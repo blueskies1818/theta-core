@@ -6,6 +6,18 @@ This document outlines the architecture, training methodology, and theoretical f
 
 The core insight is that Go gave AlphaGo Zero three things simultaneously: a perfectly verifiable state, unambiguous rules, and a clear terminal reward. The challenge of building an equivalent system for physics is finding analogs to each of these in mathematical and physical space.
 
+The analogs are: formal proof systems (Lean 4) as the verifiable environment, correspondence with established GR and QFT as the rules, and predictive compression of physical observation data as the terminal reward signal. Together these create a self-sustaining training loop that requires no human judgment at any step — the environment provides all feedback automatically.
+
+The system is a heterogeneous ensemble of three components: a Mathematical Explorer built on a graph neural network with Monte Carlo Tree Search that navigates formal mathematical space; a Physical Prediction Scorer that evaluates candidate structures against raw experimental data across all measurement modalities; and a Translation Layer that converts formal outputs into natural language for human physicists. Each component uses the architecture suited to its specific task rather than one monolithic model attempting everything.
+
+Experimental data enters the system through a two-layer data architecture. Layer 1 converts heterogeneous raw measurements — from gravitational wave detectors, particle colliders, spectrometers, titration experiments, and cosmological surveys — into a physically meaningful common format via domain-specific preprocessing pipelines. Layer 2 extracts formal mathematical objects from this common format: symmetry groups, conservation law status, scaling relations, and anomaly residuals. The model operates entirely on these mathematical objects and never on raw numbers directly. This allows cross-domain reasoning — recognizing that the same mathematical structure underlies phenomena in completely different experimental domains — that would be impossible working at the raw data level.
+
+The primary scientific target is the breakdown zone where general relativity and quantum mechanics are simultaneously necessary and currently incompatible. Current theories produce mathematical infinities at Planck scale, inside black hole singularities, and at Big Bang initial conditions. These failure coordinates are encoded explicitly as exploration targets, with candidate structures rewarded for remaining finite and consistent precisely where current theories break.
+
+Novel discoveries emerge through a mechanism modeled on Dirac's derivation of antimatter: a formally verified structure may produce solution families that do not correspond to any known physical entity. These are flagged rather than discarded, formally characterized, and translated into experimental proposals — asking what conditions would make the predicted entity detectable if it is real.
+
+**Companion document:** *Model Structure and Data Use* covers the internal architecture of each component, the complete data pipeline from raw experimental measurement to reward signal, domain-specific preprocessing pipelines, the metadata schema, and a detailed account of open engineering problems. Both documents should be read together for complete system understanding.
+
 ---
 
 ## Theoretical Foundations
