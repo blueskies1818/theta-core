@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mathematical-physics-ai"
+version = "0.1.0"
+description = "Autonomous Mathematical Physics AI — Phase 1 self-play theorem prover"
+requires-python = ">=3.11"
+
+[project.scripts]
+prepare-data = "scripts.prepare_data:main"
+train-sft = "scripts.train_sft:main"
+train-grpo = "scripts.train_grpo:main"
+evaluate = "scripts.evaluate:main"
+
+[tool.setuptools]
+packages = ["src"]

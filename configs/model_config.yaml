@@ -1,0 +1,28 @@
+# Model Configuration
+
+base_model:
+  name: "Qwen/Qwen2.5-1.5B-Instruct"
+  torch_dtype: "bfloat16"
+  attn_implementation: "sdpa"    # SDPA works on Intel XPU
+
+# Alternative base models (Phase 1 experiments):
+# - "HuggingFaceTB/SmolLM2-1.7B-Instruct"
+# - "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+
+lora:
+  use_lora: false                # Set true if VRAM is tight
+  r: 64
+  alpha: 128
+  dropout: 0.05
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+precision:
+  mixed_precision: "bf16"
+  gradient_checkpointing: true

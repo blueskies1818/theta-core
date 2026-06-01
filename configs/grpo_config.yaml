@@ -1,0 +1,35 @@
+# GRPO Self-Play Training Configuration (Phase 1)
+# Corresponds to GRPOConfig in src/utils/config.py
+
+training:
+  learning_rate: 5.0e-6
+  kl_beta: 0.01              # KL penalty coefficient (prevents reward hacking)
+  group_size: 4               # K proofs generated per theorem
+  batch_theorems: 8           # Theorems per training step (8 * 4 = 32 generations)
+  gradient_accumulation_steps: 4
+  max_steps: 5000
+  save_every: 200
+  eval_every: 200
+  log_every: 10
+
+generation:
+  max_new_tokens: 512         # Max tokens for proof generation
+  temperature: 0.8            # Exploration temperature
+  top_p: 0.95
+  do_sample: true
+
+optimizer:
+  beta1: 0.9
+  beta2: 0.95
+  weight_decay: 0.1
+  warmup_steps: 100
+  max_grad_norm: 1.0
+
+proof_checker:
+  timeout_seconds: 10.0
+  max_workers: 12             # Parallel proof checking processes
+  cache_size: 50000           # Number of results to cache
+
+replay_buffer:
+  max_size: 10000
+  sample_batch_size: 16

@@ -1,0 +1,11 @@
+# Reward Configuration for Phase 1
+
+base_reward:
+  valid_proof: 1.0           # Reward when proof type-checks
+  invalid_proof: 0.0         # Reward when proof fails
+
+length_bonus:
+  enabled: true
+  weight: 0.1                 # Multiplier for length bonus
+  reference_tokens: 100       # Proofs at this length get ~full bonus
+  decay_rate: 0.002           # Per-token penalty beyond reference
