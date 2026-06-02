@@ -8,11 +8,12 @@ The "game" is theorem proving against the Lean 4 proof checker.
 """
 
 from dataclasses import dataclass
+from pathlib import Path
 
 from src.proof_checker.lean_interface import LeanProofChecker
 from src.proof_checker.formats import ProofResult, wrap_theorem_with_proof
 from src.reward.base import compute_reward
-from src.reward.config import RewardConfig
+from src.reward.config import RewardConfig, load_reward_config
 
 
 @dataclass
@@ -33,15 +34,25 @@ class ProofEnvironment:
     - Observation: theorem statement
     - Action: generated proof text
     - Reward: proof checker output (binary + optional bonus)
+
+    If reward_config_path is provided, loads RewardConfig from YAML.
+    Otherwise uses defaults.
     """
 
     def __init__(
         self,
         proof_checker: LeanProofChecker | None = None,
         reward_config: RewardConfig | None = None,
+        reward_config_path: Path | str | None = None,
     ):
         self.checker = proof_checker or LeanProofChecker()
-        self.reward_config = reward_config or RewardConfig()
+
+        if reward_config is not None:
+            self.reward_config = reward_config
+        elif reward_config_path is not None:
+            self.reward_config = load_reward_config(Path(reward_config_path))
+        else:
+            self.reward_config = load_reward_config()  # default YAML path
 
     def step(self, statement: str, proof: str) -> EnvironmentStep:
         """Evaluate a generated proof against the proof checker.

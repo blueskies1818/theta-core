@@ -14,5 +14,6 @@ train-sft = "scripts.train_sft:main"
 train-grpo = "scripts.train_grpo:main"
 evaluate = "scripts.evaluate:main"
 
-[tool.setuptools]
-packages = ["src"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*", "scripts*"]

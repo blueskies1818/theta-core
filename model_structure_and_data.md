@@ -32,15 +32,15 @@ Data flows in one direction through the system during a training iteration: Expl
 │  ┌──────────────┐     ┌──────────────┐                  │
 │  │  Mathematical│     │    Lean 4    │                  │
 │  │   Explorer   │────▶│    Proof     │                  │
-│  │  (GNN + MCTS)│     │   Checker   │                  │
+│  │  (GNN + MCTS)│     │   Checker    │                  │
 │  └──────┬───────┘     └──────┬───────┘                  │
-│         │                   │ verified structures        │
-│         │ reward signal     ▼                           │
-│         │            ┌──────────────┐                  │
-│         └────────────│   Physical   │                  │
-│                      │  Prediction  │◀── experimental  │
-│                      │   Scorer     │    data corpus   │
-│                      └──────┬───────┘                  │
+│         │                    │ verified structures      │
+│         │ reward signal      ▼                          │
+│         │            ┌──────────────┐                   │
+│         └────────────│   Physical   │                   │
+│                      │  Prediction  │◀── experimental   │
+│                      │   Scorer     │    data corpus    │
+│                      └──────┬───────┘                   │
 │                             │ flagged anomalies         │
 └─────────────────────────────┼───────────────────────────┘
                               ▼

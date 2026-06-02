@@ -1,11 +1,15 @@
 # Reward Configuration for Phase 1
+# Fields correspond to src/reward/config.py RewardConfig dataclass.
 
-base_reward:
-  valid_proof: 1.0           # Reward when proof type-checks
-  invalid_proof: 0.0         # Reward when proof fails
+# Base reward values
+valid_proof: 1.0
+invalid_proof: 0.0
 
-length_bonus:
-  enabled: true
-  weight: 0.1                 # Multiplier for length bonus
-  reference_tokens: 100       # Proofs at this length get ~full bonus
-  decay_rate: 0.002           # Per-token penalty beyond reference
+# Length bonus: shorter proofs get higher reward
+length_bonus_enabled: true
+length_bonus_weight: 0.1
+length_reference_tokens: 100
+length_decay_rate: 0.002
+
+# Anti-reward-hacking: reject trivially short proofs
+min_proof_tokens: 10

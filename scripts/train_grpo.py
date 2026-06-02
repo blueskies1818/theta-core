@@ -24,7 +24,8 @@ from src.data.dataset import TheoremProofDataset
 from src.model.loader import load_model_for_grpo, apply_lora
 from src.proof_checker.batch_checker import BatchChecker
 from src.training.grpo_trainer import GRPOTrainer
-from src.utils.config import load_grpo_config, load_model_config, load_reward_config
+from src.reward.config import load_reward_config
+from src.utils.config import load_grpo_config, load_model_config
 from src.utils.logging import MetricsLogger
 from src.utils.xpu_utils import get_device, print_device_info
 
@@ -46,7 +47,7 @@ def main():
     # Load configs
     grpo_config = load_grpo_config()
     model_config = load_model_config()
-    reward_config = load_reward_config()
+    reward_config = load_reward_config()  # from YAML via src/reward/config.py
 
     if args.use_lora:
         model_config.lora.use_lora = True

@@ -106,21 +106,10 @@ class ModelConfig(BaseModel):
     precision: PrecisionConfig = PrecisionConfig()
 
 
-class BaseRewardConfig(BaseModel):
-    valid_proof: float = 1.0
-    invalid_proof: float = 0.0
-
-
-class LengthBonusConfig(BaseModel):
-    enabled: bool = True
-    weight: float = 0.1
-    reference_tokens: int = 100
-    decay_rate: float = 0.002
-
-
-class RewardConfig(BaseModel):
-    base_reward: BaseRewardConfig = BaseRewardConfig()
-    length_bonus: LengthBonusConfig = LengthBonusConfig()
+# NOTE: RewardConfig lives in src/reward/config.py (dataclass).
+# The canonical YAML for reward lives at configs/reward_config.yaml and
+# should be loaded via src.reward.config.RewardConfig, not here.
+# See src/environment/env.py and src/reward/base.py for usage.
 
 
 def load_yaml_config(path: Path, model_cls: type[BaseModel]) -> BaseModel:
@@ -146,9 +135,3 @@ def load_model_config(path: Path = None) -> ModelConfig:
     if path is None:
         path = Path(__file__).parent.parent.parent / "configs" / "model_config.yaml"
     return load_yaml_config(path, ModelConfig)
-
-
-def load_reward_config(path: Path = None) -> RewardConfig:
-    if path is None:
-        path = Path(__file__).parent.parent.parent / "configs" / "reward_config.yaml"
-    return load_yaml_config(path, RewardConfig)

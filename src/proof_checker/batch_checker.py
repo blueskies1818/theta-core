@@ -6,9 +6,25 @@ This module provides parallel checking across all available CPU cores.
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
+from typing import Optional
 
 from src.proof_checker.lean_interface import LeanProofChecker
 from src.proof_checker.formats import ProofResult
+
+
+def _check_single_worker(
+    code: str, project_dir: Optional[str], timeout: float
+) -> ProofResult:
+    """Check a single proof. Called in a subprocess via ProcessPoolExecutor.
+
+    Must be a module-level function (not a method) for pickling.
+    Creates a fresh LeanProofChecker in the worker process.
+    """
+    checker = LeanProofChecker(
+        project_dir=project_dir,
+        timeout=timeout,
+    )
+    return checker.check(code)
 
 
 class BatchChecker:
@@ -16,6 +32,9 @@ class BatchChecker:
 
     Each proof check is stateless and independent, enabling trivial
     parallelism across all CPU cores.
+
+    When a project_dir is provided (or auto-detected), subprocess
+    workers also use the Lake-managed Lean project for Mathlib4 access.
     """
 
     def __init__(
@@ -30,6 +49,8 @@ class BatchChecker:
             timeout=timeout,
             cache_size=cache_size,
         )
+        self.project_dir = str(self.checker.project_dir) if self.checker.project_dir else None
+        self.timeout = timeout
         self.max_workers = max_workers
 
     def check_batch(self, codes: list[str]) -> list[ProofResult]:
@@ -45,7 +66,9 @@ class BatchChecker:
 
         with ProcessPoolExecutor(max_workers=self.max_workers) as executor:
             futures = {
-                executor.submit(self._check_single, code, i): i
+                executor.submit(
+                    _check_single_worker, code, self.project_dir, self.timeout
+                ): i
                 for i, code in enumerate(codes)
             }
 
@@ -61,16 +84,6 @@ class BatchChecker:
                     )
 
         return [results[i] for i in range(len(codes))]
-
-    @staticmethod
-    def _check_single(code: str, idx: int) -> ProofResult:
-        """Check a single proof. Called in a subprocess.
-
-        Note: Creates a fresh checker instance because LeanProofChecker
-        is not pickleable (contains subprocess state).
-        """
-        checker = LeanProofChecker()
-        return checker.check(code)
 
     @property
     def cache_hit_rate(self) -> float:

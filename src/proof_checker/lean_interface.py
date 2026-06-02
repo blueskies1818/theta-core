@@ -8,6 +8,7 @@ Core design:
 """
 
 import subprocess
+import sys
 import tempfile
 import time
 from pathlib import Path
@@ -16,24 +17,70 @@ from src.proof_checker.cache import ProofCache
 from src.proof_checker.formats import ProofResult, parse_lean_error, wrap_lean_code
 
 
+def _find_project_dir() -> Path | None:
+    """Auto-detect the proof_checker_env Lake project.
+
+    Searches upward from this file's location and from CWD.
+    Returns the path to the Lake project directory, or None.
+    """
+    candidates = []
+
+    # Relative to this file: src/proof_checker/ -> ../../proof_checker_env
+    this_dir = Path(__file__).resolve().parent
+    candidates.append(this_dir.parent.parent / "proof_checker_env")
+
+    # Relative to CWD
+    candidates.append(Path.cwd() / "proof_checker_env")
+
+    for candidate in candidates:
+        if candidate.is_dir() and (candidate / "lakefile.lean").exists():
+            return candidate
+    return None
+
+
 class LeanProofChecker:
     """Stateless interface to Lean 4 for proof verification.
 
     Each check is independent — no mutable state shared between checks.
-    Uses subprocess invocation of `lean` for verification.
+    Uses subprocess invocation of ``lean`` for verification.
+
+    When a Lake-managed project directory is available (proof_checker_env/),
+    proofs are checked with ``lake env lean`` which provides access to
+    Mathlib4. Otherwise falls back to bare ``lean --stdin``.
+
+    Pass ``project_dir=False`` to force bare lean even when a Lake project
+    is available (useful for testing with core tactics only).
     """
 
     def __init__(
         self,
-        project_dir: str | Path | None = None,
+        project_dir: str | Path | None | bool = None,
         timeout: float = 10.0,
         cache_size: int = 50000,
         lean_binary: str = "lean",
     ):
         self.timeout = timeout
         self.lean_binary = lean_binary
-        self.project_dir = Path(project_dir) if project_dir else None
+
+        # Resolve project_dir:
+        # - str/Path -> use that project
+        # - None (default) -> auto-detect
+        # - False -> force bare lean (no Lake project, even if available)
+        if project_dir is False:
+            self.project_dir = None
+        elif project_dir is not None:
+            self.project_dir = Path(project_dir)
+        else:
+            self.project_dir = _find_project_dir()
+
         self.cache = ProofCache(max_size=cache_size)
+
+        if self.project_dir:
+            print(f"[LeanProofChecker] Using Lake project: {self.project_dir}",
+                  file=sys.stderr)
+        else:
+            print("[LeanProofChecker] Using bare lean --stdin (no Mathlib4)",
+                  file=sys.stderr)
 
     def check(self, code: str, timeout: float | None = None) -> ProofResult:
         """Check if a Lean 4 code string type-checks.

@@ -1,4 +1,9 @@
-"""Tests for the Lean 4 proof checker interface."""
+"""Tests for the Lean 4 proof checker interface.
+
+These tests use ONLY core Lean 4 tactics (native_decide, omega, rfl)
+that require no Mathlib4 imports. Set project_dir=None explicitly so
+tests don't trigger Lake project initialization.
+"""
 
 import sys
 from pathlib import Path
@@ -8,10 +13,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.proof_checker.lean_interface import LeanProofChecker
 from src.proof_checker.formats import LEAN_PREAMBLE
 
+# All tests use bare lean (no Lake project) — core tactics only
+# Force bare lean — these tests use only core tactics (no Mathlib4 needed)
+_PROJECT_DIR = False
+
 
 def test_valid_proof_native_decide():
     """A known-correct Lean 4 proof returns success."""
-    checker = LeanProofChecker()
+    checker = LeanProofChecker(project_dir=_PROJECT_DIR)
     code = "theorem add_one_two : 1 + 1 = 2 := by\n  native_decide"
     result = checker.check(code)
     assert result.success, f"Expected success, got: {result.errors}"
@@ -20,7 +29,7 @@ def test_valid_proof_native_decide():
 
 def test_invalid_proof():
     """A known-incorrect Lean 4 proof returns failure."""
-    checker = LeanProofChecker()
+    checker = LeanProofChecker(project_dir=_PROJECT_DIR)
     code = "theorem false_claim : 1 + 1 = 3 := by\n  native_decide"
     result = checker.check(code)
     assert not result.success, "Expected failure for false theorem"
@@ -28,7 +37,7 @@ def test_invalid_proof():
 
 def test_valid_proof_omega():
     """Omega tactic works for linear arithmetic."""
-    checker = LeanProofChecker()
+    checker = LeanProofChecker(project_dir=_PROJECT_DIR)
     code = "theorem add_comm (a b : Nat) : a + b = b + a := by\n  omega"
     result = checker.check(code)
     assert result.success, f"Expected success, got: {result.errors}"
@@ -36,7 +45,7 @@ def test_valid_proof_omega():
 
 def test_valid_proof_rfl():
     """rfl tactic works for definitional equality."""
-    checker = LeanProofChecker()
+    checker = LeanProofChecker(project_dir=_PROJECT_DIR)
     code = "theorem identity (x : Nat) : x = x := by\n  rfl"
     result = checker.check(code)
     assert result.success, f"Expected success, got: {result.errors}"
@@ -44,7 +53,7 @@ def test_valid_proof_rfl():
 
 def test_cache_hit():
     """Caching avoids redundant checks."""
-    checker = LeanProofChecker()
+    checker = LeanProofChecker(project_dir=_PROJECT_DIR)
     code = "theorem test_cache : 0 = 0 := by\n  rfl"
 
     r1 = checker.check(code)
@@ -56,7 +65,7 @@ def test_cache_hit():
 
 def test_timeout():
     """Proofs that take too long should be timed out."""
-    checker = LeanProofChecker(timeout=0.01)
+    checker = LeanProofChecker(project_dir=_PROJECT_DIR, timeout=0.01)
     code = "theorem slow : 1 = 1 := by\n  native_decide"
     result = checker.check(code)
     # native_decide should be fast; this test validates timeout mechanism

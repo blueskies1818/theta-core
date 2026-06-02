@@ -76,9 +76,21 @@ class GRPOTrainer:
         val_dataset=None,
         output_dir: str | Path = "checkpoints/grpo",
     ) -> dict:
-        """Run the full GRPO self-play training loop."""
+        """Run the full GRPO self-play training loop.
+
+        Args:
+            train_dataset: list[dict] of theorem dicts, or a Dataset-like
+                object supporting __len__ and __getitem__ returning dicts
+                with 'statement' keys.
+            val_dataset: Same format as train_dataset, for periodic eval.
+            output_dir: Directory for checkpoint saves.
+        """
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Normalize input to list[dict] for consistent access
+        train_theorems = _normalize_theorems(train_dataset)
+        val_theorems = _normalize_theorems(val_dataset) if val_dataset is not None else None
 
         cfg = self.config.training
         gen_cfg = self.config.generation
@@ -86,6 +98,7 @@ class GRPOTrainer:
         print(f"Starting GRPO training: {cfg.max_steps} steps")
         print(f"Group size K: {cfg.group_size}")
         print(f"Batch theorems: {cfg.batch_theorems}")
+        print(f"Train theorems: {len(train_theorems)}")
         print(f"KL beta: {cfg.kl_beta}")
 
         all_metrics = []
@@ -96,7 +109,7 @@ class GRPOTrainer:
 
             # 1. Sample batch of theorem statements
             batch_theorems = self._sample_theorems(
-                train_dataset, cfg.batch_theorems, theorem_idx
+                train_theorems, cfg.batch_theorems, theorem_idx
             )
             theorem_idx += cfg.batch_theorems
 
@@ -226,8 +239,8 @@ class GRPOTrainer:
                 )
 
             # 12. Evaluation
-            if val_dataset and step % cfg.eval_every == 0 and step > 0:
-                eval_metrics = self.evaluate(val_dataset, num_theorems=20)
+            if val_theorems and step % cfg.eval_every == 0 and step > 0:
+                eval_metrics = self.evaluate(val_theorems, num_theorems=20)
                 metrics["eval_success_rate"] = eval_metrics["success_rate"]
                 print(f"  Eval success rate: {eval_metrics['success_rate']:.2%}")
 
@@ -248,9 +261,11 @@ class GRPOTrainer:
         """Evaluate the policy on held-out theorems."""
         self.policy_model.eval()
 
-        theorems = self._sample_theorems(dataset, num_theorems, 0)
+        theorems = _normalize_theorems(dataset)
+        indices = list(range(min(num_theorems, len(theorems))))
+        eval_batch = [theorems[i] for i in indices]
 
-        prompts = [f"Theorem: {t['statement']}\nProof:" for t in theorems]
+        prompts = [f"Theorem: {t['statement']}\nProof:" for t in eval_batch]
         gen_cfg = self.config.generation
         gen_cfg.do_sample = True
         gen_cfg.temperature = 0.6  # Lower temperature for evaluation
@@ -265,18 +280,36 @@ class GRPOTrainer:
 
         codes = []
         for i, proofs in enumerate(all_proofs):
-            codes.append(wrap_theorem_with_proof(theorems[i]["statement"], proofs[0]))
+            codes.append(wrap_theorem_with_proof(eval_batch[i]["statement"], proofs[0]))
 
         results = self.checker.check_batch(codes)
-        success_rate = sum(1 for r in results if r.success) / len(results)
+        success_rate = sum(1 for r in results if r.success) / len(results) if results else 0.0
 
         self.policy_model.train()
         return {"success_rate": success_rate, "num_evaluated": len(codes)}
 
     @staticmethod
-    def _sample_theorems(dataset, batch_size: int, start_idx: int) -> list[dict]:
-        """Sample a batch of theorems from the dataset, cycling through."""
+    def _sample_theorems(theorems: list[dict], batch_size: int, start_idx: int) -> list[dict]:
+        """Sample a batch of theorems by cyclic indexing."""
         indices = [
-            (start_idx + i) % len(dataset) for i in range(batch_size)
+            (start_idx + i) % len(theorems) for i in range(batch_size)
         ]
-        return [dataset[idx] for idx in indices]
+        return [theorems[idx] for idx in indices]
+
+
+def _normalize_theorems(dataset) -> list[dict]:
+    """Normalize a dataset-like object to a plain list of theorem dicts.
+
+    Accepts: list[dict], torch Dataset of dicts, or any iterable of dicts.
+    Each dict must have a 'statement' key.
+    """
+    if isinstance(dataset, list):
+        return dataset
+    # Try iterating (covers torch Dataset, Generator, etc.)
+    try:
+        return list(dataset)
+    except TypeError:
+        raise TypeError(
+            f"train_dataset must be list[dict] or iterable of dicts, "
+            f"got {type(dataset).__name__}"
+        )
