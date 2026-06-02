@@ -73,14 +73,18 @@ for Phase 1 but needs redesign before physical data is introduced.
 
 ## Reward Design
 
-### 8. Multi-Pressure Reward (Consistency + Correspondence + Compression)
+### 8. Multi-Pressure Reward (Consistency + Experimental Reproduction + Compression)
 The plan describes three nested pressures that together form the reward gradient:
-internal consistency, correspondence at known limits, and predictive compression.
-Phase 1 implements only the first (binary proof checker output). The correspondence
-check (reduction to GR and QFT at appropriate limits) and compression scoring should
-be planned for Phase 2+.
+internal consistency, reproduction of experimentally verified results, and predictive
+compression. Phase 1 implements only the first (binary proof checker output).
 
-**Plan reference:** `mathematical_ai_system.md` § The Three Pressures
+Important design correction (2026-06-01): Pressure 2 does NOT require reduction to GR
+and QFT — those are theoretical frameworks, not empirical facts, and their mutual
+incompatibility is the whole problem. Pressure 2 requires reproduction of EXPERIMENTALLY
+VERIFIED RESULTS: conservation laws, spectral lines, particle masses, cross-sections,
+gravitational wave strain patterns. Things measured and confirmed, not things theorized.
+
+**Plan reference:** `mathematical_ai_system.md` § The Three Pressures (corrected)
 
 ### 9. Known Failure Coordinates as Test Conditions
 The plan describes encoding specific mathematically precise failure points
@@ -139,7 +143,17 @@ mathematical physics translation with automated verification. Phase 4 work.
 The two-dimensional energy/gravity regime map described in the plan is not implemented.
 Needed when physical data is introduced.
 
-### 18. Test-Time Compute Scaling
+### 18. Broader Application Domains (Post-Phase 5)
+The current plan focuses on the GR-QFT interface as the primary target, but the
+architecture is domain-agnostic. Once validated, the same GNN+MCTS explorer +
+experimental scorer applies to materials discovery, propulsion physics, catalyst
+design, drug discovery, battery chemistry, and any domain with formal mathematics
+and experimental measurements. Each domain needs its own formal encoding and
+scoring function but uses the same exploration architecture.
+
+See ROADMAP.md § Phase 6+ for domain-by-domain breakdown.
+
+### 19. Test-Time Compute Scaling
 The plan emphasizes allocating substantial compute to search at inference time:
 > "A 3B model searching for ten thousand steps before proposing a candidate structure
 > explores more of mathematical space than a 100B model proposing one candidate immediately."

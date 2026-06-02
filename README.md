@@ -6,7 +6,7 @@ Autonomous Mathematical Physics AI — a self-play system for exploring formal m
 
 theta-core is inspired by AlphaGo Zero's self-play mechanism — a model that generates its own training signal through interaction with a verifiable environment — applied to formal mathematics rather than a board game. The system learns to prove theorems and propose mathematical structures by generating candidates, checking them against a deterministic proof verifier, and using the verifier's accept/reject output as its sole training signal. No human labels, no human judgment at any step of the training loop.
 
-Where AlphaGo Zero had the game of Go (perfectly verifiable state, unambiguous rules, clear terminal reward), theta-core has formal proof systems (Lean 4) as the verifiable environment, correspondence with established GR and QFT as the rules, and predictive compression of physical observation data as the terminal reward signal. Together these create a self-sustaining training loop.
+Where AlphaGo Zero had the game of Go (perfectly verifiable state, unambiguous rules, clear terminal reward), theta-core has formal proof systems (Lean 4) as the verifiable environment, reproduction of experimentally verified results as the rules, and predictive compression of physical observation data as the terminal reward signal. Crucially, the "rules" are not specific theories like GR or QFT — those are models, not gospel. The rules are the empirical facts: conservation laws, spectral lines, particle masses, symmetry constraints confirmed across independent measurements. Together these create a self-sustaining training loop.
 
 The primary scientific target is the breakdown zone where general relativity and quantum mechanics are simultaneously necessary and currently incompatible — Planck scale, black hole singularities, Big Bang initial conditions. Current theories produce mathematical infinities at these coordinates; candidate structures are rewarded for remaining finite and consistent precisely where current theories break.
 
@@ -118,7 +118,7 @@ See [IMPROVEMENT_IDEAS.md](IMPROVEMENT_IDEAS.md) for the full running list.
 The full system imposes a nested hierarchy of pressures that together create a gradient toward discovery:
 
 1. **Internal consistency** — proof checker output. Any structure either holds together formally or it doesn't.
-2. **Correspondence at known limits** — must reduce to GR when quantum effects are negligible, must reduce to QFT when gravity is negligible.
+2. **Reproduction of experimentally verified results** — must predict the outcomes that have been confirmed across independent measurements. GR and QFT are the best current fits to these results, not the results themselves.
 3. **Predictive compression** — finding structures that describe known physical observations in fewer, more fundamental terms. Occam's razor formalized.
 
 ---

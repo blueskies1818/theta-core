@@ -12,7 +12,7 @@ General relativity (gravity, big things) and quantum mechanics (particles, small
 
 In 2017, DeepMind built a Go-playing AI called AlphaGo Zero. They gave it the rules of Go and told it to play against itself — millions of games. No human game records, no human strategy books. Just trial, error, and the binary signal of "win" or "lose."
 
-It became the strongest Go player in history. It found moves no human had considered in 2,500 years of playing the game. Moves that looked wrong to human experts but were deeply correct.
+It became the strongest Go player in history, even better than the pervious model first traind on human expert play. It found moves no human had considered in 2,500 years of playing the game. Moves that looked wrong to human experts but were deeply correct.
 
 **Our question:** Can we do this for mathematical physics?
 
@@ -27,7 +27,7 @@ AlphaGo Zero had three things that made self-play possible:
 | AlphaGo Zero | Our System |
 |---|---|
 | The board state is always perfectly known | Formal proof verification — a proof either checks or it doesn't, deterministically |
-| The rules of Go are unambiguous | The theorems of established physics (GR, QFT) are mathematical constraints |
+| The rules of Go are unambiguous | Experimentally verified results — conservation laws, spectral lines, particle masses. Empirical facts, not theoretical frameworks |
 | Win/lose is a clear terminal reward | A mathematical structure that predicts experimental data better than existing theories "wins" |
 
 The insight: formal proof checkers like Lean 4 can tell you with 100% certainty whether a mathematical statement is valid. No probability, no interpretation, no gray area. A computer program reads your proof and says "yes" or "no." **This is our game board.** The system proposes mathematical structures, the proof checker validates them, and experimental data scores how well they describe reality.
@@ -56,9 +56,9 @@ Rather than having a human set targets, the system imposes three constraints tha
 
 1. **Must be internally consistent.** The proof checker rejects anything logically contradictory. This alone eliminates the vast majority of possible mathematical objects.
 
-2. **Must match known physics at the edges.** At large scales, the structure must reduce to general relativity. At small scales, it must reduce to quantum field theory. These aren't suggestions — they're hard mathematical requirements encoded as formal theorems.
+2. **Must reproduce experimentally verified results.** The structure must predict the outcomes that have been confirmed across independent measurements — conservation laws, particle masses, spectral line positions, gravitational wave strain patterns. These are empirical facts, not theoretical preferences. GR and QFT happen to be our best current fits to these facts in their respective domains. A new structure must match or exceed their predictive accuracy at the limits where they've been tested — but it doesn't need to mathematically "reduce to" them. Demanding formal reduction to two mutually incompatible theories may be demanding a contradiction. Demanding reproduction of the experiments they explain is a coherent, measurable target.
 
-3. **Must predict experimental data.** A structure that accurately describes gravitational wave measurements, particle collision data, and spectroscopic observations scores higher than one that doesn't. Simpler structures score higher than complex ones (Occam's razor, formalized).
+3. **Must predict experimental data better than current theories.** A structure that describes gravitational wave measurements, particle collision data, and spectroscopic observations more accurately and more simply than existing frameworks scores higher. Simpler structures score higher than complex ones (Occam's razor, formalized).
 
 ### The Three Components
 
@@ -95,6 +95,20 @@ Everything humans have written contains:
 - The limits of what we've thought to write down
 
 A system trained on human data is bounded by human imagination. AlphaGo Zero shows that removing this constraint — at the cost of starting from almost nothing — can produce qualitatively superior results. The challenge is that mathematics isn't Go, so the mechanism has to be more carefully constructed. But the principle is the same.
+
+---
+
+## Beyond GR and QFT — A General-Purpose Discovery Engine
+
+The GR-QFT unification problem is our **first target**, not our only target. The architecture — an explorer that generates mathematical structures scored against experimental data — is domain-agnostic. Anything that can be described mathematically and measured experimentally is fair game.
+
+**Materials science:** Given a specification ("alloy with tensile strength above X, melting point above Y, using only elements from set Z"), the explorer proposes crystal structures, composition ratios, and processing conditions. The scorer evaluates predictions against materials databases and experimental measurements. The system finds candidates that no human metallurgist has considered.
+
+**Propulsion physics:** Given constraints ("specific impulse above X, thrust-to-weight ratio above Y, operating in regime Z"), the explorer proposes propulsion mechanisms — electromagnetic, thermodynamic, nuclear, or something not yet named. The scorer evaluates against known physics and experimental data. The system can explore propulsion concepts outside the design space humans have traditionally searched.
+
+**Drug discovery, catalyst design, battery chemistry, fluid dynamics, structural engineering** — the pattern is the same. Define the formal search space (chemical compounds, differential equations, tensor fields), define the scoring function (experimental measurements, physical constraints), and let the explorer search. The architecture doesn't care what domain it's exploring. It only cares that there's a formal mathematical language to generate in and experimental data to score against.
+
+GR-QFT unification is the hardest problem and therefore the best test. If the system can make progress there, it can make progress anywhere. But the investment pays off across every domain where we have formal mathematics and experimental measurements — which is to say, across all of science.
 
 ---
 

@@ -146,9 +146,9 @@ Files: New: docs/phase1_report.md
 
 ## Phase 2 — Scale the Mathematical Explorer
 
-**Goal:** Build the real architecture. The model generates novel mathematical structures — not just proofs of existing theorems — and is guided toward the GR-QFT breakdown zone.
+**Goal:** Build the real architecture. The model generates novel mathematical structures — not just proofs of existing theorems — and is guided toward the breakdown zone where current theories conflict. The GR-QFT interface is the first target; the architecture is domain-agnostic and applies to any domain with formal mathematics and experimental measurements (materials science, propulsion physics, catalysis, etc.).
 
-**Success criterion:** Model proposes a mathematical structure that (a) is internally consistent, (b) reduces to GR at large scales, (c) reduces to QFT at small scales, and (d) was not present in Mathlib4 before training.
+**Success criterion:** Model proposes a mathematical structure that (a) is internally consistent, (b) reproduces experimentally verified results (conservation laws, spectral lines, particle masses, cross-sections), and (c) was not present in Mathlib4 before training.
 
 ### 2.1 Build the math dependency graph
 
@@ -229,21 +229,28 @@ Data:   Encode Penrose-Hawking singularity conditions,
         known QFT divergences as formal zone boundaries.
 ```
 
-### 2.6 Implement correspondence checks
+### 2.6 Implement experimental reproduction checks
 
 ```
-What: Formal verification that candidate structures reduce to GR
-      at large scales and QFT at small scales.
+What: Verification that candidate structures reproduce experimentally
+      confirmed results — conservation laws, spectral lines, particle
+      masses, gravitational wave strain patterns, collider cross-sections.
+      These are EMPIRICAL FACTS, not theoretical allegiance to GR or QFT.
 Why:  Pressure 2 of the three-pressure training hierarchy.
-      Ensures proposals don't contradict known physics.
-      "They act like the banks of a river — they do not tell the
-      water where to go but massively constrain the paths."
+      Structures must match experimental outcomes. GR and QFT happen to
+      be our best current fits to those outcomes; a new structure must
+      match or exceed their predictive accuracy. But the experimental
+      results are the constraint — the theories are just models.
+      "Demanding formal reduction to two mutually incompatible theories
+      may be demanding a contradiction. Demanding reproduction of the
+      experiments they explain is a coherent, measurable target."
 Files: src/correspondence/limits.py (stub exists, expand)
-       New: src/correspondence/gr_limit.py
-       New: src/correspondence/qft_limit.py
-How:  Encoded as formal Lean 4 theorems. Candidate structures
-      must formally satisfy these theorems. Automated proof
-      checking verifies compliance.
+       New: src/correspondence/experimental_db.py (measurement database)
+       New: src/correspondence/conservation_check.py (Noether formalization)
+How:  Where results are formally encoded (Noether's theorem, Ward
+      identities) → formal proof checking. Where results are numerical
+      (cross-section curves, structure functions) → statistical comparison
+      against measurement distributions with proper uncertainties.
 ```
 
 ### 2.7 Encode known failure coordinates
@@ -489,6 +496,54 @@ Why:  "Each new domain requires domain experts to design and
 ```
 
 **Phase 5 deliverable:** Continuously operating system with pre-registered predictions, expanding data coverage, and autonomous exploration.
+
+---
+
+## Phase 6+ — Broader Applications (Post-GR/QFT)
+
+Once the system is validated on the GR-QFT interface — the hardest problem — the same architecture applies to any domain with formal mathematics and experimental measurements.
+
+### Materials Discovery
+```
+What: Given target properties (tensile strength, melting point, conductivity,
+      corrosion resistance, element constraints), the explorer proposes
+      alloy compositions, crystal structures, and processing conditions.
+      The scorer evaluates against materials databases and experimental
+      measurements.
+Why:  The same GNN+MCTS that explores mathematical physics can explore
+      materials configuration space. The search space is combinatorially
+      enormous; human metallurgists explore a tiny fraction.
+Domain experts needed: Materials scientists, metallurgists
+```
+
+### Propulsion Physics
+```
+What: Given constraints (specific impulse, thrust-to-weight ratio,
+      power density, operating environment), the explorer proposes
+      propulsion mechanisms — from refined ion drives to concepts
+      not yet named in the propulsion literature.
+Why:  "Propulsion" is just a physical system with input energy,
+      working fluid, and output momentum. The formal space of
+      possible momentum-transfer mechanisms is vastly larger than
+      what aerospace engineering has explored.
+Domain experts needed: Aerospace engineers, plasma physicists
+```
+
+### Additional Domains (same architecture, different formal spaces)
+```
+- Catalyst design: chemical reaction networks, activation energies
+- Battery chemistry: ion transport, electrode materials, electrolyte stability
+- Drug discovery: molecular docking, binding affinities, metabolic pathways
+- Fluid dynamics: turbulence models, drag reduction, mixing optimization
+- Structural engineering: topology optimization, metamaterial design
+- Quantum information: error-correcting codes, entanglement distribution
+
+Each domain requires:
+1. A formal mathematical language for the search space
+2. A scoring function built from experimental measurements
+3. Domain experts to validate the formal encodings and scoring functions
+4. The same GNN+MCTS explorer architecture (unchanged)
+```
 
 ---
 

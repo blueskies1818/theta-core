@@ -409,7 +409,11 @@ Putting all of the above together, here is the complete flow from raw experiment
 
 **Step 5 — Proof checker verification.** The Lean 4 proof checker evaluates internal consistency. If the structure contains a logical contradiction or violates any established Mathlib theorem, the check fails immediately and a strong negative reward signal is returned to the explorer. No further processing occurs for this candidate.
 
-**Step 6 — Correspondence check.** If internally consistent, the structure is checked against the formal theorems encoding the correspondence requirements — does it reduce to GR in the appropriate limit? Does it reduce to QFT in the appropriate limit? These are additional formal verification steps. Failure produces a negative reward and halts processing.
+**Step 6 — Experimental reproduction check.** If internally consistent, the structure is checked against experimentally verified results — does it reproduce the conservation laws, symmetry constraints, spectral line positions, particle masses, cross-sections, and other measured quantities that have been confirmed across independent experiments? Where these results are formally encoded (Noether's theorem, Ward identities, measured mass spectra), the check is formal verification. Where they are numerical (cross-section curves, structure functions, decay rates), the check is statistical comparison against measurement distributions.
+
+Crucially, the structure is NOT required to mathematically reduce to GR or QFT — those are theoretical frameworks, not empirical facts. It is required to reproduce the experimental outcomes that GR and QFT currently explain. This distinction matters because GR and QFT are mutually incompatible; demanding formal reduction to both simultaneously may be demanding a mathematical impossibility. Demanding reproduction of the experiments they each describe is a coherent, measurable target.
+
+Failure to reproduce confirmed experimental results produces a negative reward and halts processing.
 
 **Step 7 — Physical prediction computation.** The scorer computes what the candidate structure predicts for an experiment with this metadata in this physical regime. The prediction is expressed as a probability distribution over the Layer 2 mathematical objects — predicted symmetry group, predicted conservation law structure, predicted scaling exponents, predicted residual magnitude and form.
 

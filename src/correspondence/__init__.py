@@ -1,13 +1,19 @@
-"""Correspondence checks — Pressure 2 in the three-pressure training hierarchy.
+"""Experimental reproduction checks — Pressure 2 in the three-pressure hierarchy.
 
-Phase 2 module. Ensures candidate mathematical structures reduce to:
-- General Relativity when quantum effects are negligible (large scale, weak field)
-- Quantum Field Theory when gravity is negligible (small scale, high energy)
+Phase 2 module. Ensures candidate mathematical structures reproduce
+EXPERIMENTALLY VERIFIED RESULTS, not specific theoretical frameworks.
 
-These are hard mathematical requirements encoded as formal theorems in the
-verification environment. They act like the banks of a river — they don't tell
-the water where to go but massively constrain the space of possible paths.
+A structure must predict:
+- Conservation laws confirmed across all experiments
+- Spectral line positions, particle masses, cross-sections
+- Gravitational wave strain patterns, CMB power spectra
+- Any measurement outcome confirmed by independent experiments
 
-See mathematical_ai_system.md § The Three Pressures (Pressure 2).
-See model_structure_and_data.md § Step 6 — Correspondence Check.
+It does NOT need to mathematically "reduce to" GR or QFT — those are
+models, not empirical facts. Demanding formal reduction to two mutually
+incompatible theories may be demanding a contradiction. Demanding
+reproduction of the experiments they explain is a coherent target.
+
+See mathematical_ai_system.md § The Three Pressures (Pressure 2, corrected).
+See model_structure_and_data.md § Step 6 — Experimental Reproduction Check.
 """

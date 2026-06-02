@@ -6,7 +6,7 @@ This document outlines the architecture, training methodology, and theoretical f
 
 The core insight is that Go gave AlphaGo Zero three things simultaneously: a perfectly verifiable state, unambiguous rules, and a clear terminal reward. The challenge of building an equivalent system for physics is finding analogs to each of these in mathematical and physical space.
 
-The analogs are: formal proof systems (Lean 4) as the verifiable environment, correspondence with established GR and QFT as the rules, and predictive compression of physical observation data as the terminal reward signal. Together these create a self-sustaining training loop that requires no human judgment at any step — the environment provides all feedback automatically.
+The analogs are: formal proof systems (Lean 4) as the verifiable environment, reproduction of experimentally verified results as the rules, and predictive compression of physical observation data as the terminal reward signal. Crucially, the "rules" are not specific theoretical frameworks like GR or QFT — those are models that happen to be our best current explanations, but they are not sacred. The rules are the experimental outcomes themselves: conservation laws that have never been violated in any experiment, symmetry principles confirmed across independent measurements, and the raw numerical predictions that any candidate structure must match or exceed. Together these create a self-sustaining training loop that requires no human judgment at any step — the environment provides all feedback automatically.
 
 The system is a heterogeneous ensemble of three components: a Mathematical Explorer built on a graph neural network with Monte Carlo Tree Search that navigates formal mathematical space; a Physical Prediction Scorer that evaluates candidate structures against raw experimental data across all measurement modalities; and a Translation Layer that converts formal outputs into natural language for human physicists. Each component uses the architecture suited to its specific task rather than one monolithic model attempting everything.
 
@@ -153,7 +153,11 @@ Rather than directing the system toward specific targets, training imposes a nes
 
 **Pressure 1 — Internal consistency.** Provided automatically by the proof checker. Any structure the model proposes either holds together formally or it does not. This filter alone eliminates the vast majority of possible mathematical objects as candidates. It is not a direction but a constraint, and it is extraordinarily powerful.
 
-**Pressure 2 — Correspondence at known limits.** Whatever structure the model builds, it must reduce to general relativity when quantum effects are negligible, and must reduce to quantum field theory when gravity is negligible. These are hard mathematical requirements encoded as formal theorems in the verification environment. They act like the banks of a river — they do not tell the water where to go but they massively constrain the space of possible paths. The overlap space of structures consistent with GR at large scales AND consistent with QFT at small scales is extremely narrow.
+**Pressure 2 — Reproduction of experimentally verified results.** Whatever structure the model builds, it must reproduce the experimental outcomes that have been confirmed across independent measurements — conservation of energy, momentum, and charge; Lorentz invariance; the discrete particle mass spectrum; the specific spectral lines of hydrogen; the gravitational wave strain patterns observed by LIGO; the cross-sections measured at the LHC. These are not theoretical demands. They are empirical facts. A structure that predicts the wrong electron mass or violates charge conservation is immediately incompatible with reality, regardless of its mathematical elegance.
+
+GR and QFT happen to be the most successful mathematical frameworks for reproducing these experimental results in their respective domains. A new structure will naturally need to match or exceed their predictive accuracy at the limits where they have been tested. But the structure does not need to mathematically "reduce to" GR or QFT — it needs to predict what those theories predict, and ideally more. The experimental results are the constraint. The theories are just our current best fit to those results.
+
+This distinction matters because GR and QFT are mutually incompatible — that is the entire problem. Demanding that a new structure formally reduce to both simultaneously may be demanding a mathematical impossibility. Demanding that it reproduce the experimental results that both theories currently explain is a coherent, measurable target that does not privilege one mathematical formalism over another.
 
 **Pressure 3 — Predictive compression.** The reward contribution from the physical scorer rewards finding mathematical structures that describe known physical observations in fewer and more fundamental terms while retaining full predictive accuracy. This is the primary compass — measurable without human judgment, historically reliable as a guide toward deeper structure.
 
@@ -163,7 +167,7 @@ The core training loop runs continuously and requires no human intervention at a
 
 1. The mathematical explorer proposes a candidate structure or proof step in Lean 4
 2. The proof checker evaluates internal consistency — deterministic, immediate, binary output
-3. If consistent, the structure is checked against correspondence requirements — also formal verification
+3. If consistent, the structure is checked against experimentally verified results — does it reproduce conservation laws, symmetry constraints, and measured quantities that have been confirmed across independent experiments? (Formal verification where possible, statistical comparison otherwise)
 4. If correspondence is satisfied, the physical scorer evaluates predictive accuracy against observation data — numerical calculation
 5. The combined reward signal updates the explorer's parameters
 6. Return to step 1
