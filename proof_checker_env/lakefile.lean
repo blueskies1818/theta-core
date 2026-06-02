@@ -6,6 +6,7 @@ package proof_checker_env where
 
 @[default_target]
 lean_lib ProofChecker where
+  globs := #[`ProofChecker.+]
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git"

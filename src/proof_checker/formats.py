@@ -23,9 +23,9 @@ open Function
 open Nat
 """
 
-# Default preamble for Phase 1. Switch to LEAN_PREAMBLE_MATHLIB
-# after cloning and building mathlib4.
-LEAN_PREAMBLE = LEAN_PREAMBLE_LIGHT
+# Default preamble. Uses Mathlib4 now that the Lake project is built (Phase 1.1).
+# Fall back to LEAN_PREAMBLE_LIGHT when running without a Lake project (bare lean).
+LEAN_PREAMBLE = LEAN_PREAMBLE_MATHLIB
 
 
 @dataclass
@@ -39,15 +39,25 @@ class ProofResult:
     check_time_ms: float = 0.0
 
 
-def wrap_lean_code(generated_code: str, include_preamble: bool = True) -> str:
+def wrap_lean_code(
+    generated_code: str,
+    include_preamble: bool = True,
+    preamble: str | None = None,
+) -> str:
     """Wrap model output with necessary imports for checking.
 
     Strips any existing import/open statements from the generated code
     and prepends the standard preamble.
+
+    Args:
+        generated_code: The raw model output (theorem + proof).
+        include_preamble: If False, no preamble is prepended.
+        preamble: Override the default preamble. If None, uses LEAN_PREAMBLE.
     """
     code = _strip_existing_imports(generated_code)
     if include_preamble:
-        return LEAN_PREAMBLE + "\n" + code
+        pre = preamble if preamble is not None else LEAN_PREAMBLE
+        return pre + "\n" + code
     return code
 
 

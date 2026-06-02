@@ -14,7 +14,13 @@ import time
 from pathlib import Path
 
 from src.proof_checker.cache import ProofCache
-from src.proof_checker.formats import ProofResult, parse_lean_error, wrap_lean_code
+from src.proof_checker.formats import (
+    LEAN_PREAMBLE_LIGHT,
+    LEAN_PREAMBLE_MATHLIB,
+    ProofResult,
+    parse_lean_error,
+    wrap_lean_code,
+)
 
 
 def _find_project_dir() -> Path | None:
@@ -94,7 +100,8 @@ class LeanProofChecker:
         """
         timeout = timeout or self.timeout
 
-        wrapped = wrap_lean_code(code)
+        preamble = LEAN_PREAMBLE_MATHLIB if self.project_dir else LEAN_PREAMBLE_LIGHT
+        wrapped = wrap_lean_code(code, preamble=preamble)
         num_tokens = len(code.split())
 
         cached = self.cache.get(wrapped)
