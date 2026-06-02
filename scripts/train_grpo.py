@@ -18,6 +18,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
 
 from src.data.mathlib_extractor import load_theorems_jsonl
 from src.data.dataset import TheoremProofDataset
@@ -72,27 +73,37 @@ def main():
     # Load model: use SFT checkpoint if provided, else base model
     if args.sft_checkpoint:
         print(f"Loading SFT checkpoint from {args.sft_checkpoint}")
-        tokenizer = AutoTokenizer.from_pretrained(args.sft_checkpoint)
+        # Load tokenizer from base model (checkpoint tokenizer may have
+        # version-incompatible extra_special_tokens format)
+        base_model = model_config.base_model.name
+        print(f"Loading tokenizer from {base_model}")
+        tokenizer = AutoTokenizer.from_pretrained(base_model)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
 
         import torch as _torch
         torch_dtype = getattr(_torch, model_config.precision.mixed_precision)
 
-        policy_model = AutoModelForCausalLM.from_pretrained(
-            args.sft_checkpoint,
+        # Load base model, then apply LoRA adapters from SFT checkpoint
+        print(f"Loading base model {base_model}")
+        base_policy = AutoModelForCausalLM.from_pretrained(
+            base_model,
             torch_dtype=torch_dtype,
             trust_remote_code=True,
+        )
+        policy_model = PeftModel.from_pretrained(
+            base_policy, args.sft_checkpoint
         )
         policy_model = policy_model.to(device)
         policy_model.train()
 
-        # Reference model: same checkpoint, frozen
-        ref_model = AutoModelForCausalLM.from_pretrained(
-            args.sft_checkpoint,
+        # Reference model: fresh base model + same LoRA adapters, frozen
+        base_ref = AutoModelForCausalLM.from_pretrained(
+            base_model,
             torch_dtype=torch_dtype,
             trust_remote_code=True,
         )
+        ref_model = PeftModel.from_pretrained(base_ref, args.sft_checkpoint)
         ref_model = ref_model.to(device)
         ref_model.eval()
         for p in ref_model.parameters():
