@@ -32,7 +32,8 @@ def print_device_info() -> None:
         for i in range(torch.xpu.device_count()):
             props = torch.xpu.get_device_properties(i)
             print(f"  Device {i}: {props.name}")
-            print(f"    VRAM: {props.total_mem / 1e9:.2f} GB")
+            total_mem = getattr(props, 'total_memory', getattr(props, 'total_mem', 0))
+            print(f"    VRAM: {total_mem / 1e9:.2f} GB")
     print(f"CUDA available: {torch.cuda.is_available()}")
     print(f"Using device: {get_device()}")
 

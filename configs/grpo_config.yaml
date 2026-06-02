@@ -5,9 +5,9 @@ training:
   learning_rate: 5.0e-6
   kl_beta: 0.01              # KL penalty coefficient (prevents reward hacking)
   group_size: 4               # K proofs generated per theorem
-  batch_theorems: 8           # Theorems per training step (8 * 4 = 32 generations)
+  batch_theorems: 4           # Theorems per training step (4 * 4 = 16 generations)
   gradient_accumulation_steps: 4
-  max_steps: 5000
+  max_steps: 1000              # Phase 1 validation: 1000 steps is enough to see signal
   save_every: 200
   eval_every: 200
   log_every: 10
@@ -26,9 +26,9 @@ optimizer:
   max_grad_norm: 1.0
 
 proof_checker:
-  timeout_seconds: 10.0
-  max_workers: 12             # Parallel proof checking processes
-  cache_size: 50000           # Number of results to cache
+  timeout_seconds: 30.0        # lake env lean --stdin takes ~3s just to load Mathlib4
+  max_workers: 8               # Parallel proof checking (reduced: lake env is memory-heavy)
+  cache_size: 50000            # Number of results to cache
 
 replay_buffer:
   max_size: 10000

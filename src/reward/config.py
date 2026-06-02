@@ -41,6 +41,14 @@ class RewardConfig:
     # Minimum complexity: reject trivially short proofs
     min_proof_tokens: int = 10
 
+    # Curiosity/exploration bonus (Phase 1.5)
+    # CRITICAL: without this, model mode-collapses onto one proof pattern.
+    # Count-based exploration bonus: bonus = weight / sqrt(count + 1)
+    curiosity_enabled: bool = True
+    curiosity_weight: float = 0.05
+    curiosity_signature_length: int = 200
+    curiosity_max_tracked: int = 100_000
+
 
 def load_reward_config(path: Path | None = None) -> RewardConfig:
     """Load reward configuration from YAML file.

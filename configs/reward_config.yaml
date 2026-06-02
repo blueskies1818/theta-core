@@ -13,3 +13,11 @@ length_decay_rate: 0.002
 
 # Anti-reward-hacking: reject trivially short proofs
 min_proof_tokens: 10
+
+# Curiosity/exploration bonus (Phase 1.5 — CRITICAL for preventing mode collapse)
+# Tracks proof signatures and gives bonus for novel proofs.
+# bonus = curiosity_weight / sqrt(count + 1)
+curiosity_enabled: true
+curiosity_weight: 0.05               # Max bonus for completely novel proofs
+curiosity_signature_length: 200      # First N chars used for proof signature
+curiosity_max_tracked: 100000        # Max number of signatures to track

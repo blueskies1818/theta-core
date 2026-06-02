@@ -76,7 +76,8 @@ def main():
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
 
-        torch_dtype = getattr(__import__("torch"), model_config.precision.mixed_precision)
+        import torch as _torch
+        torch_dtype = getattr(_torch, model_config.precision.mixed_precision)
 
         policy_model = AutoModelForCausalLM.from_pretrained(
             args.sft_checkpoint,
@@ -99,7 +100,9 @@ def main():
     else:
         policy_model, ref_model, tokenizer = load_model_for_grpo(model_config, device)
 
-    if model_config.lora.use_lora:
+    if model_config.lora.use_lora and not args.sft_checkpoint:
+        # Apply LoRA only when starting from base model (not SFT checkpoint,
+        # which already has LoRA adapters applied)
         policy_model = apply_lora(policy_model, model_config)
 
     # Count parameters

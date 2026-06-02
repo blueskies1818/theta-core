@@ -42,12 +42,14 @@ class SFTTrainer:
 
         cfg = self.config.training
 
+        # num_workers=0 required for XPU compatibility:
+        # forking after XPU context init causes deadlocks.
         train_loader = DataLoader(
             train_dataset,
             batch_size=cfg.per_device_batch_size,
             shuffle=True,
-            num_workers=2,
-            pin_memory=True,
+            num_workers=0,
+            pin_memory=(self.device.type != "xpu"),
         )
 
         optimizer = torch.optim.AdamW(
@@ -134,6 +136,7 @@ class SFTTrainer:
             dataset,
             batch_size=self.config.training.per_device_batch_size,
             shuffle=False,
+            num_workers=0,
         )
 
         total_loss = 0.0

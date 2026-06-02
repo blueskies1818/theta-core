@@ -19,7 +19,12 @@ from src.data.replay_buffer import ProofReplayBuffer
 from src.model.generation import generate_proofs
 from src.proof_checker.batch_checker import BatchChecker
 from src.proof_checker.formats import wrap_theorem_with_proof
-from src.reward.base import compute_rewards_batch, compute_group_advantages
+from src.reward.base import (
+    compute_rewards_batch,
+    compute_group_advantages,
+    record_proof_signature,
+    get_curiosity_stats,
+)
 from src.reward.config import RewardConfig
 from src.training.losses import compute_grpo_loss, compute_sequence_logprob
 from src.utils.checkpoint import save_checkpoint
@@ -136,7 +141,13 @@ class GRPOTrainer:
 
             # 3. Verify all proofs (CPU, parallel)
             results = self.checker.check_batch(all_codes)
-            rewards = compute_rewards_batch(results, self.reward_config)
+            # Pass generated proof texts for curiosity bonus (Phase 1.5)
+            rewards = compute_rewards_batch(
+                results, self.reward_config, proof_texts=all_codes
+            )
+            # Record proof signatures to update curiosity counts
+            for code in all_codes:
+                record_proof_signature(code, self.reward_config)
 
             # 4. Add to replay buffer
             for i, code in enumerate(all_codes):
@@ -218,13 +229,15 @@ class GRPOTrainer:
                 self.logger.log_step(step, metrics)
 
             if step % cfg.log_every == 0 or step == cfg.max_steps - 1:
+                curiosity = get_curiosity_stats()
                 print(
                     f"Step {step}/{cfg.max_steps} | "
                     f"Success: {success_rate:.2%} | "
                     f"Reward: {avg_reward:.3f} | "
                     f"KL: {loss_dict['kl_div'].item():.4f} | "
                     f"Loss: {loss_dict['loss'].item():.4f} | "
-                    f"Time: {step_time:.2f}s"
+                    f"Time: {step_time:.2f}s | "
+                    f"Novel: {curiosity['unique_signatures']}"
                 )
 
             # 11. Checkpoint

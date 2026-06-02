@@ -3,7 +3,7 @@
 base_model:
   name: "Qwen/Qwen2.5-1.5B-Instruct"
   torch_dtype: "bfloat16"
-  attn_implementation: "sdpa"    # SDPA works on Intel XPU
+  attn_implementation: "eager"     # Eager is safest for XPU; sdpa has limited XPU support
 
 # Alternative base models (Phase 1 experiments):
 # - "HuggingFaceTB/SmolLM2-1.7B-Instruct"
@@ -24,5 +24,5 @@ lora:
     - "down_proj"
 
 precision:
-  mixed_precision: "bf16"
+  mixed_precision: "bfloat16"
   gradient_checkpointing: true
