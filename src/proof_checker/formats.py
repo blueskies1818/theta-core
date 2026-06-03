@@ -64,17 +64,21 @@ def wrap_lean_code(
 def wrap_theorem_with_proof(theorem_statement: str, proof_body: str) -> str:
     """Combine a theorem statement and proof body into a checkable Lean block.
 
-    Uses ':=' (not ':= by') so both term-style and tactic-style proofs work.
+    Uses ':=' for term proofs and ':= by' for tactic proofs.
     Lean 4 accepts both:
-        example : x = x := rfl          (term)
-        example : x = x := by rfl       (tactic)
+        example : x = x := rfl              (term)
+        example : x = x := by rfl           (tactic, single-line)
+        example : x = x := by               (tactic, multi-line)
+          intro h; exact h
     """
     statement = theorem_statement.strip()
     proof = proof_body.strip()
 
+    if not proof:
+        return f"{statement} := sorry"
+
     # Ensure the statement ends with ':=' for proof delimiter
     if not statement.endswith(":="):
-        # Strip trailing 'by' if present (will be in the proof body)
         if statement.rstrip().endswith(" by"):
             statement = statement.rstrip()[:-3].rstrip()
         if ":" in statement and not statement.rstrip().endswith(":="):
@@ -82,11 +86,74 @@ def wrap_theorem_with_proof(theorem_statement: str, proof_body: str) -> str:
         else:
             statement = statement.rstrip() + " :="
 
-    # If proof starts with 'by ', it's a tactic block; inline it
-    if proof.startswith("by "):
-        return f"{statement} {proof}"
+    # Detect tactic-style proofs
+    is_tactic = _is_tactic_proof(proof)
+
+    if is_tactic:
+        if proof.startswith("by "):
+            return f"{statement} {proof}"
+        elif "\n" in proof:
+            # Multi-line: indent each line under `by`
+            indented = "\n".join(f"  {line}" for line in proof.split("\n"))
+            return f"{statement} by\n{indented}"
+        else:
+            return f"{statement} by {proof}"
     else:
-        return f"{statement}\n  {proof}"
+        # Term proofs use :=
+        if "\n" in proof:
+            return f"{statement}\n  {proof}"
+        else:
+            return f"{statement} {proof}"
+
+
+def _is_tactic_proof(proof: str) -> bool:
+    """Detect if a proof body uses tactic style (needs ':= by' wrapper).
+
+    Tactic proofs start with keywords like apply, exact, intro, rw, simp.
+    Term proofs are expressions like `rfl`, `add_comm a b`, `h ▸ h2`.
+    """
+    _tactic_keywords = {
+        "apply", "exact", "refine", "intro", "intros", "rcases", "rintro",
+        "rw", "rwa", "erw", "simp", "simpa", "simp_rw", "dsimp",
+        "cases", "case", "induction",
+        "constructor", "left", "right", "split",
+        "have", "let", "show", "suffices",
+        "calc", "convert", "gcongr",
+        "by_contra", "exfalso", "push_neg",
+        "obtain", "set", "choose",
+        "positivity", "linarith", "nlinarith", "omega", "norm_num", "norm_cast",
+        "field_simp", "ring", "ring_nf",
+        "native_decide", "dec_trivial",
+        "repeat", "try", "all_goals", "any_goals",
+        "filter_upwards", "specialize", "generalize",
+        "apply_rules", "solve_by_elim",
+        "conv", "conv_lhs", "conv_rhs",
+        "infer_instance", "assumption",
+        "done", "skip",
+    }
+    first_word = proof.split()[0] if proof else ""
+    first_word = first_word.rstrip(":")
+
+    # Single-word terms like "rfl", "trivial", "sorry"
+    if first_word in {"rfl", "trivial", "sorry"}:
+        return False
+
+    # Multi-line: check if most non-empty lines start with tactic keywords
+    if "\n" in proof:
+        lines = [l.strip() for l in proof.split("\n") if l.strip()]
+        if not lines:
+            return False
+        tactic_count = sum(
+            1 for l in lines
+            if l.split()[0].rstrip(":") in _tactic_keywords
+        )
+        if tactic_count >= len(lines) * 0.5:
+            return True
+        # Bullet points indicate tactic proofs
+        if any(l.strip().startswith(("·", "•")) for l in lines):
+            return True
+
+    return first_word in _tactic_keywords
 
 
 def extract_proof_body(full_generation: str) -> str:

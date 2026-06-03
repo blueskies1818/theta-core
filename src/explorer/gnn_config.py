@@ -1,0 +1,106 @@
+"""Configuration for the GNN encoder (Phase 2.2)."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
+
+@dataclass
+class GNNConfig:
+    """Configuration for the Graph Neural Network encoder.
+
+    The GNN learns node embeddings over the math dependency graph.
+    These embeddings are used by MCTS (Phase 2.3) to evaluate which
+    lemmas to apply at each proof step.
+    """
+
+    # -- Architecture --------------------------------------------------------
+
+    # Number of message-passing layers (depth of neighbor aggregation)
+    num_layers: int = 4
+
+    # Hidden dimension for node embeddings
+    hidden_dim: int = 512
+
+    # Input feature dimension (from statement embedding or random init)
+    input_dim: int = 768
+
+    # Number of attention heads in GAT layers
+    num_heads: int = 8
+
+    # Dropout rate for regularization
+    dropout: float = 0.1
+
+    # Activation function
+    activation: str = "gelu"  # "gelu", "relu", "silu"
+
+    # -- Message Passing -----------------------------------------------------
+
+    # Whether to use edge-type-specific projections
+    # (different weights for "uses_in_proof" vs "uses_in_statement")
+    use_edge_types: bool = True
+
+    # Number of distinct edge types
+    num_edge_types: int = 4
+
+    # Whether to use bidirectional message passing
+    # (if True, messages also flow from dependencies → dependents)
+    bidirectional: bool = True
+
+    # Whether to add a virtual "supernode" connected to all nodes
+    # (improves global information flow, like a [CLS] token)
+    use_supernode: bool = False
+
+    # -- Initial Features ----------------------------------------------------
+
+    # How to initialize node features:
+    # "transformer" - use the Phase 1 model to embed theorem statements
+    # "random" - random initialization, learned during GNN training
+    # "onehot" - one-hot encoding of domain + node type
+    init_features: str = "random"
+
+    # Path to the SFT model checkpoint (for transformer init)
+    sft_checkpoint: str = "checkpoints/sft_v2/best"
+
+    # Base model name (for tokenizer when using transformer init)
+    base_model_name: str = "Qwen/Qwen2.5-1.5B-Instruct"
+
+    # -- Training ------------------------------------------------------------
+
+    # Learning rate for GNN training
+    learning_rate: float = 1e-3
+
+    # Weight decay for Adam optimizer
+    weight_decay: float = 1e-5
+
+    # Number of training epochs
+    num_epochs: int = 100
+
+    # Batch size for mini-batch training (number of target nodes)
+    batch_size: int = 512
+
+    # Number of neighbors to sample per node during training
+    num_neighbors: list[int] = field(default_factory=lambda: [25, 15, 10, 5])
+
+    # Training objective:
+    # "link_prediction" - predict whether an edge exists between two nodes
+    # "node_classification" - predict domain/type from embeddings
+    # "contrastive" - InfoNCE between local and global representations
+    objective: str = "link_prediction"
+
+    # Negative sampling ratio for link prediction
+    negative_ratio: int = 5
+
+    # Temperature for contrastive loss
+    temperature: float = 0.07
+
+    # -- Inference -----------------------------------------------------------
+
+    # Whether to use full-graph or sampled inference
+    full_graph_inference: bool = True
+
+    # Device to run on
+    device: str = "xpu:0"
+
+    # Mixed precision
+    use_amp: bool = True
