@@ -184,14 +184,35 @@ class ExplorerTrainer:
                     statement, node_embeddings=embeddings, verbose=False
                 )
 
-                # Convert steps to Lean code
+                # Convert steps to Lean code.
+                # MCTS may over-generate: rw [add_comm] alone closes a+b=b+a,
+                # but MCTS adds more steps that fail. Try truncating.
                 proof_text = ProofState._render_proof(best_steps)
                 full_code = wrap_theorem_with_proof(statement, proof_text or "sorry")
+                # If multi-step, also try just the first step
+                if len(best_steps) > 1:
+                    single_text = ProofState._render_proof(best_steps[:1])
+                    single_code = wrap_theorem_with_proof(statement, single_text or "sorry")
+                    # Quick check: if single step uses rw/apply of comm lemma, prefer it
+                    first_action = best_steps[0]
+                    if (first_action.tactic_type.value in ("rewrite", "apply")
+                            and first_action.lemma in ("add_comm", "mul_comm", "rfl", "Eq.refl")):
+                        full_code = single_code
+                        best_steps = best_steps[:1]  # Truncate for consistency
                 all_codes.append(full_code)
                 all_trees.append(root)
 
             # ---- Phase C: Proof checking ----
             results = self.checker.check_batch(all_codes)
+
+            # DEBUG: show proof details for first 3 epochs
+            if self.global_step < 3:
+                for i, (code, result) in enumerate(zip(all_codes, results)):
+                    status = "✓" if result.success else "✗"
+                    err = result.errors[0][:100] if result.errors else ""
+                    print(f"  [DEBUG {self.global_step}.{i}] {status} {batch[i]['name']}: "
+                          f"{code[code.find(':= by')+5:code.find(':= by')+80] if ':= by' in code else code[:80]}"
+                          f"{' | ' + err if err else ''}")
 
             # ---- Phase D: Rewards ----
             rewards = compute_rewards_batch(results, self.reward_config, proof_texts=all_codes)
