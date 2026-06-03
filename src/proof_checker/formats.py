@@ -93,8 +93,11 @@ def wrap_theorem_with_proof(theorem_statement: str, proof_body: str) -> str:
         if proof.startswith("by "):
             return f"{statement} {proof}"
         elif "\n" in proof:
-            # Multi-line: indent each line under `by`
-            indented = "\n".join(f"  {line}" for line in proof.split("\n"))
+            # Multi-line: indent each line under `by`.
+            # Strip existing indentation first (proof may already be indented
+            # from ProofState._render_proof).
+            lines = [line.strip() for line in proof.split("\n") if line.strip()]
+            indented = "\n".join(f"  {line}" for line in lines)
             return f"{statement} by\n{indented}"
         else:
             return f"{statement} by {proof}"

@@ -436,6 +436,88 @@ class CorrespondenceRewardModifier:
 
 
 # ---------------------------------------------------------------------------
+# Era-gated reward modifier (temporal gating)
+# ---------------------------------------------------------------------------
+
+
+class EraGatedRewardModifier:
+    """Wraps CorrespondenceRewardModifier with passive era-gated discovery tracking.
+
+    When training with a historical era cutoff (e.g., ≤1904), this wrapper:
+    1. Applies the standard correspondence modifier (zone multipliers + failure bonuses)
+    2. PASSIVELY scans proofs for "future" physics concepts unknown at the cutoff
+    3. Reports discoveries in training logs — but does NOT modify rewards
+
+    This is the honest temporal gating test: the explorer gets NO hints about
+    what physics comes next. It only sees pre-era knowledge through the
+    correspondence layer. If it spontaneously generates proofs touching
+    post-era concepts (Lorentz transformations, wave functions, etc.),
+    that's genuine evidence the architecture produces real discovery.
+
+    The era tracker is a MONITOR, not a teacher.
+    """
+
+    def __init__(
+        self,
+        base_modifier: CorrespondenceRewardModifier,
+        era_tracker: "EraTracker | None" = None,
+    ):
+        self.base = base_modifier
+        self.tracker = era_tracker
+
+    def apply(
+        self,
+        rewards: "torch.Tensor",
+        proofs: list[str],
+        theorem_statements: list[str],
+        energy_scale: float | None = None,
+        gauge_group: str | None = None,
+    ) -> "torch.Tensor":
+        """Apply correspondence modifier. Passively track era discoveries.
+
+        Rewards are NOT modified by era tracking — discoveries are
+        observed, not incentivized. This prevents inflated results.
+        """
+        # Step 1: Standard correspondence modifier (the only reward signal)
+        modified = self.base.apply(
+            rewards, proofs, theorem_statements,
+            energy_scale=energy_scale,
+            gauge_group=gauge_group,
+        )
+
+        # Step 2: Passive discovery tracking (no reward modification)
+        if self.tracker is not None:
+            self.tracker.scan_batch(proofs, theorem_statements)
+
+        return modified
+
+    def get_stats(self) -> dict:
+        """Return combined stats from correspondence modifier + era tracker."""
+        stats = self.base.get_stats()
+        if self.tracker is not None:
+            stats["era"] = self.tracker.era_name
+            stats["era_cutoff_year"] = self.tracker.cutoff_year
+            stats["era_discovery_rate"] = self.tracker.get_discovery_rate()
+            stats["era_top_discoveries"] = self.tracker.get_top_discoveries(5)
+            stats["era_total_discoveries"] = self.tracker.total_discoveries
+        return stats
+
+    def reset_stats(self) -> None:
+        """Reset tracking statistics."""
+        self.base.reset_stats()
+        if self.tracker is not None:
+            self.tracker.reset_counts()
+
+    @property
+    def frontier_map(self):
+        return self.base.frontier_map
+
+    @property
+    def failure_coords(self):
+        return self.base.failure_coords
+
+
+# ---------------------------------------------------------------------------
 # Factory
 # ---------------------------------------------------------------------------
 

@@ -256,6 +256,14 @@ class ExplorerTrainer:
                         f"resolved={cs['failure_resolutions']} "
                         f"reproduced={cs['failure_reproductions']}"
                     )
+                    # Era-gated discovery stats (if temporal gating is active)
+                    if cs.get("era"):
+                        log_msg += (
+                            f"\n  Era ({cs['era']}, ≤{cs['era_cutoff_year']}): "
+                            f"{cs['era_total_discoveries']} discoveries "
+                            f"({cs['era_discovery_rate']:.0%} rate) | "
+                            f"top: {cs['era_top_discoveries']}"
+                        )
                 print(log_msg)
 
             # Save checkpoint
@@ -287,41 +295,90 @@ class ExplorerTrainer:
         """Compute the explorer training loss.
 
         Combines:
-        1. Policy loss: encourage GNN to score successful lemmas higher
-        2. Value loss: MSE between GNN value and actual outcome
-        3. (Optional) KL penalty against previous GNN state
+        1. Policy loss: encourage GNN to score successful lemmas higher.
+           Uses differentiable logits stored in MCTS nodes (connected to
+           the GNN computation graph) vs MCTS visit distributions as targets.
+           This is the AlphaGo Zero training signal — the GNN learns to
+           predict which actions MCTS found promising.
+        2. Value loss: MSE between GNN value and actual outcome.
+
+        Gradient flow:
+            loss → log_softmax(child_logits) → child_logits
+                 → cosine_similarity(goal_emb, lemma_emb)
+                 → goal_emb = embeddings[selected].mean()
+                 → embeddings = GNN(x, edges)
+                 → GNN parameters ✓
 
         Args:
-            embeddings: [N, D] current GNN node embeddings.
+            embeddings: [N, D] current GNN node embeddings (for value loss).
             trees: MCTS root nodes for each theorem.
             codes: Proof code strings.
             results: Proof checker results.
             advantages: [batch_size] advantage values from GRPO.
 
         Returns:
-            Scalar loss tensor.
+            Scalar loss tensor with grad path to GNN parameters.
         """
         policy_losses = []
         value_losses = []
 
         for i, (root, result, advantage) in enumerate(zip(trees, results, advantages)):
-            # Policy loss: for each MCTS node, push priors toward actual outcomes
-            if root.children:
-                # Get visit count distribution (target policy)
+            # Guard against NaN advantages (can occur with degenerate groups,
+            # e.g. group_size=1 produces std=NaN for single-element groups).
+            if torch.isnan(advantage).any():
+                advantage = torch.zeros_like(advantage)
+
+            # ── Policy loss: differentiate through GNN logits ──
+            # Use stored child_logits (differentiable) when available.
+            # Fall back to detached priors only when no GNN was used.
+            if root.children and root.child_logits is not None and root._child_action_order:
+                total_visits = sum(c.visit_count for c in root.children.values())
+                if total_visits > 0:
+                    # Build target distribution from MCTS visit counts.
+                    # This is detached — MCTS provides the "supervised" target
+                    # and the GNN learns to predict it (AlphaGo Zero pattern).
+                    target_probs = []
+                    for action in root._child_action_order:
+                        child = root.children.get(action)
+                        if child is not None:
+                            target_probs.append(child.visit_count / total_visits)
+                        else:
+                            target_probs.append(0.0)
+
+                    if target_probs and sum(target_probs) > 0:
+                        # Normalize in case some actions were pruned
+                        target_sum = sum(target_probs)
+                        target = torch.tensor(
+                            [p / target_sum for p in target_probs],
+                            device=self.device,
+                        )
+
+                        # child_logits is a differentiable tensor connected to
+                        # the GNN via cosine_similarity → goal_embedding → embeddings.
+                        logits = root.child_logits.to(self.device)
+
+                        # Cross-entropy: -Σ target_i · log(softmax(logits)_i)
+                        log_probs = torch.log_softmax(logits, dim=0)
+                        policy_loss = -(target * log_probs).sum()
+
+                        # Weight by advantage: successful proofs get stronger signal
+                        weight = torch.sigmoid(advantage)
+                        policy_losses.append(weight * policy_loss)
+
+            elif root.children:
+                # Fallback: use detached priors (no gradient through GNN).
+                # This path is taken when no GNN is available — training
+                # signal comes only from the value loss.
                 total_visits = sum(c.visit_count for c in root.children.values())
                 if total_visits > 0:
                     target_probs = []
                     prior_probs = []
-
                     for action, child in root.children.items():
                         target_probs.append(child.visit_count / total_visits)
                         prior_probs.append(child.prior)
-
                     if target_probs:
                         target = torch.tensor(target_probs, device=self.device)
                         prior = torch.tensor(prior_probs, device=self.device)
-                        # Cross-entropy: push priors toward visit distribution
-                        # Weighted by advantage: successful proofs get stronger signal
                         weight = torch.sigmoid(advantage)
                         policy_loss = F.kl_div(
                             torch.log_softmax(prior, dim=0),
@@ -330,7 +387,7 @@ class ExplorerTrainer:
                         )
                         policy_losses.append(weight * policy_loss)
 
-            # Value loss: compare GNN value estimate vs actual outcome
+            # ── Value loss: compare GNN value estimate vs actual outcome ──
             actual_value = 1.0 if result.success else 0.0
             predicted_value = root.value_estimate
             value_loss = F.mse_loss(

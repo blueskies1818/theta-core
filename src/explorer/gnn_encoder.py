@@ -310,13 +310,57 @@ class GNNEncoder(nn.Module):
     def save(self, path: Path | str) -> None:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        torch.save({"model_state_dict": self.state_dict(), "config": self.config}, path)
+        # Save config as plain dict to avoid pickle issues with dataclass fields
+        config_dict = {
+            "hidden_dim": self.config.hidden_dim,
+            "num_layers": self.config.num_layers,
+            "num_heads": self.config.num_heads,
+            "input_dim": self.config.input_dim,
+            "dropout": self.config.dropout,
+            "activation": self.config.activation,
+            "use_edge_types": self.config.use_edge_types,
+            "num_edge_types": self.config.num_edge_types,
+            "bidirectional": self.config.bidirectional,
+        }
+        torch.save({
+            "model_state_dict": self.state_dict(),
+            "config_dict": config_dict,
+        }, path)
 
     @classmethod
     def load(cls, path: Path | str, config: GNNConfig | None = None) -> "GNNEncoder":
-        state = torch.load(path, map_location="cpu", weights_only=False)
+        state = torch.load(str(path), map_location="cpu", weights_only=False)
         if config is None:
-            config = state.get("config", GNNConfig())
+            # Support both new format (config_dict) and old format (config dataclass)
+            cd = state.get("config_dict")
+            if cd is None:
+                # Old format: try to extract from pickled config dataclass
+                old_cfg = state.get("config")
+                if old_cfg is not None:
+                    cd = {
+                        "hidden_dim": getattr(old_cfg, "hidden_dim", 128),
+                        "num_layers": getattr(old_cfg, "num_layers", 2),
+                        "num_heads": getattr(old_cfg, "num_heads", 4),
+                        "input_dim": getattr(old_cfg, "input_dim", 768),
+                        "dropout": getattr(old_cfg, "dropout", 0.1),
+                        "activation": getattr(old_cfg, "activation", "gelu"),
+                        "use_edge_types": getattr(old_cfg, "use_edge_types", True),
+                        "num_edge_types": getattr(old_cfg, "num_edge_types", 4),
+                        "bidirectional": getattr(old_cfg, "bidirectional", True),
+                    }
+                else:
+                    cd = {}
+            config = GNNConfig(
+                hidden_dim=cd.get("hidden_dim", 128),
+                num_layers=cd.get("num_layers", 2),
+                num_heads=cd.get("num_heads", 4),
+                input_dim=cd.get("input_dim", 768),
+                dropout=cd.get("dropout", 0.1),
+                activation=cd.get("activation", "gelu"),
+                use_edge_types=cd.get("use_edge_types", True),
+                num_edge_types=cd.get("num_edge_types", 4),
+                bidirectional=cd.get("bidirectional", True),
+            )
         model = cls(config)
         model.load_state_dict(state["model_state_dict"])
         return model

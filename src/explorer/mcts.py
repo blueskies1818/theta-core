@@ -45,7 +45,17 @@ class MCTSNode:
     total_value: float = 0.0
 
     # Prior probability from GNN policy (for PUCT)
+    # This is a detached float — used for MCTS tree search.
     prior: float = 1.0
+
+    # Differentiable logits from the GNN for each child action.
+    # Shape [num_children] — connected to the GNN computation graph.
+    # None when actions were scored without the GNN.
+    child_logits: "torch.Tensor | None" = None
+
+    # Order of actions matching child_logits indices.
+    # child_logits[i] corresponds to _child_action_order[i].
+    _child_action_order: list = field(default_factory=list)
 
     # Value estimate from GNN (cached)
     value_estimate: float = 0.0
@@ -274,6 +284,9 @@ class MCTS:
 
         Uses the GNN to score candidate lemmas for the current goal.
         Creates child nodes with prior probabilities proportional to scores.
+
+        Stores differentiable logits in the parent node so the training loss
+        can backpropagate through the GNN → scores → policy gradient path.
         """
         # Generate candidates
         candidates = generate_candidate_actions(
@@ -289,9 +302,14 @@ class MCTS:
         if len(candidates) > self.config.max_actions_per_node:
             candidates = random.sample(candidates, self.config.max_actions_per_node)
 
-        # Score candidates using GNN (if available)
+        # Score candidates using GNN (if available).
+        # _score_actions returns (detached_priors, differentiable_logits).
         if self.gnn is not None and self._node_embeddings is not None:
-            priors = self._score_actions(node.state, candidates)
+            priors, logits = self._score_actions(node.state, candidates)
+            # Store differentiable logits for gradient flow during training
+            if logits is not None:
+                node.child_logits = logits
+                node._child_action_order = list(candidates)
         else:
             # Uniform priors if no GNN
             priors = [1.0 / len(candidates)] * len(candidates)
@@ -370,19 +388,26 @@ class MCTS:
 
     def _score_actions(
         self, state: ProofState, actions: list[Tactic]
-    ) -> list[float]:
+    ) -> tuple[list[float], "torch.Tensor | None"]:
         """Score candidate actions using hybrid GNN + structural signals.
 
         Combines:
         1. GNN embedding similarity (goal vs lemma) — if both in embedding space
         2. Lemma centrality (in-degree in dependency graph) — fundamental = useful
         3. Tactic-type prior — structural tactics get moderate prior
+
+        Returns:
+            (priors_list, logits_tensor) where:
+            - priors_list: list of detached float priors for MCTS tree search
+            - logits_tensor: differentiable tensor of raw scores, connected to
+              the GNN computation graph — used in the training loss for gradient flow
         """
         if self._node_embeddings is None:
             uniform = 1.0 / len(actions)
-            return [uniform] * len(actions)
+            return [uniform] * len(actions), None
 
         goal_embedding = self._embed_goal(state)
+        device = self._node_embeddings.device
 
         # Pre-compute centrality scores from the dependency graph
         if self.graph is not None:
@@ -392,41 +417,82 @@ class MCTS:
             in_degrees = {}
             max_in = 1
 
-        scores = []
+        # Build scores as differentiable tensors (not Python floats).
+        # Each score is a scalar tensor connected to the GNN graph via
+        # cosine_similarity(goal_embedding, lemma_embedding).
+        score_tensors: list[torch.Tensor] = []
         for action in actions:
-            score = 0.05  # Base small prior for any action
+            # Start with a small constant base score
+            score = torch.tensor(0.05, device=device, dtype=torch.float32)
 
             lemma = action.lemma
             if lemma and lemma in self._lemma_to_idx:
                 idx = self._lemma_to_idx[lemma]
                 lemma_emb = self._node_embeddings[idx]
 
-                # GNN similarity: goal vs lemma
+                # GNN similarity: goal vs lemma (differentiable)
                 if goal_embedding is not None and goal_embedding.norm() > 0:
                     sim = torch.cosine_similarity(
                         goal_embedding.unsqueeze(0), lemma_emb.unsqueeze(0), dim=1
                     )
-                    score += max(0.0, sim.item()) * 0.4  # 40% weight on GNN
+                    # sim is [1]; squeeze to 0-dim scalar for consistent stacking
+                    score = score + sim.clamp(min=0.0).squeeze() * 0.4
 
                 # Centrality: fundamental lemmas are more useful
                 centrality = in_degrees.get(lemma, 0) / max_in
-                score += centrality * 0.3  # 30% weight on centrality
+                score = score + centrality * 0.3
 
             elif action.tactic_type.value in ("intro", "cases", "have"):
-                score += 0.25  # Structural tactics get moderate prior
+                score = score + 0.25  # Structural tactics get moderate prior
             elif action.tactic_type.value == "exact" and action.hypothesis:
-                score += 0.30  # Using a local hypothesis is promising
+                score = score + 0.30  # Using a local hypothesis is promising
 
-            scores.append(score)
+            score_tensors.append(score)
 
-        # Softmax to get prior probabilities (with temperature)
-        scores_t = torch.tensor(scores)
-        if scores_t.sum() > 0:
-            priors = torch.softmax(scores_t / 0.5, dim=0)
-            return priors.tolist()
-        else:
-            uniform = 1.0 / len(actions)
-            return [uniform] * len(actions)
+        # Stack into a single differentiable tensor [num_actions]
+        logits = torch.stack(score_tensors)
+
+        # ── Cold-start heuristics ──
+        # The GNN is pretrained for link prediction, not proof-step prediction.
+        # These heuristics bridge the gap until the GNN learns from successes.
+        #
+        # Extract just the goal (after the last ':') from the full statement.
+        goal_text = state.get_goal_embedding_key()
+        goal_only = goal_text.split(":")[-1].strip() if ":" in goal_text else goal_text
+
+        # Heuristic 1: Reflexive goals (X = X) → boost rfl
+        if _is_reflexive_goal(goal_only):
+            for i, action in enumerate(actions):
+                if action.lemma in ("rfl", "Eq.refl", "Eq.refl'") and action.tactic_type.value == "exact":
+                    logits[i] = logits[i] + 1.5
+                elif action.lemma in ("rfl", "Eq.refl") and action.tactic_type.value == "apply":
+                    logits[i] = logits[i] + 0.5
+
+        # Heuristic 2: Commutative goals → boost add_comm / mul_comm
+        comm_type = _detect_commutative_goal(goal_only)
+        if comm_type == "add":
+            for i, action in enumerate(actions):
+                if action.lemma == "add_comm":
+                    if action.tactic_type.value == "rewrite":
+                        logits[i] = logits[i] + 1.5
+                    elif action.tactic_type.value in ("exact", "apply"):
+                        logits[i] = logits[i] + 1.0
+        elif comm_type == "mul":
+            for i, action in enumerate(actions):
+                if action.lemma == "mul_comm":
+                    if action.tactic_type.value == "rewrite":
+                        logits[i] = logits[i] + 1.5
+                    elif action.tactic_type.value in ("exact", "apply"):
+                        logits[i] = logits[i] + 1.0
+
+        # Heuristic 3: Goal matches a local hypothesis → boost that hypothesis
+        _boost_hypothesis_match(logits, actions, goal_only, state.hypotheses)
+
+        # Softmax to get prior probabilities (temperature=0.5 sharpens distribution)
+        priors = torch.softmax(logits / 0.5, dim=0)
+
+        # Return detached priors for MCTS search + differentiable logits for loss
+        return priors.detach().tolist(), logits
 
     def _embed_goal(self, state: ProofState) -> torch.Tensor | None:
         """Create an embedding for the current proof goal.
@@ -573,6 +639,104 @@ class MCTS:
     def clear_cache(self) -> None:
         """Clear the transposition table and cached state."""
         self._state_cache.clear()
+
+
+def _is_reflexive_goal(goal_text: str) -> bool:
+    """Check if a goal is a simple reflexive equality (X = X).
+
+    These goals are trivially provable with `exact rfl`. The GNN doesn't
+    know this (it was pretrained for link prediction, not proof search),
+    so we add a heuristic boost for rfl on reflexive goals.
+    """
+    text = goal_text.strip()
+    # Pattern: something = same something (reflexive equality)
+    if "=" in text:
+        parts = text.split("=", 1)
+        if len(parts) == 2:
+            left = parts[0].strip()
+            right = parts[1].strip()
+            # Allow whitespace/parenthesis variations
+            left_clean = left.replace(" ", "").replace("(", "").replace(")", "")
+            right_clean = right.replace(" ", "").replace("(", "").replace(")", "")
+            return left_clean == right_clean
+    return False
+
+
+def _detect_commutative_goal(goal_text: str) -> str | None:
+    """Detect if a goal is a simple commutative equality.
+
+    Returns "add" for A + B = B + A patterns,
+            "mul" for A * B = B * A patterns,
+            None otherwise.
+    """
+    text = goal_text.strip()
+    if "=" not in text:
+        return None
+
+    lhs, rhs = text.split("=", 1)
+    lhs = lhs.strip()
+    rhs = rhs.strip()
+
+    # Check addition commutation: both sides contain '+' and share terms
+    if "+" in lhs and "+" in rhs:
+        lhs_terms = set(t.strip() for t in lhs.split("+"))
+        rhs_terms = set(t.strip() for t in rhs.split("+"))
+        if lhs_terms == rhs_terms and len(lhs_terms) >= 2:
+            return "add"
+
+    # Check multiplication commutation: both sides contain '*' (but not '+')
+    if "*" in lhs and "*" in rhs:
+        lhs_factors = set(t.strip() for t in lhs.split("*"))
+        rhs_factors = set(t.strip() for t in rhs.split("*"))
+        if lhs_factors == rhs_factors and len(lhs_factors) >= 2:
+            return "mul"
+
+    return None
+
+
+def _boost_hypothesis_match(
+    logits: "torch.Tensor",
+    actions: list,
+    goal_text: str,
+    hypotheses: dict[str, str],
+) -> None:
+    """Boost actions that directly use a hypothesis matching the goal.
+
+    If we have h : A = B and the goal is A = B (or B = A),
+    boost `exact h` and `rw [h]`.
+    """
+    if not hypotheses:
+        return
+
+    goal = goal_text.strip()
+    # Strip leading/trailing whitespace and normalize
+    goal_norm = " ".join(goal.split())
+
+    for hyp_name, hyp_type in hypotheses.items():
+        hyp_norm = " ".join(hyp_type.split())
+
+        # Check if hypothesis directly states the goal
+        if hyp_norm == goal_norm:
+            for i, action in enumerate(actions):
+                if action.hypothesis == hyp_name:
+                    if action.tactic_type.value == "exact":
+                        logits[i] = logits[i] + 2.0
+                    elif action.tactic_type.value == "rewrite":
+                        logits[i] = logits[i] + 1.0
+
+        # Check if hypothesis is the symmetric version (h : B = A, goal : A = B)
+        if "=" in hyp_norm and "=" in goal_norm:
+            h_left, h_right = hyp_norm.split("=", 1)
+            g_left, g_right = goal_norm.split("=", 1)
+            if (h_left.strip() == g_right.strip() and h_right.strip() == g_left.strip()):
+                for i, action in enumerate(actions):
+                    if action.hypothesis == hyp_name:
+                        if action.tactic_type.value == "exact":
+                            # Can use `exact h.symm` — but MCTS doesn't generate .symm
+                            # Boost exact anyway, Lean will try symmetry
+                            logits[i] = logits[i] + 1.5
+                        elif action.tactic_type.value == "rewrite":
+                            logits[i] = logits[i] + 1.5
 
 
 def _extract_math_keywords(text: str) -> list[str]:
