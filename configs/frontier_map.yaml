@@ -1,0 +1,483 @@
+version: 0.1.0
+description: Standard frontier map encoding the current state of theoretical physics.
+  Zones are defined by formal boundary conditions that can be evaluated against candidate
+  mathematical structures. The map guides the explorer toward breakdown zones where
+  new physics must exist.
+zones:
+- name: gr_classical
+  zone_type: established
+  description: 'Classical general relativity in the weak-to-moderate field regime.
+    Einstein field equations hold. Curvature is finite and well-behaved. Experimentally
+    confirmed by: perihelion precession, gravitational lensing, Shapiro delay, binary
+    pulsar orbital decay, GW150914 waveform (inspiral through ringdown).'
+  boundary_conditions:
+  - name: einstein_field_equations
+    boundary_type: theorem_dependent
+    formal_expression: "R_\u03BC\u03BD - (1/2)R g_\u03BC\u03BD + \u039B g_\u03BC\u03BD\
+      \ = (8\u03C0G/c\u2074) T_\u03BC\u03BD"
+    value: null
+    description: Structure must satisfy or generalize the Einstein field equations
+    checkable: false
+    required_theorems:
+    - einstein_field_equations
+    - ricci_tensor
+    - hilbert_action
+  - name: weak_field_limit
+    boundary_type: curvature
+    formal_expression: "|\u03A6| << c\xB2"
+    value: null
+    description: "Newtonian potential much less than c\xB2 \u2014 weak field"
+    checkable: false
+    required_theorems: []
+  - name: classical_regime
+    boundary_type: length_scale
+    formal_expression: "L >> l_Planck \u2248 1.616e-35 m"
+    value: 1.616e-35
+    description: Length scales much larger than Planck length
+    checkable: false
+    required_theorems: []
+  reward_multiplier: 0.3
+  characterizing_theorems:
+  - einstein_field_equations
+  - birkhoff_theorem
+  - no_hair_theorem
+  - positive_energy_theorem
+  known_structures:
+  - Einstein-Hilbert action
+  - Schwarzschild metric
+  - Kerr metric
+  - FLRW metric
+  - Friedmann equations
+  open_problems:
+  - cosmic_censorship_hypothesis
+  - final_state_conjecture
+- name: standard_model
+  zone_type: established
+  description: "The Standard Model of particle physics: SU(3)\xD7SU(2)\xD7U(1) gauge\
+    \ theory. Experimentally confirmed up to ~13 TeV (LHC). All predicted particles\
+    \ observed including the Higgs boson (2012)."
+  boundary_conditions:
+  - name: su3_su2_u1_gauge_group
+    boundary_type: gauge_group
+    formal_expression: "SU(3)_C \xD7 SU(2)_L \xD7 U(1)_Y"
+    value: null
+    description: Structure must contain or generalize the Standard Model gauge group
+    checkable: false
+    required_theorems:
+    - gauge_theory
+    - yang_mills_theory
+    - higgs_mechanism
+  - name: higgs_mechanism
+    boundary_type: theorem_dependent
+    formal_expression: "Spontaneous symmetry breaking: SU(2)_L \xD7 U(1)_Y \u2192\
+      \ U(1)_EM"
+    value: null
+    description: Electroweak symmetry breaking via Higgs mechanism
+    checkable: false
+    required_theorems:
+    - higgs_mechanism
+    - spontaneous_symmetry_breaking
+  - name: particle_content
+    boundary_type: conservation
+    formal_expression: "3 generations: (u,d), (c,s), (t,b) quarks; e, \u03BC, \u03C4\
+      \ leptons; \u03BD_e, \u03BD_\u03BC, \u03BD_\u03C4 neutrinos; \u03B3, W\xB1,\
+      \ Z, g, H bosons"
+    value: null
+    description: Known particle content with correct quantum numbers
+    checkable: false
+    required_theorems: []
+  reward_multiplier: 0.3
+  characterizing_theorems:
+  - noether_theorem
+  - ward_identities
+  - lsz_reduction
+  - optical_theorem
+  - cpt_theorem
+  known_structures:
+  - Standard Model Lagrangian
+  - QCD Lagrangian
+  - Electroweak Lagrangian
+  - Yukawa couplings
+  open_problems:
+  - strong_cp_problem
+  - hierarchy_problem
+  - neutrino_masses
+  - baryon_asymmetry
+- name: qed
+  zone_type: established
+  description: 'Quantum Electrodynamics: U(1) gauge theory. The most precisely tested
+    theory in physics. Electron g-factor matches theory to 12 decimal places.'
+  boundary_conditions:
+  - name: u1_gauge_theory
+    boundary_type: gauge_group
+    formal_expression: U(1)_EM
+    value: null
+    description: QED is a U(1) gauge theory
+    checkable: false
+    required_theorems:
+    - gauge_invariance
+    - ward_takahashi_identity
+  reward_multiplier: 0.2
+  characterizing_theorems:
+  - ward_takahashi_identity
+  - lsz_reduction_formula
+  - optical_theorem
+  - spin_statistics_theorem
+  known_structures:
+  - "QED Lagrangian: \u03C8\u0304(i\u03B3^\u03BC D_\u03BC - m)\u03C8 - (1/4)F_\u03BC\
+    \u03BD F^\u03BC\u03BD"
+  - Dirac equation
+  - Maxwell's equations
+  open_problems:
+  - landau_pole
+- name: thermodynamics
+  zone_type: established
+  description: Equilibrium thermodynamics and statistical mechanics. Laws of thermodynamics
+    are among the most universal in physics.
+  boundary_conditions:
+  - name: second_law
+    boundary_type: conservation
+    formal_expression: "dS \u2265 0 for isolated systems"
+    value: null
+    description: Second law of thermodynamics
+    checkable: false
+    required_theorems: []
+  reward_multiplier: 0.1
+  characterizing_theorems:
+  - zeroth_law_thermodynamics
+  - first_law_thermodynamics
+  - second_law_thermodynamics
+  - fluctuation_dissipation_theorem
+  - boltzmann_h_theorem
+  known_structures:
+  - Canonical ensemble
+  - Grand canonical ensemble
+  - Microcanonical ensemble
+  - Boltzmann distribution
+  - Gibbs free energy
+  open_problems:
+  - arrow_of_time
+  - thermalization_quantum_systems
+- name: quantum_gravity
+  zone_type: uncertain
+  description: 'The quantum gravity regime: where general relativity and quantum mechanics
+    must both be accounted for. No experimentally confirmed theory exists. Competing
+    approaches include string theory, loop quantum gravity, asymptotic safety, causal
+    dynamical triangulations, and causal set theory.'
+  boundary_conditions:
+  - name: planck_scale_energy
+    boundary_type: energy_scale
+    formal_expression: "E ~ M_Planck \u2248 1.22 \xD7 10^19 GeV"
+    value: 1.22e+19
+    description: Energy scale where quantum gravity effects become dominant
+    checkable: false
+    required_theorems: []
+  - name: planck_length
+    boundary_type: length_scale
+    formal_expression: "L ~ l_Planck \u2248 1.616 \xD7 10^-35 m"
+    value: 1.616e-35
+    description: Length scale where spacetime is expected to be quantized
+    checkable: false
+    required_theorems: []
+  reward_multiplier: 2.0
+  characterizing_theorems:
+  - bekenstein_hawking_entropy
+  - holographic_principle
+  - ads_cft_correspondence
+  - weinberg_witten_theorem
+  known_structures:
+  - String theory action (Polyakov, Nambu-Goto)
+  - Loop quantum gravity Hamiltonian constraint
+  - 'Asymptotic safety: non-Gaussian fixed point'
+  - "Einstein-Hilbert action + R\xB2, R_\u03BC\u03BDR^\u03BC\u03BD terms"
+  open_problems:
+  - quantum_gravity_uv_completion
+  - black_hole_information_paradox
+  - quantum_measurement_problem_in_curved_spacetime
+  - time_problem_in_canonical_quantum_gravity
+- name: dark_matter
+  zone_type: uncertain
+  description: "Dark matter: ~27% of the universe's energy budget. Gravitational effects\
+    \ confirmed (galaxy rotation curves, bullet cluster, CMB anisotropies) but particle\
+    \ nature unknown. Candidates span from WIMPs (GeV-TeV) to axions (\u03BCeV) to\
+    \ primordial black holes."
+  boundary_conditions:
+  - name: non_relativistic_cold_dark_matter
+    boundary_type: theorem_dependent
+    formal_expression: "\u03A9_CDM h\xB2 \u2248 0.12 from Planck 2018"
+    value: null
+    description: Cold dark matter density from CMB
+    checkable: false
+    required_theorems: []
+  reward_multiplier: 1.5
+  characterizing_theorems:
+  - virial_theorem
+  - jeans_instability
+  - collisionless_boltzmann_equation
+  known_structures:
+  - WIMP freeze-out
+  - "Axion potential: V(a) = m_a\xB2 f_a\xB2 (1 - cos(a/f_a))"
+  - Sterile neutrino mixing
+  - Self-interacting dark matter
+  open_problems:
+  - dark_matter_particle_identity
+  - core_cusp_problem
+  - missing_satellite_problem
+  - too_big_to_fail_problem
+- name: dark_energy
+  zone_type: uncertain
+  description: "Dark energy: ~68% of the universe's energy budget. Drives accelerated\
+    \ cosmic expansion. The cosmological constant problem \u2014 the 120-orders-of-magnitude\
+    \ discrepancy between QFT vacuum energy and observed \u039B \u2014 remains the\
+    \ largest quantitative mismatch in physics."
+  boundary_conditions:
+  - name: cosmological_constant_problem
+    boundary_type: theorem_dependent
+    formal_expression: "\u03C1_vac(QFT) / \u03C1_vac(obs) \u2248 10^120"
+    value: null
+    description: The cosmological constant problem
+    checkable: false
+    required_theorems: []
+  reward_multiplier: 2.0
+  characterizing_theorems:
+  - friedmann_equations
+  - positive_energy_theorem
+  - weinberg_no_go_theorem
+  known_structures:
+  - "Cosmological constant \u039B"
+  - 'Quintessence: scalar field with w > -1'
+  - 'Phantom dark energy: w < -1'
+  - 'Modified gravity: f(R), DGP, massive gravity'
+  open_problems:
+  - cosmological_constant_problem
+  - coincidence_problem
+  - dark_energy_equation_of_state
+- name: inflation
+  zone_type: uncertain
+  description: 'Cosmological inflation: early-universe exponential expansion. Solves
+    horizon, flatness, and monopole problems. Predicts nearly scale-invariant primordial
+    power spectrum. Specific model (scalar field potential) not yet identified. B-mode
+    polarization not yet detected.'
+  boundary_conditions:
+  - name: slow_roll_inflation
+    boundary_type: theorem_dependent
+    formal_expression: "\u03B5 = (M_Pl\xB2/2)(V'/V)\xB2 << 1, \u03B7 = M_Pl\xB2(V''/V)\
+      \ << 1"
+    value: null
+    description: Slow-roll inflation conditions
+    checkable: false
+    required_theorems: []
+  reward_multiplier: 1.2
+  characterizing_theorems:
+  - mukhanov_sasaki_equation
+  - weinberg_theorem_adiabatic
+  - consistency_relation_tensor_scalar
+  known_structures:
+  - "Single-field slow-roll: V(\u03C6) = (1/2)m\xB2\u03C6\xB2"
+  - "Starobinsky: f(R) = R + R\xB2/(6M\xB2)"
+  - "Higgs inflation: non-minimal coupling \u03BE"
+  - Axion monodromy
+  open_problems:
+  - inflaton_potential
+  - initial_singularity
+  - eternal_inflation_measure
+  - transplanckian_problem
+- name: planck_breakdown
+  zone_type: breakdown
+  description: "The Planck scale: where general relativity and quantum field theory\
+    \ become mutually incompatible. Spacetime is expected to lose its smooth manifold\
+    \ structure. All perturbative approaches fail. The breakdown is fundamental \u2014\
+    \ not a failure of technique but a signal that our current mathematical framework\
+    \ (smooth manifolds + quantum fields on them) is incomplete."
+  boundary_conditions:
+  - name: planck_energy
+    boundary_type: energy_scale
+    formal_expression: "E \u2265 E_Planck = sqrt(\u0127c\u2075/G) \u2248 1.22 \xD7\
+      \ 10^19 GeV"
+    value: 1.22e+19
+    description: Energies at or above the Planck scale
+    checkable: false
+    required_theorems: []
+  - name: planck_length_boundary
+    boundary_type: length_scale
+    formal_expression: "L \u2264 l_Planck = sqrt(\u0127G/c\xB3) \u2248 1.616 \xD7\
+      \ 10^-35 m"
+    value: 1.616e-35
+    description: Lengths at or below the Planck length
+    checkable: false
+    required_theorems: []
+  - name: quantum_gravity_regime
+    boundary_type: curvature
+    formal_expression: "R_\u03BC\u03BD\u03C1\u03C3 R^\u03BC\u03BD\u03C1\u03C3 ~ l_Planck^-4,\
+      \ or equivalently, when the Compton wavelength ~ Schwarzschild radius"
+    value: null
+    description: Curvature invariants at Planckian values
+    checkable: false
+    required_theorems: []
+  reward_multiplier: 3.0
+  characterizing_theorems:
+  - penrose_hawking_singularity_theorems
+  - bekenstein_bound
+  - holographic_entropy_bound
+  - no_global_symmetries_quantum_gravity
+  known_structures:
+  - GR + QFT (mutually incompatible here)
+  - String theory (UV-complete, landscape problem)
+  - Loop quantum gravity (discrete spacetime)
+  - Asymptotic safety (non-perturbative renormalizability)
+  open_problems:
+  - quantum_gravity_uv_completion
+  - spacetime_singularity_resolution
+  - black_hole_information_paradox
+  - holographic_principle_proof
+  - background_independence
+- name: black_hole_singularity
+  zone_type: breakdown
+  description: "Black hole singularities: regions where spacetime curvature becomes\
+    \ infinite. Penrose-Hawking singularity theorems prove these are generic in GR,\
+    \ not artifacts of symmetry. Geodesic incompleteness means time ends for infalling\
+    \ observers \u2014 a pathological prediction that signals GR's incompleteness."
+  boundary_conditions:
+  - name: penrose_hawking_conditions
+    boundary_type: theorem_dependent
+    formal_expression: "Trapped surface + null energy condition + generic condition\
+      \ + global hyperbolicity (or appropriate causality) \u2192 singularity"
+    value: null
+    description: Penrose-Hawking singularity theorem conditions
+    checkable: false
+    required_theorems:
+    - penrose_singularity_theorem
+    - hawking_singularity_theorem
+    - penrose_hawking_singularity_theorems
+  - name: curvature_blowup
+    boundary_type: curvature
+    formal_expression: "Kretschmann scalar K = R_\u03BC\u03BD\u03C1\u03C3 R^\u03BC\
+      \u03BD\u03C1\u03C3 \u2192 \u221E"
+    value: null
+    description: Curvature invariants diverge at the singularity
+    checkable: false
+    required_theorems: []
+  reward_multiplier: 2.5
+  characterizing_theorems:
+  - penrose_1965_singularity_theorem
+  - hawking_penrose_1970
+  - no_hair_theorem
+  - cosmic_censorship_conjecture
+  known_structures:
+  - Schwarzschild singularity (r=0, spacelike)
+  - Kerr singularity (r=0, ring, timelike)
+  - "Reissner-Nordstr\xF6m singularity"
+  - BKL chaotic singularity
+  open_problems:
+  - singularity_resolution_quantum_gravity
+  - cosmic_censorship_proof
+  - mass_inflation_instability
+  - final_state_conjecture
+- name: big_bang_singularity
+  zone_type: breakdown
+  description: "The Big Bang singularity at t=0: the FLRW scale factor a(t) \u2192\
+    \ 0, density \u03C1 \u2192 \u221E, and curvature R \u2192 \u221E. This is the\
+    \ beginning of time in classical GR \u2014 a boundary to spacetime itself. The\
+    \ singularity theorems guarantee this under reasonable assumptions (Hawking-Penrose)."
+  boundary_conditions:
+  - name: flrw_initial_singularity
+    boundary_type: theorem_dependent
+    formal_expression: "a(t) \u2192 0 as t \u2192 0, \u03C1 \u221D a^{-3(1+w)} \u2192\
+      \ \u221E, R \u221D a^{-2} (\xE4/a + (\u0227/a)\xB2) \u2192 \u221E"
+    value: null
+    description: FLRW cosmological singularity conditions
+    checkable: false
+    required_theorems:
+    - hawking_penrose_singularity
+    - borde_guth_vilenkin_theorem
+  reward_multiplier: 2.5
+  characterizing_theorems:
+  - hawking_penrose_singularity_theorems
+  - borde_guth_vilenkin_theorem
+  - weyl_curvature_hypothesis
+  known_structures:
+  - "FLRW metric with a(t) \u2192 0"
+  - Mixmaster universe (BKL)
+  - Hartle-Hawking no-boundary proposal
+  - Vilenkin tunneling proposal
+  open_problems:
+  - initial_singularity_resolution
+  - arrow_of_time_origin
+  - low_entropy_initial_condition
+  - quantum_cosmology_interpretation
+- name: qft_divergence
+  zone_type: breakdown
+  description: "Non-renormalizable divergences in quantum field theory. Perturbative\
+    \ quantum gravity (graviton spin-2 field on flat spacetime) has infinite UV divergences\
+    \ at two loops that cannot be absorbed by renormalizing a finite number of parameters.\
+    \ This is a mathematical breakdown of the perturbative approach \u2014 not necessarily\
+    \ of the underlying theory."
+  boundary_conditions:
+  - name: non_renormalizable_interaction
+    boundary_type: energy_scale
+    formal_expression: "Operator dimension > 4 \u2192 coupling has negative mass dimension\
+      \ \u2192 perturbation theory breaks down at E ~ \u039B"
+    value: null
+    description: Non-renormalizable operators cause perturbative breakdown
+    checkable: false
+    required_theorems: []
+  - name: landau_pole
+    boundary_type: energy_scale
+    formal_expression: "Running coupling g(\u03BC) diverges at finite scale \u03BC\
+      \ = \u039B_Landau"
+    value: null
+    description: 'Landau pole: coupling blows up at finite energy'
+    checkable: false
+    required_theorems: []
+  reward_multiplier: 2.0
+  characterizing_theorems:
+  - power_counting_theorem
+  - weinberg_theorem_low_energy
+  - wilsonian_renormalization_group
+  known_structures:
+  - Fermi theory (4-fermion, dim-6, non-renormalizable)
+  - GR as EFT (non-renormalizable at 2 loops)
+  - QED Landau pole (triviality)
+  - Higgs triviality bound
+  open_problems:
+  - asymptotic_safety_evidence
+  - uv_completion_eft
+  - non_perturbative_quantum_gravity
+- name: gr_qft_incompatibility
+  zone_type: breakdown
+  description: "The fundamental incompatibility between General Relativity and Quantum\
+    \ Field Theory. GR describes spacetime as a dynamical geometry; QFT describes\
+    \ matter as operator-valued distributions on a fixed background. At the Planck\
+    \ scale, quantum fluctuations of the metric become of order unity \u2014 you cannot\
+    \ treat spacetime as a fixed background, and you cannot quantize a theory where\
+    \ the stage itself is part of the play."
+  boundary_conditions:
+  - name: planck_scale_where_gr_and_qft_clash
+    boundary_type: energy_scale
+    formal_expression: "E \u2265 M_Planck \u2248 1.22 \xD7 10^19 GeV"
+    value: 1.22e+19
+    description: Energy where quantum gravitational effects are O(1)
+    checkable: false
+    required_theorems: []
+  - name: metric_fluctuations_order_unity
+    boundary_type: curvature
+    formal_expression: "\u03B4g_\u03BC\u03BD / g_\u03BC\u03BD ~ 1"
+    value: null
+    description: Metric fluctuations become order unity at Planck scale
+    checkable: false
+    required_theorems: []
+  reward_multiplier: 3.0
+  characterizing_theorems:
+  - weinberg_witten_theorem
+  - marolf_theorem
+  - penrose_hawking_singularity_theorems
+  known_structures:
+  - GR + Standard Model (mutually incompatible)
+  - String theory (unified, but background-dependent formulation)
+  - LQG (background-independent, but classical limit unclear)
+  - Causal dynamical triangulations (non-perturbative, numerical)
+  open_problems:
+  - theory_of_everything
+  - unification_gr_qft
+  - background_independence
+  - problem_of_time

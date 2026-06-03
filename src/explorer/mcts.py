@@ -371,100 +371,169 @@ class MCTS:
     def _score_actions(
         self, state: ProofState, actions: list[Tactic]
     ) -> list[float]:
-        """Score candidate actions using the GNN.
+        """Score candidate actions using hybrid GNN + structural signals.
 
-        For each action, computes the relevance of its lemma to the
-        current goal state. Actions with highly relevant lemmas get
-        higher prior probabilities.
+        Combines:
+        1. GNN embedding similarity (goal vs lemma) — if both in embedding space
+        2. Lemma centrality (in-degree in dependency graph) — fundamental = useful
+        3. Tactic-type prior — structural tactics get moderate prior
         """
         if self._node_embeddings is None:
             uniform = 1.0 / len(actions)
             return [uniform] * len(actions)
 
         goal_embedding = self._embed_goal(state)
-        if goal_embedding is None:
-            uniform = 1.0 / len(actions)
-            return [uniform] * len(actions)
+
+        # Pre-compute centrality scores from the dependency graph
+        if self.graph is not None:
+            in_degrees = dict(self.graph.graph.in_degree())
+            max_in = max(in_degrees.values()) if in_degrees else 1
+        else:
+            in_degrees = {}
+            max_in = 1
 
         scores = []
         for action in actions:
+            score = 0.05  # Base small prior for any action
+
             lemma = action.lemma
             if lemma and lemma in self._lemma_to_idx:
                 idx = self._lemma_to_idx[lemma]
                 lemma_emb = self._node_embeddings[idx]
-                # Cosine similarity between goal and lemma
-                sim = torch.cosine_similarity(
-                    goal_embedding.unsqueeze(0), lemma_emb.unsqueeze(0), dim=1
-                )
-                scores.append(max(0.01, sim.item()))
-            elif action.tactic_type.value in ("intro", "cases"):
-                # Structural tactics get moderate prior
-                scores.append(0.3)
-            else:
-                # Unknown lemma gets small prior
-                scores.append(0.05)
 
-        # Softmax to get prior probabilities
+                # GNN similarity: goal vs lemma
+                if goal_embedding is not None and goal_embedding.norm() > 0:
+                    sim = torch.cosine_similarity(
+                        goal_embedding.unsqueeze(0), lemma_emb.unsqueeze(0), dim=1
+                    )
+                    score += max(0.0, sim.item()) * 0.4  # 40% weight on GNN
+
+                # Centrality: fundamental lemmas are more useful
+                centrality = in_degrees.get(lemma, 0) / max_in
+                score += centrality * 0.3  # 30% weight on centrality
+
+            elif action.tactic_type.value in ("intro", "cases", "have"):
+                score += 0.25  # Structural tactics get moderate prior
+            elif action.tactic_type.value == "exact" and action.hypothesis:
+                score += 0.30  # Using a local hypothesis is promising
+
+            scores.append(score)
+
+        # Softmax to get prior probabilities (with temperature)
         scores_t = torch.tensor(scores)
-        priors = torch.softmax(scores_t / 0.5, dim=0)  # temperature 0.5
-        return priors.tolist()
+        if scores_t.sum() > 0:
+            priors = torch.softmax(scores_t / 0.5, dim=0)
+            return priors.tolist()
+        else:
+            uniform = 1.0 / len(actions)
+            return [uniform] * len(actions)
 
     def _embed_goal(self, state: ProofState) -> torch.Tensor | None:
         """Create an embedding for the current proof goal.
 
-        Simplified: uses a random projection of the goal text.
-        In the full system, this would use the GNN's own embedding pipeline.
+        Uses keyword-based pseudo-embedding: extracts mathematical keywords
+        from the goal and averages GNN embeddings of matching lemmas.
+        This grounds the goal embedding in the GNN's semantic space.
         """
-        if self._node_embeddings is None:
+        if self._node_embeddings is None or self.graph is None:
             return None
 
-        # Simple approach: hash the goal text to a pseudo-random embedding
-        # This gives consistent embeddings for the same goal text
         goal_text = state.get_goal_embedding_key()
-        seed = hash(goal_text) % (2**31)
-        gen = torch.Generator(device=self._node_embeddings.device)
-        gen.manual_seed(seed)
-        embed_dim = self._node_embeddings.size(1)
-        return torch.randn(embed_dim, generator=gen, device=self._node_embeddings.device)
+        keywords = _extract_math_keywords(goal_text)
+
+        # Find lemma nodes whose names/statements match the keywords
+        matching_indices = []
+        for kw in keywords:
+            for lemma_name, idx in self._lemma_to_idx.items():
+                if kw.lower() in lemma_name.lower():
+                    matching_indices.append(idx)
+                    if len(matching_indices) >= 20:
+                        break
+            if len(matching_indices) >= 20:
+                break
+
+        if matching_indices:
+            # Average the GNN embeddings of matching lemmas
+            indices_t = torch.tensor(matching_indices, device=self._node_embeddings.device)
+            return self._node_embeddings[indices_t].mean(dim=0)
+        else:
+            # Fallback: use a zero vector (will have low similarity to everything)
+            return torch.zeros(self._node_embeddings.size(1), device=self._node_embeddings.device)
 
     def _get_relevant_lemmas(self, theorem_statement: str) -> list[str]:
-        """Get lemmas relevant to this theorem from the dependency graph."""
+        """Get lemmas relevant to this theorem using hybrid retrieval.
+
+        1. Extract mathematical keywords from the goal text
+        2. Filter graph lemmas by keyword match on name
+        3. Add built-in fundamental lemmas (add_comm, rfl, etc.)
+        4. Rank candidates by GNN centrality (in-degree) × keyword score
+        5. Return top-K
+        """
         if self.graph is None:
-            return []
+            return _get_builtin_lemmas(["eq", "refl"])
 
-        lemmas = []
+        keywords = _extract_math_keywords(theorem_statement)
 
-        # Try to find the theorem node in the graph
-        node_id = self.graph.resolve_name(theorem_statement)
-        if node_id is None:
-            # Try fuzzy matching
+        # Get built-in lemmas for these keywords
+        builtins = _get_builtin_lemmas(keywords)
+
+        # Phase 1: Filter graph lemmas by keyword match
+        candidates: list[tuple[str, float]] = []  # (name, combined_score)
+        seen: set[str] = set()
+
+        for kw in keywords[:8]:  # Limit keyword expansion
             for nid in self.graph.node_ids:
-                if nid.lower() in theorem_statement.lower():
-                    node_id = nid
-                    break
-
-        if node_id and node_id in self.graph.graph:
-            # Get the neighborhood (dependencies of this theorem)
-            neighborhood = self.graph.get_neighborhood(node_id, radius=2)
-            for nid in neighborhood:
+                if nid in seen:
+                    continue
                 attrs = self.graph.get_node(nid)
-                if attrs:
-                    lemmas.append(attrs.get("name", nid))
-        else:
-            # No graph match — return high-degree hub nodes
-            in_deg = sorted(
-                self.graph.graph.in_degree(), key=lambda x: x[1], reverse=True
-            )
-            lemmas = [nid for nid, _ in in_deg[: self.config.top_k_lemmas]]
+                name = attrs.get("name", nid) if attrs else nid
+                if kw.lower() in name.lower():
+                    # Score: how many keywords match this lemma name?
+                    kw_score = sum(
+                        1.0 for k in keywords if k.lower() in name.lower()
+                    )
+                    candidates.append((nid, kw_score))
+                    seen.add(nid)
+                    if len(candidates) >= 300:
+                        break
+            if len(candidates) >= 300:
+                break
 
-        # Cache lemma indices for fast lookup
+        # Phase 2: Rank by structural centrality + keyword score
+        in_degrees = dict(self.graph.graph.in_degree())
+        max_in = max(in_degrees.values()) if in_degrees else 1
+
+        ranked = []
+        for name, kw_score in candidates:
+            centrality = in_degrees.get(name, 0) / max_in
+            combined = 0.3 * kw_score + 0.7 * centrality  # Centrality-weighted
+            ranked.append((name, combined))
+
+        ranked.sort(key=lambda x: x[1], reverse=True)
+        lemmas = [name for name, _ in ranked[: self.config.top_k_lemmas]]
+
+        # Phase 3: Prepend built-in lemmas (they take priority for bootstrap)
+        # Put builtins first, then graph lemmas
+        result = []
+        seen_result = set()
+        for bl in builtins:
+            if bl not in seen_result:
+                result.append(bl)
+                seen_result.add(bl)
+
+        for gl in lemmas:
+            if gl not in seen_result:
+                result.append(gl)
+                seen_result.add(gl)
+
+        # Cache lemma indices for fast lookup in _score_actions
         if self._node_embeddings is not None and self.graph is not None:
-            for lemma in lemmas:
+            for lemma in result:
                 idx = self.graph.node_id_to_idx(lemma)
                 if idx is not None:
                     self._lemma_to_idx[lemma] = idx
 
-        return lemmas[: self.config.top_k_lemmas]
+        return result[: self.config.top_k_lemmas]
 
     def _extract_best_path(self, root: MCTSNode) -> tuple[list[Tactic], MCTSNode]:
         """Extract the best proof path from the search tree.
@@ -504,3 +573,150 @@ class MCTS:
     def clear_cache(self) -> None:
         """Clear the transposition table and cached state."""
         self._state_cache.clear()
+
+
+def _extract_math_keywords(text: str) -> list[str]:
+    """Extract mathematical keywords from theorem text for lemma matching.
+
+    Uses word-boundary matching to avoid false positives like 'le' in 'example'.
+    """
+    import re
+
+    # Map common math tokens to lemma name fragments
+    # Only match on word boundaries to avoid substring false positives
+    token_map = {
+        # Arithmetic operators → lemma prefixes
+        "+": ["add"],
+        "*": ["mul"],
+        "-": ["sub"],
+        "/": ["div"],
+        "^": ["pow"],
+        "=": ["eq", "refl"],
+        # Relations
+        "→": ["imp", "of"],
+        "∀": ["forall"],
+        "∃": ["exists"],
+        "≤": ["le"],
+        "≥": ["ge"],
+        "<": ["lt"],
+        ">": ["gt"],
+        "⁻¹": ["inv"],
+        "∘": ["comp"],
+    }
+
+    # Word-boundary patterns for text matching
+    word_patterns = {
+        # Numbers
+        "0": ["zero"],
+        "1": ["one"],
+        # Arithmetic lemmas
+        "add": ["add"],
+        "mul": ["mul"],
+        "sub": ["sub"],
+        "div": ["div"],
+        "neg": ["neg"],
+        # Properties
+        "comm": ["comm"],
+        "assoc": ["assoc"],
+        "distrib": ["distrib"],
+        # Logic
+        "and": ["and"],
+        "or": ["or"],
+        "not": ["not"],
+        "iff": ["iff"],
+        "eq": ["eq"],
+        "refl": ["refl"],
+        "symm": ["symm"],
+        "trans": ["trans"],
+        # Types (capitalized to avoid false matches)
+        "Nat": ["Nat"],
+        "Int": ["Int"],
+        "Real": ["Real"],
+        "Complex": ["Complex"],
+        "Prop": ["Prop"],
+        "Set": ["Set"],
+        "List": ["List"],
+        # Calculus
+        "deriv": ["deriv"],
+        "integral": ["integral"],
+        "limit": ["limit"],
+        "continuous": ["continuous"],
+        "sum": ["sum"],
+        "prod": ["prod"],
+        # Algebra
+        "ring": ["ring"],
+        "field": ["field"],
+        "group": ["group"],
+        "linear": ["linear"],
+        "inv": ["inv"],
+        "pow": ["pow"],
+    }
+
+    found = []
+
+    # Symbol matching
+    for sym, terms in token_map.items():
+        if sym in text:
+            found.extend(terms)
+
+    # Word-boundary text matching
+    text_lower = text.lower()
+    for pattern, terms in word_patterns.items():
+        # Match as whole word/subword with boundaries
+        if re.search(r'\b' + re.escape(pattern.lower()) + r'\b', text_lower):
+            found.extend(terms)
+
+    # Deduplicate preserving order
+    seen = set()
+    result = []
+    for f in found:
+        if f not in seen:
+            result.append(f)
+            seen.add(f)
+
+    return result if result else ["eq", "refl"]  # default: equality lemmas
+
+
+# Built-in lemma bank for bootstrap theorems.
+# These are fundamental lemmas from core Lean/Std that may not appear
+# as explicit theorem nodes in the extracted dependency graph.
+_BUILTIN_LEMMAS: dict[str, list[str]] = {
+    "add": ["add_comm", "add_zero", "zero_add", "add_assoc", "add_left_cancel"],
+    "mul": ["mul_comm", "mul_zero", "zero_mul", "mul_one", "one_mul", "mul_assoc"],
+    "sub": ["sub_self", "sub_zero", "zero_sub"],
+    "div": ["div_self", "div_one", "one_div"],
+    "neg": ["neg_add", "neg_mul", "neg_neg"],
+    "eq": ["rfl", "Eq.refl", "Eq.symm", "Eq.trans", "Eq.subst"],
+    "refl": ["rfl", "Eq.refl"],
+    "symm": ["Eq.symm"],
+    "trans": ["Eq.trans"],
+    "imp": ["id", "Function.id"],
+    "and": ["And.intro", "And.left", "And.right"],
+    "or": ["Or.inl", "Or.inr"],
+    "not": ["not_not_intro", "by_contra"],
+    "forall": ["forall_intro"],
+    "exists": ["Exists.intro"],
+    "Nat": ["Nat.add_comm", "Nat.add_zero", "Nat.zero_add", "Nat.mul_comm",
+             "Nat.mul_zero", "Nat.zero_mul", "Nat.succ_eq_add_one"],
+    "Int": ["Int.add_comm", "Int.mul_comm"],
+    "Real": ["Real.add_comm", "Real.mul_comm"],
+    "zero": ["add_zero", "zero_add", "mul_zero", "zero_mul", "sub_self"],
+    "one": ["mul_one", "one_mul", "div_one", "one_div"],
+    "pow": ["pow_zero", "pow_one", "zero_pow", "one_pow"],
+    "inv": ["inv_mul_cancel", "mul_inv_cancel"],
+    "comm": ["add_comm", "mul_comm"],
+    "assoc": ["add_assoc", "mul_assoc"],
+    "distrib": ["mul_add", "add_mul", "left_distrib", "right_distrib"],
+}
+
+
+def _get_builtin_lemmas(keywords: list[str]) -> list[str]:
+    """Return built-in lemmas matching the given keywords."""
+    lemmas = []
+    seen = set()
+    for kw in keywords:
+        for builtin in _BUILTIN_LEMMAS.get(kw, []):
+            if builtin not in seen:
+                lemmas.append(builtin)
+                seen.add(builtin)
+    return lemmas

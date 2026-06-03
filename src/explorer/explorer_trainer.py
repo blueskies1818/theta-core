@@ -9,10 +9,12 @@ Architecture:
     2. MCTS.search(goal) → proof candidates (using GNN for guidance)
     3. Proof checker validates each candidate
     4. Compute rewards (correctness + curiosity + length)
-    5. Group-relative advantages over the search tree
-    6. Update GNN via policy gradient + value loss
+    5. Apply correspondence-layer modifier (frontier map + failure coords)
+    6. Group-relative advantages over the search tree
+    7. Update GNN via policy gradient + value loss
 
-This is the core AlphaGo Zero training loop applied to theorem proving.
+This is the core AlphaGo Zero training loop applied to theorem proving,
+extended with physics correspondence guidance (Phase 2.5+2.7).
 """
 
 from __future__ import annotations
@@ -37,6 +39,10 @@ from src.reward.base import (
     get_curiosity_stats,
 )
 from src.reward.config import RewardConfig
+from src.correspondence.reward_integration import (
+    CorrespondenceRewardModifier,
+    create_default_modifier,
+)
 from src.utils.checkpoint import save_checkpoint
 
 
@@ -61,6 +67,7 @@ class ExplorerTrainer:
         config: "ExplorerConfig | None" = None,
         mcts_config: MCTSConfig | None = None,
         reward_config: RewardConfig | None = None,
+        correspondence_modifier: CorrespondenceRewardModifier | None = None,
         device: torch.device | None = None,
     ):
         self.gnn = gnn_encoder
@@ -69,6 +76,15 @@ class ExplorerTrainer:
         self.config = config or ExplorerConfig()
         self.mcts_config = mcts_config or MCTSConfig()
         self.reward_config = reward_config or RewardConfig()
+
+        # Correspondence-layer reward modifier (Phase 2.5 + 2.7)
+        # If not provided, try to load from default config files
+        if correspondence_modifier is None and self.config.use_correspondence:
+            try:
+                correspondence_modifier = create_default_modifier()
+            except Exception as e:
+                print(f"Warning: could not load correspondence modifier: {e}")
+        self.correspondence_modifier = correspondence_modifier
 
         if device is None:
             device = torch.device("xpu:0" if torch.xpu.is_available() else "cpu")
@@ -182,6 +198,15 @@ class ExplorerTrainer:
             for code in all_codes:
                 record_proof_signature(code, self.reward_config)
 
+            # ---- Phase D2: Correspondence-layer reward modification ----
+            if self.correspondence_modifier is not None:
+                statements = [t["statement"] for t in batch]
+                rewards = self.correspondence_modifier.apply(
+                    rewards, all_codes, statements,
+                    energy_scale=self.config.correspondence_energy_scale,
+                    gauge_group=self.config.correspondence_gauge_group,
+                )
+
             # ---- Phase E: GRPO loss ----
             # Group advantages across the batch
             advantages = compute_group_advantages(rewards, self.config.group_size)
@@ -214,13 +239,24 @@ class ExplorerTrainer:
 
             if epoch % self.config.log_every == 0 or epoch == num_epochs - 1:
                 curiosity = get_curiosity_stats()
-                print(
+                log_msg = (
                     f"Epoch {epoch}/{num_epochs} | "
                     f"Success: {success_rate:.2%} | "
                     f"Reward: {avg_reward:.3f} | "
                     f"Loss: {loss.item():.4f} | "
                     f"Novel: {curiosity['unique_signatures']}"
                 )
+                if self.correspondence_modifier is not None:
+                    cs = self.correspondence_modifier.get_stats()
+                    log_msg += (
+                        f"\n  Correspondence: {cs['total_modifications']} mods | "
+                        f"BD={cs['breakdown_hits']} "
+                        f"EST={cs['established_hits']} "
+                        f"UNC={cs['uncertain_hits']} | "
+                        f"resolved={cs['failure_resolutions']} "
+                        f"reproduced={cs['failure_reproductions']}"
+                    )
+                print(log_msg)
 
             # Save checkpoint
             if epoch % self.config.save_every == 0 and epoch > 0:
@@ -397,6 +433,11 @@ class ExplorerConfig:
     # Loss weights
     policy_weight: float = 1.0
     value_weight: float = 0.5
+
+    # Correspondence-layer reward modification (Phase 2.5+2.7)
+    use_correspondence: bool = True
+    correspondence_energy_scale: float | None = None  # GeV, e.g. 1e3 for TeV
+    correspondence_gauge_group: str | None = None
 
     # Logging frequency
     log_every: int = 5
