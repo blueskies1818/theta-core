@@ -137,7 +137,18 @@ def compute_reward(
         return config.invalid_proof
 
     if not proof_result.success:
-        return config.invalid_proof
+        # Invalid proofs get curiosity bonus + tiny length variation to
+        # break reward symmetry during cold start. Without this, all
+        # invalid proofs have identical reward → zero advantage → no gradient.
+        reward = config.invalid_proof
+        if config.curiosity_enabled and proof_text:
+            reward += compute_curiosity_bonus(proof_text, config)
+        # Tiny length-based variation (shorter proofs marginally better,
+        # encouraging concise Lean-like output over rambling English)
+        if proof_text:
+            norm_len = min(len(proof_text), 500) / 500.0
+            reward += 0.001 * (1.0 - norm_len)
+        return reward
 
     base = config.valid_proof
 

@@ -2,8 +2,11 @@
 
 The proof checker runs on CPU and is the throughput bottleneck.
 This module provides parallel checking across all available CPU cores.
+
+Uses 'spawn' start method to avoid tokenizers+fork deadlock.
 """
 
+import multiprocessing as mp
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
@@ -25,6 +28,11 @@ def _check_single_worker(
         timeout=timeout,
     )
     return checker.check(code)
+
+
+# Spawn context — avoids tokenizers+fork deadlock on Linux.
+# Must be at module level so all ProcessPoolExecutor uses match.
+_MP_CONTEXT = mp.get_context("spawn")
 
 
 class BatchChecker:
@@ -56,7 +64,8 @@ class BatchChecker:
     def check_batch(self, codes: list[str]) -> list[ProofResult]:
         """Check multiple proofs in parallel.
 
-        Uses ProcessPoolExecutor to distribute work across CPU cores.
+        Uses ProcessPoolExecutor with spawn context to distribute work
+        across CPU cores without tokenizers fork deadlock.
         Results are returned in the same order as input codes.
         """
         if len(codes) <= 1:
@@ -64,7 +73,9 @@ class BatchChecker:
 
         results: dict[int, ProofResult] = {}
 
-        with ProcessPoolExecutor(max_workers=self.max_workers) as executor:
+        with ProcessPoolExecutor(
+            max_workers=self.max_workers, mp_context=_MP_CONTEXT
+        ) as executor:
             futures = {
                 executor.submit(
                     _check_single_worker, code, self.project_dir, self.timeout

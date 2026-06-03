@@ -2,19 +2,19 @@
 # Corresponds to GRPOConfig in src/utils/config.py
 
 training:
-  learning_rate: 5.0e-6
-  kl_beta: 0.01              # KL penalty coefficient (prevents reward hacking)
-  group_size: 4               # K proofs generated per theorem
-  batch_theorems: 4           # Theorems per training step (4 * 4 = 16 generations)
+  learning_rate: 1.0e-6       # Lower LR for stability (was 5.0e-6)
+  kl_beta: 0.1               # KL penalty (was 0.01 — too weak, KL exploded to 309)
+  group_size: 2               # K proofs generated per theorem (reduced for CPU headroom)
+  batch_theorems: 2           # Theorems per training step (2 * 2 = 4 generations)
   gradient_accumulation_steps: 4
-  max_steps: 1000              # Phase 1 validation: 1000 steps is enough to see signal
+  max_steps: 2000              # Compensate with more steps: same total generations
   save_every: 200
   eval_every: 200
   log_every: 10
 
 generation:
-  max_new_tokens: 512         # Max tokens for proof generation
-  temperature: 0.8            # Exploration temperature
+  max_new_tokens: 64          # Short proofs only — model appends artifacts beyond
+  temperature: 0.4            # Lower temp for higher validity rate (was 0.6)
   top_p: 0.95
   do_sample: true
 
@@ -27,7 +27,7 @@ optimizer:
 
 proof_checker:
   timeout_seconds: 30.0        # lake env lean --stdin takes ~3s just to load Mathlib4
-  max_workers: 8               # Parallel proof checking (reduced: lake env is memory-heavy)
+  max_workers: 3               # Parallel proof checking (reduced: leave CPU headroom)
   cache_size: 50000            # Number of results to cache
 
 replay_buffer:

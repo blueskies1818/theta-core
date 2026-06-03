@@ -1,0 +1,460 @@
+{"statement": "example : 0 + 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 0 = 0 :=", "proof": "by rfl"}
+{"statement": "example : 0 * 1 = 0 :=", "proof": "by omega"}
+{"statement": "example : 1 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 0 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 1 + 0 = 1 :=", "proof": "by omega"}
+{"statement": "example : 0 + 1 = 1 :=", "proof": "by omega"}
+{"statement": "example : 1 = 1 :=", "proof": "by rfl"}
+{"statement": "example : 1 * 1 = 1 :=", "proof": "by omega"}
+{"statement": "example : 2 + 0 = 2 :=", "proof": "by omega"}
+{"statement": "example : 0 + 2 = 2 :=", "proof": "by omega"}
+{"statement": "example : 2 = 2 :=", "proof": "by rfl"}
+{"statement": "example : 2 * 1 = 2 :=", "proof": "by omega"}
+{"statement": "example : 1 * 2 = 2 :=", "proof": "by omega"}
+{"statement": "example : 2 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 3 + 0 = 3 :=", "proof": "by omega"}
+{"statement": "example : 0 + 3 = 3 :=", "proof": "by omega"}
+{"statement": "example : 3 = 3 :=", "proof": "by rfl"}
+{"statement": "example : 3 * 1 = 3 :=", "proof": "by omega"}
+{"statement": "example : 1 * 3 = 3 :=", "proof": "by omega"}
+{"statement": "example : 3 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 4 + 0 = 4 :=", "proof": "by omega"}
+{"statement": "example : 0 + 4 = 4 :=", "proof": "by omega"}
+{"statement": "example : 4 = 4 :=", "proof": "by rfl"}
+{"statement": "example : 4 * 1 = 4 :=", "proof": "by omega"}
+{"statement": "example : 1 * 4 = 4 :=", "proof": "by omega"}
+{"statement": "example : 4 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 5 + 0 = 5 :=", "proof": "by omega"}
+{"statement": "example : 0 + 5 = 5 :=", "proof": "by omega"}
+{"statement": "example : 5 = 5 :=", "proof": "by rfl"}
+{"statement": "example : 5 * 1 = 5 :=", "proof": "by omega"}
+{"statement": "example : 1 * 5 = 5 :=", "proof": "by omega"}
+{"statement": "example : 5 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 6 + 0 = 6 :=", "proof": "by omega"}
+{"statement": "example : 0 + 6 = 6 :=", "proof": "by omega"}
+{"statement": "example : 6 = 6 :=", "proof": "by rfl"}
+{"statement": "example : 6 * 1 = 6 :=", "proof": "by omega"}
+{"statement": "example : 1 * 6 = 6 :=", "proof": "by omega"}
+{"statement": "example : 6 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 7 + 0 = 7 :=", "proof": "by omega"}
+{"statement": "example : 0 + 7 = 7 :=", "proof": "by omega"}
+{"statement": "example : 7 = 7 :=", "proof": "by rfl"}
+{"statement": "example : 7 * 1 = 7 :=", "proof": "by omega"}
+{"statement": "example : 1 * 7 = 7 :=", "proof": "by omega"}
+{"statement": "example : 7 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 8 + 0 = 8 :=", "proof": "by omega"}
+{"statement": "example : 0 + 8 = 8 :=", "proof": "by omega"}
+{"statement": "example : 8 = 8 :=", "proof": "by rfl"}
+{"statement": "example : 8 * 1 = 8 :=", "proof": "by omega"}
+{"statement": "example : 1 * 8 = 8 :=", "proof": "by omega"}
+{"statement": "example : 8 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 9 + 0 = 9 :=", "proof": "by omega"}
+{"statement": "example : 0 + 9 = 9 :=", "proof": "by omega"}
+{"statement": "example : 9 = 9 :=", "proof": "by rfl"}
+{"statement": "example : 9 * 1 = 9 :=", "proof": "by omega"}
+{"statement": "example : 1 * 9 = 9 :=", "proof": "by omega"}
+{"statement": "example : 9 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 10 + 0 = 10 :=", "proof": "by omega"}
+{"statement": "example : 0 + 10 = 10 :=", "proof": "by omega"}
+{"statement": "example : 10 = 10 :=", "proof": "by rfl"}
+{"statement": "example : 10 * 1 = 10 :=", "proof": "by omega"}
+{"statement": "example : 1 * 10 = 10 :=", "proof": "by omega"}
+{"statement": "example : 10 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 11 + 0 = 11 :=", "proof": "by omega"}
+{"statement": "example : 0 + 11 = 11 :=", "proof": "by omega"}
+{"statement": "example : 11 = 11 :=", "proof": "by rfl"}
+{"statement": "example : 11 * 1 = 11 :=", "proof": "by omega"}
+{"statement": "example : 1 * 11 = 11 :=", "proof": "by omega"}
+{"statement": "example : 11 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 12 + 0 = 12 :=", "proof": "by omega"}
+{"statement": "example : 0 + 12 = 12 :=", "proof": "by omega"}
+{"statement": "example : 12 = 12 :=", "proof": "by rfl"}
+{"statement": "example : 12 * 1 = 12 :=", "proof": "by omega"}
+{"statement": "example : 1 * 12 = 12 :=", "proof": "by omega"}
+{"statement": "example : 12 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 13 + 0 = 13 :=", "proof": "by omega"}
+{"statement": "example : 0 + 13 = 13 :=", "proof": "by omega"}
+{"statement": "example : 13 = 13 :=", "proof": "by rfl"}
+{"statement": "example : 13 * 1 = 13 :=", "proof": "by omega"}
+{"statement": "example : 1 * 13 = 13 :=", "proof": "by omega"}
+{"statement": "example : 13 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 14 + 0 = 14 :=", "proof": "by omega"}
+{"statement": "example : 0 + 14 = 14 :=", "proof": "by omega"}
+{"statement": "example : 14 = 14 :=", "proof": "by rfl"}
+{"statement": "example : 14 * 1 = 14 :=", "proof": "by omega"}
+{"statement": "example : 1 * 14 = 14 :=", "proof": "by omega"}
+{"statement": "example : 14 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 15 + 0 = 15 :=", "proof": "by omega"}
+{"statement": "example : 0 + 15 = 15 :=", "proof": "by omega"}
+{"statement": "example : 15 = 15 :=", "proof": "by rfl"}
+{"statement": "example : 15 * 1 = 15 :=", "proof": "by omega"}
+{"statement": "example : 1 * 15 = 15 :=", "proof": "by omega"}
+{"statement": "example : 15 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 16 + 0 = 16 :=", "proof": "by omega"}
+{"statement": "example : 0 + 16 = 16 :=", "proof": "by omega"}
+{"statement": "example : 16 = 16 :=", "proof": "by rfl"}
+{"statement": "example : 16 * 1 = 16 :=", "proof": "by omega"}
+{"statement": "example : 1 * 16 = 16 :=", "proof": "by omega"}
+{"statement": "example : 16 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 17 + 0 = 17 :=", "proof": "by omega"}
+{"statement": "example : 0 + 17 = 17 :=", "proof": "by omega"}
+{"statement": "example : 17 = 17 :=", "proof": "by rfl"}
+{"statement": "example : 17 * 1 = 17 :=", "proof": "by omega"}
+{"statement": "example : 1 * 17 = 17 :=", "proof": "by omega"}
+{"statement": "example : 17 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 18 + 0 = 18 :=", "proof": "by omega"}
+{"statement": "example : 0 + 18 = 18 :=", "proof": "by omega"}
+{"statement": "example : 18 = 18 :=", "proof": "by rfl"}
+{"statement": "example : 18 * 1 = 18 :=", "proof": "by omega"}
+{"statement": "example : 1 * 18 = 18 :=", "proof": "by omega"}
+{"statement": "example : 18 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 19 + 0 = 19 :=", "proof": "by omega"}
+{"statement": "example : 0 + 19 = 19 :=", "proof": "by omega"}
+{"statement": "example : 19 = 19 :=", "proof": "by rfl"}
+{"statement": "example : 19 * 1 = 19 :=", "proof": "by omega"}
+{"statement": "example : 1 * 19 = 19 :=", "proof": "by omega"}
+{"statement": "example : 19 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 20 + 0 = 20 :=", "proof": "by omega"}
+{"statement": "example : 0 + 20 = 20 :=", "proof": "by omega"}
+{"statement": "example : 20 = 20 :=", "proof": "by rfl"}
+{"statement": "example : 20 * 1 = 20 :=", "proof": "by omega"}
+{"statement": "example : 1 * 20 = 20 :=", "proof": "by omega"}
+{"statement": "example : 20 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 21 + 0 = 21 :=", "proof": "by omega"}
+{"statement": "example : 0 + 21 = 21 :=", "proof": "by omega"}
+{"statement": "example : 21 = 21 :=", "proof": "by rfl"}
+{"statement": "example : 21 * 1 = 21 :=", "proof": "by omega"}
+{"statement": "example : 1 * 21 = 21 :=", "proof": "by omega"}
+{"statement": "example : 21 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 22 + 0 = 22 :=", "proof": "by omega"}
+{"statement": "example : 0 + 22 = 22 :=", "proof": "by omega"}
+{"statement": "example : 22 = 22 :=", "proof": "by rfl"}
+{"statement": "example : 22 * 1 = 22 :=", "proof": "by omega"}
+{"statement": "example : 1 * 22 = 22 :=", "proof": "by omega"}
+{"statement": "example : 22 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 23 + 0 = 23 :=", "proof": "by omega"}
+{"statement": "example : 0 + 23 = 23 :=", "proof": "by omega"}
+{"statement": "example : 23 = 23 :=", "proof": "by rfl"}
+{"statement": "example : 23 * 1 = 23 :=", "proof": "by omega"}
+{"statement": "example : 1 * 23 = 23 :=", "proof": "by omega"}
+{"statement": "example : 23 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 24 + 0 = 24 :=", "proof": "by omega"}
+{"statement": "example : 0 + 24 = 24 :=", "proof": "by omega"}
+{"statement": "example : 24 = 24 :=", "proof": "by rfl"}
+{"statement": "example : 24 * 1 = 24 :=", "proof": "by omega"}
+{"statement": "example : 1 * 24 = 24 :=", "proof": "by omega"}
+{"statement": "example : 24 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 25 + 0 = 25 :=", "proof": "by omega"}
+{"statement": "example : 0 + 25 = 25 :=", "proof": "by omega"}
+{"statement": "example : 25 = 25 :=", "proof": "by rfl"}
+{"statement": "example : 25 * 1 = 25 :=", "proof": "by omega"}
+{"statement": "example : 1 * 25 = 25 :=", "proof": "by omega"}
+{"statement": "example : 25 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 26 + 0 = 26 :=", "proof": "by omega"}
+{"statement": "example : 0 + 26 = 26 :=", "proof": "by omega"}
+{"statement": "example : 26 = 26 :=", "proof": "by rfl"}
+{"statement": "example : 26 * 1 = 26 :=", "proof": "by omega"}
+{"statement": "example : 1 * 26 = 26 :=", "proof": "by omega"}
+{"statement": "example : 26 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 27 + 0 = 27 :=", "proof": "by omega"}
+{"statement": "example : 0 + 27 = 27 :=", "proof": "by omega"}
+{"statement": "example : 27 = 27 :=", "proof": "by rfl"}
+{"statement": "example : 27 * 1 = 27 :=", "proof": "by omega"}
+{"statement": "example : 1 * 27 = 27 :=", "proof": "by omega"}
+{"statement": "example : 27 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 28 + 0 = 28 :=", "proof": "by omega"}
+{"statement": "example : 0 + 28 = 28 :=", "proof": "by omega"}
+{"statement": "example : 28 = 28 :=", "proof": "by rfl"}
+{"statement": "example : 28 * 1 = 28 :=", "proof": "by omega"}
+{"statement": "example : 1 * 28 = 28 :=", "proof": "by omega"}
+{"statement": "example : 28 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 29 + 0 = 29 :=", "proof": "by omega"}
+{"statement": "example : 0 + 29 = 29 :=", "proof": "by omega"}
+{"statement": "example : 29 = 29 :=", "proof": "by rfl"}
+{"statement": "example : 29 * 1 = 29 :=", "proof": "by omega"}
+{"statement": "example : 1 * 29 = 29 :=", "proof": "by omega"}
+{"statement": "example : 29 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 30 + 0 = 30 :=", "proof": "by omega"}
+{"statement": "example : 0 + 30 = 30 :=", "proof": "by omega"}
+{"statement": "example : 30 = 30 :=", "proof": "by rfl"}
+{"statement": "example : 30 * 1 = 30 :=", "proof": "by omega"}
+{"statement": "example : 1 * 30 = 30 :=", "proof": "by omega"}
+{"statement": "example : 30 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 31 + 0 = 31 :=", "proof": "by omega"}
+{"statement": "example : 0 + 31 = 31 :=", "proof": "by omega"}
+{"statement": "example : 31 = 31 :=", "proof": "by rfl"}
+{"statement": "example : 31 * 1 = 31 :=", "proof": "by omega"}
+{"statement": "example : 1 * 31 = 31 :=", "proof": "by omega"}
+{"statement": "example : 31 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 32 + 0 = 32 :=", "proof": "by omega"}
+{"statement": "example : 0 + 32 = 32 :=", "proof": "by omega"}
+{"statement": "example : 32 = 32 :=", "proof": "by rfl"}
+{"statement": "example : 32 * 1 = 32 :=", "proof": "by omega"}
+{"statement": "example : 1 * 32 = 32 :=", "proof": "by omega"}
+{"statement": "example : 32 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 33 + 0 = 33 :=", "proof": "by omega"}
+{"statement": "example : 0 + 33 = 33 :=", "proof": "by omega"}
+{"statement": "example : 33 = 33 :=", "proof": "by rfl"}
+{"statement": "example : 33 * 1 = 33 :=", "proof": "by omega"}
+{"statement": "example : 1 * 33 = 33 :=", "proof": "by omega"}
+{"statement": "example : 33 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 34 + 0 = 34 :=", "proof": "by omega"}
+{"statement": "example : 0 + 34 = 34 :=", "proof": "by omega"}
+{"statement": "example : 34 = 34 :=", "proof": "by rfl"}
+{"statement": "example : 34 * 1 = 34 :=", "proof": "by omega"}
+{"statement": "example : 1 * 34 = 34 :=", "proof": "by omega"}
+{"statement": "example : 34 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 35 + 0 = 35 :=", "proof": "by omega"}
+{"statement": "example : 0 + 35 = 35 :=", "proof": "by omega"}
+{"statement": "example : 35 = 35 :=", "proof": "by rfl"}
+{"statement": "example : 35 * 1 = 35 :=", "proof": "by omega"}
+{"statement": "example : 1 * 35 = 35 :=", "proof": "by omega"}
+{"statement": "example : 35 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 36 + 0 = 36 :=", "proof": "by omega"}
+{"statement": "example : 0 + 36 = 36 :=", "proof": "by omega"}
+{"statement": "example : 36 = 36 :=", "proof": "by rfl"}
+{"statement": "example : 36 * 1 = 36 :=", "proof": "by omega"}
+{"statement": "example : 1 * 36 = 36 :=", "proof": "by omega"}
+{"statement": "example : 36 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 37 + 0 = 37 :=", "proof": "by omega"}
+{"statement": "example : 0 + 37 = 37 :=", "proof": "by omega"}
+{"statement": "example : 37 = 37 :=", "proof": "by rfl"}
+{"statement": "example : 37 * 1 = 37 :=", "proof": "by omega"}
+{"statement": "example : 1 * 37 = 37 :=", "proof": "by omega"}
+{"statement": "example : 37 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 38 + 0 = 38 :=", "proof": "by omega"}
+{"statement": "example : 0 + 38 = 38 :=", "proof": "by omega"}
+{"statement": "example : 38 = 38 :=", "proof": "by rfl"}
+{"statement": "example : 38 * 1 = 38 :=", "proof": "by omega"}
+{"statement": "example : 1 * 38 = 38 :=", "proof": "by omega"}
+{"statement": "example : 38 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 39 + 0 = 39 :=", "proof": "by omega"}
+{"statement": "example : 0 + 39 = 39 :=", "proof": "by omega"}
+{"statement": "example : 39 = 39 :=", "proof": "by rfl"}
+{"statement": "example : 39 * 1 = 39 :=", "proof": "by omega"}
+{"statement": "example : 1 * 39 = 39 :=", "proof": "by omega"}
+{"statement": "example : 39 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 40 + 0 = 40 :=", "proof": "by omega"}
+{"statement": "example : 0 + 40 = 40 :=", "proof": "by omega"}
+{"statement": "example : 40 = 40 :=", "proof": "by rfl"}
+{"statement": "example : 40 * 1 = 40 :=", "proof": "by omega"}
+{"statement": "example : 1 * 40 = 40 :=", "proof": "by omega"}
+{"statement": "example : 40 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 41 + 0 = 41 :=", "proof": "by omega"}
+{"statement": "example : 0 + 41 = 41 :=", "proof": "by omega"}
+{"statement": "example : 41 = 41 :=", "proof": "by rfl"}
+{"statement": "example : 41 * 1 = 41 :=", "proof": "by omega"}
+{"statement": "example : 1 * 41 = 41 :=", "proof": "by omega"}
+{"statement": "example : 41 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 42 + 0 = 42 :=", "proof": "by omega"}
+{"statement": "example : 0 + 42 = 42 :=", "proof": "by omega"}
+{"statement": "example : 42 = 42 :=", "proof": "by rfl"}
+{"statement": "example : 42 * 1 = 42 :=", "proof": "by omega"}
+{"statement": "example : 1 * 42 = 42 :=", "proof": "by omega"}
+{"statement": "example : 42 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 43 + 0 = 43 :=", "proof": "by omega"}
+{"statement": "example : 0 + 43 = 43 :=", "proof": "by omega"}
+{"statement": "example : 43 = 43 :=", "proof": "by rfl"}
+{"statement": "example : 43 * 1 = 43 :=", "proof": "by omega"}
+{"statement": "example : 1 * 43 = 43 :=", "proof": "by omega"}
+{"statement": "example : 43 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 44 + 0 = 44 :=", "proof": "by omega"}
+{"statement": "example : 0 + 44 = 44 :=", "proof": "by omega"}
+{"statement": "example : 44 = 44 :=", "proof": "by rfl"}
+{"statement": "example : 44 * 1 = 44 :=", "proof": "by omega"}
+{"statement": "example : 1 * 44 = 44 :=", "proof": "by omega"}
+{"statement": "example : 44 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 45 + 0 = 45 :=", "proof": "by omega"}
+{"statement": "example : 0 + 45 = 45 :=", "proof": "by omega"}
+{"statement": "example : 45 = 45 :=", "proof": "by rfl"}
+{"statement": "example : 45 * 1 = 45 :=", "proof": "by omega"}
+{"statement": "example : 1 * 45 = 45 :=", "proof": "by omega"}
+{"statement": "example : 45 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 46 + 0 = 46 :=", "proof": "by omega"}
+{"statement": "example : 0 + 46 = 46 :=", "proof": "by omega"}
+{"statement": "example : 46 = 46 :=", "proof": "by rfl"}
+{"statement": "example : 46 * 1 = 46 :=", "proof": "by omega"}
+{"statement": "example : 1 * 46 = 46 :=", "proof": "by omega"}
+{"statement": "example : 46 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 47 + 0 = 47 :=", "proof": "by omega"}
+{"statement": "example : 0 + 47 = 47 :=", "proof": "by omega"}
+{"statement": "example : 47 = 47 :=", "proof": "by rfl"}
+{"statement": "example : 47 * 1 = 47 :=", "proof": "by omega"}
+{"statement": "example : 1 * 47 = 47 :=", "proof": "by omega"}
+{"statement": "example : 47 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 48 + 0 = 48 :=", "proof": "by omega"}
+{"statement": "example : 0 + 48 = 48 :=", "proof": "by omega"}
+{"statement": "example : 48 = 48 :=", "proof": "by rfl"}
+{"statement": "example : 48 * 1 = 48 :=", "proof": "by omega"}
+{"statement": "example : 1 * 48 = 48 :=", "proof": "by omega"}
+{"statement": "example : 48 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 49 + 0 = 49 :=", "proof": "by omega"}
+{"statement": "example : 0 + 49 = 49 :=", "proof": "by omega"}
+{"statement": "example : 49 = 49 :=", "proof": "by rfl"}
+{"statement": "example : 49 * 1 = 49 :=", "proof": "by omega"}
+{"statement": "example : 1 * 49 = 49 :=", "proof": "by omega"}
+{"statement": "example : 49 * 0 = 0 :=", "proof": "by omega"}
+{"statement": "example : 0 * 2 = 0 :=", "proof": "by native_decide"}
+{"statement": "example : 0 * 3 = 0 :=", "proof": "by native_decide"}
+{"statement": "example : 0 * 4 = 0 :=", "proof": "by native_decide"}
+{"statement": "example : 0 * 5 = 0 :=", "proof": "by native_decide"}
+{"statement": "example : 0 * 6 = 0 :=", "proof": "by native_decide"}
+{"statement": "example : 0 * 7 = 0 :=", "proof": "by native_decide"}
+{"statement": "example : 0 * 8 = 0 :=", "proof": "by native_decide"}
+{"statement": "example : 0 * 9 = 0 :=", "proof": "by native_decide"}
+{"statement": "example : 1 + 1 = 2 :=", "proof": "by native_decide"}
+{"statement": "example : 1 + 2 = 3 :=", "proof": "by native_decide"}
+{"statement": "example : 1 + 3 = 4 :=", "proof": "by native_decide"}
+{"statement": "example : 1 + 4 = 5 :=", "proof": "by native_decide"}
+{"statement": "example : 1 + 5 = 6 :=", "proof": "by native_decide"}
+{"statement": "example : 1 + 6 = 7 :=", "proof": "by native_decide"}
+{"statement": "example : 1 + 7 = 8 :=", "proof": "by native_decide"}
+{"statement": "example : 1 + 8 = 9 :=", "proof": "by native_decide"}
+{"statement": "example : 1 + 9 = 10 :=", "proof": "by native_decide"}
+{"statement": "example : 2 + 1 = 3 :=", "proof": "by native_decide"}
+{"statement": "example : 2 + 2 = 4 :=", "proof": "by native_decide"}
+{"statement": "example : 2 * 2 = 4 :=", "proof": "by native_decide"}
+{"statement": "example : 2 + 3 = 5 :=", "proof": "by native_decide"}
+{"statement": "example : 2 * 3 = 6 :=", "proof": "by native_decide"}
+{"statement": "example : 2 + 4 = 6 :=", "proof": "by native_decide"}
+{"statement": "example : 2 * 4 = 8 :=", "proof": "by native_decide"}
+{"statement": "example : 2 + 5 = 7 :=", "proof": "by native_decide"}
+{"statement": "example : 2 * 5 = 10 :=", "proof": "by native_decide"}
+{"statement": "example : 2 + 6 = 8 :=", "proof": "by native_decide"}
+{"statement": "example : 2 * 6 = 12 :=", "proof": "by native_decide"}
+{"statement": "example : 2 + 7 = 9 :=", "proof": "by native_decide"}
+{"statement": "example : 2 * 7 = 14 :=", "proof": "by native_decide"}
+{"statement": "example : 2 + 8 = 10 :=", "proof": "by native_decide"}
+{"statement": "example : 2 * 8 = 16 :=", "proof": "by native_decide"}
+{"statement": "example : 2 + 9 = 11 :=", "proof": "by native_decide"}
+{"statement": "example : 2 * 9 = 18 :=", "proof": "by native_decide"}
+{"statement": "example : 3 + 1 = 4 :=", "proof": "by native_decide"}
+{"statement": "example : 3 + 2 = 5 :=", "proof": "by native_decide"}
+{"statement": "example : 3 * 2 = 6 :=", "proof": "by native_decide"}
+{"statement": "example : 3 + 3 = 6 :=", "proof": "by native_decide"}
+{"statement": "example : 3 * 3 = 9 :=", "proof": "by native_decide"}
+{"statement": "example : 3 + 4 = 7 :=", "proof": "by native_decide"}
+{"statement": "example : 3 * 4 = 12 :=", "proof": "by native_decide"}
+{"statement": "example : 3 + 5 = 8 :=", "proof": "by native_decide"}
+{"statement": "example : 3 * 5 = 15 :=", "proof": "by native_decide"}
+{"statement": "example : 3 + 6 = 9 :=", "proof": "by native_decide"}
+{"statement": "example : 3 * 6 = 18 :=", "proof": "by native_decide"}
+{"statement": "example : 3 + 7 = 10 :=", "proof": "by native_decide"}
+{"statement": "example : 3 * 7 = 21 :=", "proof": "by native_decide"}
+{"statement": "example : 3 + 8 = 11 :=", "proof": "by native_decide"}
+{"statement": "example : 3 * 8 = 24 :=", "proof": "by native_decide"}
+{"statement": "example : 3 + 9 = 12 :=", "proof": "by native_decide"}
+{"statement": "example : 3 * 9 = 27 :=", "proof": "by native_decide"}
+{"statement": "example : 4 + 1 = 5 :=", "proof": "by native_decide"}
+{"statement": "example : 4 + 2 = 6 :=", "proof": "by native_decide"}
+{"statement": "example : 4 * 2 = 8 :=", "proof": "by native_decide"}
+{"statement": "example : 4 + 3 = 7 :=", "proof": "by native_decide"}
+{"statement": "example : 4 * 3 = 12 :=", "proof": "by native_decide"}
+{"statement": "example : 4 + 4 = 8 :=", "proof": "by native_decide"}
+{"statement": "example : 4 * 4 = 16 :=", "proof": "by native_decide"}
+{"statement": "example : 4 + 5 = 9 :=", "proof": "by native_decide"}
+{"statement": "example : 4 * 5 = 20 :=", "proof": "by native_decide"}
+{"statement": "example : 4 + 6 = 10 :=", "proof": "by native_decide"}
+{"statement": "example : 4 * 6 = 24 :=", "proof": "by native_decide"}
+{"statement": "example : 4 + 7 = 11 :=", "proof": "by native_decide"}
+{"statement": "example : 4 * 7 = 28 :=", "proof": "by native_decide"}
+{"statement": "example : 4 + 8 = 12 :=", "proof": "by native_decide"}
+{"statement": "example : 4 * 8 = 32 :=", "proof": "by native_decide"}
+{"statement": "example : 4 + 9 = 13 :=", "proof": "by native_decide"}
+{"statement": "example : 4 * 9 = 36 :=", "proof": "by native_decide"}
+{"statement": "example : 5 + 1 = 6 :=", "proof": "by native_decide"}
+{"statement": "example : 5 + 2 = 7 :=", "proof": "by native_decide"}
+{"statement": "example : 5 * 2 = 10 :=", "proof": "by native_decide"}
+{"statement": "example : 5 + 3 = 8 :=", "proof": "by native_decide"}
+{"statement": "example : 5 * 3 = 15 :=", "proof": "by native_decide"}
+{"statement": "example : 5 + 4 = 9 :=", "proof": "by native_decide"}
+{"statement": "example : 5 * 4 = 20 :=", "proof": "by native_decide"}
+{"statement": "example : 5 + 5 = 10 :=", "proof": "by native_decide"}
+{"statement": "example : 5 * 5 = 25 :=", "proof": "by native_decide"}
+{"statement": "example : 5 + 6 = 11 :=", "proof": "by native_decide"}
+{"statement": "example : 5 * 6 = 30 :=", "proof": "by native_decide"}
+{"statement": "example : 5 + 7 = 12 :=", "proof": "by native_decide"}
+{"statement": "example : 5 * 7 = 35 :=", "proof": "by native_decide"}
+{"statement": "example : 5 + 8 = 13 :=", "proof": "by native_decide"}
+{"statement": "example : 5 * 8 = 40 :=", "proof": "by native_decide"}
+{"statement": "example : 5 + 9 = 14 :=", "proof": "by native_decide"}
+{"statement": "example : 5 * 9 = 45 :=", "proof": "by native_decide"}
+{"statement": "example : 6 + 1 = 7 :=", "proof": "by native_decide"}
+{"statement": "example : 6 + 2 = 8 :=", "proof": "by native_decide"}
+{"statement": "example : 6 * 2 = 12 :=", "proof": "by native_decide"}
+{"statement": "example : 6 + 3 = 9 :=", "proof": "by native_decide"}
+{"statement": "example : 6 * 3 = 18 :=", "proof": "by native_decide"}
+{"statement": "example : 6 + 4 = 10 :=", "proof": "by native_decide"}
+{"statement": "example : 6 * 4 = 24 :=", "proof": "by native_decide"}
+{"statement": "example : 6 + 5 = 11 :=", "proof": "by native_decide"}
+{"statement": "example : 6 * 5 = 30 :=", "proof": "by native_decide"}
+{"statement": "example : 6 + 6 = 12 :=", "proof": "by native_decide"}
+{"statement": "example : 6 * 6 = 36 :=", "proof": "by native_decide"}
+{"statement": "example : 6 + 7 = 13 :=", "proof": "by native_decide"}
+{"statement": "example : 6 * 7 = 42 :=", "proof": "by native_decide"}
+{"statement": "example : 6 + 8 = 14 :=", "proof": "by native_decide"}
+{"statement": "example : 6 * 8 = 48 :=", "proof": "by native_decide"}
+{"statement": "example : 6 + 9 = 15 :=", "proof": "by native_decide"}
+{"statement": "example : 7 + 1 = 8 :=", "proof": "by native_decide"}
+{"statement": "example : 7 + 2 = 9 :=", "proof": "by native_decide"}
+{"statement": "example : 7 * 2 = 14 :=", "proof": "by native_decide"}
+{"statement": "example : 7 + 3 = 10 :=", "proof": "by native_decide"}
+{"statement": "example : 7 * 3 = 21 :=", "proof": "by native_decide"}
+{"statement": "example : 7 + 4 = 11 :=", "proof": "by native_decide"}
+{"statement": "example : 7 * 4 = 28 :=", "proof": "by native_decide"}
+{"statement": "example : 7 + 5 = 12 :=", "proof": "by native_decide"}
+{"statement": "example : 7 * 5 = 35 :=", "proof": "by native_decide"}
+{"statement": "example : 7 + 6 = 13 :=", "proof": "by native_decide"}
+{"statement": "example : 7 * 6 = 42 :=", "proof": "by native_decide"}
+{"statement": "example : 7 + 7 = 14 :=", "proof": "by native_decide"}
+{"statement": "example : 7 * 7 = 49 :=", "proof": "by native_decide"}
+{"statement": "example : 7 + 8 = 15 :=", "proof": "by native_decide"}
+{"statement": "example : 7 + 9 = 16 :=", "proof": "by native_decide"}
+{"statement": "example : 8 + 1 = 9 :=", "proof": "by native_decide"}
+{"statement": "example : 8 + 2 = 10 :=", "proof": "by native_decide"}
+{"statement": "example : 8 * 2 = 16 :=", "proof": "by native_decide"}
+{"statement": "example : 8 + 3 = 11 :=", "proof": "by native_decide"}
+{"statement": "example : 8 * 3 = 24 :=", "proof": "by native_decide"}
+{"statement": "example : 8 + 4 = 12 :=", "proof": "by native_decide"}
+{"statement": "example : 8 * 4 = 32 :=", "proof": "by native_decide"}
+{"statement": "example : 8 + 5 = 13 :=", "proof": "by native_decide"}
+{"statement": "example : 8 * 5 = 40 :=", "proof": "by native_decide"}
+{"statement": "example : 8 + 6 = 14 :=", "proof": "by native_decide"}
+{"statement": "example : 8 * 6 = 48 :=", "proof": "by native_decide"}
+{"statement": "example : 8 + 7 = 15 :=", "proof": "by native_decide"}
+{"statement": "example : 8 + 8 = 16 :=", "proof": "by native_decide"}
+{"statement": "example : 8 + 9 = 17 :=", "proof": "by native_decide"}
+{"statement": "example : 9 + 1 = 10 :=", "proof": "by native_decide"}
+{"statement": "example : 9 + 2 = 11 :=", "proof": "by native_decide"}
+{"statement": "example : 9 * 2 = 18 :=", "proof": "by native_decide"}
+{"statement": "example : 9 + 3 = 12 :=", "proof": "by native_decide"}
+{"statement": "example : 9 * 3 = 27 :=", "proof": "by native_decide"}
+{"statement": "example : 9 + 4 = 13 :=", "proof": "by native_decide"}
+{"statement": "example : 9 * 4 = 36 :=", "proof": "by native_decide"}
+{"statement": "example : 9 + 5 = 14 :=", "proof": "by native_decide"}
+{"statement": "example : 9 * 5 = 45 :=", "proof": "by native_decide"}
+{"statement": "example : 9 + 6 = 15 :=", "proof": "by native_decide"}
+{"statement": "example : 9 + 7 = 16 :=", "proof": "by native_decide"}
+{"statement": "example : 9 + 8 = 17 :=", "proof": "by native_decide"}
+{"statement": "example : 9 + 9 = 18 :=", "proof": "by native_decide"}
+{"statement": "example (P : Prop) : P \u2192 P :=", "proof": "by intro h; exact h"}
+{"statement": "example (P Q : Prop) : P \u2192 Q \u2192 P :=", "proof": "by intro hP hQ; exact hP"}
+{"statement": "example (P Q : Prop) : P \u2192 Q \u2192 Q :=", "proof": "by intro hP hQ; exact hQ"}
+{"statement": "example (P Q R : Prop) : P \u2192 Q \u2192 R \u2192 P :=", "proof": "by intro hP hQ hR; exact hP"}
+{"statement": "example (P Q : Prop) (h : P \u2227 Q) : P :=", "proof": "by exact h.1"}
+{"statement": "example (P Q : Prop) (h : P \u2227 Q) : Q :=", "proof": "by exact h.2"}
+{"statement": "example (P Q : Prop) (hP : P) (hQ : Q) : P \u2227 Q :=", "proof": "by exact And.intro hP hQ"}
+{"statement": "example (P Q : Prop) (h : P) : P \u2228 Q :=", "proof": "by left; exact h"}
+{"statement": "example (P Q : Prop) (h : Q) : P \u2228 Q :=", "proof": "by right; exact h"}
+{"statement": "example : True :=", "proof": "by trivial"}
+{"statement": "example : True \u2227 True :=", "proof": "by exact And.intro trivial trivial"}
+{"statement": "example : True \u2228 False :=", "proof": "by left; trivial"}
+{"statement": "example (P : Prop) : P \u2194 P :=", "proof": "by rfl"}
+{"statement": "example (P Q : Prop) : (P \u2227 Q) \u2192 (Q \u2227 P) :=", "proof": "by intro h; exact And.intro h.2 h.1"}
+{"statement": "example (x y : Nat) (h : x = y) : x = y :=", "proof": "by exact h"}
+{"statement": "example (x y : Nat) (h : x = y) : y = x :=", "proof": "by rw [h]"}
+{"statement": "example (x y z : Nat) (h1 : x = y) (h2 : y = z) : x = z :=", "proof": "by rw [h1, h2]"}
+{"statement": "example (x : Nat) : x \u2264 x :=", "proof": "by exact Nat.le_refl x"}
+{"statement": "example (x y : Nat) (h : x \u2264 y) : x \u2264 y + 1 :=", "proof": "by omega"}
+{"statement": "example (x y : Nat) (h : x \u2264 y) : x + 1 \u2264 y + 1 :=", "proof": "by omega"}

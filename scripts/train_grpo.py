@@ -38,6 +38,8 @@ def main():
     parser.add_argument("--output-dir", type=str, default="checkpoints/grpo")
     parser.add_argument("--log-dir", type=str, default="logs")
     parser.add_argument("--max-theorems", type=int, default=1000)
+    parser.add_argument("--data-file", type=str, default=None,
+                        help="Specific JSONL file to load (overrides data-dir/mathlib4_theorems.jsonl)")
     parser.add_argument("--use-lora", action="store_true")
     parser.add_argument("--use-wandb", action="store_true")
     args = parser.parse_args()
@@ -55,7 +57,12 @@ def main():
 
     # Load data
     data_dir = Path(args.data_dir)
-    raw_path = data_dir / "raw" / "mathlib4_theorems.jsonl"
+    if args.data_file:
+        raw_path = Path(args.data_file)
+        if not raw_path.is_absolute():
+            raw_path = data_dir / "raw" / args.data_file
+    else:
+        raw_path = data_dir / "raw" / "mathlib4_theorems.jsonl"
 
     if not raw_path.exists():
         print(f"No training data found at {raw_path}")
@@ -80,6 +87,7 @@ def main():
         tokenizer = AutoTokenizer.from_pretrained(base_model)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.padding_side = "left"  # Required for batched generation
 
         import torch as _torch
         torch_dtype = getattr(_torch, model_config.precision.mixed_precision)
@@ -95,16 +103,21 @@ def main():
             base_policy, args.sft_checkpoint
         )
         policy_model = policy_model.to(device)
+        # PEFT loads adapters in inference mode — explicitly enable training
+        for n, p in policy_model.named_parameters():
+            if "lora" in n:
+                p.requires_grad = True
         policy_model.train()
 
-        # Reference model: fresh base model + same LoRA adapters, frozen
+        # Reference model: loaded on CPU to avoid 2-model XPU loading issues.
+        # KL computation is slower but stable.
+        print(f"Loading reference model on CPU")
         base_ref = AutoModelForCausalLM.from_pretrained(
             base_model,
             torch_dtype=torch_dtype,
             trust_remote_code=True,
         )
         ref_model = PeftModel.from_pretrained(base_ref, args.sft_checkpoint)
-        ref_model = ref_model.to(device)
         ref_model.eval()
         for p in ref_model.parameters():
             p.requires_grad = False

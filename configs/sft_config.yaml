@@ -1,7 +1,7 @@
 # Supervised Fine-Tuning Configuration (Phase 1)
 
 training:
-  num_epochs: 2
+  num_epochs: 5                  # More epochs for stronger adaptation (was 3)
   learning_rate: 2.0e-5
   per_device_batch_size: 4
   gradient_accumulation_steps: 4

@@ -64,20 +64,29 @@ def wrap_lean_code(
 def wrap_theorem_with_proof(theorem_statement: str, proof_body: str) -> str:
     """Combine a theorem statement and proof body into a checkable Lean block.
 
-    The proof_body should be the tactic block content (after ':= by').
+    Uses ':=' (not ':= by') so both term-style and tactic-style proofs work.
+    Lean 4 accepts both:
+        example : x = x := rfl          (term)
+        example : x = x := by rfl       (tactic)
     """
     statement = theorem_statement.strip()
     proof = proof_body.strip()
 
+    # Ensure the statement ends with ':=' for proof delimiter
     if not statement.endswith(":="):
-        if ":" in statement:
-            statement = statement.rstrip() + " := by"
+        # Strip trailing 'by' if present (will be in the proof body)
+        if statement.rstrip().endswith(" by"):
+            statement = statement.rstrip()[:-3].rstrip()
+        if ":" in statement and not statement.rstrip().endswith(":="):
+            statement = statement.rstrip() + " :="
         else:
-            statement = statement.rstrip() + " := by"
-    elif not statement.endswith("by") and statement.endswith(":="):
-        statement += " by"
+            statement = statement.rstrip() + " :="
 
-    return f"{statement}\n  {proof}"
+    # If proof starts with 'by ', it's a tactic block; inline it
+    if proof.startswith("by "):
+        return f"{statement} {proof}"
+    else:
+        return f"{statement}\n  {proof}"
 
 
 def extract_proof_body(full_generation: str) -> str:

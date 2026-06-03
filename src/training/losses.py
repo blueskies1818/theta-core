@@ -70,12 +70,8 @@ def compute_sequence_logprob(
         labels=input_ids,
     )
 
-    # Loss is -log P averaged over tokens. Multiply back to get sum.
-    if outputs.loss is not None:
-        seq_len = attention_mask.sum(dim=1)
-        return -outputs.loss * seq_len
-
-    # Fallback: compute manually
+    # Compute per-token-average log probability for each sequence
+    # to keep values comparable across different sequence lengths.
     logits = outputs.logits[:, :-1, :]
     targets = input_ids[:, 1:]
 
@@ -85,4 +81,6 @@ def compute_sequence_logprob(
     mask = attention_mask[:, 1:]
     token_logprobs = token_logprobs * mask
 
-    return token_logprobs.sum(dim=1)
+    # Per-token average (not sum) to keep ratios stable
+    seq_lens = mask.sum(dim=1).clamp(min=1)
+    return token_logprobs.sum(dim=1) / seq_lens

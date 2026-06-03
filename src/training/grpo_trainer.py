@@ -141,6 +141,14 @@ class GRPOTrainer:
 
             # 3. Verify all proofs (CPU, parallel)
             results = self.checker.check_batch(all_codes)
+            # DEBUG: print first proof details on first few steps
+            if self.global_step < 5:
+                n_ok = sum(1 for r in results if r.success)
+                print(f"  [DEBUG step {self.global_step}] {n_ok}/{len(results)} valid")
+                for idx in range(min(2, len(all_codes))):
+                    print(f"    proof[{idx}]: {all_codes[idx][:120]}...")
+                    if not results[idx].success and results[idx].errors:
+                        print(f"    error[{idx}]: {results[idx].errors[0][:150]}")
             # Pass generated proof texts for curiosity bonus (Phase 1.5)
             rewards = compute_rewards_batch(
                 results, self.reward_config, proof_texts=all_codes
@@ -186,15 +194,23 @@ class GRPOTrainer:
             )
 
             with torch.no_grad():
+                # Reference model may be on a different device (CPU)
+                ref_device = next(self.reference_model.parameters()).device
+                ref_encodings = {
+                    k: v.to(ref_device) for k, v in encodings.items()
+                }
                 ref_logprobs = compute_sequence_logprob(
                     self.reference_model,
-                    encodings["input_ids"],
-                    encodings["attention_mask"],
+                    ref_encodings["input_ids"],
+                    ref_encodings["attention_mask"],
                 )
 
-            # 8. GRPO loss
+            # 8. GRPO loss (move ref_logprobs to policy device)
             loss_dict = compute_grpo_loss(
-                policy_logprobs, ref_logprobs, device_advantages, cfg.kl_beta
+                policy_logprobs,
+                ref_logprobs.to(self.device),
+                device_advantages,
+                cfg.kl_beta,
             )
 
             # 9. Backward pass
@@ -210,7 +226,9 @@ class GRPOTrainer:
 
             # 10. Logging
             step_time = time.time() - step_start
-            success_rate = (rewards > 0).float().mean().item()
+            # Valid proofs have reward >= 1.0 (base valid_reward).
+            # Invalid proofs get curiosity (~0.05) which should not count as success.
+            success_rate = (rewards >= 1.0).float().mean().item()
             avg_reward = rewards.mean().item()
 
             metrics = {

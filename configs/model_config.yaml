@@ -11,7 +11,7 @@ base_model:
 
 lora:
   use_lora: false                # Set true if VRAM is tight
-  r: 64
+  r: 64                           # Stable on XPU (128 caused driver segfault)
   alpha: 128
   dropout: 0.05
   target_modules:
