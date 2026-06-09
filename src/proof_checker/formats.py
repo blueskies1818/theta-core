@@ -70,12 +70,27 @@ def wrap_theorem_with_proof(theorem_statement: str, proof_body: str) -> str:
         example : x = x := by rfl           (tactic, single-line)
         example : x = x := by               (tactic, multi-line)
           intro h; exact h
+
+    Named declarations (lemma/theorem) are converted to 'example' to avoid
+    conflicts with theorems already in the Mathlib environment.
     """
+    import re
+
     statement = theorem_statement.strip()
     proof = proof_body.strip()
 
     if not proof:
         return f"{statement} := sorry"
+
+    # Strip existing proof body (:= ...) from the statement.
+    # Some statements end with := proof_term already.
+    statement = _strip_existing_proof(statement)
+
+    # Convert "lemma name ..." / "theorem name ..." → "example ..."
+    statement = re.sub(
+        r'^(lemma|theorem)\s+\S+\s+', 'example ',
+        statement, count=1,
+    )
 
     # Ensure the statement ends with ':=' for proof delimiter
     if not statement.endswith(":="):
@@ -107,6 +122,39 @@ def wrap_theorem_with_proof(theorem_statement: str, proof_body: str) -> str:
             return f"{statement}\n  {proof}"
         else:
             return f"{statement} {proof}"
+
+
+def _strip_existing_proof(statement: str) -> str:
+    """Remove any existing proof (:= term or := by ...) from a statement.
+
+    Some theorem statements in the JSONL already include the proof, e.g.:
+        lemma foo : x = y := rfl
+        lemma bar : P → Q := by intro h; exact h
+
+    Returns the statement up to the final ':' before any existing proof.
+    """
+    import re
+
+    # Find the last ':=' that introduces a proof (not binder type annotation).
+    # Strategy: find ':=' not inside parentheses/brackets/braces.
+    depth = 0
+    last_colon_eq = -1
+    i = 0
+    while i < len(statement) - 1:
+        ch = statement[i]
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}":
+            depth -= 1
+        elif ch == ":" and statement[i + 1] == "=" and depth == 0:
+            last_colon_eq = i
+            break
+        i += 1
+
+    if last_colon_eq >= 0:
+        statement = statement[:last_colon_eq].rstrip()
+
+    return statement
 
 
 def _is_tactic_proof(proof: str) -> bool:

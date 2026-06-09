@@ -198,6 +198,45 @@ def _scattered_softmax(
 
 
 # ---------------------------------------------------------------------------
+# Goal Encoder
+# ---------------------------------------------------------------------------
+
+
+class GoalEncoder(nn.Module):
+    """Learned projection from keyword-averaged context to goal embedding.
+
+    The raw goal embedding (via keyword-matched lemma averaging) is a blurry
+    mixture of several lemmas. This MLP learns to project that mixture into a
+    sharper embedding that better identifies the correct lemma.
+
+    Trained jointly during pretraining (cross-entropy over lemma candidates)
+    and during GRPO (policy gradient through MCTS logits).
+    """
+
+    def __init__(self, hidden_dim: int, expansion: int = 2, dropout: float = 0.1):
+        super().__init__()
+        self.proj = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim * expansion),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim * expansion, hidden_dim),
+            nn.LayerNorm(hidden_dim),
+        )
+
+    def forward(self, context_embedding: torch.Tensor) -> torch.Tensor:
+        """Project a keyword-averaged context into goal embedding space.
+
+        Args:
+            context_embedding: [D] or [B, D] keyword-averaged lemma embeddings.
+
+        Returns:
+            [D] or [B, D] projected goal embedding, normalized.
+        """
+        out = self.proj(context_embedding)
+        return F.normalize(out, dim=-1)
+
+
+# ---------------------------------------------------------------------------
 # GNN Encoder
 # ---------------------------------------------------------------------------
 
@@ -238,6 +277,19 @@ class GNNEncoder(nn.Module):
             )
 
         self.out_norm = nn.LayerNorm(self.config.hidden_dim)
+
+        # Goal encoder: projects keyword-averaged lemma embeddings into a
+        # learned goal representation space (trained jointly with GNN).
+        self.goal_encoder = (
+            GoalEncoder(
+                self.config.hidden_dim,
+                expansion=self.config.goal_encoder_expansion,
+                dropout=self.config.goal_encoder_dropout,
+            )
+            if self.config.use_goal_encoder
+            else None
+        )
+
         self._init_weights()
 
     def _init_weights(self):
@@ -304,6 +356,29 @@ class GNNEncoder(nn.Module):
         return torch.matmul(q, c.T)  # [Q, C]
 
     # ------------------------------------------------------------------
+    # Goal encoding
+    # ------------------------------------------------------------------
+
+    def encode_goal(
+        self, context_embedding: torch.Tensor
+    ) -> torch.Tensor:
+        """Encode a proof goal from keyword-averaged lemma context.
+
+        Args:
+            context_embedding: [D] or [B, D] keyword-averaged embedding.
+
+        Returns:
+            [D] or [B, D] learned goal embedding. If goal encoder is
+            disabled, returns the input unchanged (normalized).
+        """
+        if self.goal_encoder is not None:
+            return self.goal_encoder(context_embedding)
+        # Fallback: just normalize the raw keyword-average
+        if context_embedding.norm(dim=-1).lt(1e-8).any():
+            return context_embedding
+        return F.normalize(context_embedding, dim=-1)
+
+    # ------------------------------------------------------------------
     # Persistence
     # ------------------------------------------------------------------
 
@@ -321,11 +396,15 @@ class GNNEncoder(nn.Module):
             "use_edge_types": self.config.use_edge_types,
             "num_edge_types": self.config.num_edge_types,
             "bidirectional": self.config.bidirectional,
+            "use_goal_encoder": self.config.use_goal_encoder,
+            "goal_encoder_expansion": self.config.goal_encoder_expansion,
+            "goal_encoder_dropout": self.config.goal_encoder_dropout,
         }
-        torch.save({
+        save_dict = {
             "model_state_dict": self.state_dict(),
             "config_dict": config_dict,
-        }, path)
+        }
+        torch.save(save_dict, path)
 
     @classmethod
     def load(cls, path: Path | str, config: GNNConfig | None = None) -> "GNNEncoder":
@@ -360,6 +439,9 @@ class GNNEncoder(nn.Module):
                 use_edge_types=cd.get("use_edge_types", True),
                 num_edge_types=cd.get("num_edge_types", 4),
                 bidirectional=cd.get("bidirectional", True),
+                use_goal_encoder=cd.get("use_goal_encoder", True),
+                goal_encoder_expansion=cd.get("goal_encoder_expansion", 2),
+                goal_encoder_dropout=cd.get("goal_encoder_dropout", 0.1),
             )
         model = cls(config)
         model.load_state_dict(state["model_state_dict"])

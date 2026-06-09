@@ -146,6 +146,7 @@ class ExplorerTrainer:
             gnn_encoder=self.gnn,
             dependency_graph=self.graph,
             config=self.mcts_config,
+            proof_checker=self.checker,
         )
 
         print(f"Explorer GRPO training: {num_epochs} epochs")
@@ -171,6 +172,15 @@ class ExplorerTrainer:
 
             embeddings = self.gnn(features, sources, targets, edge_types, self._num_nodes)
             self._mcts.set_embeddings(embeddings, sorted(self.graph.node_ids))
+
+            # ---- Heuristic annealing ----
+            # Gradually reduce heuristic weights so the GNN takes over.
+            if self.config.heuristic_anneal_epochs > 0:
+                progress = min(1.0, epoch / self.config.heuristic_anneal_epochs)
+                scale = self.config.heuristic_scale_start + progress * (
+                    self.config.heuristic_scale_min - self.config.heuristic_scale_start
+                )
+                self._mcts.config.heuristic_scale = scale
 
             # ---- Phase B: MCTS search + proof checking ----
             all_codes = []
@@ -232,14 +242,23 @@ class ExplorerTrainer:
             # Group advantages across the batch
             advantages = compute_group_advantages(rewards, self.config.group_size)
 
-            # Compute training loss
-            loss = self._compute_explorer_loss(
+            # Compute training loss (returns dict with components)
+            loss_dict = self._compute_explorer_loss(
                 embeddings, all_trees, all_codes, results, advantages
             )
+            loss = loss_dict["loss"] if isinstance(loss_dict, dict) else loss_dict
 
             # ---- Phase F: Backward pass ----
             self.optimizer.zero_grad()
             loss.backward()
+
+            # Gradient norm before clipping
+            total_grad_norm = 0.0
+            for p in self.gnn.parameters():
+                if p.grad is not None:
+                    total_grad_norm += p.grad.data.norm(2).item() ** 2
+            total_grad_norm = total_grad_norm ** 0.5
+
             torch.nn.utils.clip_grad_norm_(self.gnn.parameters(), self.config.max_grad_norm)
             self.optimizer.step()
 
@@ -249,10 +268,32 @@ class ExplorerTrainer:
             success_rate = (rewards >= 1.0).float().mean().item()
             avg_reward = rewards.mean().item()
 
+            # Count proof patterns in this batch
+            pattern_counts = {"rfl": 0, "add_comm": 0, "mul_comm": 0, "other": 0, "failed": 0}
+            for code, result in zip(all_codes, results):
+                if result.success:
+                    if "rfl" in code or "Eq.refl" in code:
+                        pattern_counts["rfl"] += 1
+                    elif "add_comm" in code:
+                        pattern_counts["add_comm"] += 1
+                    elif "mul_comm" in code:
+                        pattern_counts["mul_comm"] += 1
+                    else:
+                        pattern_counts["other"] += 1
+                else:
+                    pattern_counts["failed"] += 1
+
+            pg_loss = loss_dict.get("pg_loss", 0.0) if isinstance(loss_dict, dict) else 0.0
+            kl_div = loss_dict.get("kl_div", 0.0) if isinstance(loss_dict, dict) else 0.0
+
             metrics = {
                 "epoch": epoch,
                 "loss": loss.item(),
+                "pg_loss": pg_loss,
+                "val_loss": loss.item() - pg_loss if isinstance(pg_loss, float) else 0.0,
+                "grad_norm": total_grad_norm,
                 "success_rate": success_rate,
+                "patterns": pattern_counts,
                 "avg_reward": avg_reward,
                 "epoch_time_s": time.time() - epoch_start,
             }
@@ -260,12 +301,19 @@ class ExplorerTrainer:
 
             if epoch % self.config.log_every == 0 or epoch == num_epochs - 1:
                 curiosity = get_curiosity_stats()
+                h_scale = getattr(self._mcts.config, 'heuristic_scale', 1.0)
+                patterns = metrics.get("patterns", {})
                 log_msg = (
                     f"Epoch {epoch}/{num_epochs} | "
                     f"Success: {success_rate:.2%} | "
                     f"Reward: {avg_reward:.3f} | "
                     f"Loss: {loss.item():.4f} | "
-                    f"Novel: {curiosity['unique_signatures']}"
+                    f"Grad: {total_grad_norm:.3f} | "
+                    f"Novel: {curiosity['unique_signatures']} | "
+                    f"H: {h_scale:.2f} | "
+                    f"Proofs: r={patterns.get('rfl',0)} a={patterns.get('add_comm',0)} "
+                    f"m={patterns.get('mul_comm',0)} o={patterns.get('other',0)} "
+                    f"f={patterns.get('failed',0)}"
                 )
                 if self.correspondence_modifier is not None:
                     cs = self.correspondence_modifier.get_stats()
@@ -433,7 +481,11 @@ class ExplorerTrainer:
             + self.config.value_weight * total_value_loss
         )
 
-        return loss
+        return {
+            "loss": loss,
+            "pg_loss": total_policy_loss.item() if isinstance(total_policy_loss, torch.Tensor) else total_policy_loss,
+            "val_loss": total_value_loss.item() if isinstance(total_value_loss, torch.Tensor) else total_value_loss,
+        }
 
     # ------------------------------------------------------------------
     # Helpers
@@ -519,6 +571,12 @@ class ExplorerConfig:
 
     # Logging frequency
     log_every: int = 5
+
+    # Heuristic annealing: start at heuristic_scale=1.0, end at heuristic_scale_min
+    # over heuristic_anneal_epochs. Linear decay. 0.0 = pure GNN, 1.0 = full heuristics.
+    heuristic_scale_start: float = 1.0
+    heuristic_scale_min: float = 0.0
+    heuristic_anneal_epochs: int = 2000  # Epochs to decay from start → min
 
     # Checkpoint saving frequency
     save_every: int = 50

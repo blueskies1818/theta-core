@@ -278,9 +278,9 @@ Examples:
     # -- Model ---------------------------------------------------------------
     parser.add_argument("--pretrained", default=None,
                         help="Path to pretrained GNN checkpoint")
-    parser.add_argument("--hidden-dim", type=int, default=128,
+    parser.add_argument("--hidden-dim", type=int, default=256,
                         help="GNN hidden dimension (for fresh init)")
-    parser.add_argument("--num-layers", type=int, default=2,
+    parser.add_argument("--num-layers", type=int, default=3,
                         help="GNN layers")
     parser.add_argument("--num-heads", type=int, default=4,
                         help="GNN attention heads")
@@ -292,7 +292,7 @@ Examples:
                         help="Theorems per training step")
     parser.add_argument("--group-size", type=int, default=2,
                         help="Proofs per theorem for GRPO advantages")
-    parser.add_argument("--mcts-sims", type=int, default=200,
+    parser.add_argument("--mcts-sims", type=int, default=1000,
                         help="MCTS simulations per proof search")
     parser.add_argument("--lr", type=float, default=1e-3,
                         help="Learning rate")
@@ -300,6 +300,11 @@ Examples:
                         help="Policy loss weight")
     parser.add_argument("--value-weight", type=float, default=0.5,
                         help="Value loss weight")
+    parser.add_argument("--heuristic-anneal-epochs", type=int, default=2000,
+                        help="Epochs to anneal heuristics from 1.0 to 0.0 "
+                             "(0 = no annealing, keep heuristics at full)")
+    parser.add_argument("--heuristic-scale-min", type=float, default=0.0,
+                        help="Final heuristic scale after annealing")
 
     # -- Correspondence ------------------------------------------------------
     parser.add_argument("--no-correspondence", action="store_true",
@@ -444,6 +449,8 @@ Examples:
         correspondence_energy_scale=args.energy_scale,
         log_every=args.log_every,
         save_every=args.save_every,
+        heuristic_anneal_epochs=args.heuristic_anneal_epochs,
+        heuristic_scale_min=args.heuristic_scale_min,
     )
 
     mcts_config = MCTSConfig(
@@ -454,6 +461,8 @@ Examples:
         temperature=0.5,
         top_k_lemmas=30,
         use_gnn=True,
+        use_proof_checker=True,
+        verify_timeout=5.0,
     )
 
     reward_config = RewardConfig()

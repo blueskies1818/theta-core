@@ -22,6 +22,10 @@ class TacticType(Enum):
     HAVE = "have"  # create new hypothesis from lemma
     CALC = "calc"  # calculational proof step
     REFINE = "refine"  # refine the goal with a term (holes allowed)
+    RING = "ring"  # ring tactic for polynomial identities
+    FIELD_SIMP = "field_simp"  # field_simp for field equations
+    LINARITH = "linarith"  # linarith for linear arithmetic
+    SIMP = "simp"  # simplifier with hypotheses
 
 
 @dataclass
@@ -45,6 +49,8 @@ class Tactic:
         elif self.tactic_type == TacticType.REWRITE:
             if self.lemma:
                 return f"rw [{self.lemma}]"
+            if self.hypothesis:
+                return f"rw [{self.hypothesis}]"
             return f"rw [{', '.join(self.args)}]"
         elif self.tactic_type == TacticType.EXACT:
             if self.lemma:
@@ -62,6 +68,24 @@ class Tactic:
             return f"calc\n    ... = _ := {self.lemma or 'rfl'}"
         elif self.tactic_type == TacticType.REFINE:
             return f"refine {self.lemma or '?'}"
+        elif self.tactic_type == TacticType.RING:
+            return "ring"
+        elif self.tactic_type == TacticType.FIELD_SIMP:
+            args = [a for a in self.args if a]
+            if self.hypothesis:
+                args.append(self.hypothesis)
+            if args:
+                return f"field_simp [{', '.join(args)}]"
+            return "field_simp"
+        elif self.tactic_type == TacticType.LINARITH:
+            return "linarith"
+        elif self.tactic_type == TacticType.SIMP:
+            args = [a for a in self.args if a]
+            if self.hypothesis:
+                args.append(self.hypothesis)
+            if args:
+                return f"simp [{', '.join(args)}]"
+            return "simp"
         else:
             return "sorry"
 
@@ -120,11 +144,50 @@ class ProofState:
 
     @classmethod
     def initial(cls, theorem_statement: str) -> "ProofState":
-        """Create the initial proof state for a theorem."""
+        """Create the initial proof state for a theorem.
+
+        Parses the theorem statement to extract binder arguments
+        (e.g., (h : a = b), (hc : c ≠ 0)) as initial hypotheses, so the
+        MCTS can use them for rewrites, field_simp, linarith, etc.
+        """
+        hypotheses = cls._parse_binder_args(theorem_statement)
         return cls(
             theorem_statement=theorem_statement,
             goals=[theorem_statement],
+            hypotheses=hypotheses,
         )
+
+    @staticmethod
+    def _parse_binder_args(statement: str) -> dict[str, str]:
+        """Extract named binder arguments from a theorem statement.
+
+        Parses patterns like:
+            theorem name (h : a = b) (hc : c ≠ 0) : goal
+        Returns:
+            {'h': 'a = b', 'hc': 'c ≠ 0'}
+        """
+        import re
+        hyps: dict[str, str] = {}
+
+        # Strip "theorem name" prefix to get to the first binder
+        # Match: "theorem <name>" then optional binder args before ":"
+        # Use a regex to find all (name : type) binders
+        # Pattern: parenthesized binder with a named argument: (name : type)
+        binder_pattern = re.compile(r'\((\w+)\s*:\s*([^()]+?)\)')
+        # Find the last ':' that marks the goal (after the binders)
+        # Strategy: find all binder matches, then take their types
+
+        for match in binder_pattern.finditer(statement):
+            name = match.group(1)
+            typ = match.group(2).strip()
+            # Skip binders that are just type annotations (e.g., (ν T : ℝ))
+            # Type-only binders have multiple names or look like type names
+            if " " in name or name[0].isupper():
+                # Likely a variable binder like (ν T : ℝ) — skip
+                continue
+            hyps[name] = typ
+
+        return hyps
 
     def apply_tactic(self, tactic: Tactic) -> "ProofState":
         """Create a new state by applying a tactic.
@@ -169,9 +232,19 @@ class ProofState:
 
         elif tactic.tactic_type == TacticType.REWRITE:
             # Rewrite transforms the goal
-            if new_goals and tactic.lemma:
+            if new_goals and (tactic.lemma or tactic.hypothesis or tactic.args):
                 goal = new_goals.pop(0)
                 new_goals.insert(0, goal + " (rewritten)")
+
+        elif tactic.tactic_type in (
+            TacticType.RING,
+            TacticType.FIELD_SIMP,
+            TacticType.LINARITH,
+            TacticType.SIMP,
+        ):
+            # Automation tactics close the current goal
+            if new_goals:
+                new_goals.pop(0)
 
         elif tactic.tactic_type == TacticType.HAVE:
             # Have adds a new hypothesis
@@ -246,15 +319,13 @@ def generate_candidate_actions(
 
     candidates: list[Tactic] = []
 
-    # Exact: close the goal with a hypothesis or lemma
+    # Exact: close the goal with a hypothesis
     for hyp_name in hypotheses:
         candidates.append(
             Tactic(TacticType.EXACT, hypothesis=hyp_name)
         )
-    for lemma in available_lemmas[:10]:  # Limit for efficiency
-        candidates.append(Tactic(TacticType.EXACT, lemma=lemma))
 
-    # Apply: use a lemma that matches the goal structure
+    # Apply: use a lemma (preferred over exact for typeclass resolution)
     for lemma in available_lemmas[:20]:
         candidates.append(Tactic(TacticType.APPLY, lemma=lemma))
 
@@ -265,18 +336,67 @@ def generate_candidate_actions(
         ):
             candidates.append(Tactic(TacticType.REWRITE, lemma=lemma))
 
+    # Rewrite using local hypotheses (e.g., rw [h] where h: a=b)
+    for hyp_name, hyp_type in hypotheses.items():
+        if "=" in hyp_type or "↔" in hyp_type:
+            candidates.append(Tactic(TacticType.REWRITE, hypothesis=hyp_name))
+
     # Intro: if the goal is an implication or forall
     if state.goals and ("→" in state.goals[0] or "∀" in state.goals[0]):
         candidates.append(Tactic(TacticType.INTRO, hypothesis="h"))
 
-    # Cases: if there are hypotheses to analyze
-    for hyp_name in list(hypotheses.keys())[:3]:
+    # Cases: if there are hypotheses to analyze.
+    # Skip non-inductive hypotheses — `cases` only works on inductive types.
+    # Equality (=, ≠), iff (↔), and inequalities (≤, ≥, <, >) are not inductive.
+    for hyp_name, hyp_type in list(hypotheses.items())[:3]:
+        if any(op in hyp_type for op in ("=", "≠", "↔", "≤", "≥", "<", ">")):
+            continue
         candidates.append(Tactic(TacticType.CASES, hypothesis=hyp_name))
 
-    # Have: create a new hypothesis from a lemma
-    for lemma in available_lemmas[:5]:
+    # Have: duplicate an existing hypothesis under a fresh name
+    for hyp_name in list(hypotheses.keys())[:3]:
         candidates.append(
-            Tactic(TacticType.HAVE, lemma=lemma, hypothesis="h_new")
+            Tactic(TacticType.HAVE, lemma=hyp_name, hypothesis="h_" + hyp_name)
         )
+
+    # Automation tactics for goals they match.
+    # Skip goals containing → or ∀ — automation tactics (ring, field_simp,
+    # linarith) operate on arithmetic goals, not implications or foralls.
+    if state.goals:
+        goal = state.goals[0]
+        has_implication = "→" in goal or "∀" in goal
+
+        # ring: polynomial/ring identities
+        if "=" in goal and any(op in goal for op in ("*", "^", "+")) and not has_implication:
+            candidates.append(Tactic(TacticType.RING))
+
+        # field_simp: field equations with division or inverses
+        if ("/" in goal or "⁻¹" in goal) and not has_implication:
+            nonzero_hyps = [
+                name for name, typ in hypotheses.items()
+                if "≠" in typ or "0 ≠" in typ or "h" in name.lower()
+            ]
+            candidates.append(Tactic(
+                TacticType.FIELD_SIMP,
+                args=nonzero_hyps[:3],
+            ))
+
+        # linarith: linear arithmetic
+        if any(op in goal for op in ("≤", "≥", "<", ">", "=")) and not has_implication:
+            candidates.append(Tactic(TacticType.LINARITH))
+
+        # simp: general simplification.
+        # Only pass hypotheses that are equalities or simple propositions.
+        # Complex binder args (functions, non-propositional variables) cause
+        # "Invalid argument: Variable X is not a proposition" errors.
+        simp_hyps = [
+            name for name, typ in hypotheses.items()
+            if "=" in typ or "↔" in typ or "→" in typ
+            or typ.strip() in ("True", "False")
+        ]
+        candidates.append(Tactic(
+            TacticType.SIMP,
+            args=simp_hyps[:5],
+        ))
 
     return candidates

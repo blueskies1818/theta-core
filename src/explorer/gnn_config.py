@@ -17,10 +17,10 @@ class GNNConfig:
     # -- Architecture --------------------------------------------------------
 
     # Number of message-passing layers (depth of neighbor aggregation)
-    num_layers: int = 4
+    num_layers: int = 3
 
     # Hidden dimension for node embeddings
-    hidden_dim: int = 512
+    hidden_dim: int = 256
 
     # Input feature dimension (from statement embedding or random init)
     input_dim: int = 768
@@ -33,6 +33,20 @@ class GNNConfig:
 
     # Activation function
     activation: str = "gelu"  # "gelu", "relu", "silu"
+
+    # -- Goal Encoder --------------------------------------------------------
+    # The goal encoder projects keyword-averaged lemma embeddings into a
+    # learned goal embedding space. Trained jointly with the GNN during
+    # both pretraining and GRPO.
+
+    # Whether to use a learned goal encoder (vs. raw keyword-average)
+    use_goal_encoder: bool = True
+
+    # Goal encoder hidden dimension multiplier (2× → 2-layer MLP)
+    goal_encoder_expansion: int = 2
+
+    # Goal encoder dropout
+    goal_encoder_dropout: float = 0.1
 
     # -- Message Passing -----------------------------------------------------
 
