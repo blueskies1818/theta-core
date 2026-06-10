@@ -305,6 +305,8 @@ Examples:
                              "(0 = no annealing, keep heuristics at full)")
     parser.add_argument("--heuristic-scale-min", type=float, default=0.0,
                         help="Final heuristic scale after annealing")
+    parser.add_argument("--resume-epoch", type=int, default=0,
+                        help="Resume from this epoch (sets starting heuristic scale)")
 
     # -- Correspondence ------------------------------------------------------
     parser.add_argument("--no-correspondence", action="store_true",
@@ -388,9 +390,13 @@ Examples:
         sys.exit(1)
 
     # ---- Split train/val ----
-    split_idx = max(args.batch_size, len(train_theorems) - args.eval_theorems)
-    train_split = train_theorems[:split_idx]
-    val_split = train_theorems[split_idx:] if not args.no_eval else None
+    if args.no_eval:
+        train_split = train_theorems
+        val_split = None
+    else:
+        split_idx = max(args.batch_size, len(train_theorems) - args.eval_theorems)
+        train_split = train_theorems[:split_idx]
+        val_split = train_theorems[split_idx:]
     print(f"Train: {len(train_split)} theorems, Val: {len(val_split) if val_split else 0}")
 
     # ---- Proof checker ----
@@ -451,6 +457,7 @@ Examples:
         save_every=args.save_every,
         heuristic_anneal_epochs=args.heuristic_anneal_epochs,
         heuristic_scale_min=args.heuristic_scale_min,
+        resume_epoch=args.resume_epoch,
     )
 
     mcts_config = MCTSConfig(

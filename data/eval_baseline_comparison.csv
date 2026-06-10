@@ -1,0 +1,11 @@
+name,era,zone,heuristic_scale,success,pattern,mcts_steps,ground_truth,error,search_time_s
+heisenberg_uncertainty_identity,old_quantum,qft_divergence,0.0,True,simp,simp,  intro h; linarith,,24.399802923202515
+schrodinger_equation_identity,old_quantum,qft_divergence,0.0,False,failed,have h_h := h | rw [sub_zero] | apply Eq.trans | rw [mul_assoc] | simp [h],  rw [h]; ring,<stdin>:10:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern,17.516157627105713
+born_probability_identity,old_quantum,qft_divergence,0.0,False,failed,linarith,  apply pow_two_nonneg,<stdin>:8:32: error: linarith failed to find a contradiction,20.62116527557373
+planck_scale_completion_identity,modern,planck_breakdown,0.0,False,failed,"field_simp [hG, hℏ, hc]",  apply Real.sqrt_pos.mpr; positivity,<stdin>:8:79: error: unsolved goals,7.618861436843872
+quantum_gravity_coupling_identity,modern,planck_breakdown,0.0,False,failed,field_simp,  field_simp,<stdin>:8:41: error: unsolved goals,7.35297966003418
+heisenberg_uncertainty_identity,old_quantum,qft_divergence,1.0,True,simp,simp,  intro h; linarith,,24.630748510360718
+schrodinger_equation_identity,old_quantum,qft_divergence,1.0,True,simp,simp [h],  rw [h]; ring,,17.097479581832886
+born_probability_identity,old_quantum,qft_divergence,1.0,False,failed,cases ψ | rw [zero_pow] | exact ψ,  apply pow_two_nonneg,<stdin>:10:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern,21.433968782424927
+planck_scale_completion_identity,modern,planck_breakdown,1.0,False,failed,"field_simp [hG, hℏ, hc]",  apply Real.sqrt_pos.mpr; positivity,<stdin>:8:79: error: unsolved goals,7.553756237030029
+quantum_gravity_coupling_identity,modern,planck_breakdown,1.0,False,failed,field_simp,  field_simp,<stdin>:8:41: error: unsolved goals,7.440677881240845

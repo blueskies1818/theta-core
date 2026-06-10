@@ -175,42 +175,39 @@ class ExplorerTrainer:
 
             # ---- Heuristic annealing ----
             # Gradually reduce heuristic weights so the GNN takes over.
+            # resume_epoch offsets progress so training can continue from a checkpoint.
             if self.config.heuristic_anneal_epochs > 0:
-                progress = min(1.0, epoch / self.config.heuristic_anneal_epochs)
+                effective_epoch = epoch + self.config.resume_epoch
+                progress = min(1.0, effective_epoch / self.config.heuristic_anneal_epochs)
                 scale = self.config.heuristic_scale_start + progress * (
                     self.config.heuristic_scale_min - self.config.heuristic_scale_start
                 )
                 self._mcts.config.heuristic_scale = scale
 
-            # ---- Phase B: MCTS search + proof checking ----
+            # ---- Phase B: MCTS search (group_size proofs per theorem) ----
             all_codes = []
             all_trees = []
 
             for theorem in batch:
                 statement = theorem["statement"]
 
-                # Run MCTS to find proof
-                best_steps, root = self._mcts.search(
-                    statement, node_embeddings=embeddings, verbose=False
-                )
+                for _ in range(self.config.group_size):
+                    # Run MCTS to find proof (independent search each time)
+                    best_steps, root = self._mcts.search(
+                        statement, node_embeddings=embeddings, verbose=False
+                    )
 
-                # Convert steps to Lean code.
-                # MCTS may over-generate: rw [add_comm] alone closes a+b=b+a,
-                # but MCTS adds more steps that fail. Try truncating.
-                proof_text = ProofState._render_proof(best_steps)
-                full_code = wrap_theorem_with_proof(statement, proof_text or "sorry")
-                # If multi-step, also try just the first step
-                if len(best_steps) > 1:
-                    single_text = ProofState._render_proof(best_steps[:1])
-                    single_code = wrap_theorem_with_proof(statement, single_text or "sorry")
-                    # Quick check: if single step uses rw/apply of comm lemma, prefer it
-                    first_action = best_steps[0]
-                    if (first_action.tactic_type.value in ("rewrite", "apply")
-                            and first_action.lemma in ("add_comm", "mul_comm", "rfl", "Eq.refl")):
-                        full_code = single_code
-                        best_steps = best_steps[:1]  # Truncate for consistency
-                all_codes.append(full_code)
-                all_trees.append(root)
+                    # Convert steps to Lean code.
+                    proof_text = ProofState._render_proof(best_steps)
+                    full_code = wrap_theorem_with_proof(statement, proof_text or "sorry")
+                    if len(best_steps) > 1:
+                        single_text = ProofState._render_proof(best_steps[:1])
+                        first_action = best_steps[0]
+                        if (first_action.tactic_type.value in ("rewrite", "apply")
+                                and first_action.lemma in ("add_comm", "mul_comm", "rfl", "Eq.refl")):
+                            full_code = wrap_theorem_with_proof(statement, single_text or "sorry")
+                    all_codes.append(full_code)
+                    all_trees.append(root)
 
             # ---- Phase C: Proof checking ----
             results = self.checker.check_batch(all_codes)
@@ -220,7 +217,8 @@ class ExplorerTrainer:
                 for i, (code, result) in enumerate(zip(all_codes, results)):
                     status = "✓" if result.success else "✗"
                     err = result.errors[0][:100] if result.errors else ""
-                    print(f"  [DEBUG {self.global_step}.{i}] {status} {batch[i]['name']}: "
+                    thm_idx = i // self.config.group_size
+                    print(f"  [DEBUG {self.global_step}.{i}] {status} {batch[thm_idx]['name']}: "
                           f"{code[code.find(':= by')+5:code.find(':= by')+80] if ':= by' in code else code[:80]}"
                           f"{' | ' + err if err else ''}")
 
@@ -577,6 +575,9 @@ class ExplorerConfig:
     heuristic_scale_start: float = 1.0
     heuristic_scale_min: float = 0.0
     heuristic_anneal_epochs: int = 2000  # Epochs to decay from start → min
+
+    # Resume from a previous run (offsets annealing progress)
+    resume_epoch: int = 0
 
     # Checkpoint saving frequency
     save_every: int = 50

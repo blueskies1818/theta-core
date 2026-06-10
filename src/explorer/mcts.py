@@ -234,11 +234,11 @@ class MCTS:
         root_state = ProofState.initial(theorem_statement)
         root = MCTSNode(state=root_state)
 
-        # Add Dirichlet noise to root for exploration
-        root_prior_noise = None
-
         # Identify relevant lemmas for this theorem from the graph
         available_lemmas = self._get_relevant_lemmas(theorem_statement)
+
+        # Track whether root has been expanded (for Dirichlet noise)
+        _root_expanded = False
 
         for sim in range(self.config.num_simulations):
             node = root
@@ -256,6 +256,24 @@ class MCTS:
             # If the leaf isn't terminal, expand it
             if not node.is_terminal and depth < self.config.max_depth:
                 self._expand(node, available_lemmas)
+
+                # Apply Dirichlet noise to root priors after first expansion
+                # (AlphaGo Zero: noisy_prior = (1-eps)*prior + eps*Dirichlet(alpha))
+                # This ensures different MCTS searches explore different paths even
+                # with identical heuristic/GNN guidance.
+                if node is root and not _root_expanded:
+                    _root_expanded = True
+                    if root.children:
+                        n_children = len(root.children)
+                        alpha = self.config.dirichlet_alpha
+                        eps = self.config.dirichlet_weight
+                        # Generate Dirichlet noise: Dir(alpha, alpha, ..., alpha)
+                        noise = torch.distributions.Dirichlet(
+                            torch.full((n_children,), alpha)
+                        ).sample()
+                        children_list = list(root.children.values())
+                        for i, child in enumerate(children_list):
+                            child.prior = (1.0 - eps) * child.prior + eps * noise[i].item()
 
                 # Pick a random child for the rollout
                 if node.children:
