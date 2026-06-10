@@ -198,16 +198,13 @@ Before Phase 3 can begin, Phase 2 must demonstrate:
 ## 9. Timeline Projection
 
 ```
-2026 June (now):      Phase 2 — multi-step proofs, lemma discrimination, scale GNN
-2026 July:            Phase 2 — full 58K graph, proof trajectory pretraining, refined era-gated test
-2026 August:          Phase 2 completion — GNN proves multi-step theorems without heuristics
-2026 Sept–Oct:        Phase 3 prep — Physical Prediction Scorer prototype, Layer 1 data pipeline
-2026 Nov–Dec:         Phase 3 — Physical grounding integration, domain-level holdout
-2027 Q1:              Phase 4 — Translation layer
-2027 Q2+:             Phase 5 — Open-ended operation
+(now):Phase 2 — multi-step proofs, lemma discrimination, scale GNN
+Phase 2 — full 58K graph, proof trajectory pretraining, 
+Phase 2 completion — GNN proves multi-step theorems without 
+Phase 3 prep — Physical Prediction Scorer prototype, Layer 
+Phase 3 — Physical grounding integration, domain-level Phase 4 — Translation layer
+Phase 5 — Open-ended operation
 ```
-
-This timeline assumes one developer working part-time. With additional resources (compute, collaborators), Phase 2 could complete in 4–6 weeks and Phase 3 could begin by August 2026.
 
 ---
 
