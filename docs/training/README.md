@@ -33,6 +33,10 @@ Chronological training runs of the GNN+MCTS explorer with correspondence-layer r
 | GRPO group_size=4 | — | — | — | Y |
 | Multi-zone rewards | — | — | — | Y (passive) |
 | **GNN exceeds heuristic baseline** | — | — | — | **Y** |
+| Entropy bonus (anti-collapse) | — | — | — | — |
+| Heuristic annealing stop at 0.25 | — | — | — | — |
+| Trivial tactic baselines | — | — | — | — |
+| Multi-run eval (mean ± stdev) | — | — | — | — |
 
 ## Key Files
 
@@ -54,26 +58,27 @@ docs/training/
 # Generate richer theorems
 python scripts/build_richer_theorems.py
 
-# Train with all improvements
+# Train with Wave 1 improvements (H→0.25, entropy bonus, 800 sims)
 python scripts/train_explorer.py \
   --domain Algebra \
   --pretrained checkpoints/gnn/proof_step_pretrained.pt \
   --theorems data/raw/training_combined.jsonl \
   --max-theorems 55 \
   --steps 1000 \
-  --mcts-sims 400 \
+  --mcts-sims 800 \
   --batch-size 2 \
   --group-size 4 \
   --heuristic-anneal-epochs 2000 \
-  --heuristic-scale-min 0.0 \
+  --heuristic-scale-min 0.25 \
   --era pre_relativity \
   --output checkpoints/explorer_run9
 
-# Evaluate
+# Evaluate with baselines and multi-run statistics (Wave 1)
 python scripts/infer_explorer.py \
   --checkpoint checkpoints/explorer_run9/gnn_final.pt \
   --theorems data/raw/physics_theorems_post1905.jsonl \
-  --no-era-filter --compare
+  --no-era-filter --compare --baselines --repeat 3 \
+  --mcts-sims 800
 ```
 
 ---

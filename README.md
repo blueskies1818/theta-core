@@ -18,32 +18,191 @@ Current large language models inherit human cognitive biases, conceptual categor
 
 ## System Architecture
 
-The full system is a heterogeneous ensemble of three components with distinct architectures. No single monolithic model handles all tasks.
+The full system is a heterogeneous ensemble of three components with distinct architectures. No single monolithic model handles all tasks. Below is the complete data-flow diagram showing every processing stage from training data through to the final GRPO gradient update.
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    TRAINING LOOP                        │
-│                                                         │
-│  ┌──────────────┐     ┌──────────────┐                  │
-│  │  Mathematical│     │    Lean 4    │                  │
-│  │   Explorer   │────▶│    Proof     │                  │
-│  │  (GNN + MCTS)│     │   Checker    │                  │
-│  └──────┬───────┘     └──────┬───────┘                  │
-│         │                    │ verified structures      │
-│         │ reward signal      ▼                          │
-│         │            ┌──────────────┐                   │
-│         └────────────│   Physical   │                   │
-│                      │  Prediction  │◀── experimental   │
-│                      │   Scorer     │    data corpus    │
-│                      └──────┬───────┘                   │
-│                             │ flagged anomalies         │
-└─────────────────────────────┼───────────────────────────┘
-                              ▼
-                    ┌──────────────────┐
-                    │  Translation     │     human
-                    │  Layer (LLM)     │────▶physicists
-                    └──────────────────┘
+┌───────────────────────────────────────────────────────────────────────────┐
+│                          TRAINING DATA                                    │
+│  Mathlib4 .lean files → regex extractor → JSONL theorem-proof pairs       │
+│  (4,886+ theorems from Algebra, GroupTheory, LinearAlgebra, Data domains) │
+└────────────────────────────────────┬──────────────────────────────────────┘
+                                     │
+                                     ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│                      PROMPT FORMATTING                                    │
+│  "Theorem: lemma add_comm (a b : ℕ) : a + b = b + a\nProof:"              │
+│  (plain text, no few-shot, no instructions)                               │
+└────────────────────────────────────┬──────────────────────────────────────┘
+                                     │
+                                     ▼
+┌───────────────────────────────────────────────────────────────────────────┐
+│                                                                           │
+│  ┌──────────────────────────┐     ┌──────────────────────────┐            │
+│  │    DEPENDENCY GRAPH      │     │      GNN ENCODER         │            │
+│  │  (69K nodes, 280K edges) │────▶│  GAT layers + GoalEncoder│            │
+│  │                          │     │                          │            │
+│  │  Nodes: theorems, lemmas │     │  Input: initial features │            │
+│  │  Edges: "uses in proof"  │     │  (random/onehot/transf.) │            │
+│  │                          │     │                          │            │
+│  │  Stored as NetworkX      │     │  Output: [N, hidden_dim] │            │
+│  │  DiGraph + pickle        │     │  node embeddings         │            │
+│  └──────────────────────────┘     └──────────────┬───────────┘            │
+│                                                  │                        │
+│                                                  │ embeddings             │
+│                                                  ▼                        │
+│  ┌──────────────────────────────────────────────────────────────────┐     │
+│  │                    MCTS SEARCH ENGINE                            │     │
+│  │                                                                  │     │
+│  │  For each theorem, K independent searches (K = group_size):      │     │
+│  │                                                                  │     │
+│  │  ┌──────────┐   ┌───────────┐   ┌──────────┐   ┌────────────┐    │     │
+│  │  │ SELECT   │──▶│  EXPAND   │──▶│ EVALUATE │──▶│ BACKPROP   │    │     │
+│  │  │ PUCT     │   │ GNN scores│   │ value    │   │ update     │    │     │
+│  │  │ treewalk │   │ candidates│   │ estimate │   │ visit cnts │    │     │
+│  │  └──────────┘   └───────────┘   └──────────┘   └────────────┘    │     │
+│  │       │              │                                           │     │
+│  │       │     ┌────────┴────────┐                                  │     │
+│  │       │     │  Action scoring │                                  │     │
+│  │       │     │  ────────────── │                                  │     │
+│  │       │     │  goal_emb ·     │                                  │     │
+│  │       │     │  lemma_emb      │  ← differentiable! gradient      │     │
+│  │       │     │  (cosine sim)   │    flows back to GNN here        │     │
+│  │       │     │                 │                                  │     │
+│  │       │     │  + heuristic    │                                  │     │
+│  │       │     │    (arithmetic  │  ← annealed 1.0 → 0.25           │     │
+│  │       │     │     patterns)   │    during training               │     │
+│  │       │     │                 │                                  │     │
+│  │       │     │  + keyword      │                                  │     │
+│  │       │     │    relevance    │  ← penalty for irrelevant        │     │
+│  │       │     │    matching     │    lemmas (e.g., zero_pow        │     │
+│  │       │     │                 │    for goals without 0)          │     │
+│  │       │     │  + centrality   │                                  │     │
+│  │       │     │    (in-degree)  │  ← fundamental lemmas boosted    │     │
+│  │       │     │                 │                                  │     │
+│  │       │     │  + trivial      │                                  │     │
+│  │       │     │    lemma penalty│  ← id, rfl, Function.id etc      │     │
+│  │       │     │    (-1.5 score) │    heavily penalized             │     │
+│  │       │     └────────┬────────┘                                  │     │
+│  │       │              │                                           │     │
+│  │       │              ▼                                           │     │
+│  │       │     ┌──────────────────┐                                 │     │
+│  │       │     │  1000 sims       │                                 │     │
+│  │       │     │  per proof       │──▶ best_proof_steps, root_node  │     │
+│  │       │     └──────────────────┘                                 │     │
+│  │       │                                                          │     │
+│  │       │  ┌──────────────────────────────────────────┐            │     │
+│  │       │  │  Verification gate (optional, root only) │            │     │
+│  │       │  │  Batch-check candidate tactics through   │            │     │
+│  │       │  │  Lean before creating child nodes.       │            │     │
+│  │       │  │  Only valid steps become MCTS children.  │            │     │
+│  │       │  └──────────────────────────────────────────┘            │     │
+│  │       │                                                          │     │
+│  │       └────▶  proof_steps = [Tactic(APPLY, "add_comm"), ...]     │     │
+│  │                          ↓                                       │     │
+│  │              _render_proof(steps) → "  apply add_comm\n  rfl"    │     │
+│  └──────────────────────────────────────────────────────────────────┘     │
+│                                                                           │
+└────────────────────────────────────┬──────────────────────────────────────┘
+                                     │ proof text string
+                                     ▼
+┌────────────────────────────────────────────────────────────────────────────┐
+│                      PROOF WRAPPING                                        │
+│  wrap_theorem_with_proof(statement, proof)                                 │
+│                                                                            │
+│  Input:  "theorem add_comm (a b:ℕ): a+b = b+a" + "  apply add_comm"        │
+│  Output: "example (a b:ℕ): a+b = b+a := by\n  apply add_comm"              │
+│  (lemma→example to avoid Mathlib name collisions, auto-detect tactic/term) │
+└────────────────────────────────────┬───────────────────────────────────────┘
+                                     │ wrapped Lean code
+                                     ▼
+┌────────────────────────────────────────────────────────────────────────────┐
+│                      PROOF CHECKER (Lean 4)                                │
+│                                                                            │
+│  ┌──────────────────┐    ┌───────────────────┐    ┌────────────────────┐   │
+│  │ SHA-256 Cache    │    │ lean --stdin      │    │ BatchChecker       │   │
+│  │ LRU, 50K entries │───▶│ subprocess.run()  │◀───│ ProcessPoolExecutor│   │
+│  │                  │    │                   │    │ spawn, 3-12 workers│   │
+│  │ Avoids re-check- │    │ lake env lean     │    │                    │   │
+│  │ ing identical    │    │ (Mathlib4 imports)│    │ Each check:        │   │
+│  │ code strings     │    │                   │    │ independent, CPU   │   │
+│  └──────────────────┘    └─────────┬─────────┘    └────────────────────┘   │
+│                                    │                                       │
+│                ProofResult(success=True/False, errors=[...], num_tokens)   │
+└────────────────────────────────────┬───────────────────────────────────────┘
+                                     │
+                                     ▼
+┌────────────────────────────────────────────────────────────────────────────┐
+│                      REWARD COMPUTATION                                    │
+│                                                                            │
+│  base_reward = 1.0 (valid) or 0.0 (invalid)                                │
+│                                                                            │
+│  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────────┐  │
+│  │ Length bonus     │    │ Curiosity bonus  │    │  Anti-hack threshold │  │
+│  │ shorter=higher   │    │ novelty /        │    │  proofs < 10 tokens  │  │
+│  │ decay_rate=0.002 │    │ sqrt(count + 1)  │    │  → reward = 0.0      │  │
+│  └──────────────────┘    └──────────────────┘    └──────────────────────┘  │
+└────────────────────────────────────┬───────────────────────────────────────┘
+                                     │ raw reward
+                                     ▼
+┌────────────────────────────────────────────────────────────────────────────┐
+│                    CORRESPONDENCE LAYER (reward shaper)                    │
+│                                                                            │
+│  ┌──────────────────────┐   ┌─────────────────────┐    ┌──────────────┐    │
+│  │ Frontier Map         │   │ Failure Coordinates │    │  Era Tracker │    │
+│  │ ─────────────        │   │ ─────────────────── │    │  ─────────── │    │
+│  │ ESTABLISHED: 0.1-0.3×│   │ Singularity points  │    │  Passive     │    │
+│  │ UNCERTAIN:   1.2-2.0×│   │ Planck breakdown    │    │  discovery   │    │
+│  │ BREAKDOWN:   2.5-3.0×│   │ QFT divergences     │    │  monitor     │    │
+│  │                      │   │ Big Bang t=0        │    │  (no reward  │    │
+│  │ Keyword-classifies   │   │                     │    │   signal)    │    │
+│  │ theorem text into    │   │ Resolve=bonus       │    │              │    │
+│  │ zone → multiplier    │   │ Reproduce=penalty   │    │  "Did it     │    │
+│  └─────────┬────────────┘   └─────────┬───────────┘    │   discover   │    │
+│            │                          │                │   Lorentz    │    │
+│            └───────────┬──────────────┘                │   invar.?"   │    │
+│                        │                               └──────────────┘    │
+│                        ▼                                                   │
+│  modified_reward = base_reward × zone_multiplier + failure_modifier        │
+└────────────────────────────────────┬───────────────────────────────────────┘
+                                     │ final reward
+                                     ▼
+┌────────────────────────────────────────────────────────────────────────────┐
+│                      GRPO TRAINING (loss.backward())                       │
+│                                                                            │
+│  1. Group-relative advantages: (rᵢ - mean(r_group)) / (std(r_group) + ε)   │
+│                                                                            │
+│  2. Policy loss (through MCTS logits → GNN):                               │
+│     CrossEntropy(softmax(child_logits), MCTS_visit_distribution)           │
+│     Weighted by advantage. Gradients flow:                                 │
+│       loss → log_softmax → cosine_sim(goal_emb, lemma_emb)                 │
+│            → goal_emb = embeddings[matched].mean()                         │
+│            → embeddings = GNN(features, edges) ✓                           │
+│                                                                            │
+│  3. Value loss: MSE(predicted_value, actual_success)                       │
+│                                                                            │
+│  4. Entropy bonus: -weight × H(probs)  (maximize, prevents collapse)       │
+│                                                                            │
+│  5. KL penalty vs frozen reference model (LLM Phase 1 only)                │
+│                                                                            │
+│  6. Heuristic annealing: scale 1.0→0.25 over 2000 epochs                   │
+│     (GNN gradually takes over from hand-coded arithmetic patterns)         │
+└────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### How Data Flows Through the System
+
+| Stage | What happens | Key files |
+|-------|-------------|-----------|
+| **Training data** | Theorem-proof pairs extracted from Mathlib4 `.lean` files | `src/data/mathlib_extractor.py` |
+| **Prompt formatting** | Theorem statement formatted as `"Theorem: <stmt>\nProof:"` | `src/data/dataset.py` |
+| **Dependency graph** | 69K nodes, 280K edges of mathematical dependencies | `src/explorer/dependency_graph.py` |
+| **GNN encoder** | GAT with edge-type conditioning, learns embeddings over the graph | `src/explorer/gnn_encoder.py` |
+| **MCTS search** | 1000 simulations per proof, PUCT tree search guided by GNN scores | `src/explorer/mcts.py` |
+| **Proof wrapping** | Converts theorem+proof into checkable Lean code with Mathlib4 imports | `src/proof_checker/formats.py` |
+| **Proof checker** | Subprocess `lean --stdin`, parallel batch verification, SHA-256 LRU cache | `src/proof_checker/` |
+| **Reward computation** | Binary (valid/invalid) + length bonus + curiosity/exploration bonus | `src/reward/base.py` |
+| **Correspondence layer** | Frontier zone multiplier + failure point bonus/penalty → modified reward | `src/correspondence/reward_integration.py` |
+| **GRPO update** | Group-relative advantages → policy loss + value loss + entropy bonus → GNN update | `src/explorer/explorer_trainer.py` |
 
 ### Component 1 — Mathematical Explorer
 **Architecture:** Graph Neural Network + Monte Carlo Tree Search (1–7B params)
@@ -51,7 +210,7 @@ Navigates formal mathematical space, proposes candidate structures and proof ste
 
 ### Component 2 — Physical Prediction Scorer
 **Architecture:** Multimodal Transformer with domain-specific encoders (10–30B params)
-Evaluates candidate structures against raw physical observation data across all measurement modalities. Domain-specific encoders (time series, spatial field, spectroscopic, discrete event, thermodynamic/chemical) convert heterogeneous data into a common representation space before a shared transformer compares predictions to observations.
+Evaluates candidate structures against raw physical observation data across all measurement modalities. Domain-specific encoders (time series, spatial field, spectroscopic, discrete event, thermodynamic/chemical) convert heterogeneous data into a common representation space before a shared transformer compares predictions to observations. **Not yet implemented — raw experimental data currently enters only through the correspondence layer's reward shaping.**
 
 ### Component 3 — Translation Layer
 **Architecture:** Fine-tuned LLM (7–70B params)

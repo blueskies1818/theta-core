@@ -282,13 +282,15 @@ class ExplorerTrainer:
                     pattern_counts["failed"] += 1
 
             pg_loss = loss_dict.get("pg_loss", 0.0) if isinstance(loss_dict, dict) else 0.0
-            kl_div = loss_dict.get("kl_div", 0.0) if isinstance(loss_dict, dict) else 0.0
+            val_loss = loss_dict.get("val_loss", 0.0) if isinstance(loss_dict, dict) else 0.0
+            entropy = loss_dict.get("entropy", 0.0) if isinstance(loss_dict, dict) else 0.0
 
             metrics = {
                 "epoch": epoch,
                 "loss": loss.item(),
                 "pg_loss": pg_loss,
-                "val_loss": loss.item() - pg_loss if isinstance(pg_loss, float) else 0.0,
+                "val_loss": val_loss,
+                "entropy": entropy,
                 "grad_norm": total_grad_norm,
                 "success_rate": success_rate,
                 "patterns": pattern_counts,
@@ -307,6 +309,7 @@ class ExplorerTrainer:
                     f"Reward: {avg_reward:.3f} | "
                     f"Loss: {loss.item():.4f} | "
                     f"Grad: {total_grad_norm:.3f} | "
+                    f"Entropy: {entropy:.3f} | "
                     f"Novel: {curiosity['unique_signatures']} | "
                     f"H: {h_scale:.2f} | "
                     f"Proofs: r={patterns.get('rfl',0)} a={patterns.get('add_comm',0)} "
@@ -388,6 +391,7 @@ class ExplorerTrainer:
         """
         policy_losses = []
         value_losses = []
+        entropy_losses = []
 
         for i, (root, result, advantage) in enumerate(zip(trees, results, advantages)):
             # Guard against NaN advantages (can occur with degenerate groups,
@@ -432,6 +436,12 @@ class ExplorerTrainer:
                         weight = torch.sigmoid(advantage)
                         policy_losses.append(weight * policy_loss)
 
+                        # Entropy bonus: encourage diverse lemma distribution
+                        # H = -Σ p_i log p_i; we maximize entropy to prevent collapse
+                        probs = torch.softmax(logits, dim=0)
+                        entropy = -(probs * (probs + 1e-8).log()).sum()
+                        entropy_losses.append(entropy)
+
             elif root.children:
                 # Fallback: use detached priors (no gradient through GNN).
                 # This path is taken when no GNN is available — training
@@ -474,15 +484,25 @@ class ExplorerTrainer:
         else:
             total_value_loss = torch.tensor(0.0, device=self.device)
 
+        # Entropy bonus: we MAXIMIZE entropy, so subtract from loss
+        if entropy_losses and self.config.entropy_weight > 0:
+            total_entropy = torch.stack(entropy_losses).mean()
+            entropy_bonus = -self.config.entropy_weight * total_entropy
+        else:
+            total_entropy = torch.tensor(0.0, device=self.device)
+            entropy_bonus = torch.tensor(0.0, device=self.device)
+
         loss = (
             self.config.policy_weight * total_policy_loss
             + self.config.value_weight * total_value_loss
+            + entropy_bonus
         )
 
         return {
             "loss": loss,
             "pg_loss": total_policy_loss.item() if isinstance(total_policy_loss, torch.Tensor) else total_policy_loss,
             "val_loss": total_value_loss.item() if isinstance(total_value_loss, torch.Tensor) else total_value_loss,
+            "entropy": total_entropy.item() if isinstance(total_entropy, torch.Tensor) else total_entropy,
         }
 
     # ------------------------------------------------------------------
@@ -561,6 +581,7 @@ class ExplorerConfig:
     # Loss weights
     policy_weight: float = 1.0
     value_weight: float = 0.5
+    entropy_weight: float = 0.01  # Small entropy bonus prevents policy collapse
 
     # Correspondence-layer reward modification (Phase 2.5+2.7)
     use_correspondence: bool = True
@@ -573,7 +594,7 @@ class ExplorerConfig:
     # Heuristic annealing: start at heuristic_scale=1.0, end at heuristic_scale_min
     # over heuristic_anneal_epochs. Linear decay. 0.0 = pure GNN, 1.0 = full heuristics.
     heuristic_scale_start: float = 1.0
-    heuristic_scale_min: float = 0.0
+    heuristic_scale_min: float = 0.25  # 0.25 prevents policy collapse; 0.0 = full GNN takeover
     heuristic_anneal_epochs: int = 2000  # Epochs to decay from start → min
 
     # Resume from a previous run (offsets annealing progress)

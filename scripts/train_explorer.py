@@ -303,8 +303,9 @@ Examples:
     parser.add_argument("--heuristic-anneal-epochs", type=int, default=2000,
                         help="Epochs to anneal heuristics from 1.0 to 0.0 "
                              "(0 = no annealing, keep heuristics at full)")
-    parser.add_argument("--heuristic-scale-min", type=float, default=0.0,
-                        help="Final heuristic scale after annealing")
+    parser.add_argument("--heuristic-scale-min", type=float, default=0.25,
+                        help="Final heuristic scale after annealing "
+                             "(0.25 prevents policy collapse, 0.0 = pure GNN)")
     parser.add_argument("--resume-epoch", type=int, default=0,
                         help="Resume from this epoch (sets starting heuristic scale)")
 

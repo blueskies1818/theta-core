@@ -18,7 +18,7 @@ Usage:
         --theorems data/raw/physics_theorems_post1905.jsonl --no-era-filter
 """
 
-import sys, json, argparse, time, re, csv
+import sys, json, argparse, time, re, csv, statistics
 from pathlib import Path
 from collections import Counter
 
@@ -126,6 +126,113 @@ def classify_proof_pattern(proof_steps: list[str]) -> str:
         return "hypothesis"
 
     return "other"
+
+
+def run_inference_multi(
+    n_runs: int,
+    checkpoint: str,
+    graph_path: str,
+    domain: str,
+    theorems_path: str,
+    max_theorems: int | None,
+    mcts_sims: int,
+    era: str,
+    device: str,
+    heuristic_scale: float,
+    verbose: bool,
+    no_era_filter: bool = False,
+) -> list[list[dict]]:
+    """Run inference N times, returning a list of result-lists."""
+    all_runs = []
+    label = f"H={heuristic_scale}"
+    for run_i in range(n_runs):
+        if n_runs > 1:
+            print(f"\n--- {label} run {run_i+1}/{n_runs} ---")
+        results = run_inference(
+            checkpoint=checkpoint,
+            graph_path=graph_path,
+            domain=domain,
+            theorems_path=theorems_path,
+            max_theorems=max_theorems,
+            mcts_sims=mcts_sims,
+            era=era,
+            device=device,
+            heuristic_scale=heuristic_scale,
+            verbose=verbose,
+            no_era_filter=no_era_filter,
+        )
+        all_runs.append(results)
+    return all_runs
+
+
+def print_multi_run_stats(runs: list[list[dict]], label: str):
+    """Print mean ± stdev statistics across multiple inference runs."""
+    n_runs = len(runs)
+    n_theorems = len(runs[0]) if runs else 0
+
+    # Per-run success counts
+    run_successes = [sum(1 for r in run if r["success"]) for run in runs]
+
+    import statistics
+    mean_success = statistics.mean(run_successes)
+    stdev_success = statistics.stdev(run_successes) if n_runs > 1 else 0.0
+
+    print(f"\n{label} ({n_runs} runs): "
+          f"{mean_success:.1f} ± {stdev_success:.1f} / {n_theorems} "
+          f"({mean_success/n_theorems*100:.1f}% ± {stdev_success/n_theorems*100:.1f}pp)")
+
+    # Per-theorem consistency: how many times each theorem was proved
+    if n_runs > 1:
+        theorem_hits = {}
+        for run in runs:
+            for r in run:
+                name = r["name"]
+                theorem_hits.setdefault(name, 0)
+                if r["success"]:
+                    theorem_hits[name] += 1
+
+        always = [n for n, h in theorem_hits.items() if h == n_runs]
+        never = [n for n, h in theorem_hits.items() if h == 0]
+        sometimes = [n for n, h in theorem_hits.items() if 0 < h < n_runs]
+
+        print(f"  Always proved ({len(always)}): {always}")
+        print(f"  Never proved  ({len(never)}): {never}")
+        if sometimes:
+            print(f"  Inconsistent   ({len(sometimes)}): {[(n, theorem_hits[n]) for n in sometimes]}")
+
+
+def run_trivial_baselines(
+    theorems: list[dict],
+    checker: BatchChecker,
+    verbose: bool = False,
+) -> dict[str, dict]:
+    """Test each trivial tactic on every theorem — no MCTS, no GNN.
+
+    Returns dict mapping tactic name → {success_count, total, results}.
+    This gives a lower bound: "what if we just throw simp at everything?"
+    """
+    tactics = ["rfl", "simp", "linarith", "ring", "field_simp", "positivity", "norm_num"]
+
+    baseline_results = {t: {"success": 0, "failed": 0, "results": []} for t in tactics}
+
+    for t in theorems:
+        stmt = t["statement"]
+        name = t.get("name", "?")
+        for tactic in tactics:
+            code = wrap_theorem_with_proof(stmt, tactic)
+            check_results = checker.check_batch([code])
+            ok = check_results[0].success
+            if ok:
+                baseline_results[tactic]["success"] += 1
+                if verbose:
+                    print(f"  ✓ {tactic:12s} → {name}")
+            else:
+                baseline_results[tactic]["failed"] += 1
+            baseline_results[tactic]["results"].append(
+                {"name": name, "success": ok}
+            )
+
+    return baseline_results
 
 
 def run_inference(
@@ -319,7 +426,7 @@ def main():
     parser.add_argument("--theorems", default="data/raw/physics_theorems_post1905.jsonl",
                         help="Theorem file (default: post-1905 held-out)")
     parser.add_argument("--max-theorems", type=int, default=None, help="Max theorems to test")
-    parser.add_argument("--mcts-sims", type=int, default=400, help="MCTS simulations per proof")
+    parser.add_argument("--mcts-sims", type=int, default=800, help="MCTS simulations per proof")
     parser.add_argument("--era", default="pre_relativity", help="Era cutoff for discovery tracking")
     parser.add_argument("--device", default="cpu", help="Device for GNN inference")
     parser.add_argument("--heuristic-scale", type=float, default=1.0,
@@ -330,6 +437,10 @@ def main():
     parser.add_argument("--compare", action="store_true",
                         help="Run both H=0.0 and H=1.0 and compare results")
     parser.add_argument("--csv", default=None, help="Save results to CSV file")
+    parser.add_argument("--baselines", action="store_true",
+                        help="Run trivial baselines (simp/linarith/ring/etc on every theorem)")
+    parser.add_argument("--repeat", type=int, default=1,
+                        help="Repeat inference N times and report mean ± stdev")
     args = parser.parse_args()
 
     print("=" * 70)
@@ -344,9 +455,10 @@ def main():
     if args.compare:
         # ---- Comparison mode: H=0.0 vs H=1.0 ----
         print("-" * 70)
-        print("Running H=0.0 (pure GNN)...")
+        print(f"Running H=0.0 (pure GNN) × {args.repeat}...")
         print("-" * 70)
-        results_gnn = run_inference(
+        gnn_runs = run_inference_multi(
+            n_runs=args.repeat,
             checkpoint=args.checkpoint,
             graph_path=args.graph,
             domain=args.domain,
@@ -359,12 +471,14 @@ def main():
             verbose=args.verbose,
             no_era_filter=args.no_era_filter,
         )
+        results_gnn = gnn_runs[0]  # First run for detailed display
 
         print()
         print("-" * 70)
-        print("Running H=1.0 (full heuristics)...")
+        print(f"Running H=1.0 (full heuristics) × {args.repeat}...")
         print("-" * 70)
-        results_heur = run_inference(
+        heur_runs = run_inference_multi(
+            n_runs=args.repeat,
             checkpoint=args.checkpoint,
             graph_path=args.graph,
             domain=args.domain,
@@ -377,6 +491,55 @@ def main():
             verbose=args.verbose,
             no_era_filter=args.no_era_filter,
         )
+        results_heur = heur_runs[0]  # First run for detailed display
+
+        # ---- Trivial baselines ----
+        if args.baselines:
+            print()
+            print("-" * 70)
+            print("Running trivial baselines (simp/linarith/ring/field_simp/rfl on everything)...")
+            print("-" * 70)
+            # Load theorems for baseline (same theorem set)
+            all_theorems_for_baseline = []
+            tp = Path(args.theorems)
+            if not tp.is_absolute():
+                tp = _project_root / tp
+            with open(tp) as f:
+                all_theorems_for_baseline = [json.loads(line) for line in f]
+            # Apply same era filter as H=0.0 run
+            if args.no_era_filter:
+                baseline_theorems = all_theorems_for_baseline
+            else:
+                era_tracker = create_era_tracker(args.era) if args.era else None
+                cutoff_year = era_tracker.cutoff_year if era_tracker else 1904
+                era_order = ["classical", "classical_crisis", "pre_relativity",
+                             "pre_gr", "old_quantum", "pre_qed", "pre_sm",
+                             "sm_construction", "sm_confirmed", "precision_era", "modern"]
+                cutoff_idx = era_order.index(args.era) if args.era in era_order else 2
+                baseline_theorems = []
+                for t in all_theorems_for_baseline:
+                    t_era = t.get("era", "modern")
+                    t_idx = era_order.index(t_era) if t_era in era_order else len(era_order)
+                    if t_idx > cutoff_idx:
+                        baseline_theorems.append(t)
+            if args.max_theorems:
+                baseline_theorems = baseline_theorems[:args.max_theorems]
+
+            checker2 = BatchChecker(timeout=30, max_workers=4, cache_size=128)
+            try:
+                baseline_results = run_trivial_baselines(baseline_theorems, checker2, verbose=args.verbose)
+                print(f"\n  {'Tactic':<12} {'Success':>8} {'Failed':>8} {'Rate':>8}")
+                print(f"  {'-'*40}")
+                for tactic in ["rfl", "simp", "linarith", "ring", "field_simp", "positivity", "norm_num"]:
+                    br = baseline_results[tactic]
+                    total = br["success"] + br["failed"]
+                    rate = br["success"] / max(1, total) * 100
+                    print(f"  {tactic:<12} {br['success']:>8} {br['failed']:>8} {rate:>7.0f}%")
+            finally:
+                try:
+                    checker2.shutdown()
+                except:
+                    pass
 
         # ---- Comparison summary ----
         gnn_passed = [r for r in results_gnn if r["success"]]
@@ -430,6 +593,14 @@ def main():
                 if r["name"] in heur_only:
                     print(f"  ✓ {r['name']} [{r['era']}] [{r['pattern']}] → {r['mcts_steps']}")
 
+        # Multi-run statistics (if --repeat > 1)
+        if args.repeat > 1:
+            print(f"\n{'='*70}")
+            print(f"MULTI-RUN STATISTICS ({args.repeat} runs)")
+            print(f"{'='*70}")
+            print_multi_run_stats(gnn_runs, "H=0.0 (pure GNN)")
+            print_multi_run_stats(heur_runs, "H=1.0 (heuristics)")
+
         # Save CSV
         if args.csv:
             csv_path = _project_root / args.csv
@@ -448,7 +619,8 @@ def main():
 
     else:
         # ---- Single-scale mode ----
-        results = run_inference(
+        all_runs = run_inference_multi(
+            n_runs=args.repeat,
             checkpoint=args.checkpoint,
             graph_path=args.graph,
             domain=args.domain,
@@ -461,6 +633,7 @@ def main():
             verbose=args.verbose,
             no_era_filter=args.no_era_filter,
         )
+        results = all_runs[0]  # First run for detailed display
 
         if not results:
             return 1
@@ -517,6 +690,13 @@ def main():
                 print(f"  ✗ [{r['zone']:25s}] [{r['era']:20s}] {r['name']}")
                 print(f"    Steps: {r['mcts_steps'][:3]}")
                 print(f"    Error: {r['error']}")
+
+        # Multi-run statistics (if --repeat > 1)
+        if args.repeat > 1:
+            print(f"\n{'='*70}")
+            print(f"MULTI-RUN STATISTICS ({args.repeat} runs)")
+            print(f"{'='*70}")
+            print_multi_run_stats(all_runs, f"H={args.heuristic_scale}")
 
         # Save CSV
         if args.csv:
