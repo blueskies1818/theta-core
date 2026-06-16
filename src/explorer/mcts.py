@@ -138,7 +138,7 @@ class MCTSConfig:
 
     # Dirichlet noise concentration for root (exploration)
     dirichlet_alpha: float = 0.3
-    dirichlet_weight: float = 0.25
+    dirichlet_weight: float = 0.45  # ε=0.45 provides enough noise to create gradient diversity at 500+ sims
 
     # Number of top lemmas to consider from GNN
     top_k_lemmas: int = 30

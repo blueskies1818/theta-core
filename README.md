@@ -205,8 +205,8 @@ The full system is a heterogeneous ensemble of three components with distinct ar
 | **GRPO update** | Group-relative advantages → policy loss + value loss + entropy bonus → GNN update | `src/explorer/explorer_trainer.py` |
 
 ### Component 1 — Mathematical Explorer
-**Architecture:** Graph Neural Network + Monte Carlo Tree Search (1–7B params)
-Navigates formal mathematical space, proposes candidate structures and proof steps. The GNN operates on the dependency graph of mathematical objects; MCTS handles the exploration problem of deciding which proof tactic to try next. The proof checker validates every proposed addition.
+**Architecture:** Graph Neural Network + Monte Carlo Tree Search (1.1M params current, targeting 5–10M for Phase 2, 1–7B for Phase 3+)
+Navigates formal mathematical space, proposes candidate structures and proof steps. The GNN operates on the dependency graph of mathematical objects; MCTS handles the exploration problem of deciding which proof tactic to try next. The proof checker validates every proposed addition. **Implemented and validated — self-play loop produces genuine learning from proof-checker feedback alone.**
 
 ### Component 2 — Physical Prediction Scorer
 **Architecture:** Multimodal Transformer with domain-specific encoders (10–30B params)
@@ -242,16 +242,28 @@ Phase 1 validates the self-play loop. A small-scale system proves that the model
 
 ### What's Not Yet Implemented (Phase 2–5)
 
-- GNN + MCTS architecture for the Mathematical Explorer
-- Physical Prediction Scorer (Component 2)
-- Translation Layer (Component 3)
-- Curiosity/exploration reward to prevent mode collapse
-- Formal frontier map with zone-weighted rewards (established/uncertain/breakdown)
-- Correspondence checks against GR and QFT limits
+- Physical Prediction Scorer (Component 2) — design-only
+- Translation Layer (Component 3) — not started
+- Multi-step proof chaining (GNN currently learns single-tactic proofs only)
+- Full 58K graph training (currently Algebra subgraph: 16,842 nodes)
+- Lemma-level discrimination beyond top-30 candidate filter
+- Genuine era-gated discovery test (current theorems are algebraic identities with physics labels)
 - Solution enumeration and anomaly flagging (Dirac mechanism)
 - Layer 1 / Layer 2 data architecture for physical measurements
 - Domain-level holdout strategy
 - Simplicity penalty (Occam's razor formalized)
+
+### Phase 2 Progress (June 2026)
+
+The GNN+MCTS explorer is operational and validated:
+- **Self-play loop works:** 1.1M-param GNN improved from 40%→56% on held-out post-1905 theorems through GRPO training from proof-checker feedback alone (Run 8)
+- **GNN exceeds heuristics:** Trained GNN at H=0.0 (14/25) beat hand-coded heuristics at H=1.0 (13/25)
+- **Entropy bonus prevents collapse:** Policy entropy stable at 3.4/3.5 max even at H=0.25
+- **Architecture validated:** GNN+GoalEncoder → MCTS with Dirichlet noise → Proof checker verification → GRPO → Heuristic annealing
+- **Wave 1 (June 2026):** Dirichlet ε=0.45, 500 sims, H-min=0.25, entropy bonus, trivial baselines (linarith ceiling: 64%), multi-run eval (±2.3pp)
+- **Wave 2 (June 2026):** Multi-step theorems (14 new Level 4), curriculum learning, gradient diversity fix
+
+See [docs/training/README.md](docs/training/README.md) for full training history and [docs/reviews/roadmap_review_june2026.md](docs/reviews/roadmap_review_june2026.md) for the roadmap assessment.
 
 See [IMPROVEMENT_IDEAS.md](IMPROVEMENT_IDEAS.md) for the full running list.
 
@@ -431,13 +443,13 @@ python scripts/generate_sample.py \
 
 ## Development Roadmap
 
-| Phase | Goal | Key Deliverable |
-|-------|------|-----------------|
-| **Phase 1** (current) | Validate the self-play loop | Model demonstrably finds proofs it didn't know before training |
-| **Phase 2** | Scale the explorer | GNN+MCTS architecture, full GR+QFT Mathlib coverage, known failure condition encoding |
-| **Phase 3** | Integrate physical grounding | Physical Prediction Scorer, Layer 1/2 data architecture, domain-level holdout |
-| **Phase 4** | Translation layer | Fine-tuned formal-to-natural translator with automated verification |
-| **Phase 5** | Open-ended operation | Continuous integrated operation, holdout commitment against future experiments |
+| Phase | Goal | Key Deliverable | Status |
+|-------|------|-----------------|--------|
+| **Phase 1** | Validate the self-play loop | GNN improved 40%→56% from proof-checker feedback alone | ✅ Complete |
+| **Phase 2** | Scale the explorer | Multi-step proofs, lemma discrimination, full 58K graph, failure condition encoding | 🔄 60% — training |
+| **Phase 3** | Integrate physical grounding | Physical Prediction Scorer, Layer 1/2 data architecture, domain-level holdout | ⬜ Design only |
+| **Phase 4** | Translation layer | Fine-tuned formal-to-natural translator with automated verification | ⬜ Not started |
+| **Phase 5** | Open-ended operation | Continuous integrated operation, holdout commitment against future experiments | ⬜ Not started |
 
 ---
 

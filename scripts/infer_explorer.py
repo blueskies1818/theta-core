@@ -426,7 +426,7 @@ def main():
     parser.add_argument("--theorems", default="data/raw/physics_theorems_post1905.jsonl",
                         help="Theorem file (default: post-1905 held-out)")
     parser.add_argument("--max-theorems", type=int, default=None, help="Max theorems to test")
-    parser.add_argument("--mcts-sims", type=int, default=800, help="MCTS simulations per proof")
+    parser.add_argument("--mcts-sims", type=int, default=500, help="MCTS simulations per proof")
     parser.add_argument("--era", default="pre_relativity", help="Era cutoff for discovery tracking")
     parser.add_argument("--device", default="cpu", help="Device for GNN inference")
     parser.add_argument("--heuristic-scale", type=float, default=1.0,

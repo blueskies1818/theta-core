@@ -292,8 +292,8 @@ Examples:
                         help="Theorems per training step")
     parser.add_argument("--group-size", type=int, default=2,
                         help="Proofs per theorem for GRPO advantages")
-    parser.add_argument("--mcts-sims", type=int, default=1000,
-                        help="MCTS simulations per proof search")
+    parser.add_argument("--mcts-sims", type=int, default=500,
+                        help="MCTS simulations per proof search (500 balances search depth vs gradient diversity)")
     parser.add_argument("--lr", type=float, default=1e-3,
                         help="Learning rate")
     parser.add_argument("--policy-weight", type=float, default=1.0,
@@ -345,6 +345,9 @@ Examples:
                         help="Evaluate every N steps")
     parser.add_argument("--no-eval", action="store_true",
                         help="Skip evaluation")
+    parser.add_argument("--curriculum", action="store_true",
+                        help="Sort theorems by complexity: single-tactic first, then multi-step. "
+                             "Disables shuffle for ordered curriculum learning.")
 
     args = parser.parse_args()
 
@@ -382,8 +385,25 @@ Examples:
         jsonl_path,
         max_theorems=args.max_theorems,
         domain_filter=domain_for_filter,
-        shuffle=True,
+        shuffle=not args.curriculum,  # No shuffle for curriculum — ordered presentation
     )
+
+    # Curriculum: sort by proof complexity (single-tactic → multi-step)
+    if args.curriculum and train_theorems:
+        def _proof_complexity(t: dict) -> int:
+            proof = t.get("proof", "")
+            # Score: count tactic separators (semicolons, newlines) + 1
+            n_tactics = proof.count(";") + proof.count("\n") + 1
+            # Also weigh by proof length for similar tactic counts
+            return n_tactics * 1000 + len(proof)
+
+        train_theorems.sort(key=_proof_complexity)
+        print(f"Curriculum mode: theorems sorted by complexity "
+              f"(1-tactic → multi-step)")
+        print(f"  First: {train_theorems[0].get('name', '?')} "
+              f"({train_theorems[0].get('proof', '').strip()[:50]}...)")
+        print(f"  Last:  {train_theorems[-1].get('name', '?')} "
+              f"({train_theorems[-1].get('proof', '').strip()[:50]}...)")
 
     if len(train_theorems) < args.batch_size:
         print(f"Error: only {len(train_theorems)} theorems available, "

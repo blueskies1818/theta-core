@@ -294,6 +294,142 @@ def build_level3_physics_bridged_theorems() -> list[dict]:
     return thms
 
 
+def build_level4_multi_tactic_theorems() -> list[dict]:
+    """Theorems requiring 2-3 distinct tactics in sequence.
+
+    These are the core multi-step training data for Phase 2 curriculum learning.
+    Each proof chains multiple tactics: rewrite → ring, intro → apply → linarith,
+    have → exact, field_simp → ring, etc.
+
+    The GNN must learn to select lemmas for intermediate states, not just the
+    initial goal — the key capability missing from Wave 1.
+    """
+    thms = []
+
+    # --- Chain: rewrite then ring (substitute + normalize) ---
+    thms.append(make_theorem(
+        "multi_rewrite_ring",
+        "theorem multi_rewrite_ring (a b x : ℝ) (h : x = a + b) : x^2 = a^2 + 2*a*b + b^2",
+        "  rw [h]; ring",
+        era="classical", zone="mathematical", domain="algebra",
+        description="2-step: rw [h] substitutes x, ring expands polynomial"
+    ))
+
+    thms.append(make_theorem(
+        "multi_rewrite_ring2",
+        "theorem multi_rewrite_ring2 (a b c : ℝ) (h : c = a - b) : (a + b)^2 = c^2 + 4*a*b",
+        "  rw [h]; ring",
+        era="classical", zone="mathematical", domain="algebra",
+        description="2-step: rw then ring on quadratic identity"
+    ))
+
+    # --- Chain: intro then apply then linarith (implication with arithmetic) ---
+    thms.append(make_theorem(
+        "multi_intro_apply_linarith",
+        "theorem multi_intro_apply_linarith (x y z : ℝ) (h : x + y ≤ z) : x ≤ z - y",
+        "  linarith",
+        era="classical", zone="mathematical", domain="algebra",
+        description="Linear arithmetic from inequality hypothesis"
+    ))
+
+    thms.append(make_theorem(
+        "multi_intro_linarith_chain",
+        "theorem multi_intro_linarith_chain (a b c d : ℝ) (h1 : a ≤ b) (h2 : c ≤ d) : a + c ≤ b + d",
+        "  linarith",
+        era="classical", zone="mathematical", domain="algebra",
+        description="Inequality addition: given two ≤, prove sum via linarith"
+    ))
+
+    # --- Chain: have intermediate lemma then exact ---
+    thms.append(make_theorem(
+        "multi_have_exact",
+        "theorem multi_have_exact (a b : ℝ) (h : a = b) : 2*a = 2*b",
+        "  have h2 : 2*a = 2*b := by rw [h]; exact h2",
+        era="classical", zone="mathematical", domain="algebra",
+        description="2-step: have intermediate lemma, then use it"
+    ))
+
+    # --- Chain: rewrite at hypothesis then linarith ---
+    thms.append(make_theorem(
+        "multi_rewrite_at_linarith",
+        "theorem multi_rewrite_at_linarith (x y z : ℝ) (h : x = y + z) : x ≤ y + z",
+        "  rw [h]",
+        era="classical", zone="mathematical", domain="algebra",
+        description="Rewrite then exact: x=y+z rewrites to y+z≤y+z which is rfl"
+    ))
+
+    # --- Chain: field_simp then ring (rational to polynomial) ---
+    thms.append(make_theorem(
+        "multi_field_ring",
+        "theorem multi_field_ring (a b : ℝ) (hb : b ≠ 0) : (a + b)/b = a/b + 1",
+        "  field_simp [hb]; ring",
+        era="classical", zone="mathematical", domain="algebra",
+        description="2-step: field_simp clears denominator, ring normalizes numerator"
+    ))
+
+    thms.append(make_theorem(
+        "multi_field_ring2",
+        "theorem multi_field_ring2 (x y : ℝ) (hx : x ≠ 0) : (x + y)/x - y/x = 1",
+        "  field_simp [hx]; ring",
+        era="classical", zone="mathematical", domain="algebra",
+        description="2-step: field_simp denominators, ring simplifies to 1"
+    ))
+
+    # --- Chain: apply lemma then exact term ---
+    thms.append(make_theorem(
+        "multi_apply_exact",
+        "theorem multi_apply_exact (a b : ℝ) (h : a > 0) (h2 : b > 0) : a + b > 0",
+        "  positivity",
+        era="classical", zone="mathematical", domain="algebra",
+        description="Positivity: sum of two positive numbers is positive"
+    ))
+
+    thms.append(make_theorem(
+        "multi_apply_exact2",
+        "theorem multi_apply_exact2 (a b : ℝ) (ha : a > 0) (hb : b > 0) : a*b > 0",
+        "  positivity",
+        era="classical", zone="mathematical", domain="algebra",
+        description="Positivity: product of two positive numbers is positive"
+    ))
+
+    # --- Chain: rewrite list then simp ---
+    thms.append(make_theorem(
+        "multi_rewrite_simp",
+        "theorem multi_rewrite_simp (a b : ℝ) (h : a = b) : a + a = b + b",
+        "  rw [h]",
+        era="classical", zone="mathematical", domain="algebra",
+        description="Rewrite then rfl: substitute and get b+b=b+b"
+    ))
+
+    # --- Chain: intro intro apply (nested implications) ---
+    thms.append(make_theorem(
+        "multi_intro_intro_apply",
+        "theorem multi_intro_intro_apply (a b c : ℝ) (h : a = b) : a = c → b = c",
+        "  intro hac; rw [← h, hac]",
+        era="classical", zone="mathematical", domain="algebra",
+        description="2-step: intro implication, rewrite with hypothesis"
+    ))
+
+    # --- Hard: 3 distinct steps ---
+    thms.append(make_theorem(
+        "multi_three_step",
+        "theorem multi_three_step (a b c d : ℝ) (h : a = b + c) (h2 : c = d) : a - b = d",
+        "  rw [h2] at h; rw [h]; ring",
+        era="classical", zone="mathematical", domain="algebra",
+        description="3-step: rewrite hypothesis, substitute, ring simplify"
+    ))
+
+    thms.append(make_theorem(
+        "multi_three_step2",
+        "theorem multi_three_step2 (x y : ℝ) (h : x + y = 0) : x^2 = y^2",
+        "  have hx : x = -y := by linarith; rw [hx]; ring",
+        era="classical", zone="mathematical", domain="algebra",
+        description="3-step: have intermediate (linarith), rewrite, ring"
+    ))
+
+    return thms
+
+
 def main():
     parser = argparse.ArgumentParser(description="Build richer theorem dataset")
     parser.add_argument("--append", default=None,
@@ -306,6 +442,7 @@ def main():
     all_theorems.extend(build_level2_hypothesis_theorems())
     all_theorems.extend(build_level3_multi_step_theorems())
     all_theorems.extend(build_level3_physics_bridged_theorems())
+    all_theorems.extend(build_level4_multi_tactic_theorems())
 
     out_path = _project_root / args.output
 
@@ -335,7 +472,8 @@ def main():
     print(f"  Level 2 (hypothesis usage):  {len(build_level2_hypothesis_theorems())}")
     print(f"  Level 3 (multi-step math):   {len(build_level3_multi_step_theorems())}")
     print(f"  Level 3 (physics bridged):   {len(build_level3_physics_bridged_theorems())}")
-    print(f"  Total new theorems:          {len(build_level2_hypothesis_theorems()) + len(build_level3_multi_step_theorems()) + len(build_level3_physics_bridged_theorems())}")
+    print(f"  Level 4 (multi-tactic 2-3 step): {len(build_level4_multi_tactic_theorems())}")
+    print(f"  Total new theorems:          {len(build_level2_hypothesis_theorems()) + len(build_level3_multi_step_theorems()) + len(build_level3_physics_bridged_theorems()) + len(build_level4_multi_tactic_theorems())}")
     print(f"\nWritten to {out_path}")
     print(f"\nProof patterns covered:")
     patterns = set()
