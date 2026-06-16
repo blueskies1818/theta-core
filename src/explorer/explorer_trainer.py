@@ -155,6 +155,11 @@ class ExplorerTrainer:
         print(f"GNN layers: {self.gnn.config.num_layers}, "
               f"hidden: {self.gnn.config.hidden_dim}")
         print(f"Learning rate: {self.config.learning_rate}")
+        # Correspondence status — verifiable ON/OFF for Gate 1 honest-training runs
+        if self.correspondence_modifier is not None:
+            print(f"Correspondence: ENABLED (zone multipliers + failure bonuses)")
+        else:
+            print(f"Correspondence: DISABLED (binary proof-checker reward only)")
 
         all_metrics = []
 
