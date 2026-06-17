@@ -296,18 +296,84 @@ def _infer_node_type(statement: str) -> NodeType:
 
 
 def _infer_domain(source_file: str) -> str:
-    """Infer the mathematical domain from the source file path."""
+    """Infer the mathematical domain from the source file path.
+
+    Returns a 2-level domain for important subdirectories
+    (e.g., 'Algebra/Polynomial', 'RingTheory/Polynomial') and
+    a 1-level domain otherwise (e.g., 'Analysis', 'Topology').
+
+    Key subdirectories that get 2-level resolution:
+    - Algebra/Polynomial, Algebra/MvPolynomial, Algebra/SkewPolynomial
+    - RingTheory/Polynomial, RingTheory/Ideal, RingTheory/UniqueFactorizationDomain
+    - FieldTheory/...
+    - Data/Polynomial (if it existed), Data/Real, Data/Complex, etc.
+    """
+    rel = None
     if "Mathlib/" in source_file:
         rel = source_file.split("Mathlib/", 1)[1]
-        parts = rel.split("/")
-        if parts:
-            return parts[0]  # e.g., "Analysis", "Algebra"
-    if "../mathlib4/Mathlib/" in source_file:
+    elif "../mathlib4/Mathlib/" in source_file:
         rel = source_file.split("../mathlib4/Mathlib/", 1)[1]
-        parts = rel.split("/")
-        if parts:
-            return parts[0]
-    return "Unknown"
+
+    if not rel:
+        return "Unknown"
+
+    parts = rel.split("/")
+    if not parts:
+        return "Unknown"
+
+    top_domain = parts[0]
+    # Check for subdomain (strip .lean from the second part for file paths)
+    sub_candidate = parts[1] if len(parts) >= 2 else None
+    if sub_candidate and sub_candidate.endswith(".lean"):
+        sub_candidate = sub_candidate[:-5]  # strip .lean extension
+
+    # Domains where 2-level resolution is important for GNN discrimination
+    # Polynomial-related theorems span Algebra, RingTheory, and Data
+    _TWO_LEVEL_DOMAINS = {
+        "Algebra": {
+            "Polynomial", "MvPolynomial", "SkewPolynomial",
+            "Module", "Lie", "Ring", "Group", "Order",
+            "Homology", "QuadraticAlgebra", "Quaternion",
+        },
+        "RingTheory": {
+            "Polynomial", "Ideal", "UniqueFactorizationDomain",
+            "DedekindDomain", "Valuation", "WittVector",
+        },
+        "FieldTheory": {
+            "Polynomial", "Galois", "SplittingField",
+            "AlgebraicClosure", "Separable",
+        },
+        "Data": {
+            "Polynomial", "Real", "Complex", "Int", "Nat",
+            "Rat", "Fin", "Finset", "Fintype", "Matrix",
+            "Set", "List", "Multiset",  "NNReal", "ENNReal",
+            "Sigma", "Prod", "Bool", "Option", "Array",
+        },
+        "Geometry": {
+            "Manifold", "Euclidean",
+        },
+        "Analysis": {
+            "Calculus", "InnerProductSpace", "Fourier",
+            "Complex", "Convex", "Normed", "ODE",
+        },
+        "Topology": {
+            "Algebra", "MetricSpace", "Instances",
+            "UniformSpace", "Compactification",
+        },
+        "NumberTheory": {
+            "Polynomial", "Cyclotomic", "Zeta",
+        },
+        "LinearAlgebra": {
+            "Matrix", "Basis", "BilinearForm",
+            "QuadraticForm", "AffineSpace",
+        },
+    }
+
+    sub_map = _TWO_LEVEL_DOMAINS.get(top_domain)
+    if sub_map and sub_candidate and sub_candidate in sub_map:
+        return f"{top_domain}/{sub_candidate}"
+
+    return top_domain
 
 
 # ---------------------------------------------------------------------------

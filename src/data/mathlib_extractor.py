@@ -35,16 +35,34 @@ _DECL_START = re.compile(r'^\s*(theorem|lemma|example)\s+')
 _ASSIGN = re.compile(r':=\s*(by)?\s*(.*)')
 
 
-# Mathlib4 domains relevant to differential geometry / GR for Phase 1
+# Mathlib4 domains — ALL relevant mathematical domains (excluding meta/testing)
+# Phase 2+ expansion: include all substantive math domains for full graph coverage
 DEFAULT_DOMAINS = [
-    "Analysis",
-    "Geometry/Manifold",
-    "Topology",
-    "LinearAlgebra",
-    "GroupTheory",
     "Algebra",
-    "Data/Real",
-    "Data/Complex",
+    "AlgebraicGeometry",
+    "AlgebraicTopology",
+    "Analysis",
+    "CategoryTheory",
+    "Combinatorics",
+    "Computability",
+    "Condensed",
+    "Data",
+    "Dynamics",
+    "FieldTheory",
+    "Geometry",
+    "GroupTheory",
+    "InformationTheory",
+    "LinearAlgebra",
+    "Logic",
+    "MeasureTheory",
+    "ModelTheory",
+    "NumberTheory",
+    "Order",
+    "Probability",
+    "RepresentationTheory",
+    "RingTheory",
+    "SetTheory",
+    "Topology",
 ]
 
 
