@@ -95,8 +95,8 @@ def train_with_traversal(
         use_correspondence=False,  # H3 uses raw traversal reward, not correspondence
         log_every=5,
         save_every=25,
-        heuristic_anneal_epochs=2000,
-        heuristic_scale_min=0.0,  # Full GNN takeover
+        heuristic_anneal_epochs=0,  # No annealing: train at H=1.0, eval at H=0.0 (like H1)
+        heuristic_scale_min=1.0,  # Full heuristics during training (GNN learns via rewards)
         resume_epoch=0,
     )
 
