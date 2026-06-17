@@ -21,3 +21,11 @@ curiosity_enabled: true
 curiosity_weight: 0.05               # Max bonus for completely novel proofs
 curiosity_signature_length: 200      # First N chars used for proof signature
 curiosity_max_tracked: 100000        # Max number of signatures to track
+
+# H3 Graph-traversal bonus: rewards proofs using lemmas far from training
+# distribution in the dependency graph. "Far" = 3+ hops from any training lemma.
+# This encourages the GNN to explore deeper graph regions during training,
+# which should improve lemma-novelty generalization on Gate 3 tests.
+traversal_bonus_enabled: true
+traversal_bonus_weight: 0.5          # Max bonus for fully novel lemma usage
+traversal_hop_threshold: 3           # Minimum graph distance to count as "far"

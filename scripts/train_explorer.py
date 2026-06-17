@@ -52,7 +52,7 @@ from src.correspondence.era_tracker import (
     ERA_CUTOFFS,
     create_era_tracker,
 )
-from src.reward.config import RewardConfig
+from src.reward.config import RewardConfig, load_reward_config
 from src.utils.xpu_utils import get_device, print_device_info
 
 
@@ -349,6 +349,15 @@ Examples:
                         help="Sort theorems by complexity: single-tactic first, then multi-step. "
                              "Disables shuffle for ordered curriculum learning.")
 
+    # -- Traversal bonus (H3 study) ---------------------------------
+    parser.add_argument("--traversal", action="store_true",
+                        help="Enable graph-traversal reward bonus (H3 study). "
+                             "Rewards proofs that use lemmas 3+ hops from training distribution.")
+    parser.add_argument("--traversal-weight", type=float, default=0.5,
+                        help="Traversal bonus weight (default: 0.5)")
+    parser.add_argument("--traversal-hop-threshold", type=int, default=3,
+                        help="Minimum graph hops to count as 'far' (default: 3)")
+
     args = parser.parse_args()
 
     # ---- Setup ----
@@ -493,7 +502,11 @@ Examples:
         verify_timeout=5.0,
     )
 
-    reward_config = RewardConfig()
+    reward_config = load_reward_config() if args.traversal else RewardConfig()
+    if args.traversal:
+        reward_config.traversal_bonus_enabled = True
+        reward_config.traversal_bonus_weight = args.traversal_weight
+        reward_config.traversal_hop_threshold = args.traversal_hop_threshold
 
     # ---- Trainer ----
     trainer = ExplorerTrainer(
@@ -528,6 +541,11 @@ Examples:
                   f"{len(era_tracker.discoverable_concepts)} discoverable concepts")
     else:
         print(f"  Correspondence: DISABLED")
+    if args.traversal:
+        print(f"  Traversal:      ENABLED (weight={args.traversal_weight}, "
+              f"hop_threshold={args.traversal_hop_threshold})")
+    else:
+        print(f"  Traversal:      DISABLED")
     print(f"  Device:       {device}")
     print(f"  Output:       {args.output}")
     print("=" * 60)

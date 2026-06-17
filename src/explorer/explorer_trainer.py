@@ -37,6 +37,7 @@ from src.reward.base import (
     compute_group_advantages,
     record_proof_signature,
     get_curiosity_stats,
+    build_training_lemma_set,
 )
 from src.reward.config import RewardConfig
 from src.correspondence.reward_integration import (
@@ -108,6 +109,9 @@ class ExplorerTrainer:
         # MCTS instance
         self._mcts: MCTS | None = None
 
+        # H3 Traversal reward: precomputed training lemma set
+        self._training_lemma_set: set[str] | None = None
+
         self.global_step = 0
 
     # ------------------------------------------------------------------
@@ -162,6 +166,18 @@ class ExplorerTrainer:
             print(f"Correspondence: DISABLED (binary proof-checker reward only)")
 
         all_metrics = []
+
+        # ---- H3: Build training lemma set for traversal reward ----
+        if self.reward_config.traversal_bonus_enabled:
+            self._training_lemma_set = build_training_lemma_set(
+                train_theorems, self.graph
+            )
+            print(f"Traversal reward: ENABLED (bonus={self.reward_config.traversal_bonus_weight}, "
+                  f"threshold={self.reward_config.traversal_hop_threshold} hops)")
+            print(f"  Training lemma set: {len(self._training_lemma_set)} unique lemmas from proofs")
+            # Show some training lemmas
+            sample = sorted(self._training_lemma_set)[:10]
+            print(f"  Sample: {sample}")
 
         for epoch in range(num_epochs):
             epoch_start = time.time()
@@ -228,7 +244,10 @@ class ExplorerTrainer:
                           f"{' | ' + err if err else ''}")
 
             # ---- Phase D: Rewards ----
-            rewards = compute_rewards_batch(results, self.reward_config, proof_texts=all_codes)
+            rewards = compute_rewards_batch(
+                results, self.reward_config, proof_texts=all_codes,
+                graph=self.graph, training_lemma_set=self._training_lemma_set,
+            )
             for code in all_codes:
                 record_proof_signature(code, self.reward_config)
 

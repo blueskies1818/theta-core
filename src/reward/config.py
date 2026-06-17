@@ -49,6 +49,15 @@ class RewardConfig:
     curiosity_signature_length: int = 200
     curiosity_max_tracked: int = 100_000
 
+    # ── H3 Traversal bonus ─────────────────────────────────────────────
+    # Rewards proofs that use lemmas far from the training distribution in
+    # the dependency graph. "Far" = 3+ hops from any training lemma.
+    # This encourages the GNN to explore deeper parts of the graph during
+    # training, which should improve lemma-novelty generalization.
+    traversal_bonus_enabled: bool = False
+    traversal_bonus_weight: float = 0.5
+    traversal_hop_threshold: int = 3
+
 
 def load_reward_config(path: Path | None = None) -> RewardConfig:
     """Load reward configuration from YAML file.
