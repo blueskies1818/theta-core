@@ -1,0 +1,77 @@
+{
+  "task": "pivot_capstone",
+  "title": "Gates 1-5 Capstone with New Architecture",
+  "timestamp": "2026-06-17T16:36:48",
+  "architecture": "contrastive_char_cnn + best_first_search + dense_rewards",
+  "overall_verdict": "FAIL",
+  "gates_passed": 1,
+  "gates_total": 5,
+  "gates": {
+    "gate1": {
+      "name": "Infrastructure Validation",
+      "verdict": "PASS",
+      "tests_passed": 80,
+      "tests_total": 83,
+      "evidence": "All core components operational; 3 Lean failures are environmental"
+    },
+    "gate2": {
+      "name": "Structural Independence",
+      "verdict": "FAIL",
+      "old_verdict": "PASS",
+      "old_shape_matcher_rate": 0.0455,
+      "new_proof_rate": 0.233,
+      "evidence": "New arch proof rate 23.3% (14/60) vs old 56%; structural test not re-run"
+    },
+    "gate3": {
+      "name": "Lemma Novelty",
+      "verdict": "FAIL",
+      "old_verdict": "FAIL (28.6%)",
+      "on_gate3_lemma_novelty": {
+        "proved": 0,
+        "total": 14,
+        "rate": 0.0
+      },
+      "on_gate3_v2": {
+        "proved": 0,
+        "total": 64,
+        "rate": 0.0
+      },
+      "mrr_new": 0.334,
+      "mrr_old": 0.786,
+      "mrr_gate3_v2": 0.079,
+      "evidence": "Contrastive CharCNN cannot retrieve correct lemmas from 70K candidates"
+    },
+    "gate4": {
+      "name": "Negative Control (Era-Gated Discovery)",
+      "verdict": "FAIL",
+      "old_verdict": "FAIL",
+      "new_evaluated": false,
+      "evidence": "Old arch: no era-specific interaction (p=0.93). New arch: not evaluated \u2014 retrieval is prerequisite"
+    },
+    "gate5": {
+      "name": "Multi-Step Proof Capstone",
+      "verdict": "FAIL",
+      "multi_step_structural": 2,
+      "multi_step_lemma_novelty": 0,
+      "evidence": "2 structural multi-step proofs (rw[h];ring) but 0 lemma-novelty; dense rewards cannot contribute with 0/64 proved"
+    }
+  },
+  "what_works": [
+    "Best-first search (2 multi-step proofs MCTS never found)",
+    "Proof-step pair extraction (226K pairs, 27 domains)",
+    "Dense reward mechanism (step validity, goal proximity, completion bonus)",
+    "gate3_v2 benchmark (64 multi-step theorems, 0 simp-solvable)",
+    "Infrastructure (tests pass, graph builds, proof checker works)"
+  ],
+  "what_does_not_work": [
+    "CharCNN contrastive encoder (MRR 0.08-0.33 vs 0.79 baseline)",
+    "InfoNCE in-batch training (255 negatives insufficient for 70K lemmas)",
+    "Lemma scoring as primary action selector (all 14 gate3 theorems chose wrong tactics)",
+    "Dense rewards without retrieval (cannot contribute with 0/64 proved)"
+  ],
+  "recommendation": "NO v1.0 release. Fix retrieval first (stronger embeddings, larger negative sets, or hybrid GNN+best-first). Then re-run gates.",
+  "data_files": [
+    "docs/reports/pivot_capstone.md",
+    "data/capstone_results.json"
+  ]
+}
