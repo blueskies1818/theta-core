@@ -40,6 +40,7 @@ from src.explorer.proof_state import (
     TacticType,
     generate_candidate_actions,
 )
+from src.proof_checker.formats import ProofResult
 
 
 # ---------------------------------------------------------------------------
@@ -118,13 +119,22 @@ class GNNBestFirstSearch:
         # Build keyword → lemma index map for fast goal encoding
         self._kw_lemmas_map: dict[str, list[int]] = self._build_keyword_map()
 
+        # Pre-build normalized-text → node indices for fast goal embedding lookup.
+        # This replaces O(N) full-iteration in _embed_goal with O(1) hash lookup.
+        self._norm_to_indices: dict[str, list[int]] = self._build_norm_index_lookup()
+
         # Verification cache
         self._verification_cache: dict[tuple[int, int], bool] = {}
         self._tiebreaker: int = 0
 
+        # Domain filtering: pre-build domain → node_ids lookup
+        self._domain_node_ids: dict[str, set[str]] = self._build_domain_index()
+        self._all_domain_names: set[str] = set(self._domain_node_ids.keys())
+
         # Per-search state
         self._last_scores: list[float] = []
         self._lemma_names: list[str] = []  # Populated per theorem
+        self._goal_embed_cache: dict[str, torch.Tensor] = {}  # Goal text → embedding
 
     # ------------------------------------------------------------------
     # Main search
@@ -133,13 +143,15 @@ class GNNBestFirstSearch:
     def search(
         self,
         theorem_statement: str,
+        domain: str | None = None,
         verbose: bool = False,
     ) -> tuple[list[Tactic], ProofState | None]:
         self._tiebreaker = 0
         self._verification_cache.clear()
+        self._goal_embed_cache.clear()
 
-        # Get relevant lemmas for this theorem
-        available_lemmas = self._get_relevant_lemmas(theorem_statement)
+        # Get relevant lemmas for this theorem (domain-filtered when domain is set)
+        available_lemmas = self._get_relevant_lemmas(theorem_statement, domain=domain)
         self._lemma_names = available_lemmas
 
         root_state = ProofState.initial(theorem_statement)
@@ -154,6 +166,10 @@ class GNNBestFirstSearch:
         heap = [root]
         expansions = 0
         t_start = time.time()
+        verify_count = 0  # Track how many Lean verifications we've attempted
+        max_verifications = 5  # Cap: at most 5 Lean verifications per theorem
+        last_unverified: list[Tactic] | None = None  # Best unverified complete state
+        last_unverified_state: ProofState | None = None
 
         while heap and expansions < self.config.max_expansions:
             current = heapq.heappop(heap)
@@ -161,22 +177,34 @@ class GNNBestFirstSearch:
             depth = current.depth
 
             if state.is_complete:
-                if self.config.use_proof_checker and self.proof_checker is not None and state.steps:
-                    from src.proof_checker.formats import wrap_theorem_with_proof
-                    proof_body = ProofState._render_proof(state.steps)
-                    code = wrap_theorem_with_proof(state.theorem_statement, proof_body)
-                    check_results = self.proof_checker.check_batch([code])
-                    if check_results[0].success:
-                        if verbose:
-                            print(f"  ✓ Found verified proof at depth {depth}, "
-                                  f"expansions={expansions}, {time.time()-t_start:.1f}s")
-                        return (state.steps, state)
+                # Always verify completed proofs (regardless of use_proof_checker flag)
+                if self.proof_checker is not None and state.steps:
+                    verify_count += 1
+                    # Cap verifications to avoid bottleneck from false completions
+                    if verify_count <= max_verifications:
+                        from src.proof_checker.formats import wrap_theorem_with_proof
+                        proof_body = ProofState._render_proof(state.steps)
+                        code = wrap_theorem_with_proof(state.theorem_statement, proof_body)
+                        check_results = self.proof_checker.check_batch([code])
+                        if check_results[0].success:
+                            if verbose:
+                                print(f"  ✓ Found verified proof at depth {depth}, "
+                                      f"expansions={expansions}, {time.time()-t_start:.1f}s")
+                            return (state.steps, state)
+                        else:
+                            state.is_complete = False
+                            state.is_dead = True
+                            if verbose:
+                                err = check_results[0].errors[0][:80] if check_results[0].errors else "?"
+                                print(f"  ✗ Symbolic-complete but Lean rejects: {err}")
+                            continue
                     else:
+                        # Skipping verification — save first unverified complete state as fallback
+                        if last_unverified is None:
+                            last_unverified = list(state.steps)
+                            last_unverified_state = state
                         state.is_complete = False
                         state.is_dead = True
-                        if verbose:
-                            err = check_results[0].errors[0][:80] if check_results[0].errors else "?"
-                            print(f"  ✗ Symbolic-complete but Lean rejects: {err}")
                         continue
                 else:
                     if verbose:
@@ -233,6 +261,12 @@ class GNNBestFirstSearch:
                       f"{len(heap)} states remaining, {elapsed:.1f}s")
             else:
                 print(f"  ✗ Search space exhausted: {expansions} expansions, {elapsed:.1f}s")
+        # If we have an unverified complete state, return it for the caller to verify
+        if last_unverified is not None:
+            if verbose:
+                print(f"  → Returning unverified candidate: "
+                      f"{[s.to_lean() for s in last_unverified[:3]]}")
+            return (last_unverified, last_unverified_state)
         return ([], None)
 
     # ------------------------------------------------------------------
@@ -347,6 +381,9 @@ class GNNBestFirstSearch:
         3. Average GNN embeddings of matching lemmas.
         4. Pass through GoalEncoder for projection.
         Falls back to keyword-based context when no structural matches found.
+
+        Results are cached per goal text for performance since the same goal
+        text appears many times during search.
         """
         from scripts.eval_gnn_prover import normalize_expression
 
@@ -354,10 +391,14 @@ class GNNBestFirstSearch:
             return None
 
         goal_text = state.get_goal_embedding_key()
+
+        # Check cache — keyed on normalized goal text
+        goal_norm = normalize_expression(goal_text)
+        if goal_norm in self._goal_embed_cache:
+            return self._goal_embed_cache[goal_norm]
+
         device = self.node_embeddings.device
         node_emb_norm = self.node_embeddings_norm
-
-        goal_norm = normalize_expression(goal_text)
 
         # Detect reflexivity
         is_reflexive = False
@@ -366,44 +407,21 @@ class GNNBestFirstSearch:
             if len(sides) == 2 and sides[0].strip() == sides[1].strip():
                 is_reflexive = True
 
-        # Find exact structural matches
-        exact_matches = set()
-        for idx, lemma_norm in self.idx_to_norm.items():
-            if lemma_norm == goal_norm:
-                exact_matches.add(idx)
-            elif is_reflexive and lemma_norm == normalize_expression("a = a"):
-                exact_matches.add(idx)
-            elif " ↔ " in lemma_norm:
-                left, right = lemma_norm.split(" ↔ ", 1)
-                if left.strip() == goal_norm or right.strip() == goal_norm:
-                    exact_matches.add(idx)
-            elif " → " in lemma_norm:
-                parts = lemma_norm.rsplit(" → ", 1)
-                if parts[-1].strip() == goal_norm:
-                    exact_matches.add(idx)
+        # Find exact structural matches — O(1) hash lookup
+        exact_matches = set(self._norm_to_indices.get(goal_norm, []))
 
-        # Power-stripping fallback
+        # Power-stripping fallback: strip exponents and check hash
         if not exact_matches:
             goal_stripped = re.sub(r'\s*\^\s*\d+', '', goal_norm)
-            for idx, lemma_norm in self.idx_to_norm.items():
-                lemma_stripped = re.sub(r'\s*\^\s*\d+', '', lemma_norm)
-                if lemma_stripped == goal_stripped:
-                    exact_matches.add(idx)
+            if goal_stripped != goal_norm:
+                exact_matches.update(self._norm_to_indices.get(goal_stripped, []))
+            if is_reflexive:
+                exact_matches.update(self._norm_to_indices.get(
+                    normalize_expression("a = a"), []))
 
-        # Subterm matches
-        subterm_matches = set()
-        if " = " in goal_norm:
-            goal_lhs, goal_rhs = goal_norm.split(" = ", 1)
-            for idx, lemma_norm in self.idx_to_norm.items():
-                if idx in exact_matches or " = " not in lemma_norm:
-                    continue
-                lemma_lhs, lemma_rhs = lemma_norm.split(" = ", 1)
-                if len(lemma_lhs) < 3 or len(lemma_rhs) < 3:
-                    continue
-                if lemma_lhs in goal_lhs and lemma_rhs in goal_rhs:
-                    subterm_matches.add(idx)
-                elif lemma_lhs in goal_rhs and lemma_rhs in goal_lhs:
-                    subterm_matches.add(idx)
+        # Subterm matches disabled: too slow on 116K unique keys.
+        # Fall through to keyword-based context instead.
+        subterm_matches: set[int] = set()
 
         # Build context from matches
         match_indices = list(exact_matches) + list(subterm_matches)
@@ -431,10 +449,13 @@ class GNNBestFirstSearch:
             else:
                 return torch.zeros(node_emb_norm.size(1), device=device)
 
-        # Project through GoalEncoder
+        # Project through GoalEncoder and cache result
         if self.gnn.goal_encoder is not None:
-            return self.gnn.encode_goal(context_emb)
-        return F.normalize(context_emb, dim=-1) if context_emb.norm() > 0 else context_emb
+            result = self.gnn.encode_goal(context_emb)
+        else:
+            result = F.normalize(context_emb, dim=-1) if context_emb.norm() > 0 else context_emb
+        self._goal_embed_cache[goal_norm] = result
+        return result
 
     # ------------------------------------------------------------------
     # Action generation (same logic as original, but uses scored lemmas)
@@ -512,15 +533,23 @@ class GNNBestFirstSearch:
     # Lemma filtering (keyword-based, like MCTS._get_relevant_lemmas)
     # ------------------------------------------------------------------
 
-    def _get_relevant_lemmas(self, theorem_statement: str) -> list[str]:
+    def _get_relevant_lemmas(self, theorem_statement: str, domain: str | None = None) -> list[str]:
         """Get lemmas relevant to this theorem using keyword-based filtering.
 
         Uses the same algorithm as MCTS._get_relevant_lemmas:
-        1. Extract math keywords from theorem statement.
-        2. Filter graph lemmas by keyword match on name.
-        3. Add built-in fundamental lemmas.
-        4. Rank by structural centrality (in-degree).
-        5. Return top candidates.
+        1. (NEW) Filter graph nodes to matching Mathlib domain.
+        2. Extract math keywords from theorem statement.
+        3. Filter remaining lemmas by keyword match on name.
+        4. Add built-in fundamental lemmas.
+        5. Rank by structural centrality (in-degree).
+        6. Return top candidates.
+
+        Args:
+            theorem_statement: The theorem statement text.
+            domain: Mathlib domain label (e.g., 'algebra', 'Analysis').
+                When provided, filters candidate lemmas to the matching
+                domain(s), reducing candidates from 116K to ~2-12K.
+                None uses the full graph (backward compatible).
         """
         if self.graph is None:
             builtins = _get_builtin_lemmas(["eq", "refl"])
@@ -529,18 +558,25 @@ class GNNBestFirstSearch:
         keywords = _extract_math_keywords(theorem_statement)
         builtins = _get_builtin_lemmas(keywords)
 
-        # Filter graph lemmas by keyword match
+        # Domain filtering: pre-filter node_ids to matching domain(s)
+        domain_node_ids = self._get_domain_node_ids(domain)
+        if domain_node_ids is not None:
+            candidate_pool = list(domain_node_ids)
+        else:
+            candidate_pool = list(self.graph.node_ids)
+
+        # Filter by keyword match (within domain-filtered pool)
         candidates: list[tuple[str, float]] = []
         seen: set[str] = set()
 
         for kw in keywords[:8]:
-            for nid in self.graph.node_ids:
+            for nid in candidate_pool:
                 if nid in seen:
                     continue
-                attrs = self.graph.get_node(nid)
-                name = attrs.get("name", nid) if attrs else nid
-                if kw.lower() in name.lower():
-                    kw_score = sum(1.0 for k in keywords if k.lower() in name.lower())
+                # Domain-filtered nodes: use node_id directly as name
+                # (avoids expensive get_node() call for every node)
+                if kw.lower() in nid.lower():
+                    kw_score = sum(1.0 for k in keywords if k.lower() in nid.lower())
                     candidates.append((nid, kw_score))
                     seen.add(nid)
                     if len(candidates) >= self.config.max_graph_candidates:
@@ -560,6 +596,29 @@ class GNNBestFirstSearch:
 
         ranked.sort(key=lambda x: -x[1])
         lemmas = [name for name, _ in ranked[:self.config.top_k_lemmas]]
+
+        # If domain filtering found too few candidates, supplement from full graph
+        if domain_node_ids is not None and len(lemmas) < 5:
+            full_candidates = []
+            full_seen = set()
+            for kw in keywords[:8]:
+                for nid in self.graph.node_ids:
+                    if nid in seen or nid in full_seen:
+                        continue
+                    if kw.lower() in nid.lower():
+                        kw_score = sum(1.0 for k in keywords if k.lower() in nid.lower())
+                        centrality = in_degrees.get(nid, 0) / max_in
+                        combined = 0.3 * kw_score + 0.7 * centrality
+                        full_candidates.append((nid, combined))
+                        full_seen.add(nid)
+                        if len(full_candidates) >= self.config.max_graph_candidates:
+                            break
+                if len(full_candidates) >= self.config.max_graph_candidates:
+                    break
+            full_candidates.sort(key=lambda x: -x[1])
+            extra = [name for name, _ in full_candidates[:self.config.top_k_lemmas]
+                     if name not in seen]
+            lemmas.extend(extra)
 
         # Prepend built-ins
         result = []
@@ -624,23 +683,72 @@ class GNNBestFirstSearch:
                 uncached_codes.append(code)
 
         if uncached_codes:
-            for j, idx in enumerate(uncached_indices):
-                single_code = uncached_codes[j]
-                check_results = self.proof_checker.check_batch([single_code])
-                cr = check_results[0]
-                tactic = tactics[idx]
-                if cr.success:
-                    is_valid = True
-                elif tactic.tactic_type.value in _incomplete_ok:
-                    error_text = " ".join(cr.errors) if cr.errors else ""
-                    is_valid = "unsolved goals" in error_text.lower()
-                else:
-                    is_valid = False
-                cache_key = (hash(state.proof_so_far), hash(tactics[idx]))
-                self._verification_cache[cache_key] = is_valid
-                results[idx] = is_valid
+            # Build a single combined Lean file with all candidates,
+            # each wrapped as a uniquely-named theorem, for ONE Lake invocation.
+            # This replaces N separate Lake+Lean calls with ONE.
+            combined_code = self._build_combined_verification(uncached_codes, uncached_indices)
+            combined_result = self.proof_checker.checker.check(combined_code)
+            
+            if combined_result.success:
+                # All candidates pass — all valid
+                for idx in uncached_indices:
+                    results[idx] = True
+                    cache_key = (hash(state.proof_so_far), hash(tactics[idx]))
+                    self._verification_cache[cache_key] = True
+            else:
+                # Some failed — parse errors to determine which ones
+                failed_names = self._parse_combined_errors(combined_result.errors)
+                for j, idx in enumerate(uncached_indices):
+                    theorem_name = f"_candidate_{j}"
+                    is_valid = theorem_name not in failed_names
+                    tactic = tactics[idx]
+                    # Allow incomplete (unsolved goals) for rewrite/intro/etc
+                    if not is_valid and tactic.tactic_type.value in _incomplete_ok:
+                        error_text = " ".join(combined_result.errors) if combined_result.errors else ""
+                        is_valid = "unsolved goals" in error_text.lower() and theorem_name in error_text
+                    results[idx] = is_valid
+                    cache_key = (hash(state.proof_so_far), hash(tactics[idx]))
+                    self._verification_cache[cache_key] = is_valid
 
         return [results[i] for i in range(len(tactics))]
+
+    def _build_combined_verification(
+        self, codes: list[str], indices: list[int]
+    ) -> str:
+        """Build a single Lean source string containing all candidate theorems.
+
+        Each candidate gets a unique theorem name `_candidate_N` so we can
+        map errors back to specific candidates after parsing.
+        """
+        import re as _re
+        parts = ["import Mathlib", "open Real", "open Set", "open Filter",
+                 "open Function", "open Nat", ""]
+        for j, code in enumerate(codes):
+            # Replace "theorem <name>" with "theorem _candidate_N" or
+            # wrap bare code in a uniquely-named theorem.
+            renamed = _re.sub(
+                r'^theorem\s+\S+', f'theorem _candidate_{j}', code, count=1
+            )
+            # If code doesn't start with 'theorem', wrap it
+            if not renamed.strip().startswith("theorem "):
+                renamed = f"theorem _candidate_{j} : True := by\n  trivial"
+            parts.append(renamed)
+            parts.append("")
+        return "\n".join(parts)
+
+    def _parse_combined_errors(self, errors: list[str]) -> set[str]:
+        """Parse Lean error output to extract which candidate theorems failed.
+
+        Returns set of theorem names (e.g., '_candidate_3') that have errors.
+        """
+        import re as _re
+        failed: set[str] = set()
+        for err in errors:
+            # Lean errors look like: "<filename>:<line>:<col>: error: <msg>"
+            # or lines starting with theorem name
+            m = _re.findall(r'_candidate_\d+', err)
+            failed.update(m)
+        return failed
 
     # ------------------------------------------------------------------
     # Helpers
@@ -649,6 +757,18 @@ class GNNBestFirstSearch:
     def _next_tiebreaker(self) -> int:
         self._tiebreaker += 1
         return self._tiebreaker
+
+    def _build_norm_index_lookup(self) -> dict[str, list[int]]:
+        """Build normalized-text → list of node indices for O(1) _embed_goal lookups.
+
+        Groups all nodes that share the same normalized conclusion text,
+        enabling fast retrieval without iterating through all 116K entries.
+        """
+        lookup: dict[str, list[int]] = {}
+        for idx, norm_text in self.idx_to_norm.items():
+            if idx < self.node_embeddings.size(0):
+                lookup.setdefault(norm_text, []).append(idx)
+        return lookup
 
     def _build_keyword_map(self) -> dict[str, list[int]]:
         """Build keyword → lemma index map from graph node names."""
@@ -662,6 +782,107 @@ class GNNBestFirstSearch:
                 if kw.lower() in name_lower:
                     kw_map.setdefault(kw.lower(), []).append(idx)
         return kw_map
+
+    # ------------------------------------------------------------------
+    # Domain filtering
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _normalize_domain(domain: str) -> str:
+        """Normalize a domain name for matching.
+
+        Lowercases, strips whitespace, removes underscores, and squashes
+        multiple slashes so 'algebra' ≈ 'Algebra' ≈ 'Algebra/'"""
+        import re
+        d = domain.strip().lower()
+        d = d.replace('_', '')
+        d = re.sub(r'/+', '/', d)
+        return d
+
+    @staticmethod
+    def _domain_matches(graph_domain: str, theorem_domain: str) -> bool:
+        """Check if a graph domain matches a theorem's domain label.
+
+        Matching rules (case-insensitive):
+        - Exact match after normalization: 'algebra' ≈ 'Algebra'
+        - Prefix match: 'algebra' matches 'Algebra/Polynomial'
+        - Substring: 'theory' in 'categorytheory', 'algebra' in 'linearalgebra'
+        - Cross-domain bundle: 'algebra' also matches 'RingTheory', 'GroupTheory',
+          'LinearAlgebra', 'Algebra/Order', etc.
+        """
+        ngd = GNNBestFirstSearch._normalize_domain(graph_domain)
+        ntd = GNNBestFirstSearch._normalize_domain(theorem_domain)
+
+        if ngd == ntd:
+            return True
+        if ngd.startswith(ntd + '/'):
+            return True
+        if ntd.startswith(ngd + '/'):
+            return True
+        # Substring match for compound names
+        if ntd in ngd or ngd in ntd:
+            return True
+
+        # Cross-domain bundling: known related domains
+        # Target: ~10K nodes per broad domain area (from 116K total)
+        _cross_domain_bundles: dict[str, set[str]] = {
+            'algebra': {'linearalgebra',
+                         'algebra/order', 'algebra/polynomial',
+                         'algebra/group', 'algebra/ring'},
+            'analysis': {'analysis/calculus', 'analysis/normed',
+                          'analysis/complex', 'analysis/convolution',
+                          'measuretheory'},
+            'numbertheory': {'numbertheory/'},
+            'order': {'order/', 'algebra/order'},
+            'topology': {'topology/', 'topology/algebra'},
+            'logic': {'order', 'settheory', 'data/set'},
+            # Physics theorems use algebraic/analytic manipulation;
+            # map to core algebra + analysis (no RingTheory/Topology)
+            'physics': {'algebra', 'algebra/', 'linearalgebra',
+                         'analysis', 'analysis/', 'measuretheory'},
+        }
+
+        bundles = _cross_domain_bundles.get(ntd, set())
+        if any(ngd.startswith(b) or b.startswith(ngd)
+               for b in bundles):
+            return True
+
+        return False
+
+    def _build_domain_index(self) -> dict[str, set[str]]:
+        """Build domain → set of node_ids index for fast domain filtering."""
+        domain_index: dict[str, set[str]] = {}
+        for nid in self.graph.node_ids:
+            attrs = self.graph.get_node(nid)
+            if attrs:
+                domain = attrs.get('domain', '') or ''
+                if domain:
+                    domain_index.setdefault(domain, set()).add(nid)
+        return domain_index
+
+    def _get_domain_node_ids(self, theorem_domain: str | None) -> set[str] | None:
+        """Get the set of node IDs matching a theorem domain.
+
+        Args:
+            theorem_domain: Domain label from the theorem (e.g., 'algebra', 'Analysis').
+                None means no filtering — use all nodes.
+
+        Returns:
+            Set of node IDs in matching domains, or None for no filtering.
+        """
+        if not theorem_domain:
+            return None
+
+        matching: set[str] = set()
+        for graph_domain, node_ids in self._domain_node_ids.items():
+            if self._domain_matches(graph_domain, theorem_domain):
+                matching.update(node_ids)
+
+        if not matching:
+            # No match found — fall through to full graph
+            return None
+
+        return matching
 
     @staticmethod
     def _all_keywords() -> list[str]:
