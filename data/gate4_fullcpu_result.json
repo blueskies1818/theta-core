@@ -1,0 +1,717 @@
+{
+  "gate": "gate4",
+  "name": "Negative Control Experiment (Full CPU Retry)",
+  "description": "Two GNNs independently trained (different random seeds) via link prediction on the Algebra dependency graph (16,842 nodes). GNN-A labeled as 'pre-1905 continuous', GNN-B labeled as 'post-1925 quantized'. Both tested on same mixed-era test set with MCTS proof search.",
+  "timestamp": "2026-06-17T20:52:53",
+  "verdict": "FAIL",
+  "thresholds": {
+    "p_value_max": 0.05,
+    "interaction_direction_required": "GNN-A better on continuous, GNN-B better on quantized",
+    "epochs": 100,
+    "mcts_sims": 200,
+    "threads": 12
+  },
+  "data": {
+    "train_gnn_a": {
+      "file": "data/raw/gate4_train_pre1905.jsonl",
+      "era": "continuous (classical/pre-relativity)",
+      "num_theorems": 19,
+      "training_seed": 42
+    },
+    "train_gnn_b": {
+      "file": "data/raw/gate4_train_post1925.jsonl",
+      "era": "quantized (quantum/modern)",
+      "num_theorems": 15,
+      "training_seed": 12345
+    },
+    "test_mixed": {
+      "file": "data/raw/gate4_test_mixed.jsonl",
+      "num_continuous": 10,
+      "num_quantized": 10,
+      "total": 20
+    },
+    "graph": {
+      "domain": "Algebra",
+      "nodes": 16842,
+      "edges": 22430,
+      "note": "Both GNNs trained on identical graph with different random seeds"
+    }
+  },
+  "training_config": {
+    "epochs": 100,
+    "hidden_dim": 256,
+    "num_layers": 3,
+    "num_heads": 8,
+    "learning_rate": 0.001,
+    "objective": "link_prediction"
+  },
+  "results": {
+    "gnn_a_checkpoint": "checkpoints/gate4_fullcpu/gnn_a/gnn_final.pt",
+    "gnn_b_checkpoint": "checkpoints/gate4_fullcpu/gnn_b/gnn_final.pt",
+    "mcts_sims": 200,
+    "overall": {
+      "gnn_a": {
+        "correct": 14,
+        "total": 20,
+        "pct": 70.0
+      },
+      "gnn_b": {
+        "correct": 11,
+        "total": 20,
+        "pct": 55.0
+      }
+    },
+    "success_rates": {
+      "gnn_a": {
+        "continuous_pct": 80.0,
+        "quantized_pct": 60.0,
+        "overall_pct": 70.0
+      },
+      "gnn_b": {
+        "continuous_pct": 50.0,
+        "quantized_pct": 60.0,
+        "overall_pct": 55.0
+      }
+    },
+    "interaction": {
+      "detected": true,
+      "magnitude": 30.0,
+      "gnn_a_era_diff": 20.0,
+      "gnn_b_era_diff": 10.0,
+      "description": "GNN-A 80.0%\u219260.0% (continuous\u2192quantized), GNN-B 50.0%\u219260.0%"
+    },
+    "statistical_test": {
+      "test": "Chi-squared (Yates)",
+      "odds_ratio": 1.6,
+      "p_value": 0.9844,
+      "significant": false,
+      "note": "p \u2264 0.05 indicates significant interaction between GNN training seed and era"
+    },
+    "per_theorem": {
+      "gnn_a": [
+        {
+          "name": "chirp_mass_identity",
+          "era": "precision_era",
+          "zone": "gr_classical",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "field_simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 26.13821506500244,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "higgs_mechanism_identity",
+          "era": "sm_construction",
+          "zone": "standard_model",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 19.82347798347473,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "faraday_induction_identity",
+          "era": "classical",
+          "zone": "qed",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "linarith"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  simp",
+          "search_time_s": 16.707433938980103,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "conservation_of_momentum",
+          "era": "classical",
+          "zone": "thermodynamics",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "ring"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rw [add_comm]",
+          "search_time_s": 9.929786205291748,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "kinetic_energy_identity",
+          "era": "classical",
+          "zone": "thermodynamics",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "linarith"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  ring",
+          "search_time_s": 4.421252012252808,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "gauge_invariance_identity",
+          "era": "sm_construction",
+          "zone": "standard_model",
+          "success": false,
+          "error": "<stdin>:8:27: error: unexpected token '('; expected ':=', 'where' or '|'",
+          "mcts_steps": [
+            "apply Eq.refl",
+            "simp"
+          ],
+          "num_steps": 2,
+          "ground_truth": "  ring",
+          "search_time_s": 0.20443987846374512,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "planck_scale_completion_identity",
+          "era": "modern",
+          "zone": "planck_breakdown",
+          "success": false,
+          "error": "<stdin>:8:79: error: unsolved goals",
+          "mcts_steps": [
+            "rw [mul_comm]",
+            "rw [one_div]",
+            "have h_h\u210f := h\u210f",
+            "apply isSMulRegular_iff_mem_nonZeroSMulDivisors",
+            "exact h\u210f"
+          ],
+          "num_steps": 5,
+          "ground_truth": "  apply Real.sqrt_pos.mpr; positivity",
+          "search_time_s": 7.298588275909424,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "cosmological_constant_identity",
+          "era": "modern",
+          "zone": "dark_energy",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "apply rfl",
+            "simp"
+          ],
+          "num_steps": 2,
+          "ground_truth": "  rfl",
+          "search_time_s": 7.291616916656494,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "dark_matter_cross_section_limit",
+          "era": "modern",
+          "zone": "dark_matter",
+          "success": false,
+          "error": "<stdin>:8:68: error: unsolved goals",
+          "mcts_steps": [
+            "simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  apply div_pos; exact \u27e8h\u03c3, hm\u27e9",
+          "search_time_s": 13.821985960006714,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "black_hole_information_paradox_identity",
+          "era": "modern",
+          "zone": "black_hole_singularity",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 0.1132500171661377,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "stefan_boltzmann_identity",
+          "era": "classical_crisis",
+          "zone": "qft_divergence",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "rw [mul_comm]",
+            "apply one_pow",
+            "simp"
+          ],
+          "num_steps": 3,
+          "ground_truth": "  rw [mul_comm]",
+          "search_time_s": 2.8109893798828125,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "time_dilation_identity",
+          "era": "pre_relativity",
+          "zone": "gr_qft_incompatibility",
+          "success": false,
+          "error": "<stdin>:8:52: error: unsolved goals",
+          "mcts_steps": [
+            "ring"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  field_simp [h]",
+          "search_time_s": 2.7635154724121094,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "velocity_addition_relativistic",
+          "era": "pre_relativity",
+          "zone": "gr_qft_incompatibility",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "field_simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 0.03610491752624512,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "born_probability_identity",
+          "era": "old_quantum",
+          "zone": "qft_divergence",
+          "success": false,
+          "error": "<stdin>:8:29: error: unsolved goals",
+          "mcts_steps": [
+            "simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  apply pow_two_nonneg",
+          "search_time_s": 10.51058578491211,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "michelson_morley_null_result",
+          "era": "classical_crisis",
+          "zone": "gr_qft_incompatibility",
+          "success": false,
+          "error": "<stdin>:10:2: error: Type mismatch",
+          "mcts_steps": [
+            "have h_h := h",
+            "exact h_h"
+          ],
+          "num_steps": 2,
+          "ground_truth": "  rw [h]; ring",
+          "search_time_s": 2.6839418411254883,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "newton_second_law_identity",
+          "era": "classical",
+          "zone": "thermodynamics",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "linarith"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rw [mul_comm] at h; exact h",
+          "search_time_s": 0.15724873542785645,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "coulomb_force_symmetry",
+          "era": "classical",
+          "zone": "qed",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "field_simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rw [mul_comm q1 q2]",
+          "search_time_s": 0.1199040412902832,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "hawking_radiation_temperature",
+          "era": "modern",
+          "zone": "black_hole_singularity",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "ring"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 0.18907737731933594,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "wien_displacement_identity",
+          "era": "classical_crisis",
+          "zone": "qft_divergence",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "apply rfl",
+            "simp"
+          ],
+          "num_steps": 2,
+          "ground_truth": "  rfl",
+          "search_time_s": 10.494779109954834,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "sigma8_tension_identity",
+          "era": "modern",
+          "zone": "dark_energy",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 0.2158372402191162,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        }
+      ],
+      "gnn_b": [
+        {
+          "name": "chirp_mass_identity",
+          "era": "precision_era",
+          "zone": "gr_classical",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "linarith"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 26.40800404548645,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "higgs_mechanism_identity",
+          "era": "sm_construction",
+          "zone": "standard_model",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "ring"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 19.730390310287476,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "faraday_induction_identity",
+          "era": "classical",
+          "zone": "qed",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "linarith"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  simp",
+          "search_time_s": 16.84991693496704,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "conservation_of_momentum",
+          "era": "classical",
+          "zone": "thermodynamics",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "ring"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rw [add_comm]",
+          "search_time_s": 10.174411535263062,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "kinetic_energy_identity",
+          "era": "classical",
+          "zone": "thermodynamics",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "linarith"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  ring",
+          "search_time_s": 4.4932355880737305,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "gauge_invariance_identity",
+          "era": "sm_construction",
+          "zone": "standard_model",
+          "success": false,
+          "error": "<stdin>:8:27: error: unexpected token '('; expected ':=', 'where' or '|'",
+          "mcts_steps": [
+            "linarith"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  ring",
+          "search_time_s": 0.19545245170593262,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "planck_scale_completion_identity",
+          "era": "modern",
+          "zone": "planck_breakdown",
+          "success": false,
+          "error": "<stdin>:11:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "mcts_steps": [
+            "have h_h\u210f := h\u210f",
+            "have h_h\u210f := h\u210f",
+            "rw [one_mul]",
+            "apply mul_comm",
+            "exact h_h\u210f"
+          ],
+          "num_steps": 5,
+          "ground_truth": "  apply Real.sqrt_pos.mpr; positivity",
+          "search_time_s": 7.452364921569824,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "cosmological_constant_identity",
+          "era": "modern",
+          "zone": "dark_energy",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "linarith"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 7.513538360595703,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "dark_matter_cross_section_limit",
+          "era": "modern",
+          "zone": "dark_matter",
+          "success": false,
+          "error": "<stdin>:8:68: error: unsolved goals",
+          "mcts_steps": [
+            "field_simp [h\u03c3, hm]"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  apply div_pos; exact \u27e8h\u03c3, hm\u27e9",
+          "search_time_s": 13.817202091217041,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "black_hole_information_paradox_identity",
+          "era": "modern",
+          "zone": "black_hole_singularity",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "linarith"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 0.29164958000183105,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "stefan_boltzmann_identity",
+          "era": "classical_crisis",
+          "zone": "qft_divergence",
+          "success": false,
+          "error": "<stdin>:8:44: error: `simp` made no progress",
+          "mcts_steps": [
+            "simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rw [mul_comm]",
+          "search_time_s": 2.5227468013763428,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "time_dilation_identity",
+          "era": "pre_relativity",
+          "zone": "gr_qft_incompatibility",
+          "success": false,
+          "error": "<stdin>:8:55: error: `simp` made no progress",
+          "mcts_steps": [
+            "simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  field_simp [h]",
+          "search_time_s": 2.8975021839141846,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "velocity_addition_relativistic",
+          "era": "pre_relativity",
+          "zone": "gr_qft_incompatibility",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "ring"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 0.06145930290222168,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "born_probability_identity",
+          "era": "old_quantum",
+          "zone": "qft_divergence",
+          "success": false,
+          "error": "<stdin>:10:8: error(lean.unknownIdentifier): Unknown identifier `pow_dvd_add_pow_of_pow_eq_zero_left`",
+          "mcts_steps": [
+            "cases \u03c8",
+            "apply pow_dvd_add_pow_of_pow_eq_zero_left",
+            "exact \u03c8"
+          ],
+          "num_steps": 3,
+          "ground_truth": "  apply pow_two_nonneg",
+          "search_time_s": 10.390129327774048,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "michelson_morley_null_result",
+          "era": "classical_crisis",
+          "zone": "gr_qft_incompatibility",
+          "success": false,
+          "error": "<stdin>:10:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_mul`",
+          "mcts_steps": [
+            "have h_h := h",
+            "apply zero_mul",
+            "rw [zero_add]",
+            "have h_h_h := h_h",
+            "have h_h := h"
+          ],
+          "num_steps": 9,
+          "ground_truth": "  rw [h]; ring",
+          "search_time_s": 3.0703675746917725,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "newton_second_law_identity",
+          "era": "classical",
+          "zone": "thermodynamics",
+          "success": false,
+          "error": "<stdin>:8:51: error: unsolved goals",
+          "mcts_steps": [
+            "ring"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rw [mul_comm] at h; exact h",
+          "search_time_s": 0.10469412803649902,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "coulomb_force_symmetry",
+          "era": "classical",
+          "zone": "qed",
+          "success": false,
+          "error": "<stdin>:8:60: error: `simp` made no progress",
+          "mcts_steps": [
+            "simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rw [mul_comm q1 q2]",
+          "search_time_s": 0.04237198829650879,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "hawking_radiation_temperature",
+          "era": "modern",
+          "zone": "black_hole_singularity",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "simp"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 0.258070707321167,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        },
+        {
+          "name": "wien_displacement_identity",
+          "era": "classical_crisis",
+          "zone": "qft_divergence",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "linarith"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 10.180237770080566,
+          "heuristic_scale": 0.0,
+          "era_binary": "continuous"
+        },
+        {
+          "name": "sigma8_tension_identity",
+          "era": "modern",
+          "zone": "dark_energy",
+          "success": true,
+          "error": "",
+          "mcts_steps": [
+            "linarith"
+          ],
+          "num_steps": 1,
+          "ground_truth": "  rfl",
+          "search_time_s": 0.17093968391418457,
+          "heuristic_scale": 0.0,
+          "era_binary": "quantized"
+        }
+      ]
+    }
+  }
+}
