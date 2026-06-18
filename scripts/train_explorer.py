@@ -193,9 +193,9 @@ def build_graph(
 def create_gnn(
     graph: DependencyGraph,
     pretrained_path: str | None = None,
-    hidden_dim: int = 128,
-    num_layers: int = 2,
-    num_heads: int = 4,
+    hidden_dim: int = 768,
+    num_layers: int = 5,
+    num_heads: int = 12,
     device: torch.device | None = None,
 ) -> GNNEncoder:
     """Create or load a GNN encoder.
@@ -278,11 +278,11 @@ Examples:
     # -- Model ---------------------------------------------------------------
     parser.add_argument("--pretrained", default=None,
                         help="Path to pretrained GNN checkpoint")
-    parser.add_argument("--hidden-dim", type=int, default=256,
+    parser.add_argument("--hidden-dim", type=int, default=768,
                         help="GNN hidden dimension (for fresh init)")
-    parser.add_argument("--num-layers", type=int, default=3,
+    parser.add_argument("--num-layers", type=int, default=5,
                         help="GNN layers")
-    parser.add_argument("--num-heads", type=int, default=4,
+    parser.add_argument("--num-heads", type=int, default=12,
                         help="GNN attention heads")
 
     # -- Training ------------------------------------------------------------

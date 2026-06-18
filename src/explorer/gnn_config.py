@@ -17,16 +17,19 @@ class GNNConfig:
     # -- Architecture --------------------------------------------------------
 
     # Number of message-passing layers (depth of neighbor aggregation)
-    num_layers: int = 3
+    # Scaled from 3 → 5 for deeper structural reasoning
+    num_layers: int = 5
 
     # Hidden dimension for node embeddings
-    hidden_dim: int = 256
+    # Scaled from 256 → 768 (~10M params) for lemma discrimination
+    hidden_dim: int = 768
 
     # Input feature dimension (from statement embedding or random init)
     input_dim: int = 768
 
     # Number of attention heads in GAT layers
-    num_heads: int = 8
+    # Scaled from 8 → 12 (768/12 = 64-dim per head)
+    num_heads: int = 12
 
     # Dropout rate for regularization
     dropout: float = 0.1
@@ -94,7 +97,8 @@ class GNNConfig:
     batch_size: int = 512
 
     # Number of neighbors to sample per node during training
-    num_neighbors: list[int] = field(default_factory=lambda: [25, 15, 10, 5])
+    # One entry per GNN layer (5 layers in scaled model)
+    num_neighbors: list[int] = field(default_factory=lambda: [25, 15, 10, 5, 3])
 
     # Training objective:
     # "link_prediction" - predict whether an edge exists between two nodes
@@ -114,7 +118,7 @@ class GNNConfig:
     full_graph_inference: bool = True
 
     # Device to run on
-    device: str = "xpu:0"
+    device: str = "cpu"
 
     # Mixed precision
     use_amp: bool = True
