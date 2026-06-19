@@ -82,6 +82,15 @@ class BestFirstConfig:
     # Number of CPU threads for PyTorch inference
     num_threads: int = 4
 
+    # Value network integration
+    # Weight of value estimate vs lemma score in priority computation.
+    # 0.0 = pure lemma score (default behavior), 1.0 = pure value estimate.
+    value_weight: float = 0.3
+
+    # Prune states with value estimate below this threshold.
+    # None = no pruning, float = prune if value < threshold.
+    value_prune_threshold: float | None = 0.1
+
 
 # ---------------------------------------------------------------------------
 # Priority queue wrapper
@@ -116,9 +125,17 @@ class _PrioritizedState:
 class BestFirstSearch:
     """Best-first proof search using contrastive lemma scoring.
 
+    Optionally integrates a value network for state evaluation.
+    When provided, lemma score and value estimate are blended according
+    to config.value_weight.
+
     Usage:
         bf = BestFirstSearch(encoder, tokenizer, lemma_names, lemma_embeddings,
                               config=BestFirstConfig())
+        # With value network:
+        bf = BestFirstSearch(encoder, tokenizer, lemma_names, lemma_embeddings,
+                              config=BestFirstConfig(value_weight=0.3),
+                              value_network=vn, goal_embed_fn=encode_goal)
         proof_steps, final_state = bf.search(theorem_statement)
     """
 
@@ -130,6 +147,8 @@ class BestFirstSearch:
         lemma_embeddings: torch.Tensor,
         config: BestFirstConfig | None = None,
         proof_checker=None,
+        value_network=None,
+        goal_embed_fn=None,
     ):
         self.encoder = encoder
         self.tokenizer = tokenizer
@@ -137,6 +156,10 @@ class BestFirstSearch:
         self.lemma_embeddings = lemma_embeddings  # [num_lemmas, hidden_dim]
         self.config = config or BestFirstConfig()
         self.proof_checker = proof_checker
+
+        # Value network (optional)
+        self.value_network = value_network
+        self.goal_embed_fn = goal_embed_fn  # callable(state) → goal_embedding
 
         # Set PyTorch threads
         torch.set_num_threads(self.config.num_threads)
@@ -264,9 +287,32 @@ class BestFirstSearch:
                 child_state = state.apply_tactic(action)
                 child_depth = depth + 1
 
-                # Priority: score / (1 + depth * penalty)
+                # Compute value estimate if value network is available
+                value_estimate = 0.5  # neutral default
+                if self.value_network is not None and self.config.value_weight > 0.0:
+                    try:
+                        if self.goal_embed_fn is not None:
+                            goal_emb = self.goal_embed_fn(child_state)
+                            if goal_emb is not None:
+                                value_estimate = float(
+                                    self.value_network.predict(goal_emb).item()
+                                )
+                                value_estimate = max(0.0, min(1.0, value_estimate))
+                    except Exception:
+                        value_estimate = 0.5
+
+                    # Prune if below threshold
+                    if (self.config.value_prune_threshold is not None
+                            and value_estimate < self.config.value_prune_threshold):
+                        continue
+
+                # Blend lemma score and value estimate
+                vw = self.config.value_weight
+                blended_score = lemma_score * (1.0 - vw) + value_estimate * vw
+
+                # Priority: blended_score / (1 + depth * penalty)
                 # Negate for max-heap behavior
-                priority = -(lemma_score / (1.0 + child_depth * self.config.depth_penalty))
+                priority = -(blended_score / (1.0 + child_depth * self.config.depth_penalty))
 
                 child = _PrioritizedState(
                     priority=priority,
