@@ -64,6 +64,15 @@ class GNNBestFirstConfig:
     # How many keyword-matching lemmas to pull from the graph
     max_graph_candidates: int = 200
 
+    # Value network integration
+    # Weight of value estimate vs lemma score in priority computation.
+    # 0.0 = pure lemma score (default behavior), 1.0 = pure value estimate.
+    value_weight: float = 0.3
+
+    # Prune states with value estimate below this threshold.
+    # None = no pruning, float = prune if value < threshold.
+    value_prune_threshold: float | None = 0.1
+
 
 # ---------------------------------------------------------------------------
 # Priority queue wrapper (same as original BestFirstSearch)
@@ -101,6 +110,7 @@ class GNNBestFirstSearch:
         idx_to_norm: dict[int, str] | None = None,
         config: GNNBestFirstConfig | None = None,
         proof_checker=None,
+        value_network=None,  # ValueNetwork for state evaluation
     ):
         self.gnn = gnn
         self.graph = graph
@@ -109,6 +119,7 @@ class GNNBestFirstSearch:
         self.idx_to_norm = idx_to_norm or {}  # node index → normalized conclusion
         self.config = config or GNNBestFirstConfig()
         self.proof_checker = proof_checker
+        self.value_network = value_network  # Optional value network for pruning
 
         torch.set_num_threads(self.config.num_threads)
         self.gnn.eval()
@@ -239,7 +250,20 @@ class GNNBestFirstSearch:
                     continue
                 child_state = state.apply_tactic(action)
                 child_depth = depth + 1
-                priority = -(lemma_score / (1.0 + child_depth * self.config.depth_penalty))
+
+                # Compute value estimate if value network is available
+                value_estimate = 0.5  # neutral default
+                if self.value_network is not None and self.config.value_weight > 0.0:
+                    value_estimate = self._estimate_value(child_state)
+                    # Prune if below threshold
+                    if (self.config.value_prune_threshold is not None
+                            and value_estimate < self.config.value_prune_threshold):
+                        continue
+
+                # Blend lemma score and value estimate
+                vw = self.config.value_weight
+                blended_score = lemma_score * (1.0 - vw) + value_estimate * vw
+                priority = -(blended_score / (1.0 + child_depth * self.config.depth_penalty))
                 child = _PrioritizedState(
                     priority=priority,
                     depth=child_depth,
@@ -633,6 +657,35 @@ class GNNBestFirstSearch:
                 seen_result.add(gl)
 
         return result[:self.config.top_k_lemmas]
+
+    # ------------------------------------------------------------------
+    # Value network integration
+    # ------------------------------------------------------------------
+
+    def _estimate_value(self, state: ProofState) -> float:
+        """Estimate P(success) for a proof state using the value network.
+
+        Encodes the current goal using the GNN goal encoding pipeline,
+        then runs the value head to predict completability.
+
+        Returns:
+            Scalar in [0, 1] estimating probability of eventual proof success.
+            Returns 0.5 (neutral) if value network is unavailable or encoding fails.
+        """
+        if self.value_network is None:
+            return 0.5
+
+        try:
+            goal_emb = self._embed_goal(state)
+            if goal_emb is None:
+                return 0.5
+
+            value = self.value_network.predict(goal_emb)
+            if hasattr(value, 'item'):
+                value = float(value.item())
+            return max(0.0, min(1.0, value))
+        except Exception:
+            return 0.5
 
     # ------------------------------------------------------------------
     # Proof checker verification
