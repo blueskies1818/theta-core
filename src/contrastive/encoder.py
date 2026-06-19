@@ -317,6 +317,75 @@ class ContrastiveDualEncoder(nn.Module):
         lemma_emb = self.encode_lemma(lemma_char_ids)  # [C, D]
         return goal_emb @ lemma_emb.T * self._t_inv
 
+    def forward_hard(
+        self,
+        goal_char_ids: torch.Tensor,
+        positive_lemma_char_ids: torch.Tensor,
+        hard_negative_char_ids: torch.Tensor | None = None,
+        hard_neg_weight: float = 0.5,
+        margin: float = 0.3,
+    ) -> dict[str, torch.Tensor]:
+        """Forward pass with hard-negative contrastive loss.
+
+        Combines InfoNCE (in-batch soft negatives) with triplet margin loss
+        on confirmed hard negatives from the proof checker.
+
+        Args:
+            goal_char_ids: [B, L] character IDs for goals.
+            positive_lemma_char_ids: [B, L] character IDs for positive lemmas.
+            hard_negative_char_ids: [B, K, L] character IDs for hard negative
+                lemmas, or None. K = number of hard negatives per pair.
+            hard_neg_weight: Weight for the hard negative triplet loss.
+            margin: Triplet margin.
+
+        Returns:
+            Dict with:
+                - 'total_loss': scalar combined loss
+                - 'infonce_loss': scalar InfoNCE component
+                - 'hard_neg_loss': scalar triplet component
+                - 'goal_emb': [B, D] goal embeddings
+                - 'lemma_emb': [B, D] positive lemma embeddings
+                - 'accuracy': scalar top-1 retrieval accuracy
+        """
+        from src.contrastive.hard_negative_loss import (
+            compute_combined_loss,
+            compute_retrieval_accuracy,
+        )
+
+        goal_emb = self.encode_goal(goal_char_ids)  # [B, D]
+        pos_lemma_emb = self.encode_lemma(positive_lemma_char_ids)  # [B, D]
+
+        # Encode hard negatives if provided
+        if hard_negative_char_ids is not None and hard_negative_char_ids.size(1) > 0:
+            B, K, L = hard_negative_char_ids.shape
+            # Flatten to [B*K, L] for batch encoding
+            flat_hn_ids = hard_negative_char_ids.reshape(B * K, L)
+            flat_hn_emb = self.encode_lemma(flat_hn_ids)  # [B*K, D]
+            # Reshape back to [B, K, D]
+            hard_neg_emb = flat_hn_emb.reshape(B, K, goal_emb.size(-1))
+        else:
+            hard_neg_emb = None
+
+        losses = compute_combined_loss(
+            goal_emb=goal_emb,
+            positive_lemma_emb=pos_lemma_emb,
+            hard_negative_emb=hard_neg_emb,
+            temperature_inv=self._t_inv,
+            hard_neg_weight=hard_neg_weight,
+            margin=margin,
+        )
+
+        acc = compute_retrieval_accuracy(goal_emb, pos_lemma_emb)
+
+        return {
+            "total_loss": losses["total_loss"],
+            "infonce_loss": losses["infonce_loss"],
+            "hard_neg_loss": losses["hard_neg_loss"],
+            "goal_emb": goal_emb,
+            "lemma_emb": pos_lemma_emb,
+            "accuracy": acc,
+        }
+
     # ------------------------------------------------------------------
     # Persistence
     # ------------------------------------------------------------------
