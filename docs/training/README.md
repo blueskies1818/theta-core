@@ -56,10 +56,10 @@ docs/training/
 
 ```bash
 # Generate richer theorems
-python scripts/build_richer_theorems.py
+python scripts/build/build_richer_theorems.py
 
 # Train with Wave 1 improvements (H→0.25, entropy bonus, 800 sims)
-python scripts/train_explorer.py \
+python scripts/training/train_explorer.py \
   --domain Algebra \
   --pretrained checkpoints/gnn/proof_step_pretrained.pt \
   --theorems data/raw/training_combined.jsonl \
@@ -74,7 +74,7 @@ python scripts/train_explorer.py \
   --output checkpoints/explorer_run9
 
 # Evaluate with baselines and multi-run statistics (Wave 1)
-python scripts/infer_explorer.py \
+python scripts/eval/infer_explorer.py \
   --checkpoint checkpoints/explorer_run9/gnn_final.pt \
   --theorems data/raw/physics_theorems_post1905.jsonl \
   --no-era-filter --compare --baselines --repeat 3 \

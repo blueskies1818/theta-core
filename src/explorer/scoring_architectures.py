@@ -6,7 +6,7 @@ Four scoring architectures for ranking candidate lemmas given a proof goal:
   (c) Graph-filtered retrieval narrowing to k-hop neighbors before cosine
   (d) Baseline cosine-similarity (dot product of normalized embeddings)
 
-These are evaluated in scripts/bench_h2_scoring.py against the gate3
+These are evaluated in scripts/eval/bench_h2_scoring.py against the gate3
 lemma-novelty test set (14 theorems requiring novel lemma retrieval).
 """
 

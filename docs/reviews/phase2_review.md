@@ -147,8 +147,8 @@ Replaces `GRPOTrainer.generate_proofs()` with `MCTS.search()`. The training loop
 | Explorer trainer (GRPO+MCTS) | `src/explorer/explorer_trainer.py` | Ready for training |
 | Structure generator (3 templates, 4 mutations) | `src/explorer/structure_generator.py` | Functional |
 | Structure validator (5 checks) | `src/explorer/structure_validator.py` | Functional |
-| GNN pre-training script | `scripts/pretrain_gnn.py` | Running (slow on CPU) |
-| Build script (dependency graph) | `scripts/build_dependency_graph.py` | Complete |
+| GNN pre-training script | `scripts/training/pretrain_gnn.py` | Running (slow on CPU) |
+| Build script (dependency graph) | `scripts/build/build_dependency_graph.py` | Complete |
 | GNN config | `src/explorer/gnn_config.py` | Complete |
 | Proof state representation | `src/explorer/proof_state.py` | Functional |
 

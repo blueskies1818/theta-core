@@ -54,10 +54,10 @@ Why:  Current 4,886 theorems are from Algebra/GroupTheory/
       LinearAlgebra/Data only. Missing Analysis (limits, DEs),
       Geometry/Manifold (the language of GR), Topology.
       These are the domains where the GR-QFT interface lives.
-Files: scripts/prepare_data.py (exists, needs re-run)
+Files: scripts/build/prepare_data.py (exists, needs re-run)
        src/data/mathlib_extractor.py (exists, no changes needed)
 Command:
-  python scripts/prepare_data.py \
+  python scripts/build/prepare_data.py \
     --mathlib-dir ../mathlib4 \
     --domains Analysis Geometry/Manifold Topology Data/Complex \
               Algebra GroupTheory LinearAlgebra Data/Real Data/Nat \
@@ -72,10 +72,10 @@ What: Supervised fine-tuning of Qwen2.5-1.5B on theorem-proof pairs
 Why:  Model needs to learn Lean 4 syntax before self-play can work.
       Without SFT, GRPO has zero signal — model generates gibberish
       that never type-checks, no rewards, no learning.
-Files: scripts/train_sft.py (exists)
+Files: scripts/training/train_sft.py (exists)
        configs/sft_config.yaml (exists)
 Command:
-  python scripts/train_sft.py --data-dir data --output-dir checkpoints/sft
+  python scripts/training/train_sft.py --data-dir data --output-dir checkpoints/sft
 Expected: Loss decreases from ~3.0 to ~0.5 over 2 epochs.
           Model learns to output syntactically valid Lean 4.
 Time:    2-4 hours on 1 GPU
@@ -87,10 +87,10 @@ Time:    2-4 hours on 1 GPU
 What: Self-play training against Lean proof checker
 Why:  The core experiment. Does the model improve at theorem proving
       when the ONLY signal is proof checker accept/reject?
-Files: scripts/train_grpo.py (exists)
+Files: scripts/training/train_grpo.py (exists)
        configs/grpo_config.yaml (exists)
 Command:
-  python scripts/train_grpo.py \
+  python scripts/training/train_grpo.py \
     --sft-checkpoint checkpoints/sft/final \
     --data-dir data --output-dir checkpoints/grpo \
     --max-theorems 1000

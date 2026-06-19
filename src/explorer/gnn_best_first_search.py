@@ -409,7 +409,7 @@ class GNNBestFirstSearch:
         Results are cached per goal text for performance since the same goal
         text appears many times during search.
         """
-        from scripts.eval_gnn_prover import normalize_expression
+        from scripts.eval.eval_gnn_prover import normalize_expression
 
         if self.node_embeddings is None:
             return None

@@ -9,10 +9,10 @@ description = "Autonomous Mathematical Physics AI — Phase 1 self-play theorem 
 requires-python = ">=3.11"
 
 [project.scripts]
-prepare-data = "scripts.prepare_data:main"
-train-sft = "scripts.train_sft:main"
-train-grpo = "scripts.train_grpo:main"
-evaluate = "scripts.evaluate:main"
+prepare-data = "scripts.build.prepare_data:main"
+train-sft = "scripts.training.train_sft:main"
+train-grpo = "scripts.training.train_grpo:main"
+evaluate = "scripts.eval.evaluate:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

@@ -188,7 +188,7 @@ data that was not available in this evaluation.
 
 | File | Description |
 |------|-------------|
-| `scripts/gate5_stats_validation.py` | Multi-replicate statistical validation script |
+| `scripts/gates/gate5_stats_validation.py` | Multi-replicate statistical validation script |
 | `data/gate5_stats_validation.json` | Full results with per-replicate breakdown |
 | `data/gate4_fullcpu_result.json` | Gate 4 results from parent task |
 | `checkpoints/gnn/gate2_fullgraph_finetuned.pt` | GNN checkpoint (1.1M params) |

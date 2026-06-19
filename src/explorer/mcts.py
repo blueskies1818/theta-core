@@ -679,7 +679,7 @@ class MCTS:
             return None
 
         import re
-        from scripts.eval_gnn_prover import normalize_expression
+        from scripts.eval.eval_gnn_prover import normalize_expression
 
         goal_text = state.get_goal_embedding_key()
         device = self._node_embeddings.device
@@ -882,7 +882,7 @@ class MCTS:
     def _build_indices(self) -> None:
         """Build keyword map and normalized conclusion index for goal embedding."""
         from collections import defaultdict
-        from scripts.eval_gnn_prover import (
+        from scripts.eval.eval_gnn_prover import (
             normalize_expression, extract_conclusion, build_lemma_norm_index,
         )
 

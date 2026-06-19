@@ -30,9 +30,9 @@ def _check_single_worker(
     return checker.check(code)
 
 
-# Spawn context — avoids tokenizers+fork deadlock on Linux.
-# Must be at module level so all ProcessPoolExecutor uses match.
-_MP_CONTEXT = mp.get_context("spawn")
+# Fork context — faster worker startup. Safe because proof-checker workers
+# don't use tokenizers (tokenizers+fork deadlock doesn't apply here).
+_MP_CONTEXT = mp.get_context("fork")
 
 
 class BatchChecker:

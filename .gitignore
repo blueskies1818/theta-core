@@ -22,7 +22,7 @@ ENV/
 Thumbs.db
 
 # Build / packaging
-build/
+/build/
 dist/
 .eggs/
 *.egg-info/

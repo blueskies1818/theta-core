@@ -126,7 +126,7 @@ and shows no path to doing so.
 | GNN embeddings (full_graph_pretrained.pt) | **ARCHIVE** | Useful for retrieval baselines but not as primary architecture |
 | Correspondence layer | **PRESERVE** | Orthogonal to proof architecture |
 | Theorem sets (gate2, gate3) | **PRESERVE** | Reusable benchmarks for any architecture |
-| Training pipeline (scripts/train_explorer.py) | **ARCHIVE** | Specific to current architecture; reference only |
+| Training pipeline (scripts/training/train_explorer.py) | **ARCHIVE** | Specific to current architecture; reference only |
 
 ### What we pivot away from
 

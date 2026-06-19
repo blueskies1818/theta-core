@@ -117,7 +117,7 @@
   },
   "files_changed": [
     "src/explorer/gnn_best_first_search.py (NEW \u2014 GNNBestFirstSearch class)",
-    "scripts/eval_hybrid_retrieval.py (NEW \u2014 evaluation script)",
+    "scripts/eval/eval_hybrid_retrieval.py (NEW \u2014 evaluation script)",
     "tests/test_gnn_best_first_search.py (NEW \u2014 10 unit tests)"
   ]
 }

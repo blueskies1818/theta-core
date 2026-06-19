@@ -98,7 +98,7 @@ class GoalEncoder(nn.Module):
 
 **Output:** `data/raw/proof_step_pairs.jsonl` — goal → lemma mapping, ~50K training pairs
 
-**Code:** Existing script `scripts/build_proof_step_data.py` (no changes needed)
+**Code:** Existing script `scripts/build/build_proof_step_data.py` (no changes needed)
 
 ## Step 4: Pretrain GNN on Proof-Step Prediction
 
@@ -121,7 +121,7 @@ loss = F.cross_entropy(logits / temperature, target_index)
 
 **Output:** `checkpoints/gnn/proof_step_pretrained.pt`
 
-**Code:** Rewrite `scripts/pretrain_proof_step.py`
+**Code:** Rewrite `scripts/training/pretrain_proof_step.py`
 
 ## Step 5: Strip Heuristics, Keep Only rfl
 
@@ -185,11 +185,11 @@ Inference on 25 held-out post-1905 theorems with H-scale=0.0.
 | `src/explorer/gnn_config.py` | Edit | Scale defaults: 256-dim, 3 layers |
 | `src/explorer/gnn_encoder.py` | Edit | Add GoalEncoder class, encode_goal method, save/load |
 | `src/explorer/mcts.py` | Edit | Use goal encoder, 1000 sims default, strip heuristics, reduce rfl boost |
-| `scripts/pretrain_proof_step.py` | Rewrite | Multi-class CE loss, goal encoder, 200 epochs |
-| `scripts/train_explorer.py` | Edit | Defaults: 1000 sims, 256-dim, 3 layers, 2000 anneal |
+| `scripts/training/pretrain_proof_step.py` | Rewrite | Multi-class CE loss, goal encoder, 200 epochs |
+| `scripts/training/train_explorer.py` | Edit | Defaults: 1000 sims, 256-dim, 3 layers, 2000 anneal |
 | `src/explorer/explorer_trainer.py` | Edit | Default anneal epochs 2000 |
-| `scripts/build_proof_step_data.py` | No change | Already correct |
-| `scripts/infer_explorer.py` | No change | Already supports H-scale |
+| `scripts/build/build_proof_step_data.py` | No change | Already correct |
+| `scripts/eval/infer_explorer.py` | No change | Already supports H-scale |
 
 ---
 

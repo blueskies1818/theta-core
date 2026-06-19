@@ -44,9 +44,9 @@ GNN Encoder (GAT, 1.1M params, GoalEncoder)
 | `src/proof_checker/` | Lean 4 subprocess interface, batch checker, cache |
 | `src/correspondence/` | Frontier map, era tracker, failure points, reward integration |
 | `src/reward/base.py` | Binary reward + length bonus + curiosity bonus |
-| `scripts/train_explorer.py` | Training entry point |
-| `scripts/infer_explorer.py` | Evaluation entry point (comparison mode, baselines) |
-| `scripts/build_richer_theorems.py` | Theorem set generation |
+| `scripts/training/train_explorer.py` | Training entry point |
+| `scripts/eval/infer_explorer.py` | Evaluation entry point (comparison mode, baselines) |
+| `scripts/build/build_richer_theorems.py` | Theorem set generation |
 | `configs/` | YAML configs (model, GRPO, reward, frontier) |
 
 ## Key Numbers
@@ -109,11 +109,25 @@ Always verify your task against the appropriate category before completing.
 ## Commands
 
 ```bash
-# Train
-python scripts/train_explorer.py --domain Algebra --pretrained <path> ...
+# Train (scripts/training/)
+python scripts/training/train_explorer.py --domain Algebra --pretrained <path> ...
+python scripts/training/pretrain_gnn.py --epochs 50
+python scripts/training/train_contrastive.py --epochs 30
 
-# Evaluate
-python scripts/infer_explorer.py --checkpoint <path> --compare --repeat 3
+# Evaluate (scripts/eval/)
+python scripts/eval/infer_explorer.py --checkpoint <path> --compare --repeat 3
+python scripts/eval/run_full_gate3_v2.py --output data/result.json
+
+# Audit / Verify (scripts/gates/)
+python scripts/gates/audit_structural.py
+python scripts/gates/gate4_evaluate.py
+
+# Build data (scripts/build/)
+python scripts/build/prepare_data.py --mathlib-dir ../mathlib4
+python scripts/build/build_dependency_graph.py
+
+# Tools / Debug (scripts/tools/)
+python scripts/tools/debug_mcts_proof.py --theorem "add_comm"
 
 # Run tests
 python -m pytest tests/ -q

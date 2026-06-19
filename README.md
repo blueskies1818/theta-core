@@ -340,12 +340,26 @@ theta-core/
 │       ├── logging.py                 # Rich-based metrics logging
 │       └── checkpoint.py             # Checkpoint save/load
 │
-├── scripts/                           # CLI entry points
-│   ├── prepare_data.py               # Extract theorems from Mathlib4
-│   ├── train_sft.py                  # Run SFT pretraining
-│   ├── train_grpo.py                 # Run GRPO self-play training
-│   ├── evaluate.py                   # Evaluate model on held-out theorems
-│   └── generate_sample.py            # Interactive proof generation
+├── scripts/                           # CLI entry points (organized by function)
+│   ├── gates/                         # Audit and verification scripts
+│   │   ├── audit_structural.py        # Structural audit
+│   │   ├── gate4_evaluate.py          # Gate 4 evaluation
+│   │   └── hybrid_gates.py            # Hybrid gate runner
+│   ├── training/                      # Training scripts
+│   │   ├── train_explorer.py          # Main training entry point
+│   │   ├── train_sft.py               # Run SFT pretraining
+│   │   └── train_grpo.py              # Run GRPO self-play training
+│   ├── eval/                          # Evaluation and benchmarking
+│   │   ├── infer_explorer.py          # Inference / evaluation entry point
+│   │   ├── evaluate.py                # Evaluate model on held-out theorems
+│   │   └── run_full_gate3_v2.py       # Full gate3 benchmark
+│   ├── build/                         # Data builders and generators
+│   │   ├── prepare_data.py            # Extract theorems from Mathlib4
+│   │   ├── build_dependency_graph.py  # Build math dependency graph
+│   │   └── generate_sample.py         # Interactive proof generation
+│   └── tools/                         # Debug, smoke tests, studies
+│       ├── debug_mcts_proof.py        # MCTS proof debugger
+│       └── smoke_test_contrastive.py  # Contrastive retrieval smoke test
 │
 ├── tests/                             # Tests
 │   ├── test_lean_interface.py        # Proof checker tests
@@ -394,7 +408,7 @@ lean --version
 
 ```bash
 # Extract theorem-proof pairs from Mathlib4
-python scripts/prepare_data.py \
+python scripts/build/prepare_data.py \
   --mathlib-dir ../mathlib4 \
   --output-dir data \
   --max-theorems 50000
@@ -404,7 +418,7 @@ python scripts/prepare_data.py \
 
 ```bash
 # Pretrain the model on theorem-proof pairs
-python scripts/train_sft.py \
+python scripts/training/train_sft.py \
   --data-dir data \
   --output-dir checkpoints/sft \
   --use-lora  # optional, for memory-constrained setups
@@ -414,7 +428,7 @@ python scripts/train_sft.py \
 
 ```bash
 # Self-play training against the Lean 4 proof checker
-python scripts/train_grpo.py \
+python scripts/training/train_grpo.py \
   --sft-checkpoint checkpoints/sft/final \
   --data-dir data \
   --output-dir checkpoints/grpo \
@@ -425,7 +439,7 @@ python scripts/train_grpo.py \
 
 ```bash
 # Test on held-out theorems
-python scripts/evaluate.py \
+python scripts/eval/evaluate.py \
   --checkpoint checkpoints/grpo/checkpoint-1000 \
   --num-theorems 100
 ```
@@ -434,7 +448,7 @@ python scripts/evaluate.py \
 
 ```bash
 # Generate and check proofs interactively
-python scripts/generate_sample.py \
+python scripts/build/generate_sample.py \
   --checkpoint checkpoints/sft/final \
   --theorem "theorem add_comm (a b : Nat) : a + b = b + a"
 ```

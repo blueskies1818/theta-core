@@ -73,7 +73,7 @@ Eval every 100 epochs:
 ## 6. Run Command
 
 ```bash
-python scripts/train_explorer.py \
+python scripts/training/train_explorer.py \
   --domain Algebra \
   --pretrained checkpoints/gnn/proof_step_pretrained.pt \
   --theorems data/raw/physics_theorems_full.jsonl \

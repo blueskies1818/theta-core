@@ -372,7 +372,7 @@
       "finetuned_model": "checkpoints/gnn/gate2_fullgraph_finetuned.pt",
       "csv": "data/eval_gate3_fullgraph.csv",
       "result_file": "data/gate3_fullgraph_result.json",
-      "finetune_script": "scripts/finetune_gate2_fullgraph.py"
+      "finetune_script": "scripts/training/finetune_gate2_fullgraph.py"
     }
   },
   "comparison_summary": {

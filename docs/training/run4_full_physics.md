@@ -149,10 +149,10 @@ src/correspondence/era_tracker.py  — Fixed scan_batch to only scan proof text
 ### New in this run
 
 ```
-scripts/build_physics_theorems.py  — Physics theorem dataset generator (54 theorems)
-scripts/verify_physics_proofs.py   — Proof validity checker (29/29 pass)
-scripts/test_all_physics.py        — MCTS proof generation test
-scripts/debug_mcts_proof.py        — MCTS proof debugger
+scripts/build/build_physics_theorems.py  — Physics theorem dataset generator (54 theorems)
+scripts/gates/verify_physics_proofs.py   — Proof validity checker (29/29 pass)
+scripts/tools/test_all_physics.py        — MCTS proof generation test
+scripts/tools/debug_mcts_proof.py        — MCTS proof debugger
 data/raw/physics_theorems.jsonl    — 29 pre-relativity training theorems
 data/raw/physics_theorems_full.jsonl — Full 54-theorem dataset
 ```

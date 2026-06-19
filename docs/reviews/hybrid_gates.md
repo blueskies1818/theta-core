@@ -57,7 +57,7 @@ have match rate ≤ allowed threshold (random baseline + 5% margin).
 | Random baseline | 61.79% | — | — |
 | Structurally leaked theorems | 8/22 | — | — |
 
-**Source:** `scripts/audit_structural.py` on gate2_test_pairs.jsonl vs training_combined.jsonl
+**Source:** `scripts/gates/audit_structural.py` on gate2_test_pairs.jsonl vs training_combined.jsonl
 
 **Verdict: PASS.** The shape-matcher tactic match rate (36.36%) is well below the
 random baseline + 5% threshold (66.79%). Theorem proofs are structurally independent
@@ -116,7 +116,7 @@ proofs where the CharCNN baseline found 0.
 | MRR | 0.079 | 0.786 (reported) | +0.707 |
 | Multi-step | 0 | 0 (on this subset) | — |
 
-**Source:** `scripts/hybrid_gate3_quick.py`, parent task `data/hybrid_retrieval_result.json`
+**Source:** `scripts/gates/hybrid_gate3_quick.py`, parent task `data/hybrid_retrieval_result.json`
 
 **Verdict: PASS.** The hybrid architecture found 2 Lean-verified proofs on gate3_v2
 algebra theorems where the CharCNN baseline found 0. Both proofs are structurally
@@ -274,9 +274,9 @@ composition capability.
 | `data/hybrid_gate3_quick.json` | Gate 3 algebra subset results (2/5 proofs) |
 | `data/hybrid_retrieval_result.json` | Parent task: initial hybrid evaluation (2/2 algebra) |
 | `data/hybrid_gate4_quick.json` | Gate 4 quick evaluation (inconclusive) |
-| `scripts/hybrid_gates.py` | Comprehensive hybrid gates evaluation script |
-| `scripts/hybrid_gate3_quick.py` | Gate 3 focused evaluation script |
-| `scripts/hybrid_gate4_quick.py` | Gate 4 focused evaluation script |
+| `scripts/gates/hybrid_gates.py` | Comprehensive hybrid gates evaluation script |
+| `scripts/gates/hybrid_gate3_quick.py` | Gate 3 focused evaluation script |
+| `scripts/gates/hybrid_gate4_quick.py` | Gate 4 focused evaluation script |
 | `src/explorer/gnn_best_first_search.py` | Hybrid GNN best-first search class |
 
 ---
