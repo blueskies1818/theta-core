@@ -1,8 +1,12 @@
-"""Projection adapter that sits on top of a frozen GNN.
+"""Projection adapter for GNN embeddings.
 
-Freeze the full GNN. Train only this small head to re-weight
-embedding dimensions for proof utility. Preserves graph topology
-knowledge while learning which dimensions matter for proof-closing.
+Utility module — can be used on top of a frozen GNN to re-weight
+embedding dimensions, or as a lightweight post-processing head.
+Full GNN fine-tuning is the primary approach now; this module
+remains available for experiments that need a small trainable head.
+
+Preserves graph topology knowledge while learning which dimensions
+matter for proof-closing.
 """
 
 import torch

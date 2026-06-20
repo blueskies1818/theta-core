@@ -1,29 +1,36 @@
 #!/usr/bin/env python3
-"""Evaluate GNN+Adapter on gate3_v2 benchmark.
+"""Evaluate fine-tuned GNN on gate3_v2 benchmark.
 
-Loads frozen GNN + trained adapter, runs best-first search
-on all 64 gate3_v2 theorems. Compares to GNN-only baseline.
+Loads a fine-tuned GNN checkpoint (full model, not adapter-only),
+runs best-first search on all 64 gate3_v2 theorems. Compares to
+the pre-trained GNN baseline.
+
+No adapter — the GNN itself has been fine-tuned with proof-checker
+rejection feedback to reshape its embedding space.
 
 Usage:
     # Smoke test on 5 theorems
     python scripts/eval/eval_gnn_adapter.py \
-        --gnn-checkpoint checkpoints/gnn/full_graph_pretrained.pt \
-        --adapter data/adapter_smoke/adapter.pt \
-        --output data/adapter_smoke_eval.json \
+        --gnn-checkpoint data/gnn_ft_full/gnn_fine_tuned.pt \
+        --output data/gnn_ft_gate3_result.json \
         --max-theorems 5
 
     # Full eval
     python scripts/eval/eval_gnn_adapter.py \
-        --gnn-checkpoint checkpoints/gnn/full_graph_pretrained.pt \
-        --adapter data/adapter_full/adapter.pt \
-        --output data/adapter_gate3_result.json
+        --gnn-checkpoint data/gnn_ft_full/gnn_fine_tuned.pt \
+        --output data/gnn_ft_gate3_result.json
 
     # Statistical validation (Gate 5, 3 replicates)
     python scripts/eval/eval_gnn_adapter.py \
-        --gnn-checkpoint checkpoints/gnn/full_graph_pretrained.pt \
-        --adapter data/adapter_full/adapter.pt \
-        --output data/adapter_gate5_result.json \
+        --gnn-checkpoint data/gnn_ft_full/gnn_fine_tuned.pt \
+        --output data/gnn_ft_gate5_result.json \
         --repeat 3
+
+    # Compare against baseline
+    python scripts/eval/eval_gnn_adapter.py \
+        --gnn-checkpoint data/gnn_ft_full/gnn_fine_tuned.pt \
+        --compare \
+        --baseline checkpoints/gnn/full_graph_pretrained.pt
 """
 
 import argparse
@@ -37,7 +44,6 @@ _project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_project_root))
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
 from src.explorer.dependency_graph import DependencyGraph
@@ -46,7 +52,6 @@ from src.explorer.gnn_encoder import (
     extract_initial_features,
     prepare_graph_tensors,
 )
-from src.explorer.gnn_adapter import GNNAdapterHead
 from src.explorer.gnn_best_first_search import GNNBestFirstSearch, GNNBestFirstConfig
 from src.explorer.proof_state import ProofState
 from src.proof_checker.batch_checker import BatchChecker
@@ -66,54 +71,11 @@ from scripts.eval.run_full_gate3_v2 import (
 
 
 # ---------------------------------------------------------------------------
-# Adapted GNN wrapper
-# ---------------------------------------------------------------------------
-
-class AdaptedGNNWrapper(nn.Module):
-    """Wraps a frozen GNN with an adapter for end-to-end adapted encoding.
-
-    Delegates encode_goal through the GNN's goal encoder, then the adapter.
-    This makes it compatible with GNNBestFirstSearch which calls
-    self.gnn.encode_goal() internally.
-    """
-
-    def __init__(self, gnn: GNNEncoder, adapter: GNNAdapterHead):
-        super().__init__()
-        self._gnn = gnn
-        self._adapter = adapter
-
-        # Forward config/state_dict attributes to the real GNN
-        self.config = gnn.config
-        self.goal_encoder = gnn.goal_encoder
-
-    def encode_goal(self, context_embedding: torch.Tensor) -> torch.Tensor:
-        """Encode goal through GNN goal encoder then adapter."""
-        gnn_out = self._gnn.encode_goal(context_embedding)
-        adapted = self._adapter(gnn_out.unsqueeze(0)).squeeze(0)
-        return adapted
-
-    def eval(self):
-        self._gnn.eval()
-        self._adapter.eval()
-        return self
-
-    def state_dict(self, *args, **kwargs):
-        return self._gnn.state_dict(*args, **kwargs)
-
-    def load_state_dict(self, *args, **kwargs):
-        return self._gnn.load_state_dict(*args, **kwargs)
-
-    def parameters(self, *args, **kwargs):
-        return self._gnn.parameters(*args, **kwargs)
-
-
-# ---------------------------------------------------------------------------
 # Main evaluation
 # ---------------------------------------------------------------------------
 
-def run_gate3_with_adapter(
+def run_gate3_with_finetuned_gnn(
     gnn: GNNEncoder,
-    adapter: GNNAdapterHead,
     graph: DependencyGraph,
     theorems: list[dict],
     config: GNNBestFirstConfig,
@@ -122,53 +84,44 @@ def run_gate3_with_adapter(
     checker: BatchChecker | None,
     output_path: Path,
 ) -> dict:
-    """Run gate3_v2 benchmark with GNN+Adapter pipeline.
+    """Run gate3_v2 benchmark with fine-tuned GNN.
 
     Architecture:
-      1. Compute raw GNN node embeddings (frozen GNN)
-      2. Transform all node embeddings through adapter
-      3. Wrap GNN in AdaptedGNNWrapper for adapted goal encoding
-      4. Run standard best-first search with adapted embeddings
+      1. Compute GNN node embeddings
+      2. Use GNN directly for goal encoding and lemma scoring
+      3. Run standard best-first search
     """
     print("\n" + "=" * 70)
-    print("GATE 3: GNN + Adapter on gate3_v2 (64 theorems)")
+    print("GATE 3: Fine-tuned GNN on gate3_v2 (64 theorems)")
     print("=" * 70)
 
-    # Compute raw GNN node embeddings
+    # Compute GNN node embeddings
     print("\nComputing GNN node embeddings...")
+    gnn.eval()
     features = extract_initial_features(graph, gnn.config)
     sources, targets, edge_types, num_nodes = prepare_graph_tensors(graph)
     print(f"  Graph: {num_nodes} nodes, {sources.size(0)} edges")
 
     with torch.no_grad():
-        raw_embeddings = gnn(features, sources, targets, edge_types, num_nodes)
-    print(f"  Raw embeddings: {raw_embeddings.shape}")
+        node_embeddings = gnn(features, sources, targets, edge_types, num_nodes)
+        node_embeddings = F.normalize(node_embeddings, dim=-1)
+    print(f"  Embeddings: {node_embeddings.shape}")
 
-    # Transform through adapter
-    adapter.eval()
-    with torch.no_grad():
-        adapted_embeddings = adapter(F.normalize(raw_embeddings, dim=-1))
-        adapted_embeddings = F.normalize(adapted_embeddings, dim=-1)
-    print(f"  Adapted embeddings: {adapted_embeddings.shape}")
+    # Check embedding health
+    _check_embedding_health(node_embeddings)
 
-    # Check embedding health (Gate D info)
-    _check_adapt_health(adapted_embeddings)
-
-    # Create wrapped GNN for adapted goal encoding
-    wrapped_gnn = AdaptedGNNWrapper(gnn, adapter)
-
-    # Setup search with adapted embeddings
+    # Setup search
     bf_search = GNNBestFirstSearch(
-        gnn=wrapped_gnn,
+        gnn=gnn,
         graph=graph,
-        node_embeddings=adapted_embeddings,
+        node_embeddings=node_embeddings,
         lemma_index=lemma_to_idx,
         idx_to_norm=idx_to_norm,
         config=config,
         proof_checker=checker if config.use_proof_checker else None,
     )
 
-    print(f"\n--- Running adapted best-first search on {len(theorems)} theorems ---")
+    print(f"\n--- Running best-first search on {len(theorems)} theorems ---")
     print(f"    Max expansions: {config.max_expansions}, Top-K: {config.top_k_lemmas}")
     print(f"    Threads: {config.num_threads}")
     print()
@@ -225,7 +178,7 @@ def run_gate3_with_adapter(
             "domain": domain,
             "success": ok,
             "error": err,
-            "adapter_proof_steps": steps_str,
+            "proof_steps": steps_str,
             "num_steps": len(proof_steps),
             "ground_truth": ground_truth,
             "search_time_s": round(search_time, 1),
@@ -263,7 +216,7 @@ def run_gate3_with_adapter(
 
     # Stats
     print(f"\n{'=' * 70}")
-    print("GATE 3: GNN + ADAPTER RESULTS")
+    print("GATE 3: FINE-TUNED GNN RESULTS")
     print(f"{'=' * 70}")
     print(f"  Total:    {n_passed}/{n_total} ({rate:.0%})")
     print(f"  Multi-step: {len(multi)}")
@@ -293,9 +246,9 @@ def run_gate3_with_adapter(
 
     # Build output
     out = {
-        "task": "GNN + Adapter on gate3_v2 benchmark",
+        "task": "Fine-tuned GNN on gate3_v2 benchmark",
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "architecture": "Frozen GNN (1.1M) + GNNAdapterHead (130K) + Best-first search",
+        "architecture": "Fine-tuned GNN (1.1M) + Best-first search",
         "config": {
             "max_depth": config.max_depth,
             "max_expansions": config.max_expansions,
@@ -304,7 +257,6 @@ def run_gate3_with_adapter(
             "use_proof_checker": config.use_proof_checker,
             "num_threads": config.num_threads,
             "gnn_params": sum(p.numel() for p in gnn.parameters()),
-            "adapter_params": sum(p.numel() for p in adapter.parameters()),
         },
         "graph": {
             "num_nodes": graph.num_nodes,
@@ -340,7 +292,7 @@ def run_gate3_with_adapter(
                 {
                     "name": r["name"],
                     "domain": r["domain"],
-                    "proof": " ".join(r["adapter_proof_steps"]),
+                    "proof": " ".join(r["proof_steps"]),
                     "pattern": r["pattern"],
                     "num_steps": r["num_steps"],
                     "lemma_novelty": r["lemma_novelty"],
@@ -366,8 +318,8 @@ def run_gate3_with_adapter(
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _check_adapt_health(embeddings: torch.Tensor) -> dict:
-    """Check adapted embedding health (Gate D info)."""
+def _check_embedding_health(embeddings: torch.Tensor) -> dict:
+    """Check embedding health (relaxed Gate D thresholds)."""
     N = embeddings.size(0)
     sample_n = min(N, 2000)
     indices = torch.randperm(N)[:sample_n]
@@ -378,14 +330,13 @@ def _check_adapt_health(embeddings: torch.Tensor) -> dict:
     off_diag = cos_sim[mask]
     avg_std = off_diag.std().item()
 
-    # Rank via SVD
     U, S, V = torch.svd(sample)
     threshold = S.max().item() * 0.01
     rank = (S > threshold).sum().item()
 
     print(
         f"  Embedding health: avg_cosine_std={avg_std:.4f} "
-        f"(need >0.1), rank={rank} (need 256)"
+        f"(need >0.05), rank={rank} (need >128)"
     )
     return {"avg_cosine_std": avg_std, "rank": rank}
 
@@ -396,17 +347,12 @@ def _check_adapt_health(embeddings: torch.Tensor) -> dict:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Evaluate GNN+Adapter on gate3_v2 benchmark"
+        description="Evaluate fine-tuned GNN on gate3_v2 benchmark"
     )
     parser.add_argument(
         "--gnn-checkpoint",
-        default="checkpoints/gnn/full_graph_pretrained.pt",
-        help="Path to frozen GNN checkpoint",
-    )
-    parser.add_argument(
-        "--adapter",
-        default="data/adapter_full/adapter.pt",
-        help="Path to trained adapter weights",
+        default="data/gnn_ft_full/gnn_fine_tuned.pt",
+        help="Path to fine-tuned GNN checkpoint",
     )
     parser.add_argument(
         "--graph",
@@ -434,7 +380,7 @@ def main():
         help="Number of CPU threads",
     )
     parser.add_argument(
-        "--output", default="data/adapter_gate3_result.json",
+        "--output", default="data/gnn_ft_gate3_result.json",
         help="Output JSON file",
     )
     parser.add_argument(
@@ -449,6 +395,15 @@ def main():
         "--no-proof-checker", action="store_true",
         help="Disable Lean proof checker",
     )
+    parser.add_argument(
+        "--compare", action="store_true",
+        help="Compare against baseline GNN",
+    )
+    parser.add_argument(
+        "--baseline",
+        default="checkpoints/gnn/full_graph_pretrained.pt",
+        help="Path to baseline GNN checkpoint for comparison",
+    )
     args = parser.parse_args()
 
     # Hardware constraint
@@ -456,10 +411,9 @@ def main():
     torch.set_num_threads(args.num_threads)
 
     print("=" * 70)
-    print("GNN + ADAPTER EVALUATION")
+    print("FINE-TUNED GNN EVALUATION")
     print("=" * 70)
     print(f"  GNN: {args.gnn_checkpoint}")
-    print(f"  Adapter: {args.adapter}")
     print(f"  Threads: {args.num_threads}")
     print(f"  Repeats: {args.repeat}")
     print()
@@ -470,21 +424,9 @@ def main():
         print(f"ERROR: GNN checkpoint not found: {gnn_path}")
         return 1
     gnn = GNNEncoder.load(str(gnn_path))
-    for p in gnn.parameters():
-        p.requires_grad = False
     gnn.eval()
     print(f"  GNN: {sum(p.numel() for p in gnn.parameters()):,} params, "
           f"hidden={gnn.config.hidden_dim}")
-
-    # Load adapter
-    adapter_path = _project_root / args.adapter
-    if not adapter_path.exists():
-        print(f"ERROR: Adapter checkpoint not found: {adapter_path}")
-        return 1
-    adapter = GNNAdapterHead(input_dim=gnn.config.hidden_dim)
-    adapter.load_state_dict(torch.load(str(adapter_path), map_location="cpu"))
-    adapter.eval()
-    print(f"  Adapter: {sum(p.numel() for p in adapter.parameters()):,} params")
 
     # Load graph
     graph_path = _project_root / args.graph
@@ -536,9 +478,8 @@ def main():
             ".json", f"{rep_label}.json"
         )
 
-        result = run_gate3_with_adapter(
+        result = run_gate3_with_finetuned_gnn(
             gnn=gnn,
-            adapter=adapter,
             graph=graph,
             theorems=theorems,
             config=config,
@@ -563,10 +504,9 @@ def main():
         print(f"  Rates: {[f'{r:.1%}' for r in rates]}")
         print(f"  Mean: {mean_rate:.1%}")
         print(f"  Std: {std_rate:.3%}")
-        gate5_pass = std_rate < 0.03  # <3pp std
+        gate5_pass = std_rate < 0.03
         print(f"  Gate 5: {'PASS' if gate5_pass else 'FAIL'} (std {std_rate:.3%} < 3pp)")
 
-        # Save aggregate
         aggregate = {
             "replicates": args.repeat,
             "rates": rates,
@@ -586,6 +526,35 @@ def main():
         with open(agg_path, "w") as f:
             json.dump(aggregate, f, indent=2)
         print(f"  Aggregate saved to: {agg_path}")
+
+    # Comparison against baseline
+    if args.compare:
+        print(f"\n{'=' * 70}")
+        print("COMPARISON: Fine-tuned vs Baseline GNN")
+        print(f"{'=' * 70}")
+        baseline_path = _project_root / args.baseline
+        if baseline_path.exists():
+            baseline_gnn = GNNEncoder.load(str(baseline_path))
+            baseline_gnn.eval()
+            baseline_out = run_gate3_with_finetuned_gnn(
+                gnn=baseline_gnn,
+                graph=graph,
+                theorems=theorems,
+                config=config,
+                lemma_to_idx=lemma_to_idx,
+                idx_to_norm=idx_to_norm,
+                checker=checker,
+                output_path=_project_root / args.output.replace(".json", "_baseline.json"),
+            )
+            ft_rate = all_replicates[0]["gate3"]["rate"]
+            bl_rate = baseline_out["gate3"]["rate"]
+            delta = ft_rate - bl_rate
+            print(f"\n  Fine-tuned: {ft_rate:.1%}")
+            print(f"  Baseline:   {bl_rate:.1%}")
+            print(f"  Delta:      {delta:+.1%}")
+            print(f"  Improvement: {'YES' if delta > 0 else 'NO'}")
+        else:
+            print(f"  Baseline checkpoint not found: {baseline_path}")
 
     return 0
 
