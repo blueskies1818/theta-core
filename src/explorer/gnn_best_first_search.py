@@ -73,6 +73,15 @@ class GNNBestFirstConfig:
     # None = no pruning, float = prune if value < threshold.
     value_prune_threshold: float | None = 0.1
 
+    # Iterative rejection feedback (PATH 3)
+    # Set of lemma names that Lean rejected in previous iterations.
+    # These lemmas get a score penalty to force exploration of alternatives.
+    rejected_lemmas: set[str] = field(default_factory=set)
+
+    # How much to penalize rejected lemmas (subtracted from final score).
+    # 0.0 = no penalty (backward compatible), 0.5 = strong penalty.
+    rejection_penalty: float = 0.3
+
 
 # ---------------------------------------------------------------------------
 # Priority queue wrapper (same as original BestFirstSearch)
@@ -372,6 +381,11 @@ class GNNBestFirstSearch:
                 if name in builtins:
                     score += 0.15
                     break
+
+            # Rejection penalty: penalize lemmas Lean rejected in prior iterations.
+            # This forces exploration of alternative lemma combinations.
+            if name in self.config.rejected_lemmas:
+                score -= self.config.rejection_penalty
 
             scores.append((name, score))
 
