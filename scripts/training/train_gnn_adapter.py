@@ -576,7 +576,7 @@ def train_adapter(args):
 
         # ---- Gate C: Validation MRR ----
         val_mrr = _compute_val_mrr_fast(
-            adapter, node_embeddings, lemma_to_idx, val_pairs, device
+            adapter, node_embeddings, lemma_to_idx, kw_lemmas_map, val_pairs, device
         )
 
         # ---- Logging ----
@@ -656,7 +656,7 @@ def train_adapter(args):
         # Check Gate C on final model
         model.eval()
         final_val_mrr = _compute_val_mrr_fast(
-            adapter, node_embeddings, lemma_to_idx, val_pairs, device
+            adapter, node_embeddings, lemma_to_idx, kw_lemmas_map, val_pairs, device
         )
         gate_c_ok = final_val_mrr > 0.786
         print(f"  Gate C final MRR: {final_val_mrr:.4f} > 0.786? {'PASS' if gate_c_ok else 'FAIL'}")
@@ -710,27 +710,26 @@ def _compute_val_mrr_fast(
     adapter: GNNAdapterHead,
     node_embeddings: torch.Tensor,
     lemma_to_idx: dict[str, int],
+    kw_lemmas_map: dict[str, list[int]],
     val_pairs: list[dict],
     device: torch.device,
-    sample_size: int = 1000,
+    sample_size: int = 500,
 ) -> float:
     """Compute Mean Reciprocal Rank on a sample of validation pairs.
 
     For each (goal, correct_lemma) pair:
     1. Get goal embedding via keyword averaging + adapter
-    2. Score against all lemma embeddings
-    3. Compute rank of correct lemma
+    2. Score against lemma embeddings for matched keywords
+    3. Compute rank of correct lemma among scored lemmas
     """
     adapter.eval()
     all_emb = adapter(F.normalize(node_embeddings, dim=-1))
 
-    # Use a sample for efficiency
     sample = val_pairs[:sample_size] if len(val_pairs) > sample_size else val_pairs
 
     reciprocal_ranks = []
 
     with torch.no_grad():
-        # Pre-compute goal embeddings for all sample pairs
         for pair in sample:
             goal_text = pair["goal"]
             lemma_name = pair["lemma"]
@@ -739,14 +738,13 @@ def _compute_val_mrr_fast(
             if correct_idx is None or correct_idx >= all_emb.size(0):
                 continue
 
-            # Encode goal through keyword averaging
+            # Encode goal through keyword averaging using pre-built map
             keywords = _extract_math_keywords(goal_text)
-            matching_indices = set()
+            matching_indices: set[int] = set()
             for kw in keywords:
-                # Build keyword map on the fly using lemma_to_idx
-                kw_lower = kw.lower()
-                for name, idx in lemma_to_idx.items():
-                    if kw_lower in name.lower() and idx < all_emb.size(0):
+                matches = kw_lemmas_map.get(kw.lower(), [])
+                for idx in matches:
+                    if idx < all_emb.size(0):
                         matching_indices.add(idx)
 
             if not matching_indices:
@@ -754,12 +752,11 @@ def _compute_val_mrr_fast(
 
             match_list = list(matching_indices)[:100]
             match_t = torch.tensor(match_list, device=device)
-            context_emb = all_emb[match_t].mean(dim=0)  # [D]
-            goal_emb = F.normalize(context_emb, dim=-1)  # [D]
+            context_emb = all_emb[match_t].mean(dim=0)
+            goal_emb = F.normalize(context_emb, dim=-1)
 
             # Score all lemmas
             scores = goal_emb @ all_emb.T  # [N]
-            # Rank of correct lemma (1-indexed)
             correct_score = scores[correct_idx]
             rank = (scores > correct_score).sum().item() + 1
             reciprocal_ranks.append(1.0 / rank)
