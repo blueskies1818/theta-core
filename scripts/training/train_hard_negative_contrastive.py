@@ -168,6 +168,103 @@ def evaluate(
     }
 
 
+def save_full_checkpoint(
+    path: Path,
+    model: ContrastiveDualEncoder,
+    optimizer: torch.optim.Optimizer,
+    scheduler: torch.optim.lr_scheduler.LRScheduler,
+    epoch: int,
+    history: dict,
+    best_val_acc: float,
+    best_val_loss: float,
+    total_elapsed: float,
+):
+    """Save complete training state for resumption."""
+    config_dict = {
+        "hidden_dim": model.config.hidden_dim,
+        "vocab_size": model.config.vocab_size,
+        "max_seq_len": model.config.max_seq_len,
+        "char_embed_dim": model.config.char_embed_dim,
+        "cnn_filters": model.config.cnn_filters,
+        "cnn_kernel_sizes": list(model.config.cnn_kernel_sizes),
+        "cnn_dropout": model.config.cnn_dropout,
+        "mlp_expansion": model.config.mlp_expansion,
+        "pooling": model.config.pooling,
+        "temperature": model.config.temperature,
+    }
+    save_dict = {
+        "model_state_dict": model.state_dict(),
+        "config_dict": config_dict,
+        "optimizer_state_dict": optimizer.state_dict(),
+        "scheduler_state_dict": scheduler.state_dict(),
+        "epoch": epoch,
+        "history": history,
+        "best_val_acc": best_val_acc,
+        "best_val_loss": best_val_loss,
+        "total_elapsed": total_elapsed,
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(save_dict, str(path))
+
+
+def try_resume(
+    path: Path,
+    device: torch.device,
+) -> tuple[ContrastiveDualEncoder, torch.optim.Optimizer,
+           torch.optim.lr_scheduler.LRScheduler, int, dict,
+           float, float, float] | None:
+    """Load full training checkpoint. Returns None if file doesn't exist."""
+    if not path.exists():
+        return None
+
+    print(f"Resuming from checkpoint: {path}")
+    state = torch.load(str(path), map_location=device, weights_only=False)
+
+    cd = state["config_dict"]
+    config = ContrastiveConfig(
+        hidden_dim=cd["hidden_dim"],
+        vocab_size=cd["vocab_size"],
+        max_seq_len=cd["max_seq_len"],
+        char_embed_dim=cd["char_embed_dim"],
+        cnn_filters=cd["cnn_filters"],
+        cnn_kernel_sizes=tuple(cd["cnn_kernel_sizes"]),
+        cnn_dropout=cd["cnn_dropout"],
+        mlp_expansion=cd["mlp_expansion"],
+        pooling=cd["pooling"],
+        temperature=cd["temperature"],
+        num_epochs=cd.get("num_epochs", 30),
+    )
+
+    model = ContrastiveDualEncoder(config).to(device)
+    model.load_state_dict(state["model_state_dict"])
+
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=config.learning_rate,
+        weight_decay=config.weight_decay,
+    )
+    optimizer.load_state_dict(state["optimizer_state_dict"])
+
+    # Need to set T_max correctly — use config.num_epochs
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, T_max=config.num_epochs,
+    )
+    scheduler.load_state_dict(state["scheduler_state_dict"])
+
+    start_epoch = state["epoch"] + 1  # resume from next epoch
+    history = state["history"]
+    best_val_acc = state["best_val_acc"]
+    best_val_loss = state["best_val_loss"]
+    total_elapsed = state["total_elapsed"]
+
+    print(f"  Resuming from epoch {start_epoch}/{config.num_epochs}")
+    print(f"  Best val acc so far: {best_val_acc:.3f}")
+    print(f"  Total elapsed so far: {total_elapsed:.0f}s")
+
+    return (model, optimizer, scheduler, start_epoch, history,
+            best_val_acc, best_val_loss, total_elapsed)
+
+
 def train(args) -> dict:
     """Train the hard-negative contrastive dual-encoder."""
     # ---- Setup --------------------------------------------------------------
@@ -263,21 +360,43 @@ def train(args) -> dict:
         print(f"done. {len(pair_idx_to_hn_ids)} pairs have hard negatives "
               f"({missing_count} without).")
 
-    # ---- Create model -------------------------------------------------------
-    model = ContrastiveDualEncoder(config).to(device)
+    # ---- Attempt resume -----------------------------------------------------
+    resume_path = _project_root / args.resume if args.resume else None
+    resume_data = None
+    if resume_path:
+        resume_data = try_resume(resume_path, device)
+        if resume_data is None:
+            print(f"WARNING: Resume checkpoint not found at {resume_path}")
+            print("  Starting from scratch.")
+
+    # ---- Create / restore model ---------------------------------------------
+    if resume_data:
+        (model, optimizer, scheduler, start_epoch,
+         history, best_val_acc, best_val_loss, total_elapsed) = resume_data
+        # total_elapsed is pre-resume time; we track from now + add at end
+        t_start = time.time()
+        pre_elapsed = total_elapsed
+    else:
+        model = ContrastiveDualEncoder(config).to(device)
+        optimizer = torch.optim.AdamW(
+            model.parameters(),
+            lr=config.learning_rate,
+            weight_decay=config.weight_decay,
+        )
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer, T_max=config.num_epochs,
+        )
+        start_epoch = 0
+        best_val_acc = 0.0
+        best_val_loss = float("inf")
+        history = {"train_loss": [], "val_acc": [], "val_loss": [],
+                   "infonce_loss": [], "hard_neg_loss": []}
+        t_start = time.time()
+        pre_elapsed = 0.0
+
     print(f"Model: {model.num_params:,} total params "
           f"(goal: {model.goal_encoder_params:,}, "
           f"lemma: {model.lemma_encoder_params:,})")
-
-    # ---- Optimizer ----------------------------------------------------------
-    optimizer = torch.optim.AdamW(
-        model.parameters(),
-        lr=config.learning_rate,
-        weight_decay=config.weight_decay,
-    )
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=config.num_epochs,
-    )
 
     # ---- Split indices ------------------------------------------------------
     indices = list(range(len(pairs)))
@@ -291,15 +410,9 @@ def train(args) -> dict:
     print(f"Train: {len(train_indices)}, Val: {len(val_indices)}")
 
     # ---- Training -----------------------------------------------------------
-    best_val_acc = 0.0
-    best_val_loss = float("inf")
-    history = {"train_loss": [], "val_acc": [], "val_loss": [],
-               "infonce_loss": [], "hard_neg_loss": []}
-    t_start = time.time()
-
     temperature_inv = 1.0 / config.temperature
 
-    for epoch in range(config.num_epochs):
+    for epoch in range(start_epoch, config.num_epochs):
         model.train()
         random.shuffle(train_indices)
 
@@ -376,7 +489,7 @@ def train(args) -> dict:
         history["val_loss"].append(val_results["loss"])
         history["val_acc"].append(val_results["accuracy"])
 
-        elapsed = time.time() - t_start
+        elapsed = pre_elapsed + (time.time() - t_start)
         if epoch % 2 == 0 or epoch == config.num_epochs - 1:
             print(f"Epoch {epoch:3d}/{config.num_epochs} | "
                   f"Loss: {avg_loss:.4f} (iNCE: {avg_infonce:.4f}, "
@@ -384,7 +497,7 @@ def train(args) -> dict:
                   f"Acc: {avg_acc:.3f} | "
                   f"Val: {val_results['loss']:.4f} Acc: {val_results['accuracy']:.3f} | "
                   f"LR: {scheduler.get_last_lr()[0]:.2e} | "
-                  f"Time: {elapsed:.1f}s", flush=True)
+                  f"Time: {elapsed:.0f}s", flush=True)
 
         # ---- Checkpoint ----------------------------------------------------
         if val_results["accuracy"] > best_val_acc:
@@ -396,7 +509,17 @@ def train(args) -> dict:
         if val_results["loss"] < best_val_loss:
             best_val_loss = val_results["loss"]
 
-    total_time = time.time() - t_start
+        # ---- Periodic full checkpoint for resumption -----------------------
+        if args.checkpoint_every > 0 and epoch > 0 and epoch % args.checkpoint_every == 0:
+            ckpt_path = _project_root / args.checkpoint_path
+            total_now = pre_elapsed + (time.time() - t_start)
+            save_full_checkpoint(
+                ckpt_path, model, optimizer, scheduler,
+                epoch, history, best_val_acc, best_val_loss, total_now,
+            )
+            print(f"  → Saved resume checkpoint (epoch={epoch})")
+
+    total_time = pre_elapsed + (time.time() - t_start)
     print(f"\nTraining complete: {config.num_epochs} epochs in {total_time:.1f}s")
     print(f"  Best val accuracy: {best_val_acc:.3f}")
     print(f"  Best val loss:     {best_val_loss:.4f}")
@@ -447,6 +570,15 @@ def main():
     parser.add_argument("--margin", type=float, default=0.3,
                         help="Triplet margin")
     parser.add_argument("--seed", type=int, default=42)
+
+    # Checkpoint / Resume
+    parser.add_argument("--resume", default=None,
+                        help="Path to full training checkpoint to resume from")
+    parser.add_argument("--checkpoint-every", type=int, default=5,
+                        help="Save full training checkpoint every N epochs (0=disable)")
+    parser.add_argument("--checkpoint-path",
+                        default="checkpoints/contrastive/training_checkpoint.pt",
+                        help="Path for periodic full training checkpoint")
 
     # Hardware
     parser.add_argument("--device", default="cpu")
