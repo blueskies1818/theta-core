@@ -58,11 +58,20 @@ from src.explorer.mcts import _extract_math_keywords, _BUILTIN_LEMMAS
 # Data loading
 # ---------------------------------------------------------------------------
 
-def load_pairs(data_path: Path) -> list[dict]:
+def load_pairs(data_path: Path, pre_extract_keywords: bool = True) -> list[dict]:
+    """Load proof-step pairs from JSONL.
+    
+    When pre_extract_keywords=True, extracts math keywords once per pair
+    and stores them in pair['_keywords'] — eliminates 9M regex ops per epoch
+    in the training loop (180K pairs × 50 patterns = O(minutes) saved).
+    """
     pairs = []
     with open(data_path) as f:
         for line in f:
-            pairs.append(json.loads(line))
+            pair = json.loads(line)
+            if pre_extract_keywords:
+                pair['_keywords'] = _extract_math_keywords(pair['goal'])
+            pairs.append(pair)
     return pairs
 
 
@@ -177,8 +186,8 @@ def compute_val_mrr(
             if correct_idx is None or correct_idx >= all_emb_norm.size(0):
                 continue
 
-            # Goal embedding: keyword averaging → goal_encoder
-            keywords = _extract_math_keywords(goal_text)
+            # Goal embedding: keyword averaging → goal_encoder (uses pre-extracted)
+            keywords = pair.get('_keywords') or _extract_math_keywords(goal_text)
             matching_indices: set[int] = set()
             for kw in keywords:
                 matches = kw_lemmas_map.get(kw.lower(), [])
@@ -394,9 +403,9 @@ def train_gnn(args):
             goal_embs_list = []
             lemma_embs_list = []
             for pair in batch:
-                # Goal: keyword averaging → goal_encoder
+                # Goal: keyword averaging → goal_encoder (uses pre-extracted keywords)
                 goal_text = pair["goal"]
-                keywords = _extract_math_keywords(goal_text)
+                keywords = pair.get('_keywords') or _extract_math_keywords(goal_text)
                 matching_indices: set[int] = set()
                 for kw in keywords:
                     matches = kw_lemmas_map.get(kw.lower(), [])
