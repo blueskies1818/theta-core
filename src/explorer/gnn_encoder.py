@@ -597,6 +597,7 @@ def prepare_graph_tensors(
         EdgeType.USES_IN_STATEMENT: 1,
         EdgeType.GENERALIZES: 2,
         EdgeType.INSTANTIATES: 3,
+        EdgeType.CO_OCCURS_IN_PROOF: 4,
     }
 
     src_list, tgt_list, et_list = [], [], []

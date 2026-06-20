@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 # Ensure the project root is on sys.path
-_project_root = Path(__file__).resolve().parent.parent
+_project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_project_root))
 
 from src.explorer.graph_builder import build_and_save, build_dependency_graph
@@ -63,6 +63,12 @@ def main():
         action="store_true",
         help="Print statistics for an already-built graph and exit",
     )
+    parser.add_argument(
+        "--proof-step-pairs",
+        type=str,
+        default=None,
+        help="Path to proof_step_pairs.jsonl for co-occurrence edge enrichment",
+    )
     args = parser.parse_args()
 
     input_path = _project_root / args.input
@@ -82,11 +88,20 @@ def main():
         sys.exit(1)
 
     # ---- Full build ----
+    # Resolve proof_step_pairs path if provided
+    psp_path = None
+    if args.proof_step_pairs:
+        psp_path = _project_root / args.proof_step_pairs
+        if not psp_path.exists():
+            print(f"Warning: proof_step_pairs not found: {psp_path}")
+            psp_path = None
+
     graph = build_and_save(
         theorems_path=input_path,
         output_path=output_path,
         max_theorems=args.max,
         min_references=args.min_references,
+        proof_step_pairs_path=psp_path,
     )
 
     # Export PyG-compatible format for Phase 2.2

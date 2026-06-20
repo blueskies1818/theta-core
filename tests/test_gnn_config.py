@@ -61,7 +61,7 @@ class TestScaledGNNConfigDefaults:
         assert cfg.dropout == 0.1
         assert cfg.activation == "gelu"
         assert cfg.use_edge_types is True
-        assert cfg.num_edge_types == 4
+        assert cfg.num_edge_types == 5  # was 4, now 5 with CO_OCCURS_IN_PROOF
         assert cfg.bidirectional is True
         assert cfg.use_goal_encoder is True
         assert cfg.goal_encoder_expansion == 2
@@ -164,7 +164,7 @@ class TestGATLayerDivisibility:
         """With hidden_dim=768, num_heads=12, head_dim=64."""
         layer = GATLayer(
             in_dim=768, out_dim=768, num_heads=12,
-            num_edge_types=4, dropout=0.1, activation="gelu",
+            num_edge_types=5, dropout=0.1, activation="gelu",
         )
         assert layer.head_dim == 64
         assert layer.out_dim == 768
@@ -174,14 +174,14 @@ class TestGATLayerDivisibility:
         with pytest.raises(AssertionError):
             GATLayer(
                 in_dim=768, out_dim=768, num_heads=13,
-                num_edge_types=4, dropout=0.1, activation="gelu",
+                num_edge_types=5, dropout=0.1, activation="gelu",
             )
 
     def test_small_forward(self):
         """Small forward pass through a single GATLayer at 768-dim."""
         layer = GATLayer(
             in_dim=768, out_dim=768, num_heads=12,
-            num_edge_types=4, dropout=0.1, activation="gelu",
+            num_edge_types=5, dropout=0.1, activation="gelu",
         )
         N = 20
         x = torch.randn(N, 768)

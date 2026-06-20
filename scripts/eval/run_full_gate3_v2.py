@@ -17,7 +17,7 @@ import time
 from collections import Counter
 from pathlib import Path
 
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_PROJECT_ROOT))
 
 import torch
@@ -133,7 +133,7 @@ def run_gate3_full(
     config: GNNBestFirstConfig,
     lemma_to_idx: dict[str, int],
     idx_to_norm: dict[int, str],
-    checker: BatchChecker,
+    checker: BatchChecker | None,
     output_path: Path,
     use_domain_filter: bool = True,
 ) -> dict:
@@ -191,6 +191,10 @@ def run_gate3_full(
             ok = False
             err = "no proof found"
             failed_reasons["no_proof"] = failed_reasons.get("no_proof", 0) + 1
+        elif checker is None:
+            # No proof checker — accept search results as-is (structural)
+            ok = True
+            err = ""
         else:
             full_code = wrap_theorem_with_proof(stmt, proof_text)
             check_results = checker.check_batch([full_code])
@@ -389,6 +393,10 @@ def main():
         "--no-domain-filter", action="store_true",
         help="Disable domain filtering (use full graph for lemma candidates)",
     )
+    parser.add_argument(
+        "--no-proof-checker", action="store_true",
+        help="Disable proof checker (faster eval, no Lean verification)",
+    )
     args = parser.parse_args()
 
     print("=" * 70)
@@ -445,18 +453,19 @@ def main():
     print(f"Lemma index: {len(lemma_to_idx)} entries")
 
     # --- Config ---
+    use_pc = not args.no_proof_checker
     config = GNNBestFirstConfig(
         max_depth=20,
         max_expansions=args.max_expansions,
         top_k_lemmas=args.top_k,
         depth_penalty=args.depth_penalty,
-        use_proof_checker=True,  # Root verification filters bad candidates before search
+        use_proof_checker=use_pc,
         verify_timeout=5.0,
         num_threads=args.num_threads,
         max_graph_candidates=200,
     )
 
-    checker = BatchChecker(timeout=15, max_workers=8, cache_size=128)
+    checker = BatchChecker(timeout=15, max_workers=8, cache_size=128) if use_pc else None
 
     output_path = _project_path(args.output)
 

@@ -23,7 +23,7 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 
-_project_root = Path(__file__).resolve().parent.parent
+_project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_project_root))
 
 from src.explorer.dependency_graph import DependencyGraph

@@ -385,14 +385,17 @@ def build_dependency_graph(
     theorems_path: Path | str,
     max_theorems: int | None = None,
     min_references: int = 0,
+    proof_step_pairs_path: Path | str | None = None,
     verbose: bool = True,
 ) -> DependencyGraph:
     """Build the math dependency graph from extracted theorems.
 
-    Three phases:
+    Five phases:
     1. Load all theorems as nodes, build a name→node_id index.
-    2. For each theorem's proof, extract identifier references.
-    3. Match references against known names, creating directed edges.
+    2. Add nodes, register name aliases.
+    3. For each theorem's proof, extract identifier references.
+    4. Match references against known names, creating directed edges.
+    5. (Optional) Enrich with co-occurrence edges from proof_step_pairs.
 
     Args:
         theorems_path: Path to JSONL file with extracted theorems.
@@ -401,6 +404,8 @@ def build_dependency_graph(
         max_theorems: Cap number of theorems loaded (useful for testing).
         min_references: Remove nodes with fewer total (in+out) edges.
             0 keeps all nodes.
+        proof_step_pairs_path: Optional path to proof_step_pairs.jsonl.
+            Adds CO_OCCURS_IN_PROOF edges encoding proven lemma utility.
         verbose: Print progress information.
 
     Returns:
@@ -411,7 +416,7 @@ def build_dependency_graph(
 
     # ---- Phase 1: Load theorems ----
     if verbose:
-        print("Phase 1/4: Loading theorems...")
+        print("Phase 1/5: Loading theorems...")
 
     theorems: list[dict] = []
     parse_errors = 0
@@ -433,7 +438,7 @@ def build_dependency_graph(
 
     # ---- Phase 2: Add nodes ----
     if verbose:
-        print("Phase 2/4: Adding nodes...")
+        print("Phase 2/5: Adding nodes...")
 
     # Build name index: all known theorem/lemma names in the dataset
     known_names: set[str] = set()
@@ -477,9 +482,20 @@ def build_dependency_graph(
         print(f"  Known names: {len(known_names)} canonical + "
               f"{len(name_aliases)} aliases")
 
+    # ---- Register name aliases in the graph's node index ----
+    # This allows resolve_name() to find nodes by short names later
+    # (e.g., for co-occurrence edge enrichment from proof_step_pairs)
+    alias_registered = 0
+    for alias, canonical in name_aliases.items():
+        if alias not in graph._node_index:
+            graph._node_index[alias] = canonical
+            alias_registered += 1
+    if verbose:
+        print(f"  Registered {alias_registered} name aliases in node index")
+
     # ---- Phase 3: Extract dependencies ----
     if verbose:
-        print("Phase 3/4: Extracting dependencies from proofs...")
+        print("Phase 3/5: Extracting dependencies from proofs...")
 
     total_edges = 0
     nodes_with_deps = 0
@@ -546,7 +562,7 @@ def build_dependency_graph(
 
     # ---- Phase 4: Cleanup ----
     if verbose:
-        print("Phase 4/4: Finalizing...")
+        print("Phase 4/5: Finalizing...")
 
     if min_references > 0:
         before = graph.num_nodes
@@ -566,6 +582,17 @@ def build_dependency_graph(
 
     graph._rebuild_indices()
 
+    # ---- Phase 5: Co-occurrence edge enrichment ----
+    if proof_step_pairs_path is not None:
+        if verbose:
+            print("Phase 5/5: Adding co-occurrence edges from proof_step_pairs...")
+        co_stats = add_co_occurrence_edges(graph, proof_step_pairs_path, verbose=verbose)
+        if verbose:
+            print(f"  Added {co_stats['added']} co-occurrence edges")
+            print(f"  Skipped: {co_stats['skipped_missing_goal']} goal not in graph, "
+                  f"{co_stats['skipped_missing_lemma']} lemma not in graph, "
+                  f"{co_stats['skipped_existing']} already exists")
+
     elapsed = time.time() - start_time
     if verbose:
         stats = graph.get_statistics()
@@ -580,6 +607,93 @@ def build_dependency_graph(
 
 
 # ---------------------------------------------------------------------------
+# Co-occurrence edge enrichment
+# ---------------------------------------------------------------------------
+
+
+def add_co_occurrence_edges(
+    graph: DependencyGraph,
+    proof_step_pairs_path: Path | str,
+    verbose: bool = True,
+) -> dict:
+    """Enrich graph with CO_OCCURS_IN_PROOF edges from proof-step pairs.
+
+    For each (goal_theorem, lemma) pair where the goal was proven using the
+    lemma, adds a directed edge: goal_theorem → lemma with type
+    CO_OCCURS_IN_PROOF. This encodes proven proof utility directly in the
+    graph structure, enabling the GNN to learn which lemmas actually work
+    together in real proofs.
+
+    Args:
+        graph: The dependency graph to enrich (mutated in place).
+        proof_step_pairs_path: Path to proof_step_pairs.jsonl.
+            Each line: {"goal": ..., "lemma": ..., "name": ..., "domain": ...}
+        verbose: Print progress.
+
+    Returns:
+        Stats dict with keys: added, skipped_missing_goal,
+        skipped_missing_lemma, skipped_existing, total_pairs.
+    """
+    stats = {
+        "added": 0,
+        "skipped_missing_goal": 0,
+        "skipped_missing_lemma": 0,
+        "skipped_existing": 0,
+        "total_pairs": 0,
+    }
+
+    # Build a suffix index for fast lemma name resolution.
+    # Maps short_name → first canonical node_id ending with ".short_name".
+    # This avoids O(N) scanning per unresolved lemma lookup.
+    suffix_index: dict[str, str] = {}
+    for node_id in graph.node_ids:
+        short = node_id.split(".")[-1] if "." in node_id else node_id
+        if short not in suffix_index:
+            suffix_index[short] = node_id
+
+    with open(proof_step_pairs_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            pair = json.loads(line)
+            stats["total_pairs"] += 1
+
+            goal_name = pair.get("name", "")
+            lemma_name = pair.get("lemma", "")
+
+            # Resolve goal theorem name → node ID (supports aliases)
+            goal_id = graph.resolve_name(goal_name)
+            if goal_id is None:
+                # Try without namespace prefix
+                if "." in goal_name:
+                    goal_id = graph.resolve_name(goal_name.split(".")[-1])
+            if goal_id is None:
+                stats["skipped_missing_goal"] += 1
+                continue
+
+            # Resolve lemma name → node ID (supports aliases)
+            lemma_id = graph.resolve_name(lemma_name)
+            if lemma_id is None:
+                # Try suffix index: e.g., "mul_comm" → node ending with ".mul_comm"
+                lemma_id = suffix_index.get(lemma_name)
+            if lemma_id is None:
+                stats["skipped_missing_lemma"] += 1
+                continue
+
+            # Check if edge already exists (any type) to avoid double-counting
+            if graph._graph.has_edge(goal_id, lemma_id):
+                stats["skipped_existing"] += 1
+                continue
+
+            # Add co-occurrence edge: goal depends on (co-occurs with) lemma
+            if graph.add_edge(goal_id, lemma_id, EdgeType.CO_OCCURS_IN_PROOF):
+                stats["added"] += 1
+
+    return stats
+
+
+# ---------------------------------------------------------------------------
 # Convenience
 # ---------------------------------------------------------------------------
 
@@ -589,6 +703,7 @@ def build_and_save(
     output_path: Path | str,
     max_theorems: int | None = None,
     min_references: int = 1,
+    proof_step_pairs_path: Path | str | None = None,
 ) -> DependencyGraph:
     """Build the graph and save it to disk in one call.
 
@@ -597,6 +712,8 @@ def build_and_save(
         output_path: Base path for saved graph files (extensions added).
         max_theorems: Cap on loaded theorems.
         min_references: Minimum degree to keep a node.
+        proof_step_pairs_path: Optional path to proof_step_pairs.jsonl
+            for co-occurrence edge enrichment.
 
     Returns:
         The built DependencyGraph.
@@ -605,6 +722,7 @@ def build_and_save(
         theorems_path=theorems_path,
         max_theorems=max_theorems,
         min_references=min_references,
+        proof_step_pairs_path=proof_step_pairs_path,
         verbose=True,
     )
     graph.save(Path(output_path))

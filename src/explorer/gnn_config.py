@@ -58,7 +58,7 @@ class GNNConfig:
     use_edge_types: bool = True
 
     # Number of distinct edge types
-    num_edge_types: int = 4
+    num_edge_types: int = 5
 
     # Whether to use bidirectional message passing
     # (if True, messages also flow from dependencies → dependents)

@@ -42,6 +42,7 @@ class EdgeType(Enum):
     USES_IN_STATEMENT = "uses_in_statement"  # B appears in A's statement
     GENERALIZES = "generalizes"  # A is a generalization of B
     INSTANTIATES = "instantiates"  # A instantiates B with specific parameters
+    CO_OCCURS_IN_PROOF = "co_occurs_in_proof"  # B co-occurs with A in proof-step pairs
 
 
 @dataclass
