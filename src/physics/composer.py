@@ -26,8 +26,9 @@ import torch.nn.functional as F
 
 # ── Domain Definitions ─────────────────────────────────────────────────────────
 
-DOMAINS = ["gravity", "spring", "em", "thermal"]
+DOMAINS = ["gravity", "spring", "em", "thermal", "quantum", "relativistic"]
 COLLISION_DOMAIN = "collision"
+NUM_DOMAIN_CLASSES = len(DOMAINS)  # 6 for classifier output
 
 # Which quantities are relevant per domain (quantities fed to template generator)
 DOMAIN_QUANTITIES: dict[str, list[str]] = {
@@ -38,24 +39,30 @@ DOMAIN_QUANTITIES: dict[str, list[str]] = {
                   "v1", "v2", "x1", "x2", "k", "epsilon", "Phi", "I"],
     "thermal":   ["n", "R", "P", "V", "T", "S", "W", "Q", "t", "delta_S"],
     "collision": ["m", "v", "t"],
+    "quantum":   ["hbar", "m", "L", "n", "E", "omega", "t"],
+    "relativistic": ["c", "m", "t", "x", "v", "p", "E", "L", "t"],
 }
 
 # Quantity key sets for domain detection (used by assign_domain_labels)
 DOMAIN_QUANTITY_KEY: dict[str, set[str]] = {
     "gravity":   {"g"},
     "spring":    {"k"},
-    "em":        {"q", "E", "B", "q1", "q2", "epsilon", "Phi"},
+    "em":        {"q", "B", "q1", "q2", "epsilon", "Phi"},
     "thermal":   {"P", "V", "T", "S"},
     "collision": set(),  # detected via scenario metadata, not quantity keys
+    "quantum":   {"hbar", "omega"},
+    "relativistic": {"c"},
 }
 
 # Hardcoded fallback templates (used when no generator is trained)
 DOMAIN_TEMPLATES: dict[str, str] = {
-    "gravity":   "m*g*h + 0.5*m*v^2",
-    "spring":    "0.5*k*h^2 + 0.5*m*v^2",
-    "em":        "0.5*m*v^2 - q*E*x",
-    "thermal":   "P*V/T",
-    "collision": "0.5*m*v^2",
+    "gravity":      "m*g*h + 0.5*m*v^2",
+    "spring":       "0.5*k*h^2 + 0.5*m*v^2",
+    "em":           "0.5*m*v^2 - q*E*x",
+    "thermal":      "P*V/T",
+    "collision":    "0.5*m*v^2",
+    "quantum":      "n^2*hbar^2/(2*m*L^2)",
+    "relativistic": "E^2 - (p*c)^2",
 }
 
 # Quantity vocab for the domain classifier feature vector
@@ -64,6 +71,7 @@ QUANTITY_VOCAB = [
     "k", "L", "q", "E", "x", "y", "r",
     "P", "V", "T", "S", "n", "R", "B", "W", "Q",
     "m1", "v1", "m2", "v2", "x1", "x2", "epsilon",
+    "hbar", "omega", "c", "p", "gamma",
 ]
 
 QTY_TO_IDX = {q: i for i, q in enumerate(QUANTITY_VOCAB)}
@@ -100,7 +108,7 @@ class DomainClassifier(nn.Module):
     """Simple MLP: quantity set binary features → domain scores.
 
     Input: binary vector of length NUM_QUANTITIES (1 if quantity present)
-    Output: 4 scores [gravity, spring, em, thermal] — sigmoid applied for thresholding.
+    Output: 6 scores [gravity, spring, em, thermal, quantum, relativistic] — sigmoid applied for thresholding.
 
     Parameters
     ----------
@@ -112,7 +120,7 @@ class DomainClassifier(nn.Module):
         super().__init__()
         self.fc1 = nn.Linear(NUM_QUANTITIES, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, 4)  # 4 domains: gravity, spring, em, thermal
+        self.fc3 = nn.Linear(hidden_dim, 6)  # 6 domains: gravity, spring, em, thermal, quantum, relativistic
         self.dropout = nn.Dropout(0.1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -122,7 +130,7 @@ class DomainClassifier(nn.Module):
             x: [batch, NUM_QUANTITIES] binary feature vector
 
         Returns:
-            [batch, 4] raw logits for [gravity, spring, em, thermal]
+            [batch, 6] raw logits for [gravity, spring, em, thermal, quantum, relativistic]
         """
         h = F.relu(self.fc1(x))
         h = self.dropout(h)
@@ -133,7 +141,7 @@ class DomainClassifier(nn.Module):
     def predict_proba(self, x: torch.Tensor) -> torch.Tensor:
         """Return sigmoid probabilities for each domain.
 
-        Returns [batch, 4] with values in [0, 1].
+        Returns [batch, 6] with values in [0, 1].
         """
         return torch.sigmoid(self.forward(x))
 
@@ -147,7 +155,7 @@ class DomainClassifier(nn.Module):
         Returns:
             List of lists of active domain names.
         """
-        probs = self.predict_proba(x)  # [batch, 4]
+        probs = self.predict_proba(x)  # [batch, 6]
         active = probs > threshold
         results: list[list[str]] = []
         for b in range(active.size(0)):
@@ -406,6 +414,7 @@ class CollisionTemplateGenerator(DomainTemplateGenerator):
         max_src_len: int = 8,
         max_tgt_len: int = 32,
         dropout: float = 0.1,
+        vocab_size: int | None = None,
     ):
         super().__init__(
             d_model=d_model,
@@ -415,6 +424,7 @@ class CollisionTemplateGenerator(DomainTemplateGenerator):
             max_src_len=max_src_len,
             max_tgt_len=max_tgt_len,
             dropout=dropout,
+            vocab_size=vocab_size,
         )
 
 
@@ -803,10 +813,14 @@ class PerDomainComposer(nn.Module):
             domains.append("gravity")
         if "k" in syms:
             domains.append("spring")
-        if "q" in syms or "E" in syms or "B" in syms:
+        if "q" in syms or "B" in syms:
             domains.append("em")
         if syms & {"P", "V", "T", "S", "n", "R", "W", "Q"}:
             domains.append("thermal")
+        if "hbar" in syms or "omega" in syms:
+            domains.append("quantum")
+        if "c" in syms:
+            domains.append("relativistic")
         return domains if domains else ["gravity"]  # default
 
     @staticmethod
@@ -884,7 +898,16 @@ def load_composer(
             )
             d_model = gen_ckpt.get("d_model", 40)
             nhead = gen_ckpt.get("nhead", 2)
-            gen = DomainTemplateGenerator(d_model=d_model, nhead=nhead)
+            # Detect vocab size from checkpoint embedding weight shape
+            state_dict = gen_ckpt["model_state_dict"]
+            emb_weight = state_dict.get("token_embedding.weight")
+            if emb_weight is not None:
+                ckpt_vocab_size = emb_weight.shape[0]
+            else:
+                ckpt_vocab_size = gen_ckpt.get("vocab_size", TEMPLATE_VOCAB_SIZE)
+            gen = DomainTemplateGenerator(
+                d_model=d_model, nhead=nhead, vocab_size=ckpt_vocab_size,
+            )
             gen.load_state_dict(gen_ckpt["model_state_dict"])
         else:
             gen = DomainTemplateGenerator()
@@ -900,7 +923,14 @@ def load_composer(
         )
         d_model = col_ckpt.get("d_model", 36)
         nhead = col_ckpt.get("nhead", 2)
-        col_gen = CollisionTemplateGenerator(d_model=d_model, nhead=nhead)
+        # Detect vocab size from checkpoint
+        col_state = col_ckpt["model_state_dict"]
+        col_emb = col_state.get("token_embedding.weight")
+        if col_emb is not None:
+            col_vocab = col_emb.shape[0]
+        else:
+            col_vocab = col_ckpt.get("vocab_size", TEMPLATE_VOCAB_SIZE)
+        col_gen = CollisionTemplateGenerator(d_model=d_model, nhead=nhead, vocab_size=col_vocab)
         col_gen.load_state_dict(col_ckpt["model_state_dict"])
         col_gen = col_gen.to(device)
         col_gen.eval()
@@ -931,8 +961,8 @@ def prepare_source_tensor(
 def assign_domain_labels(quantity_symbols: list[str]) -> list[int]:
     """Assign multi-label domain indicators based on quantity symbols.
 
-    Returns list of 0/1 for [gravity, spring, em, thermal].
-    A scenario like mass_spring_gravity has g AND k → [1, 1, 0, 0].
+    Returns list of 0/1 for [gravity, spring, em, thermal, quantum, relativistic].
+    A scenario like mass_spring_gravity has g AND k → [1, 1, 0, 0, 0, 0].
     """
     syms = set(quantity_symbols)
     return [
@@ -940,6 +970,8 @@ def assign_domain_labels(quantity_symbols: list[str]) -> list[int]:
         1 if DOMAIN_QUANTITY_KEY["spring"] & syms else 0,
         1 if DOMAIN_QUANTITY_KEY["em"] & syms else 0,
         1 if DOMAIN_QUANTITY_KEY["thermal"] & syms else 0,
+        1 if DOMAIN_QUANTITY_KEY["quantum"] & syms else 0,
+        1 if DOMAIN_QUANTITY_KEY["relativistic"] & syms else 0,
     ]
 
 
@@ -1024,8 +1056,10 @@ def _assign_domain_labels_from_keys(
         1 if DOMAIN_QUANTITY_KEY["spring"] & all_keys else 0,
         1 if DOMAIN_QUANTITY_KEY["em"] & all_keys else 0,
         1 if DOMAIN_QUANTITY_KEY["thermal"] & all_keys else 0,
+        1 if DOMAIN_QUANTITY_KEY["quantum"] & all_keys else 0,
+        1 if DOMAIN_QUANTITY_KEY["relativistic"] & all_keys else 0,
     ]
-    # Collision is NOT part of the 4-class label — it's handled separately
+    # Collision is NOT part of the 6-class label — it's handled separately
     return labels
 
 
@@ -1042,10 +1076,26 @@ def save_domain_classifier(
 
 
 def load_domain_classifier(path: str | Path) -> DomainClassifier:
-    """Load domain classifier checkpoint."""
+    """Load domain classifier checkpoint.
+
+    Handles old 4-output checkpoints by loading into the first 4 output
+    neurons and leaving quantum/relativistic neurons randomly initialized.
+    """
     ckpt = torch.load(path, map_location="cpu", weights_only=False)
     model = DomainClassifier()
-    model.load_state_dict(ckpt["model_state_dict"])
+
+    # Check for old 4-output checkpoint and handle gracefully
+    old_state = ckpt["model_state_dict"]
+    fc3_old = old_state.get("fc3.weight")
+    if fc3_old is not None and fc3_old.shape[0] == 4:
+        # Old checkpoint: load matching params, keep quantum/relativistic random
+        model_state = model.state_dict()
+        for k, v in old_state.items():
+            if k in model_state and model_state[k].shape == v.shape:
+                model_state[k] = v
+        model.load_state_dict(model_state)
+    else:
+        model.load_state_dict(old_state)
     model.eval()
     return model
 

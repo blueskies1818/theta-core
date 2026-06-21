@@ -44,6 +44,26 @@ from src.physics.simulators.thermodynamics import (
     generate_entropy_scenarios,
     generate_ideal_gas_scenarios,
 )
+from src.physics.simulators.quantum import (
+    generate_all_quantum,
+    generate_particle_in_box_scenarios,
+    generate_harmonic_oscillator_scenarios,
+    generate_hydrogen_atom_scenarios,
+    generate_probability_current_scenarios,
+    generate_expectation_scenarios,
+    generate_wave_packet_scenarios,
+)
+from src.physics.simulators.relativity import (
+    generate_all_relativity,
+    generate_time_dilation_scenarios,
+    generate_length_contraction_scenarios,
+    generate_velocity_addition_scenarios,
+    generate_energy_momentum_scenarios,
+    generate_spacetime_interval_scenarios,
+    generate_doppler_scenarios,
+    generate_lorentz_boost_scenarios,
+    generate_proper_time_scenarios,
+)
 
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -119,6 +139,8 @@ class TestSimulatorStructure:
             ("mechanics", generate_all_mechanics),
             ("electromagnetism", generate_all_electromagnetism),
             ("thermodynamics", generate_all_thermodynamics),
+            ("quantum", generate_all_quantum),
+            ("relativity", generate_all_relativity),
         ]:
             scenarios = generator()
             for s in scenarios:
@@ -139,6 +161,8 @@ class TestSimulatorStructure:
             ("mechanics", generate_all_mechanics),
             ("electromagnetism", generate_all_electromagnetism),
             ("thermodynamics", generate_all_thermodynamics),
+            ("quantum", generate_all_quantum),
+            ("relativity", generate_all_relativity),
         ]:
             scenarios = generator()
             ids = [s["id"] for s in scenarios]
@@ -329,7 +353,171 @@ class TestThermalInvariants:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 6. ObservationDatabase integration
+# 6. Quantum invariants
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class TestQuantumInvariants:
+    """Quantum invariants should score > 0.90 on generated data."""
+
+    def test_particle_in_box_energy_quantization(self, ev):
+        # E ∝ n² — check that E/n² is constant for n >= 1
+        scenarios = generate_particle_in_box_scenarios()
+        for s in scenarios:
+            # Energy quantization: E_n / n^2 = π²ℏ²/(2mL²) = constant
+            E1 = s["parameters"].get("E1")
+            E2 = s["parameters"].get("E2")
+            if E1 and E2:
+                # E2/E1 should be close to 4 (since E_n ∝ n²)
+                ratio = E2 / E1
+                assert 3.8 < ratio < 4.2, (
+                    f"Particle-in-box {s['id']}: E2/E1={ratio:.3f} not ≈ 4"
+                )
+
+    def test_harmonic_oscillator_energy_spacing(self, ev):
+        # E_n = ℏω(n + ½), so ΔE = ℏω = constant spacing
+        scenarios = generate_harmonic_oscillator_scenarios()
+        for s in scenarios:
+            E0 = s["parameters"].get("E0")
+            E1 = s["parameters"].get("E1")
+            if E0 and E1:
+                spacing_expected = s["parameters"]["omega"] * 1.054571817e-34 / 1.602176634e-19
+                spacing_actual = abs(E1 - E0)
+                rel_err = abs(spacing_actual - spacing_expected) / spacing_expected
+                assert rel_err < 0.02, (
+                    f"Harmonic osc {s['id']}: spacing={spacing_actual:.4f}eV vs expected={spacing_expected:.4f}eV"
+                )
+
+    def test_hydrogen_energy_levels(self, ev):
+        # E_n = -13.6 * Z² / n²
+        scenarios = generate_hydrogen_atom_scenarios()
+        for s in scenarios:
+            Z = s["parameters"]["Z"]
+            E1 = s["parameters"].get("E1")
+            if E1:
+                expected = -13.605693 * Z**2
+                rel_err = abs(E1 - expected) / abs(expected)
+                assert rel_err < 0.01, (
+                    f"Hydrogen {s['id']}: E1={E1:.4f}eV vs expected={expected:.4f}eV"
+                )
+
+    def test_probability_current_constant(self, ev):
+        scenarios = generate_probability_current_scenarios()
+        for s in scenarios:
+            db = _scenarios_to_db([s])
+            obs = db.get(s["id"])
+            score = ev.score("j", obs)
+            assert score >= 0.95, (
+                f"Prob current {obs.id}: score={score:.4f} < 0.95"
+            )
+
+    def test_expectation_energy_constant(self, ev):
+        scenarios = generate_expectation_scenarios()
+        for s in scenarios:
+            db = _scenarios_to_db([s])
+            obs = db.get(s["id"])
+            score = ev.score("E", obs)
+            assert score >= 0.90, (
+                f"Expectation {obs.id}: score={score:.4f} < 0.90"
+            )
+
+    def test_wave_packet_probability_conservation(self, ev):
+        scenarios = generate_wave_packet_scenarios()
+        for s in scenarios:
+            db = _scenarios_to_db([s])
+            obs = db.get(s["id"])
+            score = ev.score("prob", obs)
+            assert score >= 0.95, (
+                f"Wave-packet {obs.id}: prob score={score:.4f} < 0.95"
+            )
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 7. Relativistic invariants
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class TestRelativityInvariants:
+    """Relativistic invariants should score > 0.95 on generated data."""
+
+    def test_spacetime_interval_invariant(self, ev):
+        # For constant velocity: t/tau = gamma = constant
+        # tau * gamma = t varies, but t/tau is constant
+        scenarios = generate_spacetime_interval_scenarios()
+        for s in scenarios:
+            db = _scenarios_to_db([s])
+            obs = db.get(s["id"])
+            score = ev.score("t / tau", obs)
+            assert score >= 0.95, (
+                f"Spacetime {obs.id}: score={score:.4f} < 0.95"
+            )
+
+    def test_time_dilation_spacetime_interval(self, ev):
+        scenarios = generate_time_dilation_scenarios()
+        for s in scenarios:
+            db = _scenarios_to_db([s])
+            obs = db.get(s["id"])
+            # For constant velocity: t / tau = gamma = constant
+            score = ev.score("t / tau", obs)
+            assert score >= 0.95, (
+                f"Time dilation {obs.id}: score={score:.4f} < 0.95"
+            )
+
+    def test_length_contraction_lorentz_factor(self, ev):
+        # L * gamma = L0 = constant — but L is in parameters, gamma in params
+        # Check L_obs (in timesteps) * gamma = L0 = constant
+        scenarios = generate_length_contraction_scenarios()
+        for s in scenarios:
+            db = _scenarios_to_db([s])
+            obs = db.get(s["id"])
+            score = ev.score("L_obs * gamma", obs)
+            assert score >= 0.95, (
+                f"Length contraction {obs.id}: score={score:.4f} < 0.95"
+            )
+
+    def test_energy_momentum_invariant(self, ev):
+        # E^2 - p^2 = (mc^2)^2 = constant (p is already pc in MeV units)
+        # Timestep p is pc/conv in MeV; E is in MeV
+        scenarios = generate_energy_momentum_scenarios()
+        for s in scenarios:
+            db = _scenarios_to_db([s])
+            obs = db.get(s["id"])
+            score = ev.score("E^2 - p^2", obs)
+            assert score >= 0.95, (
+                f"Energy-momentum {obs.id}: score={score:.4f} < 0.95"
+            )
+
+    def test_lorentz_boost_spacetime_interval(self, ev):
+        scenarios = generate_lorentz_boost_scenarios()
+        for s in scenarios:
+            db = _scenarios_to_db([s])
+            obs = db.get(s["id"])
+            # In each timestep, s2 (computed from t,x) should equal s2_prime
+            # (computed from t',x' after Lorentz boost).
+            # Verify numerically: s2 should match s2_prime to high precision
+            for ts in obs.timesteps:
+                s2 = ts.get("s2", 0.0)
+                s2_prime = ts.get("s2_prime", 0.0)
+                rel_err = abs(s2 - s2_prime) / max(abs(s2), 1.0)
+                assert rel_err < 0.01, (
+                    f"Lorentz boost {obs.id}: s2={s2:.4f} ≠ s2_prime={s2_prime:.4f}"
+                )
+
+    def test_proper_time_dilation(self, ev):
+        # tau * gamma = t varies, but t/tau = gamma = constant for uniform motion
+        scenarios = generate_proper_time_scenarios()
+        for s in scenarios:
+            db = _scenarios_to_db([s])
+            obs = db.get(s["id"])
+            score = ev.score("t / tau", obs)
+            # Proper time ratio is nearly constant even for acceleration
+            assert score >= 0.85, (
+                f"Proper time {obs.id}: score={score:.4f} < 0.85"
+            )
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 8. ObservationDatabase integration (quantum + relativity)
 # ═══════════════════════════════════════════════════════════════════════════
 
 
@@ -358,9 +546,23 @@ class TestDatabaseIntegration:
         obs = db.get(scenarios[0]["id"])
         assert obs.id == scenarios[0]["id"]
 
+    def test_quantum_loads_into_database(self):
+        scenarios = generate_all_quantum()
+        db = _scenarios_to_db(scenarios)
+        assert len(db) == len(scenarios)
+        obs = db.get(scenarios[0]["id"])
+        assert obs.id == scenarios[0]["id"]
+
+    def test_relativity_loads_into_database(self):
+        scenarios = generate_all_relativity()
+        db = _scenarios_to_db(scenarios)
+        assert len(db) == len(scenarios)
+        obs = db.get(scenarios[0]["id"])
+        assert obs.id == scenarios[0]["id"]
+
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 7. Numerical sanity
+# 9. Numerical sanity
 # ═══════════════════════════════════════════════════════════════════════════
 
 
@@ -372,6 +574,8 @@ class TestNumericalSanity:
             ("mechanics", generate_all_mechanics),
             ("electromagnetism", generate_all_electromagnetism),
             ("thermodynamics", generate_all_thermodynamics),
+            ("quantum", generate_all_quantum),
+            ("relativity", generate_all_relativity),
         ]:
             scenarios = generator()
             for s in scenarios:
@@ -397,6 +601,7 @@ class TestNumericalSanity:
         for domain_name, generator in [
             ("mechanics", generate_all_mechanics),
             ("electromagnetism", generate_all_electromagnetism),
+            ("quantum", generate_all_quantum),
         ]:
             scenarios = generator()
             for s in scenarios:
@@ -413,3 +618,22 @@ class TestNumericalSanity:
                 assert s["parameters"]["T"] > 0, (
                     f"Thermal {s['id']}: T must be positive"
                 )
+
+    def test_quantum_scenarios_have_positive_parameters(self):
+        scenarios = generate_all_quantum()
+        for s in scenarios:
+            for key in ["m", "L", "hbar", "omega"]:
+                if key in s["parameters"]:
+                    assert s["parameters"][key] > 0, (
+                        f"Quantum {s['id']}: {key} must be positive"
+                    )
+
+    def test_relativistic_velocity_less_than_c(self):
+        scenarios = generate_all_relativity()
+        for s in scenarios:
+            if "v" in s["parameters"]:
+                v = s["parameters"]["v"]
+                if isinstance(v, (int, float)):
+                    assert abs(v) < 3e8, (
+                        f"Relativity {s['id']}: v={v:.1e} >= c"
+                    )
