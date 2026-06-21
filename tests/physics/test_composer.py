@@ -81,12 +81,25 @@ def thermal_generator():
 
 
 @pytest.fixture
-def composer(classifier, gravity_generator, spring_generator, em_generator, thermal_generator):
+def quantum_generator():
+    return DomainTemplateGenerator(d_model=40, nhead=2)
+
+
+@pytest.fixture
+def relativistic_generator():
+    return DomainTemplateGenerator(d_model=40, nhead=2)
+
+
+@pytest.fixture
+def composer(classifier, gravity_generator, spring_generator, em_generator, thermal_generator,
+             quantum_generator, relativistic_generator):
     generators = {
         "gravity": gravity_generator,
         "spring": spring_generator,
         "em": em_generator,
         "thermal": thermal_generator,
+        "quantum": quantum_generator,
+        "relativistic": relativistic_generator,
     }
     return PerDomainComposer(classifier, generators)
 
@@ -128,28 +141,28 @@ class TestQuantitySetFeatures:
 class TestDomainLabels:
     def test_gravity_only(self):
         labels = assign_domain_labels(["m", "g", "h", "v"])
-        assert labels == [1, 0, 0, 0]
+        assert labels == [1, 0, 0, 0, 0, 0]
 
     def test_spring_only(self):
         labels = assign_domain_labels(["m", "k", "h", "v"])
-        assert labels == [0, 1, 0, 0]
+        assert labels == [0, 1, 0, 0, 0, 0]
 
     def test_em_domain(self):
         labels = assign_domain_labels(["m", "g", "h", "v", "q", "E"])
-        assert labels == [1, 0, 1, 0]  # gravity + em
+        assert labels == [1, 0, 1, 0, 0, 0]  # gravity + em
 
     def test_gravity_spring_combined(self):
         labels = assign_domain_labels(["m", "k", "g", "h", "v"])
-        assert labels == [1, 1, 0, 0]
+        assert labels == [1, 1, 0, 0, 0, 0]
 
     def test_all_three(self):
         labels = assign_domain_labels(["m", "k", "g", "h", "v", "q", "E"])
-        assert labels == [1, 1, 1, 0]
+        assert labels == [1, 1, 1, 0, 0, 0]
 
     def test_no_domain(self):
         labels = assign_domain_labels(["m", "v"])
         # No g, k, q, E, P, V, T, S — defaults to no domains
-        assert labels == [0, 0, 0, 0]
+        assert labels == [0, 0, 0, 0, 0, 0]
 
 
 # ── Domain Classifier ────────────────────────────────────────────────────────
@@ -163,7 +176,7 @@ class TestDomainClassifier:
     def test_forward_shape(self, classifier):
         x = quantity_set_to_features(["m", "g", "h", "v"]).unsqueeze(0)
         output = classifier.forward(x)
-        assert output.shape == (1, 4)
+        assert output.shape == (1, 6)
         # Raw logits, not necessarily softmaxed
 
     def test_forward_batch(self, classifier):
@@ -173,12 +186,12 @@ class TestDomainClassifier:
             quantity_set_to_features(["m", "g", "h", "v", "q", "E"]),
         ])
         output = classifier.forward(x)
-        assert output.shape == (3, 4)
+        assert output.shape == (3, 6)
 
     def test_predict_proba_gravity(self, classifier):
         x = quantity_set_to_features(["m", "g", "h", "v"]).unsqueeze(0)
         probs = classifier.predict_proba(x)
-        assert probs.shape == (1, 4)
+        assert probs.shape == (1, 6)
         # All probabilities should be valid
         for v in probs[0]:
             assert 0.0 <= v.item() <= 1.0

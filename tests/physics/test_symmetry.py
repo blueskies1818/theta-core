@@ -559,7 +559,8 @@ class TestSymmetryClassifier:
             features, labels = build_symmetry_training_data(tmp.name)
             assert len(features) == 1
             assert len(labels) == 1
-            assert len(features[0]) == 28  # QUANTITY_VOCAB size
+            from src.physics.composer import NUM_QUANTITIES
+            assert len(features[0]) == NUM_QUANTITIES  # dynamic
             assert len(labels[0]) == 7  # 7 symmetry classes
         finally:
             Path(tmp.name).unlink(missing_ok=True)

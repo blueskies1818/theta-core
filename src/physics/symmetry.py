@@ -214,11 +214,18 @@ class Lagrangian:
 
     @classmethod
     def gravity_spring(cls) -> Lagrangian:
-        """Combined gravity + spring: L = ½mv² - mgh - ½kh²."""
+        """Combined gravity + spring: L = ½mv² - (½kh² - mgh) = ½mv² + mgh - ½kh².
+
+        For a vertical spring under gravity (h measured from unstretched position
+        downward), V_spring = ½kh², V_gravity = -mgh (potential decreases as h
+        increases). Total V = ½kh² - mgh, so L = T - V = ½mv² - ½kh² + mgh.
+
+        The conserved energy is H = ½mv² + ½kh² - mgh.
+        """
         return cls(
-            expression="0.5*m*v^2 - m*g*h - 0.5*k*h^2",
+            expression="0.5*m*v^2 + m*g*h - 0.5*k*h^2",
             kinetic_terms=["0.5*m*v^2"],
-            potential_terms=["m*g*h", "0.5*k*h^2"],
+            potential_terms=["0.5*k*h^2", "-m*g*h"],
             velocities={"v": "h"},
             positions=["h"],
             parameters={"m": 1.0, "g": 9.8, "k": 1.0},
@@ -303,8 +310,8 @@ class NoetherDerivation:
         "0.5*m*v^2 - 0.5*k*h^2": {"v": "m*v", "h": "-k*h"},
         # Spring (x): L = ½mv² - ½kx²
         "0.5*m*v^2 - 0.5*k*x^2": {"v": "m*v", "x": "-k*x"},
-        # Gravity + spring: L = ½mv² - mgh - ½kh²
-        "0.5*m*v^2 - m*g*h - 0.5*k*h^2": {"v": "m*v", "h": "-m*g - k*h"},
+        # Gravity + spring: L = ½mv² + mgh - ½kh²
+        "0.5*m*v^2 + m*g*h - 0.5*k*h^2": {"v": "m*v", "h": "m*g - k*h"},
         # Projectile: L = ½m(vx²+vy²) - mgy
         "0.5*m*vx^2 + 0.5*m*vy^2 - m*g*y": {"vx": "m*vx", "vy": "m*vy",
                                                 "x": "0", "y": "-m*g"},
@@ -554,10 +561,11 @@ class NoetherDerivation:
             # But ∂L/∂v = m*v, so term = m*v*v = m*v^2
             return "0.5*m*v^2 + 0.5*k*x^2" if "x" in expr_norm else "0.5*m*v^2 + 0.5*k*h^2"
 
-        if expr_norm == "0.5*m*v^2-m*g*h-0.5*k*h^2":
-            # H = m*v^2 - (0.5*m*v^2 - m*g*h - 0.5*k*h^2)
-            #   = 0.5*m*v^2 + m*g*h + 0.5*k*h^2
-            return "0.5*m*v^2 + m*g*h + 0.5*k*h^2"
+        if expr_norm == "0.5*m*v^2+m*g*h-0.5*k*h^2":
+            # H = (m*v)*v - (0.5*m*v^2 + m*g*h - 0.5*k*h^2)
+            #   = m*v^2 - 0.5*m*v^2 - m*g*h + 0.5*k*h^2
+            #   = 0.5*m*v^2 + 0.5*k*h^2 - m*g*h
+            return "0.5*m*v^2 + 0.5*k*h^2 - m*g*h"
 
         if "0.5*m*vx^2+0.5*m*vy^2" in expr_norm and "-m*g*y" in expr_norm:
             # H = m*vx^2 + m*vy^2 - (0.5*m*vx^2 + 0.5*m*vy^2 - m*g*y)

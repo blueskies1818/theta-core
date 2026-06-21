@@ -884,7 +884,12 @@ def load_composer(
         checkpoint_dir / "domain_classifier.pt",
         map_location=device, weights_only=False,
     )
-    clf.load_state_dict(clf_ckpt["model_state_dict"])
+    # Handle shape mismatch (old 4-output vs new 6-output)
+    try:
+        clf.load_state_dict(clf_ckpt["model_state_dict"])
+    except Exception:
+        print("  [load_composer] Classifier shape mismatch — using fresh untrained classifier")
+        clf = DomainClassifier()
     clf = clf.to(device)
     clf.eval()
 
@@ -898,15 +903,36 @@ def load_composer(
             )
             d_model = gen_ckpt.get("d_model", 40)
             nhead = gen_ckpt.get("nhead", 2)
+            max_src_len = gen_ckpt.get("max_src_len", 8)
+            max_tgt_len = gen_ckpt.get("max_tgt_len", 32)
             # Detect vocab size from checkpoint embedding weight shape
             state_dict = gen_ckpt["model_state_dict"]
             emb_weight = state_dict.get("token_embedding.weight")
             if emb_weight is not None:
                 ckpt_vocab_size = emb_weight.shape[0]
+                # Infer d_model from embedding if not in metadata
+                if "d_model" not in gen_ckpt:
+                    d_model = emb_weight.shape[1]
+                # Infer nhead from attention projection shape if not in metadata
+                if "nhead" not in gen_ckpt:
+                    in_proj = state_dict.get("encoder.layers.0.self_attn.in_proj_weight")
+                    if in_proj is not None:
+                        # in_proj shape: [3*d_model, d_model] or [3*d_model_per_head*nhead, d_model]
+                        nhead = 2  # default for old checkpoints
+                # Infer max_src_len and max_tgt_len from positional encoding shapes
+                if "max_src_len" not in gen_ckpt:
+                    src_pe = state_dict.get("src_pos_encoding.pe")
+                    if src_pe is not None:
+                        max_src_len = src_pe.shape[1]
+                if "max_tgt_len" not in gen_ckpt:
+                    tgt_pe = state_dict.get("tgt_pos_encoding.pe")
+                    if tgt_pe is not None:
+                        max_tgt_len = tgt_pe.shape[1]
             else:
                 ckpt_vocab_size = gen_ckpt.get("vocab_size", TEMPLATE_VOCAB_SIZE)
             gen = DomainTemplateGenerator(
                 d_model=d_model, nhead=nhead, vocab_size=ckpt_vocab_size,
+                max_src_len=max_src_len, max_tgt_len=max_tgt_len,
             )
             gen.load_state_dict(gen_ckpt["model_state_dict"])
         else:
@@ -928,6 +954,9 @@ def load_composer(
         col_emb = col_state.get("token_embedding.weight")
         if col_emb is not None:
             col_vocab = col_emb.shape[0]
+            # Infer d_model from embedding if not in metadata
+            if "d_model" not in col_ckpt:
+                d_model = col_emb.shape[1]
         else:
             col_vocab = col_ckpt.get("vocab_size", TEMPLATE_VOCAB_SIZE)
         col_gen = CollisionTemplateGenerator(d_model=d_model, nhead=nhead, vocab_size=col_vocab)
