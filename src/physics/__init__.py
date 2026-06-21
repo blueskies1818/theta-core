@@ -5,7 +5,10 @@ expression builder for self-play physics discovery.
 
 Phase B: Observation database loader and constancy-based expression evaluator.
 
+Phase C: Self-play search loop for invariant discovery.
+
 Phase D: Lean proof generation for discovered conservation laws.
+         Symmetry-driven invariant derivation (Noether's theorem).
 """
 
 from src.physics.dimensions import Dimension
@@ -25,6 +28,25 @@ from src.physics.lean_prover import (
     verify_all,
     save_verified_theorem,
     verified_theorems_dir,
+)
+from src.physics.symmetry import (
+    SymmetryGroup,
+    SymmetryDetection,
+    SymmetryDetector,
+    NoetherDerivation,
+    ConservedQuantity,
+    SymmetryResult,
+    SymmetryPipeline,
+    SymmetryClassifier,
+    GeneratorKind,
+    Lagrangian,
+    PREBUILT_GROUPS,
+    build_galilean_group,
+    build_u1_group,
+    build_su2_group,
+    build_symmetry_training_data,
+    train_symmetry_classifier,
+    run_symmetry_smoke_test,
 )
 
 __all__ = [
@@ -47,4 +69,22 @@ __all__ = [
     "verify_all",
     "save_verified_theorem",
     "verified_theorems_dir",
+    # Symmetry module
+    "SymmetryGroup",
+    "SymmetryDetection",
+    "SymmetryDetector",
+    "NoetherDerivation",
+    "ConservedQuantity",
+    "SymmetryResult",
+    "SymmetryPipeline",
+    "SymmetryClassifier",
+    "GeneratorKind",
+    "Lagrangian",
+    "PREBUILT_GROUPS",
+    "build_galilean_group",
+    "build_u1_group",
+    "build_su2_group",
+    "build_symmetry_training_data",
+    "train_symmetry_classifier",
+    "run_symmetry_smoke_test",
 ]
