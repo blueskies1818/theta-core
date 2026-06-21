@@ -393,6 +393,8 @@ class ExpressionEvaluator:
             context = {**obs.parameters, **ts}
             try:
                 val = evaluate_node(ast, context)
+                if isinstance(val, complex):
+                    return 0.0
                 values.append(val)
             except (EvalError, ZeroDivisionError, ValueError, OverflowError):
                 return 0.0
@@ -400,19 +402,37 @@ class ExpressionEvaluator:
         n = len(values)
         mean_val = sum(values) / n
 
+        # Guard against overflow: if values are astronomically large,
+        # the expression isn't physically meaningful.
+        if any(abs(v) > 1e150 for v in values):
+            return 0.0
+
         if abs(mean_val) < 1e-12:
             scale = max(abs(v) for v in values)
             if scale < 1e-12:
                 return 1.0
             variance = sum((v - mean_val) ** 2 for v in values) / n
-            std_val = math.sqrt(variance)
+            variance = _safe_real(variance)
+            std_val = math.sqrt(max(variance, 0.0))
             return 1.0 / (1.0 + std_val / scale)
 
         variance = sum((v - mean_val) ** 2 for v in values) / n
-        std_val = math.sqrt(variance)
+        variance = _safe_real(variance)
+        std_val = math.sqrt(max(variance, 0.0))
         rel_std = std_val / abs(mean_val)
 
         return 1.0 / (1.0 + rel_std)
+
+
+# ── Helper ───────────────────────────────────────────────────────────────
+
+def _safe_real(x: float | complex) -> float:
+    """Return the real part of x, or 0.0 if complex or NaN."""
+    if isinstance(x, complex):
+        return x.real
+    if isinstance(x, float) and math.isnan(x):
+        return 0.0
+    return float(x)
 
 
 # ── Alias for backward compatibility ──────────────────────────────────────────

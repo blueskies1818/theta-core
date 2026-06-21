@@ -87,13 +87,94 @@ class Dimension:
         """Return a pre-defined named dimension.
 
         Valid names: Scalar, Mass, Length, Time, Velocity, Accel, Force, Energy.
+        Also supports compound names like ``"Force/Length"`` or ``"Mass*Length/Time^2"``
+        by parsing and computing the resulting dimension.
         """
-        if name not in _NAMED_DIMENSIONS:
-            raise ValueError(
-                f"Unknown dimension name {name!r}. "
-                f"Available: {list(_NAMED_DIMENSIONS)}"
-            )
-        return cls._cached(_NAMED_DIMENSIONS[name])
+        if name in _NAMED_DIMENSIONS:
+            return cls._cached(_NAMED_DIMENSIONS[name])
+
+        # Try to parse compound dimension name like "Force/Length" or "Mass*Velocity"
+        parsed = cls._parse_compound(name)
+        if parsed is not None:
+            return parsed
+
+        raise ValueError(
+            f"Unknown dimension name {name!r}. "
+            f"Available: {list(_NAMED_DIMENSIONS)}"
+        )
+
+    @classmethod
+    def _parse_compound(cls, name: str) -> Dimension | None:
+        """Parse a compound dimension name like 'Force/Length' or 'Mass*Velocity^2'.
+
+        Supports: * (multiply), / (divide), ^ (power), and named dimensions.
+        Returns None if the string cannot be parsed.
+        """
+        import re
+
+        name = name.strip()
+
+        # Handle division: "A/B"
+        if "/" in name:
+            parts = name.split("/", 1)
+            left = cls._parse_compound(parts[0])
+            right = cls._parse_compound(parts[1])
+            if left is not None and right is not None:
+                return left / right
+            return None
+
+        # Handle multiplication: split on *
+        # But be careful: "Mass*Length" or "Mass*Length^2"
+        tokens: list[str] = []
+        depth = 0
+        current = ""
+        for ch in name:
+            if ch == "(":
+                depth += 1
+                current += ch
+            elif ch == ")":
+                depth -= 1
+                current += ch
+            elif ch == "*" and depth == 0:
+                if current:
+                    tokens.append(current.strip())
+                current = ""
+            else:
+                current += ch
+        if current:
+            tokens.append(current.strip())
+
+        if len(tokens) == 0:
+            return None
+
+        if len(tokens) == 1:
+            # Single token: could be a named dimension, possibly with ^N
+            token = tokens[0]
+            # Match "Name^N" pattern
+            m = re.match(r'^(\w+)\^(-?\d+)$', token)
+            if m:
+                base_name = m.group(1)
+                exponent = float(m.group(2))
+                if base_name in _NAMED_DIMENSIONS:
+                    base = cls._cached(_NAMED_DIMENSIONS[base_name])
+                    return base ** exponent
+                return None
+            # Just a named dimension
+            if token in _NAMED_DIMENSIONS:
+                return cls._cached(_NAMED_DIMENSIONS[token])
+            return None
+
+        # Multiple tokens: multiply them all
+        result: Dimension | None = None
+        for token in tokens:
+            dim = cls._parse_compound(token)
+            if dim is None:
+                return None
+            if result is None:
+                result = dim
+            else:
+                result = result * dim
+        return result
 
     @classmethod
     def from_exponents(cls, exp: dict[str, float]) -> Dimension:

@@ -1,0 +1,54 @@
+{
+  "database": "data/observations/phase1_falling.json",
+  "train_observation_ids": [
+    "falling_ball_straight_drop",
+    "sliding_block_incline",
+    "projectile_90deg",
+    "falling_ball_varying_mass",
+    "pendulum_large_angle",
+    "projectile_45deg",
+    "falling_ball_upward_throw",
+    "pendulum_small_angle"
+  ],
+  "test_observation_ids": [
+    "spring_undamped",
+    "spring_damped_light"
+  ],
+  "parameters": {
+    "train_count": 8,
+    "test_count": 2,
+    "max_expansions": 5000,
+    "max_depth": 6,
+    "discovery_threshold": 0.95,
+    "top_k": 50,
+    "seed": 41
+  },
+  "result": {
+    "discovered": false,
+    "total_expansions": 185,
+    "discoveries": [
+      {
+        "expression": "h*g*m+-1*h*g*m",
+        "train_score": 1.0,
+        "test_score": 0.0,
+        "depth": 4,
+        "expansions_needed": 185,
+        "train_constancies": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "test_constancies": [
+          0.0,
+          0.0
+        ],
+        "timestamp": 1782075132.0120606
+      }
+    ]
+  }
+}
