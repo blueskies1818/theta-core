@@ -941,6 +941,8 @@ def extract_domain_examples(
     examples: list[dict] = []
     for obs in data:
         inv = obs.get("known_invariant")
+        if inv is None:
+            continue
         qty_symbols = list(obs["quantities"].keys())
         # For domain detection, also consider parameter keys
         all_keys = set(qty_symbols) | set(obs.get("parameters", {}).keys())

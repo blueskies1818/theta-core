@@ -1,31 +1,31 @@
 {
-  "expression": "-1*g*m*h+0.5*(1*v*m*-1*v)",
-  "train_score": 0.9999999802966576,
-  "test_score": 0.9835106902968744,
-  "depth": 6,
-  "expansions": 314,
-  "train_ids": [
-    "falling_ball_straight_drop",
-    "falling_ball_upward_throw",
-    "falling_ball_varying_mass",
+  "database": "data/observations/phase1_falling.json",
+  "train_observation_ids": [
     "projectile_45deg",
-    "projectile_90deg",
-    "sliding_block_incline"
-  ],
-  "test_ids": [
     "pendulum_small_angle",
+    "falling_ball_varying_mass",
+    "projectile_90deg",
+    "spring_undamped",
+    "spring_damped_light",
+    "sliding_block_incline",
     "pendulum_large_angle"
   ],
-  "train_constancies": [
-    1.0,
-    0.9999999850333705,
-    1.0,
-    0.9999999162702283,
-    0.9999999850333705,
-    0.9999999954429766
+  "test_observation_ids": [
+    "falling_ball_straight_drop",
+    "falling_ball_upward_throw"
   ],
-  "test_constancies": [
-    0.9996625616223848,
-    0.9673588189713641
-  ]
+  "parameters": {
+    "train_count": 8,
+    "test_count": 2,
+    "max_expansions": 5000,
+    "max_depth": 6,
+    "discovery_threshold": 0.95,
+    "top_k": 50,
+    "seed": 42
+  },
+  "result": {
+    "discovered": false,
+    "total_expansions": 241,
+    "discoveries": []
+  }
 }

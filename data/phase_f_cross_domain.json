@@ -1,0 +1,45 @@
+{
+  "model_path": "/home/blueman1818/Projects/theta-core/checkpoints/expression_model.pt",
+  "observations_path": "/home/blueman1818/Projects/theta-core/data/observations/phase2_extended.json",
+  "model_params": 934948,
+  "tests": {
+    "cross_domain": {
+      "scenario_id": "mass_spring_gravity",
+      "known_invariant": "0.5*m*v^2 + 0.5*k*h^2 - m*g*h",
+      "num_candidates": 2,
+      "best_expression": "m*g*h+0.5*m*v^2",
+      "best_score": 0.8260520256058023,
+      "all_scored": [
+        [
+          "m*g*h+0.5*m*v^2",
+          0.8260520256058023
+        ],
+        [
+          "0.5*m*v^2",
+          0.5358983848622454
+        ]
+      ],
+      "passed": true
+    },
+    "collision_elastic_1d_equal_mass": {
+      "best_expression": "0.5*m*v^2",
+      "best_score": 0.4494897427831781,
+      "known_invariant": "0.5*m*v^2",
+      "passed": false
+    },
+    "charged_particle_gravity": {
+      "best_expression": "m*g*h+0.5*m*v^2",
+      "best_score": 0.8489540281607676,
+      "known_invariant": "0.5*m*v^2 + m*g*h + q*E*h",
+      "passed": true
+    },
+    "pendulum_small_angle": {
+      "best_expression": "m*g*h+0.5*m*v^2",
+      "best_score": 0.9996625616223848,
+      "known_invariant": "m*g*h + 0.5*m*v^2",
+      "passed": true
+    }
+  },
+  "n_tests": 4,
+  "n_passed": 3
+}

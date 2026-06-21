@@ -79,6 +79,8 @@ class SelfPlayLoop:
         *,
         train_count: int = 8,
         test_count: int = 2,
+        train_ids: list[str] | None = None,
+        test_ids: list[str] | None = None,
         max_expansions: int = 10_000,
         max_depth: int = 6,
         discovery_threshold: float = 0.95,
@@ -88,6 +90,8 @@ class SelfPlayLoop:
         self.db_path = Path(db_path)
         self.train_count = train_count
         self.test_count = test_count
+        self.train_ids = train_ids
+        self.test_ids = test_ids
         self.max_expansions = max_expansions
         self.max_depth = max_depth
         self.discovery_threshold = discovery_threshold
@@ -108,18 +112,25 @@ class SelfPlayLoop:
         """Load database and split into train/test."""
         self._db = ObservationDatabase(self.db_path)
         all_obs = list(self._db)
-        if len(all_obs) < self.train_count + self.test_count:
-            raise ValueError(
-                f"Database has {len(all_obs)} observations, "
-                f"need at least {self.train_count + self.test_count}"
-            )
 
-        rng = random.Random(self.seed)
-        indices = list(range(len(all_obs)))
-        rng.shuffle(indices)
+        # Use explicit IDs if provided, otherwise random split
+        if self.train_ids is not None:
+            obs_by_id = {o.id: o for o in all_obs}
+            self._train = [obs_by_id[id_] for id_ in self.train_ids]
+            self._test = [obs_by_id[id_] for id_ in (self.test_ids or [])]
+        else:
+            if len(all_obs) < self.train_count + self.test_count:
+                raise ValueError(
+                    f"Database has {len(all_obs)} observations, "
+                    f"need at least {self.train_count + self.test_count}"
+                )
 
-        self._train = [all_obs[i] for i in indices[:self.train_count]]
-        self._test = [all_obs[i] for i in indices[self.train_count:self.train_count + self.test_count]]
+            rng = random.Random(self.seed)
+            indices = list(range(len(all_obs)))
+            rng.shuffle(indices)
+
+            self._train = [all_obs[i] for i in indices[:self.train_count]]
+            self._test = [all_obs[i] for i in indices[self.train_count:self.train_count + self.test_count]]
         self._quantities = self._extract_quantities(self._train)
 
     def _extract_quantities(self, obs_list: list[Observation]) -> dict[str, Dimension]:
