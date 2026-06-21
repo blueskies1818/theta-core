@@ -57,8 +57,9 @@ class GNNConfig:
     # (different weights for "uses_in_proof" vs "uses_in_statement")
     use_edge_types: bool = True
 
-    # Number of distinct edge types
-    num_edge_types: int = 5
+    # Number of distinct edge types (6: USES_IN_PROOF, USES_IN_STATEMENT, GENERALIZES,
+    # INSTANTIATES, CO_OCCURS_IN_PROOF, PROVED_BY)
+    num_edge_types: int = 6
 
     # Whether to use bidirectional message passing
     # (if True, messages also flow from dependencies → dependents)

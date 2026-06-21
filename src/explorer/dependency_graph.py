@@ -43,6 +43,7 @@ class EdgeType(Enum):
     GENERALIZES = "generalizes"  # A is a generalization of B
     INSTANTIATES = "instantiates"  # A instantiates B with specific parameters
     CO_OCCURS_IN_PROOF = "co_occurs_in_proof"  # B co-occurs with A in proof-step pairs
+    PROVED_BY = "proved_by"  # A is proved using lemma B (from proof-step extraction)
 
 
 @dataclass

@@ -452,21 +452,24 @@ def train_binary_scorer(
             pos_lemma = lemma_embs[batch_idx].to(device)  # [B, 256]
             pos_labels = torch.ones(b_size, 1, device=device)
 
-            # Negative pairs: random lemmas from other pairs
-            # For each positive, pick num_negatives lemmas from DIFFERENT indices
-            neg_goal_list = []
-            neg_lemma_list = []
-            for bi in batch_idx:
-                # Pick random indices NOT equal to bi
-                candidates = [j for j in range(n_total) if j != bi]
-                neg_indices = random.sample(candidates, min(num_negatives, len(candidates)))
-                for nj in neg_indices:
-                    neg_goal_list.append(goal_embs[bi].unsqueeze(0))   # same goal
-                    neg_lemma_list.append(lemma_embs[nj].unsqueeze(0)) # wrong lemma
+            # Negative pairs: vectorized random sampling
+            # Generate b_size * K random indices, ensure none match the positive
+            neg_idx = torch.randint(0, n_total, (b_size, num_negatives))
+            # Replace any that match the positive index with another random
+            mask = neg_idx == torch.tensor(batch_idx).unsqueeze(1)
+            while mask.any():
+                neg_idx[mask] = torch.randint(0, n_total, (mask.sum().item(),))
+                mask = neg_idx == torch.tensor(batch_idx).unsqueeze(1)
 
-            neg_goal = torch.cat(neg_goal_list, dim=0).to(device)     # [B*K, 256]
-            neg_lemma = torch.cat(neg_lemma_list, dim=0).to(device)   # [B*K, 256]
-            neg_labels = torch.zeros(len(neg_goal_list), 1, device=device)
+            # neg_goal: repeat each goal K times
+            neg_goal = goal_embs[batch_idx].unsqueeze(1).expand(-1, num_negatives, -1)
+            neg_goal = neg_goal.reshape(-1, encoder.hidden_dim).to(device)
+
+            # neg_lemma: fetch K random lemmas per goal
+            neg_lemma_flat = neg_idx.reshape(-1)
+            neg_lemma = lemma_embs[neg_lemma_flat].to(device)
+
+            neg_labels = torch.zeros(b_size * num_negatives, 1, device=device)
 
             # Combine positives and negatives
             all_goal = torch.cat([pos_goal, neg_goal], dim=0)
@@ -510,19 +513,14 @@ def train_binary_scorer(
                 pos_lemma = val_lemma[vb_local].to(device)
                 pos_labels = torch.ones(vb_size, 1, device=device)
 
-                # Negatives for validation
-                neg_goal_list = []
-                neg_lemma_list = []
-                for bi in vb_global:
-                    candidates = [j for j in range(n_total) if j != bi]
-                    neg_indices = random.sample(candidates, min(num_negatives, len(candidates)))
-                    for nj in neg_indices:
-                        neg_goal_list.append(goal_embs[bi].unsqueeze(0))
-                        neg_lemma_list.append(lemma_embs[nj].unsqueeze(0))
-
-                neg_goal = torch.cat(neg_goal_list, dim=0).to(device)
-                neg_lemma = torch.cat(neg_lemma_list, dim=0).to(device)
-                neg_labels = torch.zeros(len(neg_goal_list), 1, device=device)
+                # Negatives for validation (vectorized)
+                neg_idx = torch.randint(0, n_total, (vb_size, num_negatives))
+                mask = neg_idx == torch.tensor(vb_global).unsqueeze(1)
+                neg_idx[mask] = (neg_idx[mask] + 1) % n_total  # simple fix
+                neg_goal = goal_embs[vb_global].unsqueeze(1).expand(-1, num_negatives, -1)
+                neg_goal = neg_goal.reshape(-1, encoder.hidden_dim).to(device)
+                neg_lemma = lemma_embs[neg_idx.reshape(-1)].to(device)
+                neg_labels = torch.zeros(vb_size * num_negatives, 1, device=device)
 
                 all_goal = torch.cat([pos_goal, neg_goal], dim=0)
                 all_lemma = torch.cat([pos_lemma, neg_lemma], dim=0)

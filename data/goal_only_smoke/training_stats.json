@@ -1,0 +1,72 @@
+{
+  "config": {
+    "vocab_size": 3000,
+    "token_dim": 128,
+    "hidden_dim": 256,
+    "n_params": 195456,
+    "temperature": 0.07,
+    "epochs": 5,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "n_pairs": 1000
+  },
+  "final_mrr": 0.5529982363315696,
+  "best_epoch": 4,
+  "history": [
+    {
+      "epoch": 1,
+      "loss": 1.607133,
+      "pos_sim": 0.606154,
+      "neg_sim": 0.224888,
+      "gap": 0.381266,
+      "lr": 0.00090451,
+      "time_s": 0.1,
+      "mrr": 0.475554,
+      "recall_at_50": 0.28
+    },
+    {
+      "epoch": 2,
+      "loss": 0.633099,
+      "pos_sim": 0.723089,
+      "neg_sim": 0.197759,
+      "gap": 0.525331,
+      "lr": 0.00065451,
+      "time_s": 0.1,
+      "mrr": 0.527523,
+      "recall_at_50": 0.27
+    },
+    {
+      "epoch": 3,
+      "loss": 0.426036,
+      "pos_sim": 0.749412,
+      "neg_sim": 0.184573,
+      "gap": 0.564838,
+      "lr": 0.00034549,
+      "time_s": 0.1,
+      "mrr": 0.543264,
+      "recall_at_50": 0.27
+    },
+    {
+      "epoch": 4,
+      "loss": 0.28457,
+      "pos_sim": 0.769912,
+      "neg_sim": 0.175109,
+      "gap": 0.594803,
+      "lr": 9.549e-05,
+      "time_s": 0.1,
+      "mrr": 0.552998,
+      "recall_at_50": 0.27
+    },
+    {
+      "epoch": 5,
+      "loss": 0.260745,
+      "pos_sim": 0.774186,
+      "neg_sim": 0.172326,
+      "gap": 0.601859,
+      "lr": 0.0,
+      "time_s": 0.1,
+      "mrr": 0.532728,
+      "recall_at_50": 0.27
+    }
+  ]
+}

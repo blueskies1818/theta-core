@@ -1,0 +1,15 @@
+{
+  "before": {
+    "nodes": 116171,
+    "edges": 436460,
+    "lemma_recall": 0.6457991525544634,
+    "pair_recall": 0.6741282195369088
+  },
+  "after": {
+    "nodes": 139183,
+    "edges": 459388,
+    "injected": 22928,
+    "lemma_recall": 0.9729074229951635,
+    "pair_recall": 0.9613190975341035
+  }
+}

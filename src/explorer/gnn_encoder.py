@@ -598,14 +598,32 @@ def prepare_graph_tensors(
         EdgeType.GENERALIZES: 2,
         EdgeType.INSTANTIATES: 3,
         EdgeType.CO_OCCURS_IN_PROOF: 4,
+        EdgeType.PROVED_BY: 5,
     }
 
     src_list, tgt_list, et_list = [], [], []
     for u, v, attrs in graph._graph.edges(data=True):
         if u in graph._id_to_idx and v in graph._id_to_idx:
-            src_list.append(graph._id_to_idx[u])
-            tgt_list.append(graph._id_to_idx[v])
-            et_list.append(_etype_map.get(attrs.get("type", EdgeType.USES_IN_PROOF), 0))
+            src_idx = graph._id_to_idx[u]
+            tgt_idx = graph._id_to_idx[v]
+            primary_type = attrs.get("type", EdgeType.USES_IN_PROOF)
+            primary_code = _etype_map.get(primary_type, 0)
+
+            # Always emit the primary edge type
+            src_list.append(src_idx)
+            tgt_list.append(tgt_idx)
+            et_list.append(primary_code)
+
+            # If proof attributes are present, emit extra rows for those edge types
+            if attrs.get("cooccurs_in_proof") and primary_type != EdgeType.CO_OCCURS_IN_PROOF:
+                src_list.append(src_idx)
+                tgt_list.append(tgt_idx)
+                et_list.append(_etype_map[EdgeType.CO_OCCURS_IN_PROOF])
+
+            if attrs.get("proved_by") and primary_type != EdgeType.PROVED_BY:
+                src_list.append(src_idx)
+                tgt_list.append(tgt_idx)
+                et_list.append(_etype_map[EdgeType.PROVED_BY])
 
     device = device or torch.device("cpu")
     return (

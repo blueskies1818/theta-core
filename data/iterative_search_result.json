@@ -1,0 +1,4829 @@
+{
+  "task": "PATH 3: Iterative proof search with Lean rejection feedback",
+  "timestamp": "2026-06-19 23:18:02",
+  "architecture": "GNN cosine similarity + Iterative Best-first search with Lean feedback",
+  "config": {
+    "max_iterations": 5,
+    "max_depth": 20,
+    "max_expansions_per_pass": 500,
+    "top_k_lemmas": 30,
+    "depth_penalty": 0.05,
+    "rejection_penalty_initial": 0.3,
+    "num_threads": 4,
+    "max_graph_candidates": 200,
+    "gnn_params": 1118848,
+    "domain_filtering": true
+  },
+  "graph": {
+    "num_nodes": 116171,
+    "num_edges": 436460
+  },
+  "results": {
+    "total": 64,
+    "pass_0": 10,
+    "newly_found": 0,
+    "total_found": 10,
+    "not_found": 54,
+    "rate_total": 0.15625,
+    "elapsed_s": 3070.84343457222,
+    "pass_distribution": {
+      "0": 10
+    },
+    "domains": {
+      "algebra": {
+        "total": 17,
+        "pass_0": 4,
+        "newly_found": 0
+      },
+      "Algebra": {
+        "total": 9,
+        "pass_0": 1,
+        "newly_found": 0
+      },
+      "analysis": {
+        "total": 14,
+        "pass_0": 2,
+        "newly_found": 0
+      },
+      "physics": {
+        "total": 16,
+        "pass_0": 2,
+        "newly_found": 0
+      },
+      "logic": {
+        "total": 5,
+        "pass_0": 1,
+        "newly_found": 0
+      },
+      "number_theory": {
+        "total": 3,
+        "pass_0": 0,
+        "newly_found": 0
+      }
+    },
+    "multi_step": {
+      "total": 3,
+      "newly_found": 0
+    },
+    "lemma_novelty": {
+      "total": 3,
+      "newly_found": 0
+    }
+  },
+  "theorems": [
+    {
+      "name": "alg_subst_expand",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "pass_found": 0,
+      "is_newly_found": false,
+      "num_passes": 1,
+      "proof_steps": [
+        "rw [h]",
+        "ring"
+      ],
+      "proof_text": "  rw [h]\n  ring",
+      "search_time_s": 13.7,
+      "rejected_lemma_count": 0,
+      "num_steps": 2,
+      "era": "classical",
+      "ground_truth": "rw [h]; ring",
+      "pattern": "multi",
+      "lemma_novelty": true
+    },
+    {
+      "name": "alg_subst_factor",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "pass_found": 0,
+      "is_newly_found": false,
+      "num_passes": 1,
+      "proof_steps": [
+        "rw [h]",
+        "ring"
+      ],
+      "proof_text": "  rw [h]\n  ring",
+      "search_time_s": 13.4,
+      "rejected_lemma_count": 0,
+      "num_steps": 2,
+      "era": "classical",
+      "ground_truth": "rw [h]; ring",
+      "pattern": "multi",
+      "lemma_novelty": true
+    },
+    {
+      "name": "alg_cross_multiply",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.1,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 22.2,
+          "lean_error": "<stdin>:8:90: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 8.9,
+          "lean_error": "<stdin>:8:90: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:8:90: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:8:90: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:8:90: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h' := congrArg (fun t => t * (b * d)) h; field_simp [hb, hd] at h'; exact h'",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_fraction_split",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "pass_found": 0,
+      "is_newly_found": false,
+      "num_passes": 1,
+      "proof_steps": [
+        "ring"
+      ],
+      "proof_text": "  ring",
+      "search_time_s": 5.4,
+      "rejected_lemma_count": 0,
+      "num_steps": 1,
+      "era": "classical",
+      "ground_truth": "field_simp [hc]; ring",
+      "pattern": "ring",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_ratio_identity",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "pass_found": 0,
+      "is_newly_found": false,
+      "num_passes": 1,
+      "proof_steps": [
+        "field_simp"
+      ],
+      "proof_text": "  field_simp",
+      "search_time_s": 10.6,
+      "rejected_lemma_count": 0,
+      "num_steps": 1,
+      "era": "classical",
+      "ground_truth": "field_simp [hx, hy]",
+      "pattern": "field_simp",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_complete_square",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 44.9,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:8:85: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 9.1,
+          "lean_error": "<stdin>:8:85: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:85: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:85: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:85: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "rw [h]; field_simp [ha]; ring",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_amgm_two",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 66.2,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_assoc",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_pow",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_comm",
+            "exact hy"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h : (x - y)^2 \u2265 0 := pow_two_nonneg _; nlinarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_deriv_product",
+      "domain": "Algebra",
+      "success": true,
+      "error": "",
+      "pass_found": 0,
+      "is_newly_found": false,
+      "num_passes": 1,
+      "proof_steps": [
+        "simp"
+      ],
+      "proof_text": "  simp",
+      "search_time_s": 8.1,
+      "rejected_lemma_count": 0,
+      "num_steps": 1,
+      "era": "classical",
+      "ground_truth": "rw [Polynomial.derivative_mul]; rfl",
+      "pattern": "simp",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_root_factor",
+      "domain": "Algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.3,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact p"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact p"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact p"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact p"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact p"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "apply Polynomial.dvd_iff_isRoot.mpr; rw [Polynomial.IsRoot]; exact h",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_degree_leading_term",
+      "domain": "Algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 65.6,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.1,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.refl`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.refl",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.6,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.symm",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.trans",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.subst",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_comm",
+            "exact hq"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "apply Polynomial.natDegree_add_eq_left_of_natDegree_lt; apply lt_of_lt_of_le ?_ (Nat.zero_le _); exact hp",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_iterated_deriv",
+      "domain": "Algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.8,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.6,
+          "lean_error": "<stdin>:8:20: error(lean.unknownIdentifier): Unknown identifier `Function.iterate`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.symm",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:8:20: error(lean.unknownIdentifier): Unknown identifier `Function.iterate`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.trans",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:20: error(lean.unknownIdentifier): Unknown identifier `Function.iterate`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.subst",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:8:20: error(lean.unknownIdentifier): Unknown identifier `Function.iterate`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_comm",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:20: error(lean.unknownIdentifier): Unknown identifier `Function.iterate`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_add",
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "ext p; rw [Function.iterate_add, Function.comp_apply]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_triangle_rev",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.4,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Convex.mul_sub_le_image_sub_of_le_deriv`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Convex.mul_sub_le_image_sub_of_le_deriv",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 8.9,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@log_le_sub_one_of_pos`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply log_le_sub_one_of_pos",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:8: error(lean.unknownIdentifier): Unknown identifier `sub_le_integral_of_hasDeriv_right_of_le_Ico`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply sub_le_integral_of_hasDeriv_right_of_le_Ico",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@dist_vsub_vsub_le`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply dist_vsub_vsub_le",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:8: error(lean.unknownIdentifier): Unknown identifier `integral_le_sub_of_hasDeriv_right_of_le`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply integral_le_sub_of_hasDeriv_right_of_le",
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h := abs_sub_abs_le_abs_sub x y; linarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_eps_delta",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "pass_found": 0,
+      "is_newly_found": false,
+      "num_passes": 1,
+      "proof_steps": [
+        "linarith"
+      ],
+      "proof_text": "  linarith",
+      "search_time_s": 10.8,
+      "rejected_lemma_count": 0,
+      "num_steps": 1,
+      "era": "classical",
+      "ground_truth": "have h := lt_of_lt_of_le h\u03b4 h\u03b4\u03b5; exact h",
+      "pattern": "linarith",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_cs_two_dim",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.6,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_comm",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_mul`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_mul",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_assoc",
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "nlinarith [sq_nonneg (a*y - b*x)]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_sum_sq_bound",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.2,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.1,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 8.9,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_comm",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_mul`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_mul",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_assoc",
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h : (x - y)^2 \u2265 0 := pow_two_nonneg _; nlinarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_abs_prod_pos",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 65.5,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.1,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_assoc",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:8: error(lean.unknownIdentifier): Unknown identifier `integral_prod_mul`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply integral_prod_mul",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_zero",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.1,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_add`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_add",
+            "exact hy"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "apply abs_pos.mpr; exact mul_ne_zero hx hy",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_sq_mono",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 66.0,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_pow",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_add`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_add",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_zero",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@pow_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply pow_one",
+            "exact h"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "nlinarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_ratio_test",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "pass_found": 0,
+      "is_newly_found": false,
+      "num_passes": 1,
+      "proof_steps": [
+        "linarith"
+      ],
+      "proof_text": "  linarith",
+      "search_time_s": 10.5,
+      "rejected_lemma_count": 0,
+      "num_steps": 1,
+      "era": "classical",
+      "ground_truth": "have hlt : r < 1 := hr1; linarith",
+      "pattern": "linarith",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_midpoint_bound",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 44.6,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 22.3,
+          "lean_error": "<stdin>:8:97: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:8:97: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:97: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:97: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:97: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have hmid : (a + b)/2 - a = (b - a)/2 := by ring; have hbmid : b - (a + b)/2 = (b - a)/2 := by ring; nlinarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_sum_abs_bound",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 65.7,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.1,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_assoc",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_comm",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_mul`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_mul",
+            "exact hy"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_zero",
+            "exact hy"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "calc\n  |x + y| \u2264 |x| + |y| := abs_add _ _\n  _ \u2264 M + M := add_le_add hx hy\n  _ = 2*M := by ring",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_bernstein_bounds",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.7,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hn0"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_pow",
+            "exact hn0"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "exact hn0"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_zero",
+            "exact hn0"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_add`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_add",
+            "exact hn0"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h_base : 0 \u2264 1 - x := by linarith; have h_ub : 1 - x \u2264 1 := by linarith; constructor; exact pow_nonneg h_base (by exact_mod_cast hn0); exact pow_le_one _ h_base h_ub",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_ke_classical",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 1 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 47.5,
+      "rejected_lemma_count": 1,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "exact hm"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:8:56: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:8:56: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:8:56: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:8:56: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "nlinarith [sq_nonneg v]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_rest_energy",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 65.6,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_assoc",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_pow",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_mul`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_mul",
+            "exact hc"
+          ]
+        }
+      ],
+      "era": "post_1925",
+      "ground_truth": "nlinarith [sq_nonneg c]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_galileo_velocity",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "pass_found": 0,
+      "is_newly_found": false,
+      "num_passes": 1,
+      "proof_steps": [
+        "linarith"
+      ],
+      "proof_text": "  linarith",
+      "search_time_s": 8.2,
+      "rejected_lemma_count": 0,
+      "num_steps": 1,
+      "era": "classical",
+      "ground_truth": "rw [h]; ring",
+      "pattern": "linarith",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_lorentz_bound",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.4,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_pow",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_add`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_add",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_mul`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_mul",
+            "exact hc"
+          ]
+        }
+      ],
+      "era": "post_1925",
+      "ground_truth": "have h_sq_pos : c^2 > 0 := pow_pos hc 2; exact (div_lt_one h_sq_pos).mpr (by nlinarith)",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_photon_quantum",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.6,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hr]",
+            "exact hh"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.1,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hr]",
+            "exact hh"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hr]",
+            "exact hh"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hr]",
+            "exact hh"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hr]",
+            "exact hh"
+          ]
+        }
+      ],
+      "era": "post_1925",
+      "ground_truth": "rw [hr]; field_simp [hh.ne.symm]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_absolute_time",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "pass_found": 0,
+      "is_newly_found": false,
+      "num_passes": 1,
+      "proof_steps": [
+        "linarith"
+      ],
+      "proof_text": "  linarith",
+      "search_time_s": 8.2,
+      "rejected_lemma_count": 0,
+      "num_steps": 1,
+      "era": "classical",
+      "ground_truth": "rw [h]; ring",
+      "pattern": "linarith",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_time_dilation",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 44.7,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 22.3,
+          "lean_error": "<stdin>:8:115: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "field_simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 8.8,
+          "lean_error": "<stdin>:8:115: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "field_simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:8:115: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "field_simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:8:115: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "field_simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:8:115: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "field_simp"
+          ]
+        }
+      ],
+      "era": "post_1925",
+      "ground_truth": "have h_sqrt : 0 < Real.sqrt (1 - v^2/c^2) \u2227 Real.sqrt (1 - v^2/c^2) \u2264 1 := by\n  have h_nonneg : 0 \u2264 1 - v^2/c^2 := by\n    have h_sq : v^2/c^2 < 1 := by\n      have h_sq_pos : c^2 > 0 := pow_pos hc 2\n      exact (div_lt_one h_sq_pos).mpr (by nlinarith)\n    nlinarith\n  have h_sqrt_pos : 0 < Real.sqrt (1 - v^2/c^2) := Real.sqrt_pos.mpr (by nlinarith)\n  have h_sqrt_le : Real.sqrt (1 - v^2/c^2) \u2264 1 := Real.sqrt_le_one h_nonneg\n  exact \u27e8h_sqrt_pos, h_sqrt_le\u27e9\napply (one_le_div ?_ h).mpr h_sqrt.2; exact \u27e8h_sqrt.1, h\u27e9",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_debroglie_wavelength",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.1,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.1,
+          "lean_error": "<stdin>:8:10: error: unexpected token '\u03bb'; expected ')'",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hp]",
+            "exact h\u03bb"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.1,
+          "lean_error": "<stdin>:8:10: error: unexpected token '\u03bb'; expected ')'",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hp]",
+            "exact h\u03bb"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:8:10: error: unexpected token '\u03bb'; expected ')'",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hp]",
+            "exact h\u03bb"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:8:10: error: unexpected token '\u03bb'; expected ')'",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hp]",
+            "exact h\u03bb"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:8:10: error: unexpected token '\u03bb'; expected ')'",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hp]",
+            "exact h\u03bb"
+          ]
+        }
+      ],
+      "era": "post_1925",
+      "ground_truth": "rw [hp]; field_simp [h\u03bb]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_classical_measure",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 65.6,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.1,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_assoc",
+            "exact h\u03b5"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_comm",
+            "exact h\u03b5"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@sub_self`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply sub_self",
+            "exact h\u03b5"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_zero",
+            "exact h\u03b5"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@sub_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply sub_zero",
+            "exact h\u03b5"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "constructor; linarith; linarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_heisenberg_bound",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.4,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_assoc",
+            "exact h\u210f"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact h\u210f"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_add`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_add",
+            "exact h\u210f"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_comm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_comm",
+            "exact h\u210f"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_zero",
+            "exact h\u210f"
+          ]
+        }
+      ],
+      "era": "post_1925",
+      "ground_truth": "constructor\n\u00b7 by_contra hx; push_neg at hx; have h1 : \u0394x * \u0394p \u2264 0 := mul_nonpos_of_nonpos_of_nonneg hx (by nlinarith); linarith\n\u00b7 by_contra hp; push_neg at hp; have h2 : \u0394x * \u0394p \u2264 0 := mul_nonpos_of_nonneg_of_nonpos (by nlinarith) hp; linarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "logic_contrapositive",
+      "domain": "logic",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 54.7,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 21.9,
+          "lean_error": "<stdin>:9:8: error(lean.unknownIdentifier): Unknown identifier `Function.id`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Function.id",
+            "exact hPQ"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 8.8,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply id",
+            "exact hPQ"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@not_or_of_imp`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply not_or_of_imp",
+            "exact hPQ"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@or_not_of_imp`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply or_not_of_imp",
+            "exact hPQ"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@IsSimpleOrder.of_forall_eq_top`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply IsSimpleOrder.of_forall_eq_top",
+            "exact hPQ"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "intro hnR hP; apply hnR; apply hQR; apply hPQ; exact hP",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "logic_cases_or",
+      "domain": "logic",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 44.4,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 21.7,
+          "lean_error": "<stdin>:9:8: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "intro h",
+            "exact h_or"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.1,
+          "lean_error": "<stdin>:9:8: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "intro h",
+            "exact h_or"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:8: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "intro h",
+            "exact h_or"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:8: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "intro h",
+            "exact h_or"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:8: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "intro h",
+            "exact h_or"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "rcases h_or with (hP | hQ); exact hPQ hP; exact hQR hQ",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "logic_demorgan",
+      "domain": "logic",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 62.6,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 3,
+          "pass_time_s": 21.9,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@ite_prop_iff_or`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply ite_prop_iff_or",
+            "apply ite_prop_iff_or",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 3,
+          "pass_time_s": 11.5,
+          "lean_error": "<stdin>:9:8: error(lean.unknownIdentifier): Unknown identifier `fromRel_prop`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply fromRel_prop",
+            "apply fromRel_prop",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 3,
+          "pass_time_s": 8.9,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@isEmpty_Prop`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply isEmpty_Prop",
+            "apply isEmpty_Prop",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.1,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@iSup_Prop_eq`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply iSup_Prop_eq",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@iUnion_congr_Prop`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply iUnion_congr_Prop",
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "constructor\n\u00b7 intro h; by_cases hP : P; right; intro hQ; apply h; exact \u27e8hP, hQ\u27e9; left; exact hP\n\u00b7 intro h hPQ; rcases hPQ with \u27e8hP, hQ\u27e9; rcases h with (hNP | hNQ); exact hNP hP; exact hNQ hQ",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "logic_iff_trans",
+      "domain": "logic",
+      "success": true,
+      "error": "",
+      "pass_found": 0,
+      "is_newly_found": false,
+      "num_passes": 1,
+      "proof_steps": [
+        "rw [hPQ]",
+        "exact hQR"
+      ],
+      "proof_text": "  rw [hPQ]\n  exact hQR",
+      "search_time_s": 10.6,
+      "rejected_lemma_count": 0,
+      "num_steps": 2,
+      "era": "classical",
+      "ground_truth": "constructor; intro hP; exact hQR.mp (hPQ.mp hP); intro hR; exact hPQ.mpr (hQR.mpr hR)",
+      "pattern": "multi",
+      "lemma_novelty": true
+    },
+    {
+      "name": "logic_modus_tollens",
+      "domain": "logic",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 44.1,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.0,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "intro h",
+            "exact hnR"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "intro h",
+            "exact hnR"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "intro h",
+            "exact hnR"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "intro h",
+            "exact hnR"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:10:2: error: Type mismatch",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "intro h",
+            "exact hnR"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "intro hP; apply hnR; apply hQR; apply hPQ; exact hP",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "nt_sum_first_n",
+      "domain": "number_theory",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.5,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.3,
+          "lean_error": "<stdin>:8:26: error: unexpected token 'in'; expected ','",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.refl",
+            "exact n"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 8.9,
+          "lean_error": "<stdin>:8:26: error: unexpected token 'in'; expected ','",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.symm",
+            "exact n"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:26: error: unexpected token 'in'; expected ','",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.trans",
+            "exact n"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:8:26: error: unexpected token 'in'; expected ','",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.subst",
+            "exact n"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:26: error: unexpected token 'in'; expected ','",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply sub_self",
+            "exact n"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "induction' n with k ih\n\u00b7 simp\n\u00b7 rw [Finset.sum_range_succ, mul_add, add_comm, \u2190 add_assoc, ih]; ring",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_quadratic_formula",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.7,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.6,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.1,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.9,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h_discr : 4*a*(a*x^2 + b*x + c) = 0 := by rw [h]; ring; nlinarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_mvt_inequality",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.4,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_assoc",
+            "exact hxy"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@sub_self`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply sub_self",
+            "exact hxy"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_pow",
+            "exact hxy"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "exact hxy"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@sub_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply sub_zero",
+            "exact hxy"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h_diff : x^3 - y^3 = (x - y)*(x^2 + x*y + y^2) := by ring; rw [h_diff]; have h_nonpos : x - y \u2264 0 := by linarith; nlinarith [sq_nonneg x, sq_nonneg y]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_telescoping",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 44.8,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 22.2,
+          "lean_error": "<stdin>:8:22: error: unexpected token 'in'; expected ','",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 9.1,
+          "lean_error": "<stdin>:8:22: error: unexpected token 'in'; expected ','",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:22: error: unexpected token 'in'; expected ','",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:22: error: unexpected token 'in'; expected ','",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:22: error: unexpected token 'in'; expected ','",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "linarith"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "induction' n with m ih\n\u00b7 simp\n\u00b7 rw [Finset.sum_range_succ, ih]; push_cast; ring",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_amgm_sqrt",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 54.9,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hx"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 8.9,
+          "lean_error": "<stdin>:9:8: error(lean.unknownIdentifier): Unknown constant `Real.add_comm`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Real.add_comm",
+            "exact hx"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:8: error(lean.unknownIdentifier): Unknown constant `Real.mul_comm`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Real.mul_comm",
+            "exact hx"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_comm",
+            "exact hx"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_mul`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_mul",
+            "exact hx"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h_nonneg : (Real.sqrt x - Real.sqrt y)^2 \u2265 0 := pow_two_nonneg _; nlinarith [Real.sq_sqrt hx, Real.sq_sqrt hy]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_cubic_formula_factor",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.6,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.5,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact hr"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.1,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact hr"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact hr"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact hr"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact hr"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "rw [hr] at h; nlinarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_sq_eq_ineq_chain",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.7,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.3,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.4,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h_sq : (x - 2)^2 = 0 := by nlinarith; nlinarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_poly_interp_two",
+      "domain": "Algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 65.7,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.1,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.refl`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.refl",
+            "exact p"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.symm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.symm",
+            "exact p"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.trans`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.trans",
+            "exact p"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:10:8: error(lean.unknownIdentifier): Unknown identifier `p`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.subst",
+            "exact p"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:10:8: error(lean.unknownIdentifier): Unknown identifier `p`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Exists.intro",
+            "exact p"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "refine \u27e8Polynomial.C ((y0*x1 - y1*x0)/(x1 - x0)) + Polynomial.C ((y1 - y0)/(x1 - x0)) * Polynomial.X, ?_, ?_\u27e9\n\u00b7 field_simp [hx]; ring\n\u00b7 field_simp [hx]; ring",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_system_substitution",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.4,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h1]",
+            "exact h1"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.1,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h1]",
+            "exact h1"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h1]",
+            "exact h1"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.9,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h1]",
+            "exact h1"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h1]",
+            "exact h1"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "rw [h3] at h1; have hy : y = a/3 := by linarith; rw [hy] at h2; linarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_abs_ineq_mul",
+      "domain": "analysis",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 66.5,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hb"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.8,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_assoc",
+            "exact hb"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_mul`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_mul",
+            "exact hb"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_zero",
+            "exact hb"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_comm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_comm",
+            "exact hb"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "rw [abs_mul]; have h_nonneg_a : 0 \u2264 |a| := abs_nonneg _; have h_nonneg_b : 0 \u2264 |b| := abs_nonneg _; nlinarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_poly_remainder",
+      "domain": "Algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.4,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.1,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "exact h"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "rw [Polynomial.eval_sub, h, Polynomial.eval_C]; ring",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_linear_system_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.5,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.5,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h1]",
+            "exact h1"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.2,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h1]",
+            "exact h1"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h1]",
+            "exact h1"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h1]",
+            "exact h1"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.9,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h1]",
+            "exact h1"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have hx : x = (a + b)/2 := by linarith; have hy : y = (a - b)/2 := by linarith; exact And.intro hx hy",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_ratio_bound_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.3,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact ha"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 8.8,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_add`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_add",
+            "exact ha"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_mul`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_mul",
+            "exact ha"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_zero",
+            "exact ha"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@div_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply div_one",
+            "exact ha"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h1 : a / b \u2264 1 := (div_le_one hb).mpr h; have h2 : 1 \u2264 b / a := by rw [\u2190 one_le_div ha]; exact h; exact And.intro h1 h2",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_sq_factor_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.7,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_pow",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.refl`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.refl",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.symm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.symm",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.trans`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.trans",
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "constructor; ring; ring",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_cubic_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 56.1,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_pow",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.refl`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.refl",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.symm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.symm",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.trans`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.trans",
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "constructor; ring; ring",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_prod_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.7,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@sub_self`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply sub_self",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_pow",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.refl`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.refl",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.symm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.symm",
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "constructor; ring; positivity",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_sqrt_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 66.3,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_assoc",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.4,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@sub_self`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply sub_self",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.refl`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.refl",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.symm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.symm",
+            "exact hq"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h := Real.sqrt_mul hp q; constructor; exact h; exact Real.sqrt_nonneg _",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_degree_v2",
+      "domain": "Algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.4,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:8: error(lean.unknownIdentifier): Unknown identifier `degree_add_eq_left_of_degree_lt`",
+          "error_hint": "unknown_identifier",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply degree_add_eq_left_of_degree_lt",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_assoc",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply add_zero",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_add`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_add",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@multipliable_nat_add_iff`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply multipliable_nat_add_iff",
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "constructor; rw [Polynomial.degree_add_le]; exact le_rfl; rw [Polynomial.natDegree_add_le]; exact le_rfl",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_deg_mul_v2",
+      "domain": "Algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 66.4,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_assoc",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_mul`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_mul",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_comm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_comm",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_zero`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_zero",
+            "exact hq"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "constructor; rw [Polynomial.natDegree_mul hp hq]; rw [Polynomial.degree_mul]; exact rfl",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_monic_v2",
+      "domain": "Algebra",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 65.5,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.0,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 11.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_assoc",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.2,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_mul`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_mul",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.1,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.refl`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.refl",
+            "exact hq"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 6.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.symm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.symm",
+            "exact hq"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h := Polynomial.Monic.mul hp hq; constructor; exact h; simp [hp.leadingCoeff, hq.leadingCoeff]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_newton_gravity_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 1 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 47.4,
+      "rejected_lemma_count": 1,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.3,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "exact hr"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:8:76: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:76: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:8:76: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:8:76: error: unsolved goals",
+          "error_hint": "unsolved_goals",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "constructor; apply div_pos; apply mul_pos; apply mul_pos; nlinarith [hr]; nlinarith [hr]; nlinarith [hr]; apply div_pos; apply mul_pos; apply mul_pos; nlinarith [hr]; nlinarith [hr]; nlinarith [hr]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_einstein_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.8,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.5,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_assoc",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_one`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply mul_one",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_pow",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "exact hc"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.refl`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.refl",
+            "exact hc"
+          ]
+        }
+      ],
+      "era": "post_1925",
+      "ground_truth": "have hR := by linarith; constructor; exact hR; positivity",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_maxwell_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.1,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.3,
+          "lean_error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.1,
+          "lean_error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [h]",
+            "linarith"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "constructor; rw [h]; rw [h]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_newton_mom_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.6,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.5,
+          "lean_error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [ha]",
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.2,
+          "lean_error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [ha]",
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [ha]",
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [ha]",
+            "linarith"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.9,
+          "lean_error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [ha]",
+            "linarith"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "constructor; rw [ha]; rw [ha, mul_comm]",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_classical_prob_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 45.6,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.4,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hsum]",
+            "exact hp1"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 9.1,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hsum]",
+            "exact hp1"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.9,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hsum]",
+            "exact hp1"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hsum]",
+            "exact hp1"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.8,
+          "lean_error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "rw [hsum]",
+            "exact hp1"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "constructor; linarith; linarith",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_quantum_born_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "max iterations (5) exhausted, 5 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 55.7,
+      "rejected_lemma_count": 5,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 22.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply zero_pow",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 8.8,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@one_pow`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply one_pow",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.refl`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.refl",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.symm`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.symm",
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 2,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.trans`",
+          "error_hint": "type_mismatch",
+          "rejected_lemmas_added": 1,
+          "proof_steps": [
+            "apply Eq.trans",
+            "simp"
+          ]
+        }
+      ],
+      "era": "post_1925",
+      "ground_truth": "constructor; ring; ring",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "nt_dvd_trans_v2",
+      "domain": "number_theory",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 44.7,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 22.3,
+          "lean_error": "<stdin>:8:74: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:8:74: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:74: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:8:74: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.5,
+          "lean_error": "<stdin>:8:74: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h_ac : a \u2223 c := Nat.dvd_trans hab hbc; have h_sum : a \u2223 b + c := by apply Nat.dvd_add hab h_ac; constructor; exact h_ac; exact h_sum",
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "nt_euclid_v2",
+      "domain": "number_theory",
+      "success": false,
+      "error": "max iterations (5) exhausted, 0 lemmas rejected",
+      "pass_found": -1,
+      "is_newly_found": false,
+      "num_passes": 5,
+      "proof_steps": [],
+      "proof_text": "",
+      "search_time_s": 44.5,
+      "rejected_lemma_count": 0,
+      "num_steps": 0,
+      "all_attempts": [
+        {
+          "iteration": 0,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 22.2,
+          "lean_error": "<stdin>:8:77: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 1,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 9.0,
+          "lean_error": "<stdin>:8:77: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 2,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:77: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 3,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.7,
+          "lean_error": "<stdin>:8:77: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        },
+        {
+          "iteration": 4,
+          "found": false,
+          "num_steps": 1,
+          "pass_time_s": 3.6,
+          "lean_error": "<stdin>:8:77: error: `simp` made no progress",
+          "error_hint": "unknown",
+          "rejected_lemmas_added": 0,
+          "proof_steps": [
+            "simp"
+          ]
+        }
+      ],
+      "era": "classical",
+      "ground_truth": "have h_or := hp.dvd_mul.mp h; rcases h_or with (hpa | hpb); left; exact hpa; right; exact hpb",
+      "pattern": "failed",
+      "lemma_novelty": false
+    }
+  ],
+  "newly_found_theorems": []
+}

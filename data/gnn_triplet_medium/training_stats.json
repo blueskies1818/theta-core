@@ -1,0 +1,56 @@
+{
+  "mode": "full_gnn_finetune_triplet_only",
+  "config": {
+    "gnn_checkpoint": "checkpoints/gnn/full_graph_pretrained.pt",
+    "num_epochs": 2,
+    "batch_size": 256,
+    "learning_rate": 0.0001,
+    "preservation_weight": 0.1,
+    "margin": 0.3,
+    "num_threads": 4
+  },
+  "baseline_lp_loss": 0.6829724311828613,
+  "gate_a_threshold": 0.8878641605377198,
+  "gate_b_threshold": 0.6,
+  "best_val_mrr": 7.78624127753451e-05,
+  "best_epoch": 1,
+  "aborted_gate": null,
+  "epochs": [
+    {
+      "epoch": 1,
+      "loss": 0.698446,
+      "triplet_loss": 0.630057,
+      "lp_loss": 0.683891,
+      "current_lp_loss": 0.683166,
+      "lp_delta_pct": 0.03,
+      "val_mrr": 7.8e-05,
+      "embed_std": 0.087983,
+      "embed_rank": 255,
+      "lr": 5e-05,
+      "time_s": 10.6,
+      "gates": {
+        "A": "PASS",
+        "B": "FAIL",
+        "C": "PASS"
+      }
+    },
+    {
+      "epoch": 2,
+      "loss": 0.614016,
+      "triplet_loss": 0.545687,
+      "lp_loss": 0.683286,
+      "current_lp_loss": 0.6835,
+      "lp_delta_pct": 0.08,
+      "val_mrr": 6.2e-05,
+      "embed_std": 0.087295,
+      "embed_rank": 255,
+      "lr": 0.0,
+      "time_s": 11.0,
+      "gates": {
+        "A": "PASS",
+        "B": "FAIL",
+        "C": "PASS"
+      }
+    }
+  ]
+}
