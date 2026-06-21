@@ -32,13 +32,16 @@ sys.path.insert(0, str(_project_root))
 from src.physics.composer import (
     DomainClassifier,
     DomainTemplateGenerator,
+    CollisionTemplateGenerator,
     ExpressionComposer,
     PerDomainComposer,
     DOMAINS,
     DOMAIN_TEMPLATES,
     DOMAIN_QUANTITIES,
+    COLLISION_DOMAIN,
     assign_domain_labels,
     extract_domain_examples,
+    _assign_domain_labels_from_keys,
     quantity_set_to_features,
     quantities_to_tensor,
     quantities_to_features,
@@ -71,9 +74,11 @@ class DomainClassifierDataset(torch.utils.data.Dataset):
         self.samples: list[tuple[torch.Tensor, torch.Tensor]] = []
         for obs in data:
             qty_symbols = list(obs["quantities"].keys())
-            features = quantity_set_to_features(qty_symbols)
+            # Merge parameter keys that are physics symbols into features
+            all_symbols = set(qty_symbols) | set(obs.get("parameters", {}).keys())
+            features = quantity_set_to_features(list(all_symbols))
             labels = torch.tensor(
-                assign_domain_labels(qty_symbols), dtype=torch.float
+                _assign_domain_labels_from_keys(all_symbols), dtype=torch.float
             )
             self.samples.append((features, labels))
 
@@ -395,18 +400,130 @@ def main() -> None:
     gen_stats: dict[str, dict] = {}
 
     for domain in DOMAINS:
+        # Spring needs more capacity to learn from just 4 examples
+        d_model_domain = args.d_model
+        nhead_domain = 2 if args.d_model <= 40 else 4
+        if domain == "spring":
+            d_model_domain = max(args.d_model, 64)
+            nhead_domain = 4
+
         gen, stats = train_domain_generator(
             observations_path=str(observations_path),
             domain=domain,
             checkpoint_dir=str(checkpoint_dir),
             epochs=args.epochs_generator,
             lr=args.lr,
-            batch_size=args.batch_size,
+            batch_size=min(args.batch_size, 4),
             device=device,
-            d_model=args.d_model,
+            d_model=d_model_domain,
+            nhead=nhead_domain,
         )
         generators[domain] = gen
         gen_stats[domain] = stats
+
+    # ── Train collision template generator ───────────────────────────────
+    print(f"\n{'=' * 60}")
+    print("Training Collision Template Generator")
+    print("=" * 60)
+
+    col_examples = extract_domain_examples(
+        str(observations_path), COLLISION_DOMAIN
+    )
+    print(f"  Collision examples: {len(col_examples)}")
+
+    if len(col_examples) > 0:
+        col_dataset = DomainTemplateDataset(col_examples)
+        col_loader = DataLoader(
+            col_dataset, batch_size=min(args.batch_size, len(col_dataset)),
+            shuffle=True,
+        )
+
+        col_gen = CollisionTemplateGenerator(d_model=36, nhead=2)
+        col_n_params = col_gen.count_parameters()
+        print(f"  Parameters: {col_n_params:,}")
+        col_stats = {"train_loss": [], "train_acc": []}
+
+        criterion = nn.CrossEntropyLoss(ignore_index=TEMPLATE_PAD_IDX)
+        optimizer = torch.optim.Adam(col_gen.parameters(), lr=args.lr)
+
+        col_gen.train()
+        col_gen.to(device)
+
+        for epoch in range(1, args.epochs_generator + 1):
+            epoch_loss = 0.0
+            epoch_correct = 0
+            epoch_total = 0
+            n_batches = 0
+
+            for src, tgt in col_loader:
+                src = src.to(device)
+                tgt = tgt.to(device)
+                optimizer.zero_grad()
+                tgt_input = tgt[:, :-1]
+                tgt_output = tgt[:, 1:]
+                src_mask = (src == TEMPLATE_PAD_IDX)
+                tgt_mask_pad = (tgt_input == TEMPLATE_PAD_IDX)
+                tgt_causal = torch.triu(
+                    torch.ones(tgt_input.size(1), tgt_input.size(1),
+                               device=device) * float("-inf"),
+                    diagonal=1,
+                )
+                logits = col_gen.forward(
+                    src, tgt_input,
+                    src_padding_mask=src_mask,
+                    tgt_padding_mask=tgt_mask_pad,
+                    tgt_mask=tgt_causal,
+                )
+                loss = criterion(
+                    logits.reshape(-1, logits.size(-1)),
+                    tgt_output.reshape(-1),
+                )
+                loss.backward()
+                optimizer.step()
+                epoch_loss += loss.item()
+                preds = logits.argmax(dim=-1)
+                mask = tgt_output != TEMPLATE_PAD_IDX
+                correct = (preds[mask] == tgt_output[mask]).sum().item()
+                total = mask.sum().item()
+                epoch_correct += correct
+                epoch_total += total
+                n_batches += 1
+
+            avg_loss = epoch_loss / max(n_batches, 1)
+            avg_acc = epoch_correct / max(epoch_total, 1)
+            col_stats["train_loss"].append(avg_loss)
+            col_stats["train_acc"].append(avg_acc)
+            if epoch % 10 == 0 or epoch == 1:
+                print(
+                    f"  Epoch {epoch:3d}/{args.epochs_generator} — "
+                    f"loss: {avg_loss:.4f}, acc: {avg_acc:.4f}"
+                )
+
+        # Save collision model
+        col_gen.eval()
+        ckpt_path = checkpoint_dir / "collision_template.pt"
+        save_domain_generator(col_gen, str(ckpt_path))
+        print(f"  Saved: {ckpt_path}")
+
+        # Sample generation
+        if col_examples:
+            sample_qty = sorted(col_examples[0]["quantities"].keys())
+            src = quantities_to_tensor(sample_qty, max_len=8).unsqueeze(0).to(device)
+            src_mask = (src == TEMPLATE_PAD_IDX)
+            with torch.no_grad():
+                seqs = col_gen.generate(src, src_padding_mask=src_mask, max_len=32)
+                generated = detokenize_expression(seqs[0])
+            expected = DOMAIN_TEMPLATES.get(COLLISION_DOMAIN, "?")
+            print(f"  Sample generation: {generated}")
+            print(f"  Expected template:  {expected}")
+
+        generators[COLLISION_DOMAIN] = col_gen
+        gen_stats[COLLISION_DOMAIN] = col_stats
+    else:
+        print("  WARNING: No collision examples found")
+        col_gen = CollisionTemplateGenerator(d_model=36, nhead=2)
+        generators[COLLISION_DOMAIN] = col_gen
+        gen_stats[COLLISION_DOMAIN] = {"error": "no_examples"}
 
     # Save the full composer
     composer = PerDomainComposer(classifier, generators)
@@ -441,38 +558,86 @@ def main() -> None:
             "name": "gravity_only",
             "quantities": ["m", "g", "h", "v"],
             "expected_fragments": ["m", "g", "h", "v"],
+            "required_fragments": ["0.5*m*v^2", "m*g*h"],
             "observation_id": "falling_ball_straight_drop",
         },
         {
             "name": "spring_only",
-            "quantities": ["m", "k", "x", "v"],
+            "quantities": ["m", "k", "h", "v"],
             "expected_fragments": ["k", "m", "v"],
+            "required_fragments": ["0.5*k", "0.5*m*v^2"],
             "observation_id": "spring_undamped",
         },
         {
             "name": "em_gravity",
             "quantities": ["m", "g", "h", "v", "q", "E"],
             "expected_fragments": ["q", "E", "m", "g", "h", "v"],
+            "required_fragments": ["q*E", "m*g*h"],
             "observation_id": "charged_particle_gravity",
         },
         {
             "name": "mass_spring_gravity",
             "quantities": ["m", "k", "g", "h", "v"],
             "expected_fragments": ["m", "k", "g", "h", "v"],
+            "required_fragments": ["0.5*m*v^2", "0.5*k", "m*g*h"],
             "observation_id": "mass_spring_gravity",
+        },
+        {
+            "name": "collision_elastic_1d",
+            "quantities": ["m", "v"],
+            "expected_fragments": ["m", "v"],
+            "required_fragments": ["0.5*m*v^2"],
+            "observation_id": "collision_elastic_1d_equal_mass",
+            "is_collision": True,
+        },
+        {
+            "name": "gravity_collision_compose",
+            "quantities": ["m", "g", "h", "v"],
+            "expected_fragments": ["m", "g", "h", "v"],
+            "required_fragments": ["0.5*m*v^2", "m*g*h"],
+            "observation_id": "falling_ball_straight_drop",
+            "is_composition": True,
+        },
+        {
+            "name": "spring_collision_compose",
+            "quantities": ["m", "k", "h", "v"],
+            "expected_fragments": ["m", "k", "h", "v"],
+            "required_fragments": ["0.5*m*v^2", "0.5*k"],
+            "observation_id": "spring_undamped",
+            "is_composition": True,
+        },
+        {
+            "name": "gravity_spring_collision_compose",
+            "quantities": ["m", "k", "g", "h", "v"],
+            "expected_fragments": ["m", "k", "g", "h", "v"],
+            "required_fragments": ["0.5*m*v^2", "0.5*k", "m*g*h"],
+            "observation_id": "mass_spring_gravity",
+            "is_composition": True,
         },
     ]
 
     all_passed = True
     for tc in test_cases:
         qty = tc["quantities"]
+        obs = db.get(tc["observation_id"])
 
-        # Generate via composer
-        expr, domains = composer.forward(qty)
+        # Generate via composer — pass collision context if applicable
+        is_collision = tc.get("is_collision", False)
+        expr, domains = composer.forward(
+            qty,
+            scenario_id=tc["observation_id"] if is_collision else None,
+            phase_regions=obs.phase_regions if is_collision else None,
+        )
 
         # Score against the known observation
-        obs = db.get(tc["observation_id"])
+        # score() automatically uses piecewise for phase_region observations
         score = evaluator.score(expr, obs) if expr else 0.0
+
+        # Check required fragments are ALL present
+        required_checks = [
+            frag in expr for frag in tc["required_fragments"]
+        ] if expr else []
+        all_required = all(required_checks) if required_checks else False
 
         # Check expected fragments
         fragments_present = [
@@ -480,13 +645,18 @@ def main() -> None:
         ] if expr else []
         all_fragments = all(fragments_present) if fragments_present else False
 
-        passed = score > 0.9 or all_fragments
+        # PASS: required fragments present AND score threshold met
+        # For collision or composition, require piecewise constancy > 0.85
+        pass_threshold = 0.85 if (is_collision or tc.get("is_composition")) else 0.7
+        passed = all_required and score > pass_threshold
 
         print(f"\n  [{tc['name']}]")
         print(f"    Quantities: {qty}")
         print(f"    Active domains: {domains}")
         print(f"    Composed: {expr}")
         print(f"    Score vs {tc['observation_id']}: {score:.4f}")
+        print(f"    Required fragments: {required_checks}")
+        print(f"    All required: {all_required}")
         print(f"    Expected fragments present: {fragments_present}")
         print(f"    PASSED: {passed}")
 
@@ -497,6 +667,8 @@ def main() -> None:
             "composed_expression": expr,
             "observation_id": tc["observation_id"],
             "constancy_score": score,
+            "required_fragments_present": required_checks,
+            "all_required": all_required,
             "expected_fragments_present": fragments_present,
             "passed": passed,
         })

@@ -27,26 +27,30 @@ import torch.nn.functional as F
 # ── Domain Definitions ─────────────────────────────────────────────────────────
 
 DOMAINS = ["gravity", "spring", "em"]
+COLLISION_DOMAIN = "collision"
 
-# Which quantities are relevant per domain
+# Which quantities are relevant per domain (quantities fed to template generator)
 DOMAIN_QUANTITIES: dict[str, list[str]] = {
-    "gravity": ["m", "g", "h", "v"],
-    "spring":  ["m", "k", "x", "v"],
-    "em":      ["q", "E", "m", "v", "h"],
+    "gravity":   ["m", "g", "h", "v"],
+    "spring":    ["m", "k", "h", "v"],
+    "em":        ["m", "g", "h", "v", "q", "E"],
+    "collision": ["m", "v", "t"],
 }
 
 # Quantity key sets for domain detection (used by assign_domain_labels)
 DOMAIN_QUANTITY_KEY: dict[str, set[str]] = {
-    "gravity": {"g"},
-    "spring": {"k"},
-    "em": {"q", "E"},
+    "gravity":   {"g"},
+    "spring":    {"k"},
+    "em":        {"q", "E"},
+    "collision": set(),  # detected via scenario metadata, not quantity keys
 }
 
 # Hardcoded fallback templates (used when no generator is trained)
 DOMAIN_TEMPLATES: dict[str, str] = {
-    "gravity": "m*g*h + 0.5*m*v^2",
-    "spring": "0.5*k*x^2 + 0.5*m*v^2",
-    "em": "q*E*h + 0.5*m*v^2",
+    "gravity":   "m*g*h + 0.5*m*v^2",
+    "spring":    "0.5*k*h^2 + 0.5*m*v^2",
+    "em":        "q*E*h + 0.5*m*v^2",
+    "collision": "0.5*m*v^2",
 }
 
 # Quantity vocab for the domain classifier feature vector
@@ -345,6 +349,59 @@ class DomainTemplateGenerator(nn.Module):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
 
+class CollisionTemplateGenerator(DomainTemplateGenerator):
+    """Template generator specifically for collision physics domain.
+
+    Subclasses DomainTemplateGenerator with collision-specific defaults.
+    Trained on 7 collision scenarios (elastic, inelastic, 1D, 2D).
+    Learns templates: ½mv² (kinetic energy, piecewise-constant across impact),
+    m₁v₁+m₂v₂ (momentum, conserved in elastic).
+
+    Collision-specific behavior:
+      - Kinetic energy is piecewise-constant (constant before and after
+        impact, with a step change at the collision instant)
+      - Momentum is conserved in elastic collisions
+      - Energy is partially conserved in inelastic collisions
+
+    Parameters
+    ----------
+    d_model : int
+        Hidden dimension (default 36, for ~50K total params).
+    nhead : int
+        Attention heads (default 2).
+    num_encoder_layers : int
+        Encoder layers (default 1).
+    num_decoder_layers : int
+        Decoder layers (default 1).
+    max_src_len : int
+        Max source length.
+    max_tgt_len : int
+        Max target length.
+    dropout : float
+        Dropout rate.
+    """
+
+    def __init__(
+        self,
+        d_model: int = 36,
+        nhead: int = 2,
+        num_encoder_layers: int = 1,
+        num_decoder_layers: int = 1,
+        max_src_len: int = 8,
+        max_tgt_len: int = 32,
+        dropout: float = 0.1,
+    ):
+        super().__init__(
+            d_model=d_model,
+            nhead=nhead,
+            num_encoder_layers=num_encoder_layers,
+            num_decoder_layers=num_decoder_layers,
+            max_src_len=max_src_len,
+            max_tgt_len=max_tgt_len,
+            dropout=dropout,
+        )
+
+
 # ── Template Tokenization ──────────────────────────────────────────────────────
 
 def tokenize_expression(expr_str: str) -> list[int]:
@@ -618,12 +675,16 @@ class PerDomainComposer(nn.Module):
         self,
         quantity_symbols: list[str],
         temperature: float = 0.0,
+        scenario_id: str | None = None,
+        phase_regions: list[dict] | None = None,
     ) -> tuple[str, list[str]]:
         """Full pipeline: classify domain → generate templates → compose.
 
         Args:
             quantity_symbols: List of quantity variable names present.
             temperature: Generation temperature (0 = greedy).
+            scenario_id: Optional scenario ID for collision detection.
+            phase_regions: Optional phase regions for collision detection.
 
         Returns:
             (composed_expression, active_domains) tuple.
@@ -635,6 +696,19 @@ class PerDomainComposer(nn.Module):
         # Fallback: if no domain active, use heuristic based on quantities
         if not active_domains:
             active_domains = self._heuristic_domains(quantity_symbols)
+
+        # Secondary pass: with lower threshold for rare domains (EM)
+        all_probs = self.domain_classifier.predict_proba(features).squeeze(0)
+        low_threshold = max(0.15, self.threshold * 0.4)
+        for i, domain in enumerate(DOMAINS):
+            if domain not in active_domains and all_probs[i].item() > low_threshold:
+                active_domains.append(domain)
+
+        # Collision detection: activate collision domain when phase_regions
+        # or collision-named scenario is present
+        is_collision = self._detect_collision(scenario_id, phase_regions)
+        if is_collision and COLLISION_DOMAIN not in active_domains:
+            active_domains.append(COLLISION_DOMAIN)
 
         # Step 2: Generate templates for each active domain
         templates: list[str] = []
@@ -713,6 +787,26 @@ class PerDomainComposer(nn.Module):
             domains.append("em")
         return domains if domains else ["gravity"]  # default
 
+    @staticmethod
+    def _detect_collision(
+        scenario_id: str | None,
+        phase_regions: list[dict] | None,
+    ) -> bool:
+        """Detect whether a scenario involves collision physics.
+
+        Uses scenario ID naming convention and phase_regions metadata.
+        Collision scenarios have phase_regions with 'before_collision'
+        or 'after_collision' labels.
+        """
+        if scenario_id and "collision" in scenario_id.lower():
+            return True
+        if phase_regions:
+            for region in phase_regions:
+                label = region.get("label", "")
+                if "collision" in label.lower():
+                    return True
+        return False
+
     def count_parameters(self) -> int:
         total = self.domain_classifier.count_parameters()
         for gen in self.template_generators.values():
@@ -761,16 +855,34 @@ def load_composer(
     # Load template generators
     generators: dict[str, DomainTemplateGenerator] = {}
     for domain in DOMAINS:
-        gen = DomainTemplateGenerator()
         gen_path = checkpoint_dir / f"{domain}_template.pt"
         if gen_path.exists():
             gen_ckpt = torch.load(
                 gen_path, map_location=device, weights_only=False,
             )
+            d_model = gen_ckpt.get("d_model", 40)
+            nhead = gen_ckpt.get("nhead", 2)
+            gen = DomainTemplateGenerator(d_model=d_model, nhead=nhead)
             gen.load_state_dict(gen_ckpt["model_state_dict"])
+        else:
+            gen = DomainTemplateGenerator()
         gen = gen.to(device)
         gen.eval()
         generators[domain] = gen
+
+    # Load collision template generator if available
+    collision_path = checkpoint_dir / "collision_template.pt"
+    if collision_path.exists():
+        col_ckpt = torch.load(
+            collision_path, map_location=device, weights_only=False,
+        )
+        d_model = col_ckpt.get("d_model", 36)
+        nhead = col_ckpt.get("nhead", 2)
+        col_gen = CollisionTemplateGenerator(d_model=d_model, nhead=nhead)
+        col_gen.load_state_dict(col_ckpt["model_state_dict"])
+        col_gen = col_gen.to(device)
+        col_gen.eval()
+        generators[COLLISION_DOMAIN] = col_gen
 
     composer = PerDomainComposer(clf, generators)
     composer._device = device
@@ -817,6 +929,9 @@ def extract_domain_examples(
     Each example: {quantities: dict, expression: str}
 
     Only includes observations whose known_invariant matches the domain.
+    For EM domain, checks both quantities and parameters for q/E symbols.
+    For collision domain, detects via collision-named scenario IDs and
+    phase_regions with collision labels.
     """
     import json
 
@@ -826,23 +941,63 @@ def extract_domain_examples(
     examples: list[dict] = []
     for obs in data:
         inv = obs.get("known_invariant")
-        if inv is None:
-            continue
         qty_symbols = list(obs["quantities"].keys())
-        labels = assign_domain_labels(qty_symbols)
+        # For domain detection, also consider parameter keys
+        all_keys = set(qty_symbols) | set(obs.get("parameters", {}).keys())
+        labels = _assign_domain_labels_from_keys(all_keys, obs)
+
+        if domain == COLLISION_DOMAIN:
+            # Collision detection: scenario ID or phase_regions
+            oid = obs.get("id", "").lower()
+            phase_regions = obs.get("phase_regions")
+            is_collision = "collision" in oid
+            if not is_collision and phase_regions:
+                for region in phase_regions:
+                    if "collision" in region.get("label", "").lower():
+                        is_collision = True
+                        break
+            if is_collision and inv:
+                examples.append({
+                    "quantities": obs["quantities"],
+                    "expression": inv,
+                })
+            continue
 
         domain_idx = DOMAINS.index(domain)
         if labels[domain_idx] == 1:
-            # For EM domain, also check that 'q' and 'E' are present
+            # For EM domain, merge q/E from parameters into quantities
+            quantities = dict(obs["quantities"])
             if domain == "em":
-                if "q" not in qty_symbols or "E" not in qty_symbols:
+                if "q" not in all_keys or "E" not in all_keys:
                     continue
+                # Add q/E from parameters if they exist there
+                params = obs.get("parameters", {})
+                for k in ("q", "E"):
+                    if k in params and k not in quantities:
+                        quantities[k] = "Scalar"
             examples.append({
-                "quantities": dict(obs["quantities"]),
+                "quantities": quantities,
                 "expression": inv,
             })
 
     return examples
+
+
+def _assign_domain_labels_from_keys(
+    all_keys: set[str], obs: dict | None = None
+) -> list[int]:
+    """Like assign_domain_labels but takes a set of all available keys.
+
+    Optionally takes an observation dict for collision detection via
+    ID and phase_regions metadata.
+    """
+    labels = [
+        1 if DOMAIN_QUANTITY_KEY["gravity"] & all_keys or "g" in all_keys else 0,
+        1 if DOMAIN_QUANTITY_KEY["spring"] & all_keys else 0,
+        1 if DOMAIN_QUANTITY_KEY["em"] & all_keys else 0,
+    ]
+    # Collision is NOT part of the 3-class label — it's handled separately
+    return labels
 
 
 def save_domain_classifier(
@@ -873,7 +1028,8 @@ def save_domain_generator(
     torch.save(
         {
             "model_state_dict": generator.state_dict(),
-            "domain_name": "unknown",
+            "d_model": generator.d_model,
+            "nhead": generator.encoder.layers[0].self_attn.num_heads,
         },
         path,
     )
@@ -882,7 +1038,9 @@ def save_domain_generator(
 def load_domain_generator(path: str | Path) -> DomainTemplateGenerator:
     """Load domain template generator checkpoint."""
     ckpt = torch.load(path, map_location="cpu", weights_only=False)
-    model = DomainTemplateGenerator()
+    d_model = ckpt.get("d_model", 40)
+    nhead = ckpt.get("nhead", 2)
+    model = DomainTemplateGenerator(d_model=d_model, nhead=nhead)
     model.load_state_dict(ckpt["model_state_dict"])
     model.eval()
     return model

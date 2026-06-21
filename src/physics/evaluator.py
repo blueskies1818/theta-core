@@ -369,7 +369,16 @@ class ExpressionEvaluator:
         except ParseError:
             return 0.0
 
-        scores = [self._score_observation(ast, obs) for obs in observations]
+        scores: list[float] = []
+        for obs in observations:
+            if obs.phase_regions:
+                # For scenarios with velocity discontinuities (collisions),
+                # use piecewise evaluation — constancy within each phase
+                # matters, not constancy across the discontinuity.
+                pw = self.score_piecewise(expr_str, obs)
+                scores.append(pw.get("piecewise_mean", 0.0))
+            else:
+                scores.append(self._score_observation(ast, obs))
         return sum(scores) / len(scores)
 
     def score_all(
@@ -568,6 +577,46 @@ class ExpressionEvaluator:
                 if piecewise_scores else None
             ),
         }
+
+    def score_piecewise_aware(
+        self,
+        expr_str: str,
+        obs_or_db: Observation | ObservationDatabase,
+        epsilon: float = 1e-12,
+    ) -> float:
+        """Score an expression with piecewise-awareness for collision scenarios.
+
+        When an observation has phase_regions (e.g., collision with velocity
+        discontinuity at impact), uses the piecewise mean — evaluating
+        constancy separately before and after the impact point.
+
+        Without phase_regions, falls back to standard constancy scoring.
+
+        This is the recommended scoring method for evaluating conservation
+        laws in scenarios with discontinuities.
+        """
+        if isinstance(obs_or_db, ObservationDatabase):
+            observations: list[Observation] = list(obs_or_db)
+        else:
+            observations = [obs_or_db]
+
+        if not observations:
+            return 0.0
+
+        try:
+            ast = self.parse(expr_str)
+        except ParseError:
+            return 0.0
+
+        scores: list[float] = []
+        for obs in observations:
+            if obs.phase_regions:
+                pw = self.score_piecewise(expr_str, obs)
+                scores.append(pw.get("piecewise_mean", 0.0))
+            else:
+                scores.append(self._score_observation(ast, obs))
+
+        return sum(scores) / len(scores)
 
     def _score_observation(
         self, ast: ExprNode, obs: Observation
