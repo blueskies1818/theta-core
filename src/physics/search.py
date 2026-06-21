@@ -236,8 +236,8 @@ class ExpressionSearch:
         energy_terms.sort(key=lambda x: -x[1])
 
         # Try all pairs of Energy terms, including scaled variants
-        for i, (a_str, a_score, a_depth) in enumerate(energy_terms[:30]):
-            for j, (b_str, b_score, b_depth) in enumerate(energy_terms[:30]):
+        for i, (a_str, a_score, a_depth) in enumerate(energy_terms[:100]):
+            for j, (b_str, b_score, b_depth) in enumerate(energy_terms[:100]):
                 if i > j:
                     continue
                 self._expansion_count += 1
@@ -321,34 +321,10 @@ class ExpressionSearch:
         # Check non-zero
         if not self._quick_nz(expr_str):
             return False
-        # Check variation (filters x^0 = 1 always)
-        if not self._quick_var(expr_str):
+        # Filter x^0 = 1 pattern (trivially constant)
+        if "^0" in expr_str:
             return False
         return True
-
-    def _quick_var(self, expr_str: str) -> bool:
-        """Check if expression varies across any timesteps."""
-        if not self.train_observations:
-            return True
-        obs = self.train_observations[0]
-        if len(obs.timesteps) < 2:
-            return True
-        try:
-            ast = self._evaluator.parse(expr_str)
-            from src.physics.evaluator import evaluate_node
-            values = []
-            for ts in obs.timesteps:
-                val = evaluate_node(ast, {**obs.parameters, **ts})
-                if isinstance(val, complex):
-                    return False
-                values.append(val)
-            for i in range(len(values)):
-                for j in range(i+1, len(values)):
-                    if abs(values[i] - values[j]) > 1e-12:
-                        return True
-            return False
-        except Exception:
-            return False
 
     def _quick_nz(self, expr_str: str) -> bool:
         """Check if expression is non-zero at ANY timestep across ANY observation."""
