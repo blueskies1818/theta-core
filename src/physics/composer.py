@@ -26,14 +26,17 @@ import torch.nn.functional as F
 
 # ── Domain Definitions ─────────────────────────────────────────────────────────
 
-DOMAINS = ["gravity", "spring", "em"]
+DOMAINS = ["gravity", "spring", "em", "thermal"]
 COLLISION_DOMAIN = "collision"
 
 # Which quantities are relevant per domain (quantities fed to template generator)
 DOMAIN_QUANTITIES: dict[str, list[str]] = {
-    "gravity":   ["m", "g", "h", "v"],
-    "spring":    ["m", "k", "h", "v"],
-    "em":        ["m", "g", "h", "v", "q", "E"],
+    "gravity":   ["m", "g", "h", "v", "t"],
+    "spring":    ["m", "k", "h", "v", "t"],
+    "em":        ["m", "g", "h", "v", "q", "E", "B",
+                  "vx", "vy", "x", "y", "t", "q1", "q2", "m1", "m2",
+                  "v1", "v2", "x1", "x2", "k", "epsilon", "Phi", "I"],
+    "thermal":   ["n", "R", "P", "V", "T", "S", "W", "Q", "t", "delta_S"],
     "collision": ["m", "v", "t"],
 }
 
@@ -41,7 +44,8 @@ DOMAIN_QUANTITIES: dict[str, list[str]] = {
 DOMAIN_QUANTITY_KEY: dict[str, set[str]] = {
     "gravity":   {"g"},
     "spring":    {"k"},
-    "em":        {"q", "E"},
+    "em":        {"q", "E", "B", "q1", "q2", "epsilon", "Phi"},
+    "thermal":   {"P", "V", "T", "S"},
     "collision": set(),  # detected via scenario metadata, not quantity keys
 }
 
@@ -49,7 +53,8 @@ DOMAIN_QUANTITY_KEY: dict[str, set[str]] = {
 DOMAIN_TEMPLATES: dict[str, str] = {
     "gravity":   "m*g*h + 0.5*m*v^2",
     "spring":    "0.5*k*h^2 + 0.5*m*v^2",
-    "em":        "q*E*h + 0.5*m*v^2",
+    "em":        "0.5*m*v^2 - q*E*x",
+    "thermal":   "P*V/T",
     "collision": "0.5*m*v^2",
 }
 
@@ -57,6 +62,8 @@ DOMAIN_TEMPLATES: dict[str, str] = {
 QUANTITY_VOCAB = [
     "m", "g", "h", "v", "t",
     "k", "L", "q", "E", "x", "y", "r",
+    "P", "V", "T", "S", "n", "R", "B", "W", "Q",
+    "m1", "v1", "m2", "v2", "x1", "x2", "epsilon",
 ]
 
 QTY_TO_IDX = {q: i for i, q in enumerate(QUANTITY_VOCAB)}
@@ -71,14 +78,17 @@ TEMPLATE_EOS_IDX = 2
 TEMPLATE_UNK_IDX = 3
 
 TEMPLATE_OPERATORS = ["+", "-", "*", "/", "^"]
-TEMPLATE_CONSTANTS = ["0", "0.5", "1", "2", "1/2"]
+TEMPLATE_CONSTANTS = ["0", "0.5", "1", "2", "1/2", "1.4", "1.67", "8.314"]
+# Symbols needed for complex expressions: parentheses and function names
+TEMPLATE_SYMBOLS = ["(", ")", "abs", "log", "delta_S", "q1", "q2", "Phi", "I"]
 
-TEMPLATE_TOKENS = (
+TEMPLATE_TOKENS = list(dict.fromkeys(
     TEMPLATE_SPECIAL_TOKENS
     + TEMPLATE_OPERATORS
     + TEMPLATE_CONSTANTS
+    + TEMPLATE_SYMBOLS
     + QUANTITY_VOCAB
-)
+))
 TEMPLATE_TOKEN_TO_ID = {t: i for i, t in enumerate(TEMPLATE_TOKENS)}
 TEMPLATE_ID_TO_TOKEN = {i: t for t, i in TEMPLATE_TOKEN_TO_ID.items()}
 TEMPLATE_VOCAB_SIZE = len(TEMPLATE_TOKEN_TO_ID)
@@ -90,7 +100,7 @@ class DomainClassifier(nn.Module):
     """Simple MLP: quantity set binary features → domain scores.
 
     Input: binary vector of length NUM_QUANTITIES (1 if quantity present)
-    Output: 3 scores [gravity, spring, em] — sigmoid applied for thresholding.
+    Output: 4 scores [gravity, spring, em, thermal] — sigmoid applied for thresholding.
 
     Parameters
     ----------
@@ -102,7 +112,7 @@ class DomainClassifier(nn.Module):
         super().__init__()
         self.fc1 = nn.Linear(NUM_QUANTITIES, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, 3)  # 3 domains
+        self.fc3 = nn.Linear(hidden_dim, 4)  # 4 domains: gravity, spring, em, thermal
         self.dropout = nn.Dropout(0.1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -112,7 +122,7 @@ class DomainClassifier(nn.Module):
             x: [batch, NUM_QUANTITIES] binary feature vector
 
         Returns:
-            [batch, 3] raw logits for [gravity, spring, em]
+            [batch, 4] raw logits for [gravity, spring, em, thermal]
         """
         h = F.relu(self.fc1(x))
         h = self.dropout(h)
@@ -123,7 +133,7 @@ class DomainClassifier(nn.Module):
     def predict_proba(self, x: torch.Tensor) -> torch.Tensor:
         """Return sigmoid probabilities for each domain.
 
-        Returns [batch, 3] with values in [0, 1].
+        Returns [batch, 4] with values in [0, 1].
         """
         return torch.sigmoid(self.forward(x))
 
@@ -137,11 +147,11 @@ class DomainClassifier(nn.Module):
         Returns:
             List of lists of active domain names.
         """
-        probs = self.predict_proba(x)  # [batch, 3]
+        probs = self.predict_proba(x)  # [batch, 4]
         active = probs > threshold
         results: list[list[str]] = []
         for b in range(active.size(0)):
-            domains = [DOMAINS[i] for i in range(3) if active[b, i].item()]
+            domains = [DOMAINS[i] for i in range(len(DOMAINS)) if active[b, i].item()]
             results.append(domains)
         return results
 
@@ -204,15 +214,15 @@ class DomainTemplateGenerator(nn.Module):
         max_src_len: int = 8,
         max_tgt_len: int = 32,
         dropout: float = 0.1,
+        vocab_size: int | None = None,
     ):
         super().__init__()
         self.d_model = d_model
-        self.vocab_size = TEMPLATE_VOCAB_SIZE
+        self.vocab_size = vocab_size if vocab_size is not None else TEMPLATE_VOCAB_SIZE
 
         self.token_embedding = nn.Embedding(
-            TEMPLATE_VOCAB_SIZE, d_model, padding_idx=TEMPLATE_PAD_IDX
+            self.vocab_size, d_model, padding_idx=TEMPLATE_PAD_IDX
         )
-
         self.src_pos_encoding = PositionalEncoding(d_model, max_src_len, dropout)
         self.tgt_pos_encoding = PositionalEncoding(d_model, max_tgt_len, dropout)
 
@@ -234,7 +244,7 @@ class DomainTemplateGenerator(nn.Module):
         )
         self.decoder = nn.TransformerDecoder(decoder_layer, num_decoder_layers)
 
-        self.output_proj = nn.Linear(d_model, TEMPLATE_VOCAB_SIZE)
+        self.output_proj = nn.Linear(d_model, self.vocab_size)
 
         self._init_weights()
 
@@ -252,6 +262,10 @@ class DomainTemplateGenerator(nn.Module):
         tgt_mask: torch.Tensor | None = None,
     ) -> torch.Tensor:
         """Forward pass. Returns logits: [batch, tgt_len, vocab_size]."""
+        # Clamp token IDs to valid range (handles stale vocabulary edge cases)
+        src = src.clamp(0, TEMPLATE_VOCAB_SIZE - 1)
+        tgt = tgt.clamp(0, TEMPLATE_VOCAB_SIZE - 1)
+
         src_emb = self.token_embedding(src) * math.sqrt(self.d_model)
         src_emb = self.src_pos_encoding(src_emb)
 
@@ -273,6 +287,7 @@ class DomainTemplateGenerator(nn.Module):
     def encode_source(
         self, src: torch.Tensor, src_padding_mask: torch.Tensor | None = None
     ) -> torch.Tensor:
+        src = src.clamp(0, TEMPLATE_VOCAB_SIZE - 1)
         src_emb = self.token_embedding(src) * math.sqrt(self.d_model)
         src_emb = self.src_pos_encoding(src_emb)
         return self.encoder(src_emb, src_key_padding_mask=src_padding_mask)
@@ -284,6 +299,7 @@ class DomainTemplateGenerator(nn.Module):
         tgt_mask: torch.Tensor,
         memory_key_padding_mask: torch.Tensor | None = None,
     ) -> torch.Tensor:
+        tgt = tgt.clamp(0, TEMPLATE_VOCAB_SIZE - 1)
         tgt_emb = self.token_embedding(tgt) * math.sqrt(self.d_model)
         tgt_emb = self.tgt_pos_encoding(tgt_emb)
         output = self.decoder(
@@ -409,12 +425,14 @@ def tokenize_expression(expr_str: str) -> list[int]:
     tokens: list[int] = []
     i = 0
     s = expr_str.strip()
+    # Find the maximum token length in the vocabulary for greedy matching
+    _max_tok_len = max((len(t) for t in TEMPLATE_TOKEN_TO_ID), default=4)
     while i < len(s):
         if s[i].isspace():
             i += 1
             continue
         matched = False
-        for length in (4, 3, 2, 1):
+        for length in range(_max_tok_len, 0, -1):
             if i + length <= len(s):
                 candidate = s[i:i + length]
                 if candidate in TEMPLATE_TOKEN_TO_ID:
@@ -693,11 +711,13 @@ class PerDomainComposer(nn.Module):
         features = quantities_to_features(quantity_symbols).unsqueeze(0).to(self._device)
         active_domains = self.domain_classifier.predict_domains(features, self.threshold)[0]
 
-        # Fallback: if no domain active, use heuristic based on quantities
-        if not active_domains:
-            active_domains = self._heuristic_domains(quantity_symbols)
+        # Heuristic supplement: always add domains detectable by key symbols
+        heuristic_domains = self._heuristic_domains(quantity_symbols)
+        for d in heuristic_domains:
+            if d not in active_domains:
+                active_domains.append(d)
 
-        # Secondary pass: with lower threshold for rare domains (EM)
+        # Secondary pass: with lower threshold for rare domains
         all_probs = self.domain_classifier.predict_proba(features).squeeze(0)
         low_threshold = max(0.15, self.threshold * 0.4)
         for i, domain in enumerate(DOMAINS):
@@ -783,8 +803,10 @@ class PerDomainComposer(nn.Module):
             domains.append("gravity")
         if "k" in syms:
             domains.append("spring")
-        if "q" in syms or "E" in syms:
+        if "q" in syms or "E" in syms or "B" in syms:
             domains.append("em")
+        if syms & {"P", "V", "T", "S", "n", "R", "W", "Q"}:
+            domains.append("thermal")
         return domains if domains else ["gravity"]  # default
 
     @staticmethod
@@ -909,14 +931,15 @@ def prepare_source_tensor(
 def assign_domain_labels(quantity_symbols: list[str]) -> list[int]:
     """Assign multi-label domain indicators based on quantity symbols.
 
-    Returns list of 0/1 for [gravity, spring, em].
-    A scenario like mass_spring_gravity has g AND k → [1, 1, 0].
+    Returns list of 0/1 for [gravity, spring, em, thermal].
+    A scenario like mass_spring_gravity has g AND k → [1, 1, 0, 0].
     """
     syms = set(quantity_symbols)
     return [
         1 if DOMAIN_QUANTITY_KEY["gravity"] & syms or "g" in syms else 0,
         1 if DOMAIN_QUANTITY_KEY["spring"] & syms else 0,
         1 if DOMAIN_QUANTITY_KEY["em"] & syms else 0,
+        1 if DOMAIN_QUANTITY_KEY["thermal"] & syms else 0,
     ]
 
 
@@ -967,14 +990,17 @@ def extract_domain_examples(
 
         domain_idx = DOMAINS.index(domain)
         if labels[domain_idx] == 1:
-            # For EM domain, merge q/E from parameters into quantities
             quantities = dict(obs["quantities"])
             if domain == "em":
-                if "q" not in all_keys or "E" not in all_keys:
-                    continue
-                # Add q/E from parameters if they exist there
+                # Merge EM domain symbols from parameters into quantities
                 params = obs.get("parameters", {})
-                for k in ("q", "E"):
+                for k in ("q", "E", "B", "q1", "q2", "Phi", "epsilon", "k"):
+                    if k in params and k not in quantities:
+                        quantities[k] = "Scalar"
+            # For thermal domain, merge n/R from parameters into quantities
+            if domain == "thermal":
+                params = obs.get("parameters", {})
+                for k in ("n", "R"):
                     if k in params and k not in quantities:
                         quantities[k] = "Scalar"
             examples.append({
@@ -997,8 +1023,9 @@ def _assign_domain_labels_from_keys(
         1 if DOMAIN_QUANTITY_KEY["gravity"] & all_keys or "g" in all_keys else 0,
         1 if DOMAIN_QUANTITY_KEY["spring"] & all_keys else 0,
         1 if DOMAIN_QUANTITY_KEY["em"] & all_keys else 0,
+        1 if DOMAIN_QUANTITY_KEY["thermal"] & all_keys else 0,
     ]
-    # Collision is NOT part of the 3-class label — it's handled separately
+    # Collision is NOT part of the 4-class label — it's handled separately
     return labels
 
 
@@ -1027,22 +1054,48 @@ def save_domain_generator(
     generator: DomainTemplateGenerator, path: str | Path
 ) -> None:
     """Save domain template generator checkpoint."""
+    # Get positional encoding sizes from the model's buffers
+    src_max_len = generator.src_pos_encoding.pe.size(1)
+    tgt_max_len = generator.tgt_pos_encoding.pe.size(1)
     torch.save(
         {
             "model_state_dict": generator.state_dict(),
             "d_model": generator.d_model,
             "nhead": generator.encoder.layers[0].self_attn.num_heads,
+            "vocab_size": generator.vocab_size,
+            "max_src_len": src_max_len,
+            "max_tgt_len": tgt_max_len,
         },
         path,
     )
 
 
 def load_domain_generator(path: str | Path) -> DomainTemplateGenerator:
-    """Load domain template generator checkpoint."""
+    """Load domain template generator checkpoint.
+
+    Handles vocab size and positional encoding size changes by matching
+    the checkpoint's parameters.
+    """
     ckpt = torch.load(path, map_location="cpu", weights_only=False)
     d_model = ckpt.get("d_model", 40)
     nhead = ckpt.get("nhead", 2)
-    model = DomainTemplateGenerator(d_model=d_model, nhead=nhead)
+    max_src_len = ckpt.get("max_src_len", 8)
+    max_tgt_len = ckpt.get("max_tgt_len", 32)
+
+    # Detect vocab size from the checkpoint's embedding weight shape
+    state_dict = ckpt["model_state_dict"]
+    emb_weight = state_dict.get("token_embedding.weight")
+    if emb_weight is not None:
+        checkpoint_vocab_size = emb_weight.shape[0]
+    else:
+        checkpoint_vocab_size = ckpt.get("vocab_size", TEMPLATE_VOCAB_SIZE)
+
+    model = DomainTemplateGenerator(
+        d_model=d_model, nhead=nhead,
+        vocab_size=checkpoint_vocab_size,
+        max_src_len=max_src_len,
+        max_tgt_len=max_tgt_len,
+    )
     model.load_state_dict(ckpt["model_state_dict"])
     model.eval()
     return model
