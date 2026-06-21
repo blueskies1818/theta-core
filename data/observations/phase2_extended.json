@@ -1,0 +1,3368 @@
+[
+  {
+    "id": "falling_ball_straight_drop",
+    "name": "Ball dropped from rest",
+    "description": "A 1kg ball dropped from 10m in Earth gravity. No air resistance.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "h0": 10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 10.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.3571,
+        "h": 9.375,
+        "v": 3.5
+      },
+      {
+        "t": 0.7143,
+        "h": 7.5,
+        "v": 7.0
+      },
+      {
+        "t": 1.0714,
+        "h": 4.375,
+        "v": 10.5
+      },
+      {
+        "t": 1.4286,
+        "h": -0.0,
+        "v": 14.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_freefall (m g h0 : \u211d) (hpos : m > 0) (hg : g > 0) (t : \u211d) : let h := h0 - g*t^2/2; v := g*t in m*g*h + m*v^2/2 = m*g*h0 :=",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "falling_ball_upward_throw",
+    "name": "Ball thrown upward from ground",
+    "description": "A 1kg ball thrown upward at 10 m/s from ground level. No air resistance.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 10.0
+      },
+      {
+        "t": 0.4082,
+        "h": 3.265306,
+        "v": 6.0
+      },
+      {
+        "t": 0.8163,
+        "h": 4.897959,
+        "v": 2.0
+      },
+      {
+        "t": 1.2245,
+        "h": 4.897959,
+        "v": -2.0
+      },
+      {
+        "t": 1.6327,
+        "h": 3.265306,
+        "v": -6.0
+      },
+      {
+        "t": 2.0408,
+        "h": -0.0,
+        "v": -10.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_upward (m g v0 t : \u211d) : let h := v0*t - g*t^2/2; v := v0 - g*t in m*g*h + m*v^2/2 = m*v0^2/2 :=",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "falling_ball_varying_mass",
+    "name": "Heavy ball dropped from rest",
+    "description": "A 5kg ball dropped from 10m. Same kinematics, different mass.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 5.0,
+      "g": 9.8,
+      "h0": 10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 10.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.3571,
+        "h": 9.375,
+        "v": 3.5
+      },
+      {
+        "t": 0.7143,
+        "h": 7.5,
+        "v": 7.0
+      },
+      {
+        "t": 1.0714,
+        "h": 4.375,
+        "v": 10.5
+      },
+      {
+        "t": 1.4286,
+        "h": -0.0,
+        "v": 14.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_heavy (m g h0 t : \u211d) : let h := h0 - g*t^2/2; v := g*t in m*g*h + m*v^2/2 = m*g*h0 :=",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "pendulum_small_angle",
+    "name": "Pendulum with small amplitude",
+    "description": "A 1kg pendulum of length 1m released from 0.1 rad (5.7\u00b0). Small-angle approximation.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time",
+      "L": "Length"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "L": 1.0,
+      "theta0": 0.1
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.00499583,
+        "v": 0.0
+      },
+      {
+        "t": 0.2509,
+        "h": 0.00249896,
+        "v": 0.22135944
+      },
+      {
+        "t": 0.5018,
+        "h": 0.0,
+        "v": 0.31304952
+      },
+      {
+        "t": 0.7527,
+        "h": 0.00249896,
+        "v": 0.22135944
+      },
+      {
+        "t": 1.0035,
+        "h": 0.00499583,
+        "v": 0.0
+      },
+      {
+        "t": 1.2544,
+        "h": 0.00249896,
+        "v": 0.22135944
+      },
+      {
+        "t": 1.5053,
+        "h": 0.0,
+        "v": 0.31304952
+      },
+      {
+        "t": 1.7562,
+        "h": 0.00249896,
+        "v": 0.22135944
+      },
+      {
+        "t": 2.0071,
+        "h": 0.00499583,
+        "v": 0.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_pendulum_small (m g L theta0 t : \u211d) : ... :=",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "pendulum_large_angle",
+    "name": "Pendulum with large amplitude",
+    "description": "A 1kg pendulum of length 1m released from 1.0 rad (57\u00b0). Small-angle solution used as approximation.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time",
+      "L": "Length"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "L": 1.0,
+      "theta0": 1.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.45969769,
+        "v": 0.0
+      },
+      {
+        "t": 0.2509,
+        "h": 0.2397554,
+        "v": 2.21359436
+      },
+      {
+        "t": 0.5018,
+        "h": 0.0,
+        "v": 3.13049517
+      },
+      {
+        "t": 0.7527,
+        "h": 0.2397554,
+        "v": 2.21359436
+      },
+      {
+        "t": 1.0035,
+        "h": 0.45969769,
+        "v": 0.0
+      },
+      {
+        "t": 1.2544,
+        "h": 0.2397554,
+        "v": 2.21359436
+      },
+      {
+        "t": 1.5053,
+        "h": 0.0,
+        "v": 3.13049517
+      },
+      {
+        "t": 1.7562,
+        "h": 0.2397554,
+        "v": 2.21359436
+      },
+      {
+        "t": 2.0071,
+        "h": 0.45969769,
+        "v": 0.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_pendulum_large (m g L theta0 t : \u211d) : ... :=",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "spring_undamped",
+    "name": "Undamped spring-mass system",
+    "description": "A 1kg mass on a spring (k=10 N/m), released from 0.5m displacement. No damping.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "k": 10.0,
+      "A": 0.5
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.5,
+        "v": -0.0
+      },
+      {
+        "t": 0.2484,
+        "h": 0.35355339,
+        "v": -1.11803399
+      },
+      {
+        "t": 0.4967,
+        "h": 0.0,
+        "v": -1.58113883
+      },
+      {
+        "t": 0.7451,
+        "h": -0.35355339,
+        "v": -1.11803399
+      },
+      {
+        "t": 0.9935,
+        "h": -0.5,
+        "v": -0.0
+      },
+      {
+        "t": 1.2418,
+        "h": -0.35355339,
+        "v": 1.11803399
+      },
+      {
+        "t": 1.4902,
+        "h": -0.0,
+        "v": 1.58113883
+      },
+      {
+        "t": 1.7386,
+        "h": 0.35355339,
+        "v": 1.11803399
+      },
+      {
+        "t": 1.9869,
+        "h": 0.5,
+        "v": 0.0
+      }
+    ],
+    "known_invariant": "0.5*k*h^2 + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_spring (m k A t : \u211d) : let x := A*cos(sqrt(k/m)*t); v := -A*sqrt(k/m)*sin(sqrt(k/m)*t) in k*x^2/2 + m*v^2/2 = k*A^2/2 :=",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "spring_damped_light",
+    "name": "Lightly damped spring-mass system",
+    "description": "A 1kg mass on a spring (k=10 N/m) with light damping (\u03b2=0.5 s\u207b\u00b9). Energy decays slowly.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "k": 10.0,
+      "A": 0.5,
+      "beta": 0.5
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.5,
+        "v": -0.25
+      },
+      {
+        "t": 0.25,
+        "h": 0.31349556,
+        "v": -1.1263364
+      },
+      {
+        "t": 0.5,
+        "h": 0.00371748,
+        "v": -1.21770566
+      },
+      {
+        "t": 0.75,
+        "h": -0.23948893,
+        "v": -0.64978962
+      },
+      {
+        "t": 1.0,
+        "h": -0.30321005,
+        "v": 0.13352547
+      },
+      {
+        "t": 1.25,
+        "h": -0.19370585,
+        "v": 0.67349524
+      },
+      {
+        "t": 1.5,
+        "h": -0.00676348,
+        "v": 0.74056133
+      },
+      {
+        "t": 1.75,
+        "h": 0.14237699,
+        "v": 0.40413215
+      },
+      {
+        "t": 2.0,
+        "h": 0.18380562,
+        "v": -0.0699752
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "damping"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "projectile_45deg",
+    "name": "Projectile launched at 45 degrees",
+    "description": "A 1kg projectile launched at 10 m/s at 45\u00b0 above horizontal. Parabolic trajectory.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 10.0,
+      "theta": 45.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 10.0
+      },
+      {
+        "t": 0.2886,
+        "h": 1.632653,
+        "v": 8.246211
+      },
+      {
+        "t": 0.5772,
+        "h": 2.44898,
+        "v": 7.211103
+      },
+      {
+        "t": 0.8658,
+        "h": 2.44898,
+        "v": 7.211103
+      },
+      {
+        "t": 1.1545,
+        "h": 1.632653,
+        "v": 8.246211
+      },
+      {
+        "t": 1.4431,
+        "h": -0.0,
+        "v": 10.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_projectile_45 (m g v0 theta t : \u211d) : let vx := v0*cos(theta); vy := v0*sin(theta) - g*t; h := v0*sin(theta)*t - g*t^2/2; v := sqrt(vx^2 + vy^2) in m*g*h + m*v^2/2 = m*v0^2/2 :=",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "projectile_90deg",
+    "name": "Projectile launched straight up",
+    "description": "A 1kg projectile launched at 10 m/s straight up.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 10.0,
+      "theta": 90.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 10.0
+      },
+      {
+        "t": 0.4082,
+        "h": 3.265306,
+        "v": 6.0
+      },
+      {
+        "t": 0.8163,
+        "h": 4.897959,
+        "v": 2.0
+      },
+      {
+        "t": 1.2245,
+        "h": 4.897959,
+        "v": 2.0
+      },
+      {
+        "t": 1.6327,
+        "h": 3.265306,
+        "v": 6.0
+      },
+      {
+        "t": 2.0408,
+        "h": -0.0,
+        "v": 10.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_projectile_90 (m g v0 t : \u211d) : let h := v0*t - g*t^2/2; v := v0 - g*t in m*g*h + m*v^2/2 = m*v0^2/2 :=",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "sliding_block_incline",
+    "name": "Block sliding down frictionless incline",
+    "description": "A 1kg block sliding down a 30\u00b0 frictionless incline from 5m height.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "theta": 30.0,
+      "h0": 5.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 5.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.4041,
+        "h": 4.8,
+        "v": 1.979899
+      },
+      {
+        "t": 0.8081,
+        "h": 4.2,
+        "v": 3.959798
+      },
+      {
+        "t": 1.2122,
+        "h": 3.2,
+        "v": 5.939697
+      },
+      {
+        "t": 1.6162,
+        "h": 1.8,
+        "v": 7.919596
+      },
+      {
+        "t": 2.0203,
+        "h": 0.0,
+        "v": 9.899495
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_incline (m g theta h0 t : \u211d) : let s := g*sin(theta)*t^2/2; v := g*sin(theta)*t; h := h0 - s*sin(theta) in m*g*h + m*v^2/2 = m*g*h0 :=",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "freefall_moon_drop",
+    "name": "Ball dropped on Moon from 10m",
+    "description": "1kg ball dropped from 10m on Moon (g=1.62 m/s^2). No atmosphere.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 1.62,
+      "h0": 10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 10.0,
+        "v": -0.0
+      },
+      {
+        "t": 0.702728,
+        "h": 9.6,
+        "v": -1.13842
+      },
+      {
+        "t": 1.405457,
+        "h": 8.4,
+        "v": -2.27684
+      },
+      {
+        "t": 2.108185,
+        "h": 6.4,
+        "v": -3.41526
+      },
+      {
+        "t": 2.810913,
+        "h": 3.6,
+        "v": -4.55368
+      },
+      {
+        "t": 3.513642,
+        "h": 0.0,
+        "v": -5.6921
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "freefall_mars_drop",
+    "name": "2kg ball dropped on Mars from 15m",
+    "description": "2kg ball dropped from 15m on Mars (g=3.71 m/s^2).",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 2.0,
+      "g": 3.71,
+      "h0": 15.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 15.0,
+        "v": -0.0
+      },
+      {
+        "t": 0.568727,
+        "h": 14.4,
+        "v": -2.109976
+      },
+      {
+        "t": 1.137454,
+        "h": 12.6,
+        "v": -4.219953
+      },
+      {
+        "t": 1.70618,
+        "h": 9.6,
+        "v": -6.329929
+      },
+      {
+        "t": 2.274907,
+        "h": 5.4,
+        "v": -8.439905
+      },
+      {
+        "t": 2.843634,
+        "h": 0.0,
+        "v": -10.549882
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "freefall_mars_upward",
+    "name": "Ball thrown upward on Mars at 8 m/s",
+    "description": "1kg ball thrown upward at 8 m/s on Mars (g=3.71 m/s^2).",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 3.71,
+      "v0": 8.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 8.0
+      },
+      {
+        "t": 0.718778,
+        "h": 4.791854,
+        "v": 5.333333
+      },
+      {
+        "t": 1.437556,
+        "h": 7.666966,
+        "v": 2.666667
+      },
+      {
+        "t": 2.156334,
+        "h": 8.625337,
+        "v": 0.0
+      },
+      {
+        "t": 2.875112,
+        "h": 7.666966,
+        "v": -2.666667
+      },
+      {
+        "t": 3.59389,
+        "h": 4.791854,
+        "v": -5.333333
+      },
+      {
+        "t": 4.312668,
+        "h": 0.0,
+        "v": -8.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "freefall_air_resistance_linear",
+    "name": "Ball dropped with linear air resistance",
+    "description": "1kg ball dropped from 10m with linear drag (k=0.5 s^-1). Energy not conserved - watch it decay.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "h0": 10.0,
+      "k": 0.5
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 10.0,
+        "v": -0.0
+      },
+      {
+        "t": 0.324176,
+        "h": 9.511789,
+        "v": -2.932817
+      },
+      {
+        "t": 0.648352,
+        "h": 8.145883,
+        "v": -5.426787
+      },
+      {
+        "t": 0.972527,
+        "h": 6.033614,
+        "v": -7.547575
+      },
+      {
+        "t": 1.296703,
+        "h": 3.286663,
+        "v": -9.351021
+      },
+      {
+        "t": 1.620879,
+        "h": 0.0,
+        "v": -10.884612
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "air_resistance"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "freefall_air_resistance_quadratic",
+    "name": "Ball dropped with quadratic air resistance",
+    "description": "1kg ball dropped from 15m with quadratic drag (k=0.15). Energy not conserved.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "h0": 15.0,
+      "k": 0.15
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 15.0,
+        "v": -0.0
+      },
+      {
+        "t": 0.485033,
+        "h": 13.908133,
+        "v": -4.271874
+      },
+      {
+        "t": 0.970067,
+        "h": 11.174075,
+        "v": -6.678351
+      },
+      {
+        "t": 1.4551,
+        "h": 7.666692,
+        "v": -7.621951
+      },
+      {
+        "t": 1.940133,
+        "h": 3.878983,
+        "v": -7.937855
+      },
+      {
+        "t": 2.425167,
+        "h": 0.0,
+        "v": -8.037882
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "air_resistance"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "freefall_high_g",
+    "name": "Heavy ball on high-gravity planet",
+    "description": "3kg ball dropped from 8m on planet with g=25 m/s^2.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 3.0,
+      "g": 25.0,
+      "h0": 8.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 8.0,
+        "v": -0.0
+      },
+      {
+        "t": 0.16,
+        "h": 7.68,
+        "v": -4.0
+      },
+      {
+        "t": 0.32,
+        "h": 6.72,
+        "v": -8.0
+      },
+      {
+        "t": 0.48,
+        "h": 5.12,
+        "v": -12.0
+      },
+      {
+        "t": 0.64,
+        "h": 2.88,
+        "v": -16.0
+      },
+      {
+        "t": 0.8,
+        "h": -0.0,
+        "v": -20.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "freefall_low_g",
+    "name": "Ball dropped on asteroid (low g)",
+    "description": "1kg ball dropped from 20m with very low gravity g=0.5 m/s^2.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 0.5,
+      "h0": 20.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 20.0,
+        "v": -0.0
+      },
+      {
+        "t": 1.788854,
+        "h": 19.2,
+        "v": -0.894427
+      },
+      {
+        "t": 3.577709,
+        "h": 16.8,
+        "v": -1.788854
+      },
+      {
+        "t": 5.366563,
+        "h": 12.8,
+        "v": -2.683282
+      },
+      {
+        "t": 7.155418,
+        "h": 7.2,
+        "v": -3.577709
+      },
+      {
+        "t": 8.944272,
+        "h": -0.0,
+        "v": -4.472136
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "freefall_downward_throw",
+    "name": "Ball thrown downward from height",
+    "description": "1kg ball thrown downward at 10 m/s from 10m height.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "h0": 10.0,
+      "v0": -10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 10.0,
+        "v": -10.0
+      },
+      {
+        "t": 0.147034,
+        "h": 8.423731,
+        "v": -11.44093
+      },
+      {
+        "t": 0.294067,
+        "h": 6.635596,
+        "v": -12.88186
+      },
+      {
+        "t": 0.441101,
+        "h": 4.635596,
+        "v": -14.32279
+      },
+      {
+        "t": 0.588135,
+        "h": 2.423731,
+        "v": -15.76372
+      },
+      {
+        "t": 0.735168,
+        "h": 0.0,
+        "v": -17.204651
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "freefall_upward_from_height",
+    "name": "Ball thrown upward from elevated position",
+    "description": "2kg ball thrown upward at 5 m/s from 5m height.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 2.0,
+      "g": 9.8,
+      "h0": 5.0,
+      "v0": 5.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 5.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.273649,
+        "h": 6.001314,
+        "v": 2.318244
+      },
+      {
+        "t": 0.547297,
+        "h": 6.268768,
+        "v": -0.363512
+      },
+      {
+        "t": 0.820946,
+        "h": 5.802364,
+        "v": -3.045268
+      },
+      {
+        "t": 1.094594,
+        "h": 4.602102,
+        "v": -5.727024
+      },
+      {
+        "t": 1.368243,
+        "h": 2.66798,
+        "v": -8.40878
+      },
+      {
+        "t": 1.641891,
+        "h": -0.0,
+        "v": -11.090537
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "freefall_heavy_10kg",
+    "name": "10kg ball dropped from 10m",
+    "description": "10kg ball dropped from 10m. Same kinematics as 1kg but different mass.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 10.0,
+      "g": 9.8,
+      "h0": 10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 10.0,
+        "v": -0.0
+      },
+      {
+        "t": 0.285714,
+        "h": 9.6,
+        "v": -2.8
+      },
+      {
+        "t": 0.571429,
+        "h": 8.4,
+        "v": -5.6
+      },
+      {
+        "t": 0.857143,
+        "h": 6.4,
+        "v": -8.4
+      },
+      {
+        "t": 1.142857,
+        "h": 3.6,
+        "v": -11.2
+      },
+      {
+        "t": 1.428571,
+        "h": -0.0,
+        "v": -14.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "projectile_30deg",
+    "name": "Projectile at 30 degrees",
+    "description": "1kg projectile at 10 m/s, 30 deg above horizontal.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 10.0,
+      "theta": 30.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 10.0
+      },
+      {
+        "t": 0.170068,
+        "h": 0.708617,
+        "v": 9.279607
+      },
+      {
+        "t": 0.340136,
+        "h": 1.133787,
+        "v": 8.819171
+      },
+      {
+        "t": 0.510204,
+        "h": 1.27551,
+        "v": 8.660254
+      },
+      {
+        "t": 0.680272,
+        "h": 1.133787,
+        "v": 8.819171
+      },
+      {
+        "t": 0.85034,
+        "h": 0.708617,
+        "v": 9.279607
+      },
+      {
+        "t": 1.020408,
+        "h": 0.0,
+        "v": 10.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "projectile_60deg",
+    "name": "Projectile at 60 degrees",
+    "description": "1kg projectile at 12 m/s, 60 deg above horizontal.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 12.0,
+      "theta": 60.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 12.0
+      },
+      {
+        "t": 0.35348,
+        "h": 3.061224,
+        "v": 9.165151
+      },
+      {
+        "t": 0.70696,
+        "h": 4.897959,
+        "v": 6.928203
+      },
+      {
+        "t": 1.060439,
+        "h": 5.510204,
+        "v": 6.0
+      },
+      {
+        "t": 1.413919,
+        "h": 4.897959,
+        "v": 6.928203
+      },
+      {
+        "t": 1.767399,
+        "h": 3.061224,
+        "v": 9.165151
+      },
+      {
+        "t": 2.120879,
+        "h": 0.0,
+        "v": 12.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "projectile_20deg",
+    "name": "Projectile at shallow 20 degrees",
+    "description": "2kg projectile at 15 m/s, 20 deg above horizontal.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 2.0,
+      "g": 9.8,
+      "v0": 15.0,
+      "theta": 20.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 15.0
+      },
+      {
+        "t": 0.1745,
+        "h": 0.746032,
+        "v": 14.504405
+      },
+      {
+        "t": 0.349,
+        "h": 1.193651,
+        "v": 14.198748
+      },
+      {
+        "t": 0.5235,
+        "h": 1.342857,
+        "v": 14.095389
+      },
+      {
+        "t": 0.698,
+        "h": 1.193651,
+        "v": 14.198748
+      },
+      {
+        "t": 0.8725,
+        "h": 0.746032,
+        "v": 14.504405
+      },
+      {
+        "t": 1.047,
+        "h": 0.0,
+        "v": 15.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "projectile_75deg",
+    "name": "Projectile at steep 75 degrees",
+    "description": "1kg projectile at 8 m/s, 75 deg above horizontal.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 8.0,
+      "theta": 75.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 8.0
+      },
+      {
+        "t": 0.262837,
+        "h": 1.69254,
+        "v": 5.552136
+      },
+      {
+        "t": 0.525674,
+        "h": 2.708064,
+        "v": 3.304836
+      },
+      {
+        "t": 0.788511,
+        "h": 3.046572,
+        "v": 2.070552
+      },
+      {
+        "t": 1.051348,
+        "h": 2.708064,
+        "v": 3.304836
+      },
+      {
+        "t": 1.314185,
+        "h": 1.69254,
+        "v": 5.552136
+      },
+      {
+        "t": 1.577022,
+        "h": 0.0,
+        "v": 8.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "projectile_linear_drag",
+    "name": "Projectile with linear air drag",
+    "description": "1kg projectile launched at 20 m/s, 45 deg, with linear drag (k=0.3). Energy NOT conserved.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 20.0,
+      "theta": 45.0,
+      "k": 0.3
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 20.0
+      },
+      {
+        "t": 0.08,
+        "h": 1.083982,
+        "v": 18.9851
+      },
+      {
+        "t": 0.205,
+        "h": 2.602828,
+        "v": 17.481867
+      },
+      {
+        "t": 0.335,
+        "h": 3.963647,
+        "v": 16.029274
+      },
+      {
+        "t": 0.425,
+        "h": 4.779517,
+        "v": 15.092966
+      },
+      {
+        "t": 0.51,
+        "h": 5.458078,
+        "v": 14.263403
+      },
+      {
+        "t": 0.645,
+        "h": 0.0,
+        "v": 13.4896
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "air_resistance",
+      "drag"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "projectile_quadratic_drag",
+    "name": "Projectile with quadratic air drag",
+    "description": "1kg projectile launched at 20 m/s, 45 deg, with quadratic drag (k=0.08). Energy NOT conserved.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 20.0,
+      "theta": 45.0,
+      "k": 0.08
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 20.0
+      },
+      {
+        "t": 0.1,
+        "h": 1.258183,
+        "v": 16.629355
+      },
+      {
+        "t": 0.2,
+        "h": 2.265883,
+        "v": 14.087506
+      },
+      {
+        "t": 0.3,
+        "h": 3.072226,
+        "v": 12.1026
+      },
+      {
+        "t": 0.4,
+        "h": 3.709879,
+        "v": 10.518879
+      },
+      {
+        "t": 0.5,
+        "h": 4.201452,
+        "v": 9.24395
+      },
+      {
+        "t": 0.6,
+        "h": 4.563051,
+        "v": 8.222967
+      },
+      {
+        "t": 0.7,
+        "h": 4.806423,
+        "v": 7.424405
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "air_resistance",
+      "drag"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "projectile_high_speed",
+    "name": "High-speed projectile",
+    "description": "1kg projectile at 50 m/s, 45 deg.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 50.0,
+      "theta": 45.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 50.0
+      },
+      {
+        "t": 0.801708,
+        "h": 25.195263,
+        "v": 44.790321
+      },
+      {
+        "t": 1.603417,
+        "h": 44.091711,
+        "v": 40.445055
+      },
+      {
+        "t": 2.405125,
+        "h": 56.689342,
+        "v": 37.2678
+      },
+      {
+        "t": 3.206833,
+        "h": 62.988158,
+        "v": 35.572912
+      },
+      {
+        "t": 4.008542,
+        "h": 62.988158,
+        "v": 35.572912
+      },
+      {
+        "t": 4.81025,
+        "h": 56.689342,
+        "v": 37.2678
+      },
+      {
+        "t": 5.611959,
+        "h": 44.091711,
+        "v": 40.445055
+      },
+      {
+        "t": 6.413667,
+        "h": 25.195263,
+        "v": 44.790321
+      },
+      {
+        "t": 7.215375,
+        "h": 0.0,
+        "v": 50.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "projectile_low_speed",
+    "name": "Low-speed heavy projectile",
+    "description": "5kg projectile at 3 m/s, 45 deg.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 5.0,
+      "g": 9.8,
+      "v0": 3.0,
+      "theta": 45.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 3.0
+      },
+      {
+        "t": 0.086585,
+        "h": 0.146939,
+        "v": 2.473863
+      },
+      {
+        "t": 0.173169,
+        "h": 0.220408,
+        "v": 2.163331
+      },
+      {
+        "t": 0.259754,
+        "h": 0.220408,
+        "v": 2.163331
+      },
+      {
+        "t": 0.346338,
+        "h": 0.146939,
+        "v": 2.473863
+      },
+      {
+        "t": 0.432923,
+        "h": 0.0,
+        "v": 3.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "projectile_10deg",
+    "name": "Very shallow projectile",
+    "description": "1kg projectile at 10 m/s, 10 deg above horizontal.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 10.0,
+      "theta": 10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 10.0
+      },
+      {
+        "t": 0.059064,
+        "h": 0.08547,
+        "v": 9.915886
+      },
+      {
+        "t": 0.118128,
+        "h": 0.136751,
+        "v": 9.865073
+      },
+      {
+        "t": 0.177192,
+        "h": 0.153845,
+        "v": 9.848078
+      },
+      {
+        "t": 0.236256,
+        "h": 0.136751,
+        "v": 9.865073
+      },
+      {
+        "t": 0.29532,
+        "h": 0.08547,
+        "v": 9.915886
+      },
+      {
+        "t": 0.354384,
+        "h": 0.0,
+        "v": 10.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "projectile_mars",
+    "name": "Projectile on Mars",
+    "description": "1kg projectile at 10 m/s, 45 deg on Mars (g=3.71).",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 3.71,
+      "v0": 10.0,
+      "theta": 45.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 10.0
+      },
+      {
+        "t": 0.635316,
+        "h": 3.743636,
+        "v": 8.498366
+      },
+      {
+        "t": 1.270632,
+        "h": 5.989817,
+        "v": 7.45356
+      },
+      {
+        "t": 1.905948,
+        "h": 6.738544,
+        "v": 7.071068
+      },
+      {
+        "t": 2.541264,
+        "h": 5.989817,
+        "v": 7.45356
+      },
+      {
+        "t": 3.17658,
+        "h": 3.743636,
+        "v": 8.498366
+      },
+      {
+        "t": 3.811896,
+        "h": -0.0,
+        "v": 10.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "spring_heavily_damped",
+    "name": "Heavily damped spring (overdamped)",
+    "description": "2kg mass on spring (k=20) with heavy damping (beta=10). No oscillation, slow decay.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 2.0,
+      "k": 20.0,
+      "A": 0.5,
+      "beta": 10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.5,
+        "v": 0.0
+      },
+      {
+        "t": 0.333333,
+        "h": 0.432764,
+        "v": -0.221693
+      },
+      {
+        "t": 0.666667,
+        "h": 0.36474,
+        "v": -0.187172
+      },
+      {
+        "t": 1.0,
+        "h": 0.307393,
+        "v": -0.157744
+      },
+      {
+        "t": 1.333333,
+        "h": 0.259063,
+        "v": -0.132943
+      },
+      {
+        "t": 1.666667,
+        "h": 0.218332,
+        "v": -0.112041
+      },
+      {
+        "t": 2.0,
+        "h": 0.184005,
+        "v": -0.094425
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "damping"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "spring_forced",
+    "name": "Forced spring oscillator",
+    "description": "1kg mass on spring (k=10) driven by external sinusoidal force F=0.5*sin(2t). Energy not conserved due to external work.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "k": 10.0,
+      "A": 0.1,
+      "F0": 0.5,
+      "omega_f": 2.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.1,
+        "v": 0.166667
+      },
+      {
+        "t": 1.428571,
+        "h": 0.004024,
+        "v": 0.150274
+      },
+      {
+        "t": 2.857143,
+        "h": -0.137394,
+        "v": 0.020278
+      },
+      {
+        "t": 4.285714,
+        "h": 0.117973,
+        "v": -0.373299
+      },
+      {
+        "t": 5.714286,
+        "h": -0.004509,
+        "v": 0.292193
+      },
+      {
+        "t": 7.142857,
+        "h": -0.000312,
+        "v": 0.152987
+      },
+      {
+        "t": 8.571429,
+        "h": -0.121663,
+        "v": -0.313636
+      },
+      {
+        "t": 10.0,
+        "h": 0.173947,
+        "v": 0.003067
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "external_driving_force"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "spring_coupled",
+    "name": "Coupled spring oscillators (one mass observed)",
+    "description": "One mass observed in a coupled 2-mass spring system. Energy transfers between masses.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "k": 10.0,
+      "A": 0.3
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.6,
+        "v": -0.0
+      },
+      {
+        "t": 0.714286,
+        "h": -0.405716,
+        "v": 0.411815
+      },
+      {
+        "t": 1.428571,
+        "h": -0.049275,
+        "v": -0.711728
+      },
+      {
+        "t": 2.142857,
+        "h": 0.46684,
+        "v": 0.762857
+      },
+      {
+        "t": 2.857143,
+        "h": -0.57699,
+        "v": -0.45689
+      },
+      {
+        "t": 3.571429,
+        "h": 0.315285,
+        "v": -0.166723
+      },
+      {
+        "t": 4.285714,
+        "h": 0.139145,
+        "v": 0.845627
+      },
+      {
+        "t": 5.0,
+        "h": -0.487638,
+        "v": -1.177059
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "internal_transfer"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "spring_stiff",
+    "name": "Stiff spring oscillator",
+    "description": "0.5kg mass on stiff spring (k=100 N/m), released from 0.2m displacement.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 0.5,
+      "k": 100.0,
+      "A": 0.2
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.2,
+        "v": -0.0
+      },
+      {
+        "t": 0.074048,
+        "h": 0.1,
+        "v": -2.44949
+      },
+      {
+        "t": 0.148096,
+        "h": -0.1,
+        "v": -2.44949
+      },
+      {
+        "t": 0.222144,
+        "h": -0.2,
+        "v": -0.0
+      },
+      {
+        "t": 0.296192,
+        "h": -0.1,
+        "v": 2.44949
+      },
+      {
+        "t": 0.37024,
+        "h": 0.1,
+        "v": 2.44949
+      },
+      {
+        "t": 0.444288,
+        "h": 0.2,
+        "v": 0.0
+      }
+    ],
+    "known_invariant": "0.5*m*v^2 + 0.5*k*h^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "spring_weak",
+    "name": "Weak spring with heavy mass",
+    "description": "3kg mass on weak spring (k=2 N/m), released from 0.8m displacement.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 3.0,
+      "k": 2.0,
+      "A": 0.8
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.8,
+        "v": -0.0
+      },
+      {
+        "t": 1.923825,
+        "h": 0.0,
+        "v": -0.653197
+      },
+      {
+        "t": 3.847649,
+        "h": -0.8,
+        "v": -0.0
+      },
+      {
+        "t": 5.771474,
+        "h": -0.0,
+        "v": 0.653197
+      },
+      {
+        "t": 7.695299,
+        "h": 0.8,
+        "v": 0.0
+      },
+      {
+        "t": 9.619124,
+        "h": 0.0,
+        "v": -0.653197
+      },
+      {
+        "t": 11.542948,
+        "h": -0.8,
+        "v": -0.0
+      }
+    ],
+    "known_invariant": "0.5*m*v^2 + 0.5*k*h^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "spring_critically_damped",
+    "name": "Critically damped spring",
+    "description": "1kg mass on spring (k=16) with critical damping. Returns to equilibrium fastest without oscillation.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "k": 16.0,
+      "A": 0.4,
+      "beta": 4.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.4,
+        "v": 0.0
+      },
+      {
+        "t": 0.5,
+        "h": 0.162402,
+        "v": -0.433073
+      },
+      {
+        "t": 1.0,
+        "h": 0.036631,
+        "v": -0.11722
+      },
+      {
+        "t": 1.5,
+        "h": 0.006941,
+        "v": -0.023796
+      },
+      {
+        "t": 2.0,
+        "h": 0.001208,
+        "v": -0.004294
+      },
+      {
+        "t": 2.5,
+        "h": 0.0002,
+        "v": -0.000726
+      },
+      {
+        "t": 3.0,
+        "h": 3.2e-05,
+        "v": -0.000118
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "damping"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "spring_undamped_v2",
+    "name": "Undamped spring (variant parameters)",
+    "description": "2kg mass on spring (k=25 N/m), released from 0.3m displacement. No damping.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 2.0,
+      "k": 25.0,
+      "A": 0.3
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.3,
+        "v": -0.0
+      },
+      {
+        "t": 0.296192,
+        "h": 0.15,
+        "v": -0.918559
+      },
+      {
+        "t": 0.592384,
+        "h": -0.15,
+        "v": -0.918559
+      },
+      {
+        "t": 0.888577,
+        "h": -0.3,
+        "v": -0.0
+      },
+      {
+        "t": 1.184769,
+        "h": -0.15,
+        "v": 0.918559
+      },
+      {
+        "t": 1.480961,
+        "h": 0.15,
+        "v": 0.918559
+      },
+      {
+        "t": 1.777153,
+        "h": 0.3,
+        "v": 0.0
+      }
+    ],
+    "known_invariant": "0.5*m*v^2 + 0.5*k*h^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "spring_medium_damped",
+    "name": "Medium damped spring oscillator",
+    "description": "1.5kg mass on spring (k=15) with medium damping (beta=1.0). Oscillates with decaying amplitude.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.5,
+      "k": 15.0,
+      "A": 0.4,
+      "beta": 1.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.4,
+        "v": -0.4
+      },
+      {
+        "t": 0.349066,
+        "h": 0.141069,
+        "v": -0.874087
+      },
+      {
+        "t": 0.698132,
+        "h": -0.099503,
+        "v": -0.417529
+      },
+      {
+        "t": 1.047198,
+        "h": -0.140368,
+        "v": 0.140368
+      },
+      {
+        "t": 1.396263,
+        "h": -0.049504,
+        "v": 0.306734
+      },
+      {
+        "t": 1.745329,
+        "h": 0.034917,
+        "v": 0.146519
+      },
+      {
+        "t": 2.094395,
+        "h": 0.049258,
+        "v": -0.049258
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "damping"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "collision_elastic_1d_equal_mass",
+    "name": "1D elastic collision, equal masses",
+    "description": "1kg ball at 5 m/s collides elastically with stationary 1kg ball. After: m1 stops. Before/after piecewise.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "m2": 1.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.1,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.2,
+        "h": 0.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.3,
+        "h": 0.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.4,
+        "h": 0.0,
+        "v": 0.0
+      }
+    ],
+    "known_invariant": "0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true,
+    "phase_regions": [
+      {
+        "label": "before_collision",
+        "t_range": [
+          0.0,
+          0.19
+        ]
+      },
+      {
+        "label": "after_collision",
+        "t_range": [
+          0.2,
+          0.4
+        ]
+      }
+    ]
+  },
+  {
+    "id": "collision_elastic_1d_unequal_mass",
+    "name": "1D elastic collision, light hitting heavy",
+    "description": "1kg ball at 5 m/s hits stationary 3kg ball elastically. m1 rebounds backward.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "m2": 3.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.1,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.2,
+        "h": 0.0,
+        "v": -2.5
+      },
+      {
+        "t": 0.3,
+        "h": 0.0,
+        "v": -2.5
+      },
+      {
+        "t": 0.4,
+        "h": 0.0,
+        "v": -2.5
+      }
+    ],
+    "known_invariant": "0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true,
+    "phase_regions": [
+      {
+        "label": "before_collision",
+        "t_range": [
+          0.0,
+          0.19
+        ]
+      },
+      {
+        "label": "after_collision",
+        "t_range": [
+          0.2,
+          0.4
+        ]
+      }
+    ]
+  },
+  {
+    "id": "collision_inelastic_equal_mass",
+    "name": "Perfectly inelastic collision, equal masses",
+    "description": "1kg ball at 5 m/s hits stationary 1kg ball, they stick. Kinetic energy NOT conserved (half lost to heat).",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "m2": 1.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.1,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.2,
+        "h": 0.0,
+        "v": 2.5
+      },
+      {
+        "t": 0.3,
+        "h": 0.0,
+        "v": 2.5
+      },
+      {
+        "t": 0.4,
+        "h": 0.0,
+        "v": 2.5
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "inelastic_deformation",
+      "heat_loss"
+    ],
+    "is_conservative": false,
+    "phase_regions": [
+      {
+        "label": "before_collision",
+        "t_range": [
+          0.0,
+          0.19
+        ]
+      },
+      {
+        "label": "after_collision",
+        "t_range": [
+          0.2,
+          0.4
+        ]
+      }
+    ]
+  },
+  {
+    "id": "collision_elastic_2d_glancing",
+    "name": "2D elastic glancing collision",
+    "description": "1kg ball at 5 m/s glances off stationary 1kg ball. Speed changes (direction change). Energy conserved but observed speed decreases.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "m2": 1.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.1,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.2,
+        "h": 0.0,
+        "v": 3.535
+      },
+      {
+        "t": 0.3,
+        "h": 0.0,
+        "v": 3.535
+      },
+      {
+        "t": 0.4,
+        "h": 0.0,
+        "v": 3.535
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": false,
+    "phase_regions": [
+      {
+        "label": "before_collision",
+        "t_range": [
+          0.0,
+          0.19
+        ]
+      },
+      {
+        "label": "after_collision",
+        "t_range": [
+          0.2,
+          0.4
+        ]
+      }
+    ]
+  },
+  {
+    "id": "collision_elastic_1d_2to1_mass",
+    "name": "1D elastic collision, light hitting medium",
+    "description": "1kg ball at 5 m/s hits stationary 2kg ball elastically.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "m2": 2.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.1,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.2,
+        "h": 0.0,
+        "v": -1.666667
+      },
+      {
+        "t": 0.3,
+        "h": 0.0,
+        "v": -1.666667
+      },
+      {
+        "t": 0.4,
+        "h": 0.0,
+        "v": -1.666667
+      }
+    ],
+    "known_invariant": "0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true,
+    "phase_regions": [
+      {
+        "label": "before_collision",
+        "t_range": [
+          0.0,
+          0.19
+        ]
+      },
+      {
+        "label": "after_collision",
+        "t_range": [
+          0.2,
+          0.4
+        ]
+      }
+    ]
+  },
+  {
+    "id": "collision_inelastic_unequal_mass",
+    "name": "Perfectly inelastic collision, heavy hitting light",
+    "description": "2kg ball at 5 m/s hits stationary 1kg ball, they stick. Energy NOT conserved.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 2.0,
+      "m2": 1.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.1,
+        "h": 0.0,
+        "v": 5.0
+      },
+      {
+        "t": 0.2,
+        "h": 0.0,
+        "v": 3.333333
+      },
+      {
+        "t": 0.3,
+        "h": 0.0,
+        "v": 3.333333
+      },
+      {
+        "t": 0.4,
+        "h": 0.0,
+        "v": 3.333333
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "inelastic_deformation",
+      "heat_loss"
+    ],
+    "is_conservative": false,
+    "phase_regions": [
+      {
+        "label": "before_collision",
+        "t_range": [
+          0.0,
+          0.19
+        ]
+      },
+      {
+        "label": "after_collision",
+        "t_range": [
+          0.2,
+          0.4
+        ]
+      }
+    ]
+  },
+  {
+    "id": "collision_elastic_headon",
+    "name": "Head-on elastic collision, equal masses",
+    "description": "2kg ball at 3 m/s hits 2kg ball at -1 m/s head-on elastically. They exchange velocities.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 2.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 3.0
+      },
+      {
+        "t": 0.1,
+        "h": 0.0,
+        "v": 3.0
+      },
+      {
+        "t": 0.2,
+        "h": 0.0,
+        "v": -1.0
+      },
+      {
+        "t": 0.3,
+        "h": 0.0,
+        "v": -1.0
+      },
+      {
+        "t": 0.4,
+        "h": 0.0,
+        "v": -1.0
+      }
+    ],
+    "known_invariant": "0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true,
+    "phase_regions": [
+      {
+        "label": "before_collision",
+        "t_range": [
+          0.0,
+          0.19
+        ]
+      },
+      {
+        "label": "after_collision",
+        "t_range": [
+          0.2,
+          0.4
+        ]
+      }
+    ]
+  },
+  {
+    "id": "incline_20deg",
+    "name": "20-degree frictionless incline",
+    "description": "1kg block sliding down 20 deg frictionless incline from 5m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "theta": 20.0,
+      "h0": 5.0,
+      "mu": 0.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 5.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.590698,
+        "h": 4.8,
+        "v": 1.979899
+      },
+      {
+        "t": 1.181395,
+        "h": 4.2,
+        "v": 3.959798
+      },
+      {
+        "t": 1.772093,
+        "h": 3.2,
+        "v": 5.939697
+      },
+      {
+        "t": 2.362791,
+        "h": 1.8,
+        "v": 7.919596
+      },
+      {
+        "t": 2.953488,
+        "h": 0.0,
+        "v": 9.899495
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "incline_45deg",
+    "name": "45-degree frictionless incline",
+    "description": "1kg block sliding down 45 deg frictionless incline from 8m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "theta": 45.0,
+      "h0": 8.0,
+      "mu": 0.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 8.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.361403,
+        "h": 7.68,
+        "v": 2.504396
+      },
+      {
+        "t": 0.722806,
+        "h": 6.72,
+        "v": 5.008792
+      },
+      {
+        "t": 1.084209,
+        "h": 5.12,
+        "v": 7.513188
+      },
+      {
+        "t": 1.445613,
+        "h": 2.88,
+        "v": 10.017585
+      },
+      {
+        "t": 1.807016,
+        "h": 0.0,
+        "v": 12.521981
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "incline_60deg",
+    "name": "Steep 60-degree frictionless incline",
+    "description": "2kg block sliding down 60 deg frictionless incline from 6m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 2.0,
+      "g": 9.8,
+      "theta": 60.0,
+      "h0": 6.0,
+      "mu": 0.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 6.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.255551,
+        "h": 5.76,
+        "v": 2.168871
+      },
+      {
+        "t": 0.511101,
+        "h": 5.04,
+        "v": 4.337741
+      },
+      {
+        "t": 0.766652,
+        "h": 3.84,
+        "v": 6.506612
+      },
+      {
+        "t": 1.022203,
+        "h": 2.16,
+        "v": 8.675483
+      },
+      {
+        "t": 1.277753,
+        "h": -0.0,
+        "v": 10.844353
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "incline_10deg",
+    "name": "Shallow 10-degree frictionless incline",
+    "description": "1kg block sliding down 10 deg frictionless incline from 3m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "theta": 10.0,
+      "h0": 3.0,
+      "mu": 0.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 3.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.901202,
+        "h": 2.88,
+        "v": 1.533623
+      },
+      {
+        "t": 1.802405,
+        "h": 2.52,
+        "v": 3.067246
+      },
+      {
+        "t": 2.703607,
+        "h": 1.92,
+        "v": 4.600869
+      },
+      {
+        "t": 3.60481,
+        "h": 1.08,
+        "v": 6.134493
+      },
+      {
+        "t": 4.506012,
+        "h": 0.0,
+        "v": 7.668116
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "incline_20deg_friction",
+    "name": "20-degree incline with friction (mu=0.3)",
+    "description": "1kg block sliding down 20 deg incline with friction mu=0.3.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "theta": 20.0,
+      "h0": 5.0,
+      "mu": 0.3
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 5.0,
+        "v": 0.0
+      },
+      {
+        "t": 1.408994,
+        "h": 4.8,
+        "v": 0.83004
+      },
+      {
+        "t": 2.817989,
+        "h": 4.2,
+        "v": 1.66008
+      },
+      {
+        "t": 4.226983,
+        "h": 3.2,
+        "v": 2.49012
+      },
+      {
+        "t": 5.635977,
+        "h": 1.8,
+        "v": 3.32016
+      },
+      {
+        "t": 7.044972,
+        "h": 0.0,
+        "v": 4.1502
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "friction"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "incline_30deg_friction",
+    "name": "30-degree incline with friction (mu=0.2)",
+    "description": "1kg block sliding down 30 deg incline with friction mu=0.2 from 6m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "theta": 30.0,
+      "h0": 6.0,
+      "mu": 0.2
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 6.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.547501,
+        "h": 5.76,
+        "v": 1.753421
+      },
+      {
+        "t": 1.095002,
+        "h": 5.04,
+        "v": 3.506843
+      },
+      {
+        "t": 1.642503,
+        "h": 3.84,
+        "v": 5.260264
+      },
+      {
+        "t": 2.190004,
+        "h": 2.16,
+        "v": 7.013686
+      },
+      {
+        "t": 2.737505,
+        "h": 0.0,
+        "v": 8.767107
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "friction"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "incline_45deg_friction",
+    "name": "45-degree incline with friction (mu=0.4)",
+    "description": "2kg block sliding down 45 deg incline with friction mu=0.4 from 4m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 2.0,
+      "g": 9.8,
+      "theta": 45.0,
+      "h0": 4.0,
+      "mu": 0.4
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 4.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.329914,
+        "h": 3.84,
+        "v": 1.371714
+      },
+      {
+        "t": 0.659829,
+        "h": 3.36,
+        "v": 2.743429
+      },
+      {
+        "t": 0.989743,
+        "h": 2.56,
+        "v": 4.115143
+      },
+      {
+        "t": 1.319658,
+        "h": 1.44,
+        "v": 5.486857
+      },
+      {
+        "t": 1.649572,
+        "h": -0.0,
+        "v": 6.858571
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "friction"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "incline_15deg_friction",
+    "name": "15-degree incline with friction (mu=0.15)",
+    "description": "1kg block sliding down 15 deg incline with friction mu=0.15.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "theta": 15.0,
+      "h0": 4.0,
+      "mu": 0.15
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 4.0,
+        "v": 0.0
+      },
+      {
+        "t": 1.052312,
+        "h": 3.84,
+        "v": 1.174923
+      },
+      {
+        "t": 2.104624,
+        "h": 3.36,
+        "v": 2.349845
+      },
+      {
+        "t": 3.156936,
+        "h": 2.56,
+        "v": 3.524768
+      },
+      {
+        "t": 4.209247,
+        "h": 1.44,
+        "v": 4.699691
+      },
+      {
+        "t": 5.261559,
+        "h": -0.0,
+        "v": 5.874613
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "friction"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "mass_spring_gravity",
+    "name": "Mass on vertical spring under gravity",
+    "description": "1kg mass on vertical spring (k=10) under Earth gravity. Combined conserved: 0.5*m*v^2 + 0.5*k*h^2 - m*g*h.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "k": 10.0,
+      "g": 9.8,
+      "A": 0.3
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 1.28,
+        "v": -0.0
+      },
+      {
+        "t": 0.331153,
+        "h": 1.13,
+        "v": -0.821584
+      },
+      {
+        "t": 0.662306,
+        "h": 0.83,
+        "v": -0.821584
+      },
+      {
+        "t": 0.993459,
+        "h": 0.68,
+        "v": -0.0
+      },
+      {
+        "t": 1.324612,
+        "h": 0.83,
+        "v": 0.821584
+      },
+      {
+        "t": 1.655765,
+        "h": 1.13,
+        "v": 0.821584
+      },
+      {
+        "t": 1.986918,
+        "h": 1.28,
+        "v": 0.0
+      }
+    ],
+    "known_invariant": "0.5*m*v^2 + 0.5*k*h^2 - m*g*h",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "pendulum_air_resistance",
+    "name": "Pendulum with air resistance",
+    "description": "1kg pendulum (L=1m) released from 0.3 rad with light air resistance (k=0.2). Energy gradually decays.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time",
+      "L": "Length"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "L": 1.0,
+      "theta0": 0.3,
+      "k": 0.2
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.044664,
+        "v": 0.03
+      },
+      {
+        "t": 0.860621,
+        "h": 0.030595,
+        "v": 0.348888
+      },
+      {
+        "t": 1.721241,
+        "h": 0.012373,
+        "v": 0.602089
+      },
+      {
+        "t": 2.581862,
+        "h": 0.001329,
+        "v": 0.701741
+      },
+      {
+        "t": 3.442482,
+        "h": 0.001119,
+        "v": 0.653336
+      },
+      {
+        "t": 4.303103,
+        "h": 0.007389,
+        "v": 0.489412
+      },
+      {
+        "t": 5.163724,
+        "h": 0.012977,
+        "v": 0.25914
+      },
+      {
+        "t": 6.024344,
+        "h": 0.013458,
+        "v": 0.016424
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "air_resistance"
+    ],
+    "is_conservative": false
+  },
+  {
+    "id": "charged_particle_gravity",
+    "name": "Charged particle in gravity + electric field",
+    "description": "1kg charged particle (q=2C) falling in gravity (g=9.8) + uniform downward E-field (E=3 V/m). Combined conservative force.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "q": 2.0,
+      "E": 3.0,
+      "h0": 10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 10.0,
+        "v": -0.0
+      },
+      {
+        "t": 0.225018,
+        "h": 9.6,
+        "v": -3.555278
+      },
+      {
+        "t": 0.450035,
+        "h": 8.4,
+        "v": -7.110556
+      },
+      {
+        "t": 0.675053,
+        "h": 6.4,
+        "v": -10.665833
+      },
+      {
+        "t": 0.90007,
+        "h": 3.6,
+        "v": -14.221111
+      },
+      {
+        "t": 1.125088,
+        "h": -0.0,
+        "v": -17.776389
+      }
+    ],
+    "known_invariant": "0.5*m*v^2 + m*g*h + q*E*h",
+    "lean_theorem": "",
+    "external_forces": null,
+    "is_conservative": true
+  },
+  {
+    "id": "mass_spring_damped_gravity",
+    "name": "Damped mass-spring under gravity",
+    "description": "1kg mass on vertical damped spring (k=12, beta=0.8) under gravity. Energy not conserved due to damping.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "k": 12.0,
+      "g": 9.8,
+      "A": 0.3,
+      "beta": 2.5
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 1.116667,
+        "v": -0.75
+      },
+      {
+        "t": 0.436712,
+        "h": 0.86701,
+        "v": -0.334947
+      },
+      {
+        "t": 0.873423,
+        "h": 0.799771,
+        "v": -0.027934
+      },
+      {
+        "t": 1.310135,
+        "h": 0.805325,
+        "v": 0.028353
+      },
+      {
+        "t": 1.746846,
+        "h": 0.814763,
+        "v": 0.012662
+      },
+      {
+        "t": 2.183558,
+        "h": 0.817305,
+        "v": 0.001056
+      },
+      {
+        "t": 2.620269,
+        "h": 0.817095,
+        "v": -0.001072
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": "",
+    "external_forces": [
+      "damping"
+    ],
+    "is_conservative": false
+  }
+]

@@ -381,6 +381,194 @@ class ExpressionEvaluator:
             for obs in db
         ]
 
+    # ── Phase E: Piecewise and conditional evaluation ───────────────────
+
+    def score_piecewise(
+        self,
+        expr_str: str,
+        obs: Observation,
+    ) -> dict[str, float]:
+        """Score an expression separately in each phase region.
+
+        For collision scenarios and other piecewise-physics scenarios,
+        evaluate constancy independently in each time segment.
+
+        Returns:
+            Dict with keys:
+            - 'overall': same as score() across all timesteps
+            - '<label>': constancy within each phase region
+            - 'piecewise_mean': mean of per-phase constancies
+        """
+        if len(obs.timesteps) < 2:
+            return {"overall": 0.0}
+
+        try:
+            ast = self.parse(expr_str)
+        except ParseError:
+            return {"overall": 0.0}
+
+        regions = obs.phase_regions
+        if not regions:
+            return {"overall": self._score_observation(ast, obs)}
+
+        result: dict[str, float] = {}
+        result["overall"] = self._score_observation(ast, obs)
+
+        for region in regions:
+            label = region.get("label", "unknown")
+            t_range = region.get("t_range", [0.0, float("inf")])
+            t_min, t_max = t_range[0], t_range[1]
+
+            # Filter timesteps in this region
+            region_ts = [ts for ts in obs.timesteps if t_min <= ts["t"] <= t_max]
+            if len(region_ts) < 2:
+                result[label] = 0.0
+                continue
+
+            values: list[float] = []
+            for ts in region_ts:
+                context = {**obs.parameters, **ts}
+                try:
+                    val = evaluate_node(ast, context)
+                    if isinstance(val, complex):
+                        break
+                    values.append(val)
+                except (EvalError, ZeroDivisionError, ValueError, OverflowError):
+                    break
+
+            if len(values) < 2:
+                result[label] = 0.0
+                continue
+
+            n = len(values)
+            mean_val = sum(values) / n
+            if abs(mean_val) < 1e-12:
+                scale = max(abs(v) for v in values)
+                if scale < 1e-12:
+                    result[label] = 1.0
+                    continue
+                variance = sum((v - mean_val) ** 2 for v in values) / n
+                std_val = math.sqrt(max(variance, 0.0))
+                result[label] = 1.0 / (1.0 + std_val / scale)
+            else:
+                variance = sum((v - mean_val) ** 2 for v in values) / n
+                std_val = math.sqrt(max(variance, 0.0))
+                result[label] = 1.0 / (1.0 + std_val / abs(mean_val))
+
+        # Compute piecewise mean
+        region_scores = [v for k, v in result.items() if k != "overall"]
+        result["piecewise_mean"] = sum(region_scores) / len(region_scores) if region_scores else 0.0
+
+        return result
+
+    def score_conditional(
+        self,
+        expr_str: str,
+        db: ObservationDatabase,
+    ) -> dict:
+        """Score an expression conditionally — separately for conservative
+        and non-conservative scenarios.
+
+        This enables the system to discover:
+          "m*g*h + 0.5*m*v^2 is constant WHEN no friction is present"
+          "m*g*h + 0.5*m*v^2 is NOT constant when friction is present"
+
+        Returns:
+            Dict with:
+            - 'conservative_score': mean constancy in conservative scenarios
+            - 'nonconservative_score': mean constancy in non-conservative scenarios
+            - 'conservative_count': number of conservative observations
+            - 'nonconservative_count': number of non-conservative observations
+            - 'conditional_pattern': description of the conditional pattern
+            - 'conservative_constancies': per-obs scores for conservative
+            - 'nonconservative_constancies': per-obs scores for non-conservative
+        """
+        cons_obs: list[Observation] = []
+        noncons_obs: list[Observation] = []
+
+        for obs in db:
+            is_cons = self._is_conservative_observation(obs)
+            if is_cons:
+                cons_obs.append(obs)
+            else:
+                noncons_obs.append(obs)
+
+        cons_scores = [self.score(expr_str, obs) for obs in cons_obs]
+        noncons_scores = [self.score(expr_str, obs) for obs in noncons_obs]
+
+        cons_mean = sum(cons_scores) / len(cons_scores) if cons_scores else 0.0
+        noncons_mean = sum(noncons_scores) / len(noncons_scores) if noncons_scores else 0.0
+
+        # Detect conditional pattern
+        if cons_mean >= 0.90 and noncons_mean < 0.50:
+            pattern = "conservative_only"
+        elif cons_mean >= 0.90 and noncons_mean >= 0.90:
+            pattern = "universal"
+        elif cons_mean < 0.50 and noncons_mean < 0.50:
+            pattern = "no_conservation"
+        elif noncons_mean >= 0.90 and cons_mean < 0.50:
+            pattern = "nonconservative_only"  # unusual but possible
+        else:
+            pattern = "partial"
+
+        return {
+            "conservative_score": cons_mean,
+            "nonconservative_score": noncons_mean,
+            "conservative_count": len(cons_scores),
+            "nonconservative_count": len(noncons_scores),
+            "conditional_pattern": pattern,
+            "conservative_constancies": cons_scores,
+            "nonconservative_constancies": noncons_scores,
+        }
+
+    def _is_conservative_observation(self, obs: Observation) -> bool:
+        """Determine if an observation represents a conservative scenario."""
+        # Explicit flag takes precedence
+        if obs.is_conservative is not None:
+            return obs.is_conservative
+        # If it has external forces, it's non-conservative
+        if obs.external_forces:
+            return False
+        # If it has a known_invariant, it's likely conservative
+        if obs.known_invariant is not None:
+            return True
+        # Default: conservative
+        return True
+
+    def score_with_context(
+        self,
+        expr_str: str,
+        db: ObservationDatabase,
+    ) -> dict:
+        """Comprehensive evaluation: overall, piecewise, and conditional.
+
+        This is the primary Phase E scoring function. It returns all
+        evaluation dimensions needed for conditional discovery.
+
+        Returns:
+            Dict with keys: overall, conditional, piecewise_summary
+        """
+        conditional = self.score_conditional(expr_str, db)
+
+        # Piecewise: evaluate on scenarios with phase_regions
+        piecewise_scores: dict[str, float] = {}
+        for obs in db:
+            if obs.phase_regions:
+                pw = self.score_piecewise(expr_str, obs)
+                piecewise_scores[obs.id] = pw.get("piecewise_mean", 0.0)
+
+        overall = self.score(expr_str, db)
+
+        return {
+            "overall": overall,
+            "conditional": conditional,
+            "piecewise_scores": piecewise_scores,
+            "piecewise_mean": (
+                sum(piecewise_scores.values()) / len(piecewise_scores)
+                if piecewise_scores else None
+            ),
+        }
+
     def _score_observation(
         self, ast: ExprNode, obs: Observation
     ) -> float:

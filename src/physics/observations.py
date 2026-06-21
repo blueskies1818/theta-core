@@ -24,6 +24,9 @@ class Observation:
     timesteps: list[dict[str, float]]  # [{t, h, v, ...}, ...]
     known_invariant: str | None  # expression that should be conserved
     lean_theorem: str  # Lean proof (may be empty)
+    external_forces: list[str] | None = None  # forces breaking conservation
+    phase_regions: list[dict] | None = None  # piecewise evaluation regions
+    is_conservative: bool | None = None  # whether scenario is conservative
 
 
 class ObservationDatabase:
@@ -53,6 +56,9 @@ class ObservationDatabase:
                 timesteps=[dict(ts) for ts in entry["timesteps"]],
                 known_invariant=entry.get("known_invariant"),
                 lean_theorem=entry.get("lean_theorem", ""),
+                external_forces=entry.get("external_forces"),
+                phase_regions=entry.get("phase_regions"),
+                is_conservative=entry.get("is_conservative"),
             )
             self._observations.append(obs)
             self._by_id[obs.id] = obs

@@ -1,0 +1,280 @@
+{
+  "database": "data/observations/phase2_extended.json",
+  "total_scenarios": 57,
+  "discovery_method": "guided_expression_evaluation_with_conditional_scoring",
+  "discoveries": [
+    {
+      "expression": "m*g*h + 0.5*m*v^2",
+      "description": "Gravitational mechanical energy",
+      "conditional_pattern": "partial",
+      "conservative_score": 0.7800533289451616,
+      "nonconservative_score": 0.4203858149125535,
+      "conservative_count": 38,
+      "nonconservative_count": 19,
+      "piecewise": {
+        "collision_elastic_1d_equal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_1d_unequal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_inelastic_equal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_2d_glancing": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_1d_2to1_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_inelastic_unequal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_headon": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        }
+      }
+    },
+    {
+      "expression": "0.5*m*v^2 + 0.5*k*h^2",
+      "description": "Spring mechanical energy",
+      "conditional_pattern": "no_conservation",
+      "conservative_score": 0.12426693991698953,
+      "nonconservative_score": 0.39723321341608175,
+      "conservative_count": 38,
+      "nonconservative_count": 19,
+      "piecewise": {
+        "collision_elastic_1d_equal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_1d_unequal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_inelastic_equal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_2d_glancing": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_1d_2to1_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_inelastic_unequal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_headon": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        }
+      }
+    },
+    {
+      "expression": "0.5*m*v^2 + 0.5*k*h^2 - m*g*h",
+      "description": "Spring under gravity (combined)",
+      "conditional_pattern": "no_conservation",
+      "conservative_score": 0.026315789071122205,
+      "nonconservative_score": 0.16101289282599784,
+      "conservative_count": 38,
+      "nonconservative_count": 19,
+      "piecewise": {
+        "collision_elastic_1d_equal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_1d_unequal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_inelastic_equal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_2d_glancing": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_1d_2to1_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_inelastic_unequal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_headon": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        }
+      }
+    },
+    {
+      "expression": "0.5*m*v^2 + m*g*h + q*E*h",
+      "description": "EM + gravity combined",
+      "conditional_pattern": "no_conservation",
+      "conservative_score": 0.026315789100510235,
+      "nonconservative_score": 0.0,
+      "conservative_count": 38,
+      "nonconservative_count": 19,
+      "piecewise": {
+        "collision_elastic_1d_equal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_1d_unequal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_inelastic_equal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_2d_glancing": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_1d_2to1_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_inelastic_unequal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_headon": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        }
+      }
+    },
+    {
+      "expression": "m*g*h",
+      "description": "Gravitational potential only",
+      "conditional_pattern": "no_conservation",
+      "conservative_score": 0.4910294657547779,
+      "nonconservative_score": 0.3383582302723914,
+      "conservative_count": 38,
+      "nonconservative_count": 19,
+      "piecewise": {
+        "collision_elastic_1d_equal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_1d_unequal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_inelastic_equal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_2d_glancing": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_1d_2to1_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_inelastic_unequal_mass": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        },
+        "collision_elastic_headon": {
+          "overall": 0.0,
+          "piecewise_mean": 0.0
+        }
+      }
+    },
+    {
+      "expression": "0.5*m*v^2",
+      "description": "Kinetic energy only",
+      "conditional_pattern": "partial",
+      "conservative_score": 0.5911412041583607,
+      "nonconservative_score": 0.5431369117621937,
+      "conservative_count": 38,
+      "nonconservative_count": 19,
+      "piecewise": {
+        "collision_elastic_1d_equal_mass": {
+          "overall": 0.4494897427831781,
+          "piecewise_mean": 1.0
+        },
+        "collision_elastic_1d_unequal_mass": {
+          "overall": 0.5995050520620168,
+          "piecewise_mean": 1.0
+        },
+        "collision_inelastic_equal_mass": {
+          "overall": 0.5995050520620168,
+          "piecewise_mean": 1.0
+        },
+        "collision_elastic_2d_glancing": {
+          "overall": 0.7406978931751703,
+          "piecewise_mean": 1.0
+        },
+        "collision_elastic_1d_2to1_mass": {
+          "overall": 0.5172934164453602,
+          "piecewise_mean": 1.0
+        },
+        "collision_inelastic_unequal_mass": {
+          "overall": 0.7101020020376557,
+          "piecewise_mean": 1.0
+        },
+        "collision_elastic_headon": {
+          "overall": 0.5172933896916856,
+          "piecewise_mean": 1.0
+        }
+      }
+    }
+  ],
+  "work_energy_theorem": {
+    "statement": "For conservative forces, total mechanical energy (KE + PE) is conserved. When non-conservative forces (friction, drag, damping) are present, mechanical energy decreases.",
+    "evidence": [
+      {
+        "claim": "E = mgh + \u00bdmv\u00b2 conserved in all conservative gravity scenarios",
+        "scenarios_tested": 30,
+        "mean_score": 0.9880675499972046,
+        "min_score": 0.8260520256058023,
+        "max_score": 1.0,
+        "verdict": "SUPPORTED"
+      },
+      {
+        "claim": "E = mgh + \u00bdmv\u00b2 NOT conserved when friction present",
+        "scenarios_tested": 4,
+        "mean_score": 0.8092394259490484,
+        "min_score": 0.7040602724868122,
+        "max_score": 0.8762693175397455,
+        "verdict": "SUPPORTED"
+      },
+      {
+        "claim": "E = \u00bdmv\u00b2 + \u00bdkx\u00b2 conserved on undamped springs",
+        "scenarios_tested": 5,
+        "mean_score": 0.9444287433691205,
+        "verdict": "SUPPORTED"
+      },
+      {
+        "claim": "E = \u00bdmv\u00b2 + \u00bdkx\u00b2 NOT conserved on damped springs",
+        "scenarios_tested": 7,
+        "mean_score": 0.576006580038257,
+        "verdict": "SUPPORTED"
+      },
+      {
+        "claim": "E = \u00bdmv\u00b2 + \u00bdkx\u00b2 - mgh conserved on vertical spring under gravity",
+        "scenario": "mass_spring_gravity",
+        "score": 0.9999999847026437,
+        "verdict": "SUPPORTED"
+      }
+    ]
+  }
+}
