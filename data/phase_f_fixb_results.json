@@ -1,0 +1,79 @@
+{
+  "scenarios": {
+    "falling_ball_straight_drop": {
+      "name": "Ball dropped from rest",
+      "quantities": [
+        "m",
+        "g",
+        "h",
+        "v",
+        "t"
+      ],
+      "known_invariant": "m*g*h + 0.5*m*v^2",
+      "generated": "m*g*h + 0.5*m*v^2",
+      "active_domains": [
+        "gravity"
+      ]
+    },
+    "spring_undamped": {
+      "name": "Undamped spring-mass system",
+      "quantities": [
+        "m",
+        "k",
+        "h",
+        "v",
+        "t"
+      ],
+      "known_invariant": "0.5*k*h^2 + 0.5*m*v^2",
+      "generated": "0.5*m*v^2 + 0.5*k*h^2",
+      "active_domains": [
+        "gravity",
+        "spring"
+      ]
+    },
+    "mass_spring_gravity": {
+      "name": "Mass on vertical spring under gravity",
+      "quantities": [
+        "m",
+        "k",
+        "g",
+        "h",
+        "v",
+        "t"
+      ],
+      "known_invariant": "0.5*m*v^2 + 0.5*k*h^2 - m*g*h",
+      "generated": "m*g*h + 0.5*m*v^2 + 0.5*k*h^2",
+      "active_domains": [
+        "gravity",
+        "spring"
+      ]
+    },
+    "charged_particle_gravity": {
+      "name": "Charged particle in gravity + electric field",
+      "quantities": [
+        "m",
+        "g",
+        "h",
+        "v",
+        "t"
+      ],
+      "known_invariant": "0.5*m*v^2 + m*g*h + q*E*h",
+      "generated": "m*g*h + 0.5*m*v^2",
+      "active_domains": [
+        "gravity"
+      ]
+    }
+  },
+  "summary": {
+    "all_terms_present": true,
+    "all_domains_active": true,
+    "generated_expression": "m*g*h + 0.5*m*v^2 + 0.5*k*h^2",
+    "known_invariant": "0.5*m*v^2 + 0.5*k*h^2 - m*g*h"
+  },
+  "acceptance_passed": true,
+  "model_params": {
+    "classifier": 1571,
+    "per_template_generator": 48186,
+    "total": 146129
+  }
+}
