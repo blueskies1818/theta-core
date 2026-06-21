@@ -107,9 +107,8 @@ class ModelConfig(BaseModel):
 
 
 # NOTE: RewardConfig lives in src/reward/config.py (dataclass).
-# The canonical YAML for reward lives at configs/reward_config.yaml and
-# should be loaded via src.reward.config.RewardConfig, not here.
-# See src/environment/env.py and src/reward/base.py for usage.
+# The canonical YAML for reward has been archived at archive/gnn_legacy/configs/reward_config.yaml.
+# Configure rewards directly via src.reward.config.RewardConfig, not here.
 
 
 def load_yaml_config(path: Path, model_cls: type[BaseModel]) -> BaseModel:
@@ -121,17 +120,17 @@ def load_yaml_config(path: Path, model_cls: type[BaseModel]) -> BaseModel:
 
 def load_grpo_config(path: Path = None) -> GRPOConfig:
     if path is None:
-        path = Path(__file__).parent.parent.parent / "configs" / "grpo_config.yaml"
+        path = Path(__file__).parent.parent.parent / "archive" / "gnn_legacy" / "configs" / "grpo_config.yaml"
     return load_yaml_config(path, GRPOConfig)
 
 
 def load_sft_config(path: Path = None) -> SFTConfig:
     if path is None:
-        path = Path(__file__).parent.parent.parent / "configs" / "sft_config.yaml"
+        path = Path(__file__).parent.parent.parent / "archive" / "gnn_legacy" / "configs" / "sft_config.yaml"
     return load_yaml_config(path, SFTConfig)
 
 
 def load_model_config(path: Path = None) -> ModelConfig:
     if path is None:
-        path = Path(__file__).parent.parent.parent / "configs" / "model_config.yaml"
+        path = Path(__file__).parent.parent.parent / "archive" / "gnn_legacy" / "configs" / "model_config.yaml"
     return load_yaml_config(path, ModelConfig)

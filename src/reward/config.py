@@ -63,13 +63,13 @@ def load_reward_config(path: Path | None = None) -> RewardConfig:
     """Load reward configuration from YAML file.
 
     Args:
-        path: Path to reward_config.yaml. Defaults to configs/reward_config.yaml.
+        path: Path to reward_config.yaml. Defaults to archive/gnn_legacy/configs/reward_config.yaml.
 
     Returns:
         RewardConfig populated from YAML.
     """
     if path is None:
-        path = Path(__file__).parent.parent.parent / "configs" / "reward_config.yaml"
+        path = Path(__file__).parent.parent.parent / "archive" / "gnn_legacy" / "configs" / "reward_config.yaml"
 
     with open(path) as f:
         data = yaml.safe_load(f) or {}
