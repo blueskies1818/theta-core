@@ -1,0 +1,60 @@
+{
+  "task": "Value network for proof states \u2014 gate3_v2 evaluation",
+  "timestamp": "2026-06-18",
+  "architecture": "Frozen GNN GoalEncoder (256-dim) \u2192 ValueHead MLP (256\u2192128\u21921) \u2192 sigmoid",
+  "training": {
+    "method": "Keyword-hashed goal encodings via GNN GoalEncoder",
+    "samples": 5000,
+    "epochs": 25,
+    "test_accuracy": 0.965,
+    "training_time_s": 1.3,
+    "gnn_checkpoint": "checkpoints/gnn/proof_step_pretrained.pt",
+    "value_head_params": 66049,
+    "gnn_params": 1118848,
+    "gnn_frozen": true
+  },
+  "evaluation": {
+    "method": "GNN best-first search on gate3_v2 (first 20 theorems)",
+    "max_expansions": 200,
+    "timeout_per_theorem_s": 60,
+    "value_weight": 0.3,
+    "value_prune_threshold": 0.1,
+    "blind": {
+      "passed": 7,
+      "total": 20,
+      "multi_step": 2,
+      "timeouts": 0
+    },
+    "value_guided": {
+      "passed": 7,
+      "total": 20,
+      "multi_step": 2,
+      "timeouts": 0
+    },
+    "delta_proofs": 0,
+    "smoke_test": {
+      "blind": 4,
+      "value_guided": 4,
+      "total": 5
+    }
+  },
+  "observations": {
+    "proof_count": "Same (7/20 both configs)",
+    "search_efficiency": "Value-guided search was 2-3x faster per theorem (prunes unpromising branches)",
+    "limitations": [
+      "Value head trained on keyword-hash encodings, not full GNN goal embeddings \u2014 limited discriminative power",
+      "Small test set (20 theorems) may not show differentiation",
+      "value_weight=0.3 may be too low to overcome lemma scoring dominance"
+    ]
+  },
+  "files": {
+    "checkpoints/value_network.pt": "Trained value network (66K params)",
+    "data/value_net_result.json": "This result file",
+    "src/explorer/value_network.py": "ValueNetwork module",
+    "src/explorer/gnn_best_first_search.py": "Modified with value network integration",
+    "scripts/training/train_value_quick.py": "Quick training script",
+    "scripts/eval/eval_value_fast.py": "Fast evaluation script",
+    "tests/test_value_network.py": "Value network tests (11 tests)",
+    "tests/test_value_integration.py": "Integration tests (7 tests)"
+  }
+}

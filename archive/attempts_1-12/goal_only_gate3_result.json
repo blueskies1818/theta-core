@@ -1,0 +1,3592 @@
+{
+  "passed": 0,
+  "total": 64,
+  "rate": 0.0,
+  "results": [
+    {
+      "name": "alg_subst_expand",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact tsub_le_iff_left"
+      ],
+      "ground_truth": "rw [h]; ring",
+      "top_lemmas": [
+        [
+          "add_comm",
+          6.3426
+        ],
+        [
+          "tsub_le_iff_left",
+          4.535
+        ],
+        [
+          "SubNegMonoid.zsmul_neg'",
+          1.9424
+        ],
+        [
+          "sub_eq_add_neg",
+          1.867
+        ],
+        [
+          "mvfderiv",
+          1.0
+        ],
+        [
+          "sub_val_of_le",
+          0.9931
+        ],
+        [
+          "natCast_zsmul",
+          0.9712
+        ],
+        [
+          "Nat.add_sub_cancel",
+          0.9662
+        ],
+        [
+          "succ_ascFactorial",
+          0.9493
+        ],
+        [
+          "add_assoc",
+          0.9414
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_subst_factor",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact tsub_le_iff_left"
+      ],
+      "ground_truth": "rw [h]; ring",
+      "top_lemmas": [
+        [
+          "add_comm",
+          6.3426
+        ],
+        [
+          "tsub_le_iff_left",
+          4.535
+        ],
+        [
+          "SubNegMonoid.zsmul_neg'",
+          1.9424
+        ],
+        [
+          "sub_eq_add_neg",
+          1.867
+        ],
+        [
+          "mvfderiv",
+          1.0
+        ],
+        [
+          "sub_val_of_le",
+          0.9931
+        ],
+        [
+          "natCast_zsmul",
+          0.9712
+        ],
+        [
+          "Nat.add_sub_cancel",
+          0.9662
+        ],
+        [
+          "succ_ascFactorial",
+          0.9493
+        ],
+        [
+          "add_assoc",
+          0.9414
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_cross_multiply",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact mul_assoc",
+        "apply mul_assoc",
+        "exact mul_comm"
+      ],
+      "ground_truth": "have h' := congrArg (fun t => t * (b * d)) h; field_simp [hb, hd] at h'; exact h'",
+      "top_lemmas": [
+        [
+          "mul_assoc",
+          5.9292
+        ],
+        [
+          "mul_comm",
+          4.9689
+        ],
+        [
+          "iSup",
+          4.0
+        ],
+        [
+          "hc.eq_or_lt",
+          3.9889
+        ],
+        [
+          "sSup_mul_distrib",
+          2.9945
+        ],
+        [
+          "mul_sSup_distrib",
+          2.9945
+        ],
+        [
+          "mul_left_comm",
+          2.9765
+        ],
+        [
+          "iSup_range",
+          2.0
+        ],
+        [
+          "sSup_pair",
+          1.9945
+        ],
+        [
+          "iSup_pair",
+          1.9945
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_fraction_split",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact div_eq_mul_inv",
+        "apply div_eq_mul_inv",
+        "exact mul_comm"
+      ],
+      "ground_truth": "field_simp [hc]; ring",
+      "top_lemmas": [
+        [
+          "div_eq_mul_inv",
+          4.9051
+        ],
+        [
+          "mul_comm",
+          3.9297
+        ],
+        [
+          "div_inv_eq_mul",
+          3.9074
+        ],
+        [
+          "Nat.add_div",
+          2.9925
+        ],
+        [
+          "add_div",
+          2.9774
+        ],
+        [
+          "map_mul_le_add",
+          2.9489
+        ],
+        [
+          "inv_div",
+          2.9303
+        ],
+        [
+          "eq_comm",
+          1.9765
+        ],
+        [
+          "div_mul_div_cancel",
+          1.9537
+        ],
+        [
+          "div_div_eq_mul_div",
+          1.9535
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_ratio_identity",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact div_eq_mul_inv",
+        "apply div_eq_mul_inv",
+        "exact mul_comm"
+      ],
+      "ground_truth": "field_simp [hx, hy]",
+      "top_lemmas": [
+        [
+          "div_eq_mul_inv",
+          15.9169
+        ],
+        [
+          "mul_comm",
+          6.9662
+        ],
+        [
+          "mul_assoc",
+          3.9842
+        ],
+        [
+          "mul_div_cancel_left",
+          3.9706
+        ],
+        [
+          "div_inv_eq_mul",
+          3.9687
+        ],
+        [
+          "mul_div_cancel_left\u2080",
+          2.9787
+        ],
+        [
+          "div_zero",
+          2.9782
+        ],
+        [
+          "div_mul_cancel",
+          1.9981
+        ],
+        [
+          "mul_left_comm",
+          1.9921
+        ],
+        [
+          "mul_div_assoc",
+          1.9913
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_complete_square",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact f.map_update_add"
+      ],
+      "ground_truth": "rw [h]; field_simp [ha]; ring",
+      "top_lemmas": [
+        [
+          "add_comm",
+          1.8822
+        ],
+        [
+          "f.map_update_add",
+          1.8361
+        ],
+        [
+          "map_add",
+          1.8327
+        ],
+        [
+          "sum_split_boxes",
+          1.0
+        ],
+        [
+          "Nat.sub_le_iff_le_add",
+          1.0
+        ],
+        [
+          "mvfderiv",
+          0.9879
+        ],
+        [
+          "symmDiff_eq_sup_sdiff_inf",
+          0.9879
+        ],
+        [
+          "bit_div_two",
+          0.9879
+        ],
+        [
+          "size_bit",
+          0.9879
+        ],
+        [
+          "leibniz_identity_mlieBracketWithin_apply",
+          0.9747
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_amgm_two",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact f.map_update_add"
+      ],
+      "ground_truth": "have h : (x - y)^2 \u2265 0 := pow_two_nonneg _; nlinarith",
+      "top_lemmas": [
+        [
+          "add_comm",
+          1.1504
+        ],
+        [
+          "f.map_update_add",
+          1.1464
+        ],
+        [
+          "ClusterPt.limsSup",
+          0.8117
+        ],
+        [
+          "isGreatest_clusterPt_limsSup",
+          0.8117
+        ],
+        [
+          "(ClusterPt.limsInf).exists_seq_tendsto",
+          0.8117
+        ],
+        [
+          "ClusterPt.limsInf",
+          0.8117
+        ],
+        [
+          "isLeast_clusterPt_limsInf",
+          0.8117
+        ],
+        [
+          "(MapClusterPt.liminf).exists_seq_tendsto",
+          0.8117
+        ],
+        [
+          "hx.le_limsSup",
+          0.8117
+        ],
+        [
+          "Antitone.map_limsSup_of_continuousAt",
+          0.8117
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "poly_deriv_product",
+      "domain": "Algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact mul_assoc",
+        "apply mul_assoc",
+        "exact mul_comm"
+      ],
+      "ground_truth": "rw [Polynomial.derivative_mul]; rfl",
+      "top_lemmas": [
+        [
+          "mul_assoc",
+          6.3099
+        ],
+        [
+          "mul_comm",
+          4.578
+        ],
+        [
+          "zero_mul",
+          3.6402
+        ],
+        [
+          "mul_add",
+          2.7432
+        ],
+        [
+          "add_comm",
+          1.8547
+        ],
+        [
+          "Matrix.fromBlocks_transpose",
+          1.8176
+        ],
+        [
+          "Matrix.fromBlocks_multiply",
+          1.8176
+        ],
+        [
+          "Matrix.fromBlocks_smul",
+          1.8176
+        ],
+        [
+          "dvd_mul_right",
+          1.777
+        ],
+        [
+          "eq_modMonomial_single_iff",
+          1.777
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "poly_root_factor",
+      "domain": "Algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact Fin.cases",
+        "apply Fin.cases",
+        "exact aeval_X"
+      ],
+      "ground_truth": "apply Polynomial.dvd_iff_isRoot.mpr; rw [Polynomial.IsRoot]; exact h",
+      "top_lemmas": [
+        [
+          "Fin.cases",
+          6.21
+        ],
+        [
+          "aeval_X",
+          3.1315
+        ],
+        [
+          "optionEquivLeft_apply",
+          2.62
+        ],
+        [
+          "finSuccEquiv_apply",
+          2.3526
+        ],
+        [
+          "RingHom.coe_coe",
+          2.1135
+        ],
+        [
+          "aeval_C",
+          1.963
+        ],
+        [
+          "bind\u2081",
+          1.6399
+        ],
+        [
+          "optionEquivRight_apply",
+          1.3743
+        ],
+        [
+          "coeff_update_apply",
+          1.3698
+        ],
+        [
+          "comp_apply",
+          1.2115
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "poly_degree_leading_term",
+      "domain": "Algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact map_mul",
+        "apply map_mul",
+        "exact eq_natDegree_of_le_mem_support"
+      ],
+      "ground_truth": "apply Polynomial.natDegree_add_eq_left_of_natDegree_lt; apply lt_of_lt_of_le ?_ (Nat.zero_le _); exact hp",
+      "top_lemmas": [
+        [
+          "map_mul",
+          1.955
+        ],
+        [
+          "eq_natDegree_of_le_mem_support",
+          1.955
+        ],
+        [
+          "Nat.cast_add",
+          1.938
+        ],
+        [
+          "natDegree_eq_of_le_of_coeff_ne_zero",
+          1.9263
+        ],
+        [
+          "pow_succ",
+          1.9181
+        ],
+        [
+          "degree_eq_natDegree",
+          1.9134
+        ],
+        [
+          "natDegree_mul_le",
+          1.9097
+        ],
+        [
+          "sub_eq_add_neg",
+          1.9055
+        ],
+        [
+          "degree_smul_of_smul_regular",
+          0.9865
+        ],
+        [
+          "coeff_add",
+          0.9823
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "poly_iterated_deriv",
+      "domain": "Algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact map_add",
+        "apply map_add",
+        "exact add_comm"
+      ],
+      "ground_truth": "ext p; rw [Function.iterate_add, Function.comp_apply]",
+      "top_lemmas": [
+        [
+          "map_add",
+          2.4662
+        ],
+        [
+          "add_comm",
+          1.6836
+        ],
+        [
+          "f.map_update_add",
+          1.6256
+        ],
+        [
+          "JU.mlieBracketWithin_vectorField_eq_of_mem",
+          1.0
+        ],
+        [
+          "congr($(fromTangentSpace_mfderiv_smul",
+          1.0
+        ],
+        [
+          "leibniz_identity_mlieBracketWithin_apply",
+          1.0
+        ],
+        [
+          "leibniz_identity_mlieBracket_apply",
+          1.0
+        ],
+        [
+          "sum_split_boxes",
+          0.9747
+        ],
+        [
+          "Nat.sub_le_iff_le_add",
+          0.9747
+        ],
+        [
+          "symmDiff_eq_sup_sdiff_inf",
+          0.9282
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "ana_triangle_rev",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact mod_cast",
+        "apply mod_cast",
+        "exact abs_sub_comm"
+      ],
+      "ground_truth": "have h := abs_sub_abs_le_abs_sub x y; linarith",
+      "top_lemmas": [
+        [
+          "mod_cast",
+          2.1601
+        ],
+        [
+          "abs_sub_comm",
+          2.1049
+        ],
+        [
+          "abs_sub_round_eq_min",
+          1.6853
+        ],
+        [
+          "abs_eq_self.mpr",
+          1.581
+        ],
+        [
+          "le_sub_one_iff",
+          1.4849
+        ],
+        [
+          "round_sub_intCast",
+          1.4555
+        ],
+        [
+          "sub_eq_add_neg",
+          1.4541
+        ],
+        [
+          "cast_one",
+          1.4541
+        ],
+        [
+          "round",
+          1.4048
+        ],
+        [
+          "not_isMin",
+          1.3429
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "ana_eps_delta",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact round_eq",
+        "apply round_eq",
+        "exact abs_sub_round_eq_min"
+      ],
+      "ground_truth": "have h := lt_of_lt_of_le h\u03b4 h\u03b4\u03b5; exact h",
+      "top_lemmas": [
+        [
+          "round_eq",
+          1.7127
+        ],
+        [
+          "abs_sub_round_eq_min",
+          1.4807
+        ],
+        [
+          "abs_eq_self.mpr",
+          1.4282
+        ],
+        [
+          "le_sub_one_iff",
+          1.3511
+        ],
+        [
+          "eq_or_ne",
+          1.3223
+        ],
+        [
+          "add_comm",
+          1.3085
+        ],
+        [
+          "not_isMin",
+          1.262
+        ],
+        [
+          "pred_eq_sub_one",
+          1.262
+        ],
+        [
+          "round_sub_intCast",
+          1.1629
+        ],
+        [
+          "cast_one",
+          1.1566
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "ana_cs_two_dim",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact map_add",
+        "apply map_add",
+        "exact f.map_update_add"
+      ],
+      "ground_truth": "nlinarith [sq_nonneg (a*y - b*x)]",
+      "top_lemmas": [
+        [
+          "map_add",
+          2.7372
+        ],
+        [
+          "f.map_update_add",
+          1.866
+        ],
+        [
+          "add_comm",
+          1.8175
+        ],
+        [
+          "congr($(u.mul_inv).val",
+          0.9674
+        ],
+        [
+          "congr($(u.inv_mul).val",
+          0.9674
+        ],
+        [
+          "\u00b7.sub",
+          0.9663
+        ],
+        [
+          "zpow_natCast",
+          0.9663
+        ],
+        [
+          "hM.neg.add",
+          0.9663
+        ],
+        [
+          "Nat.add_comm",
+          0.9537
+        ],
+        [
+          "Real.toNNReal_add_le",
+          0.946
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "ana_sum_sq_bound",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact f.map_update_add"
+      ],
+      "ground_truth": "have h : (x - y)^2 \u2265 0 := pow_two_nonneg _; nlinarith",
+      "top_lemmas": [
+        [
+          "add_comm",
+          2.7482
+        ],
+        [
+          "f.map_update_add",
+          1.9054
+        ],
+        [
+          "Real.toNNReal_add_le",
+          0.9948
+        ],
+        [
+          "ENNReal.coe_le_coe",
+          0.9948
+        ],
+        [
+          "hausdorffEDist_comm",
+          0.9724
+        ],
+        [
+          "le_inf_support_add",
+          0.9724
+        ],
+        [
+          "approx",
+          0.9719
+        ],
+        [
+          "Finset.sdiff_subset",
+          0.9719
+        ],
+        [
+          "zpow_natCast",
+          0.9666
+        ],
+        [
+          "hM.neg.add",
+          0.9666
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "ana_abs_prod_pos",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact round",
+        "apply round",
+        "exact round_eq"
+      ],
+      "ground_truth": "apply abs_pos.mpr; exact mul_ne_zero hx hy",
+      "top_lemmas": [
+        [
+          "round",
+          2.9218
+        ],
+        [
+          "round_eq",
+          2.043
+        ],
+        [
+          "abs_eq_self.mpr",
+          1.2962
+        ],
+        [
+          "abs_sub_round_eq_min",
+          1.1415
+        ],
+        [
+          "add_comm",
+          1.0573
+        ],
+        [
+          "floor_lt",
+          1.0356
+        ],
+        [
+          "lt_floor_add_one",
+          0.9976
+        ],
+        [
+          "round_eq_iff",
+          0.9762
+        ],
+        [
+          "lt_ceil",
+          0.9522
+        ],
+        [
+          "le_floor",
+          0.9281
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "ana_sq_mono",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact ENat.card_eq_coe_fintype_card",
+        "apply ENat.card_eq_coe_fintype_card",
+        "exact truncateToReal"
+      ],
+      "ground_truth": "nlinarith",
+      "top_lemmas": [
+        [
+          "ENat.card_eq_coe_fintype_card",
+          2.0
+        ],
+        [
+          "truncateToReal",
+          1.0
+        ],
+        [
+          "sumNodes",
+          1.0
+        ],
+        [
+          "NNReal.summable_coe",
+          1.0
+        ],
+        [
+          "mem_groupoid_of_pregroupoid",
+          1.0
+        ],
+        [
+          "restrict_le_one_iff",
+          1.0
+        ],
+        [
+          "vectorSpan_mono",
+          1.0
+        ],
+        [
+          "mk'",
+          1.0
+        ],
+        [
+          "tail_subset",
+          1.0
+        ],
+        [
+          "baseChange",
+          1.0
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "ana_ratio_test",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact mul_self_le_mul_self_iff",
+        "apply mul_self_le_mul_self_iff",
+        "exact abs_eq_natAbs"
+      ],
+      "ground_truth": "have hlt : r < 1 := hr1; linarith",
+      "top_lemmas": [
+        [
+          "mul_self_le_mul_self_iff",
+          2.8292
+        ],
+        [
+          "abs_eq_natAbs",
+          1.5074
+        ],
+        [
+          "abs_sub_comm",
+          1.156
+        ],
+        [
+          "abs_of_nonneg",
+          1.0953
+        ],
+        [
+          "abs_choice",
+          1.0726
+        ],
+        [
+          "abs_re_le_norm",
+          1.0488
+        ],
+        [
+          "abs",
+          1.0472
+        ],
+        [
+          "mul_self_lt_mul_self_iff",
+          0.9257
+        ],
+        [
+          "eq_natCast_toNat.mpr",
+          0.8867
+        ],
+        [
+          "le_total",
+          0.8839
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "ana_midpoint_bound",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact tsub_le_iff_left",
+        "apply tsub_le_iff_left",
+        "exact add_comm"
+      ],
+      "ground_truth": "have hmid : (a + b)/2 - a = (b - a)/2 := by ring; have hbmid : b - (a + b)/2 = (b - a)/2 := by ring; nlinarith",
+      "top_lemmas": [
+        [
+          "tsub_le_iff_left",
+          5.8588
+        ],
+        [
+          "add_comm",
+          5.845
+        ],
+        [
+          "tsub_le_iff_right",
+          2.3854
+        ],
+        [
+          "SubNegMonoid.zsmul_neg'",
+          1.6926
+        ],
+        [
+          "sub_eq_add_neg",
+          1.6585
+        ],
+        [
+          "sub_self_eq_zero_of_ne_top",
+          1.5729
+        ],
+        [
+          "le_tsub_add",
+          0.8549
+        ],
+        [
+          "succ_ascFactorial",
+          0.8548
+        ],
+        [
+          "mul_one_sub",
+          0.8519
+        ],
+        [
+          "one_sub_mul",
+          0.8519
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "ana_sum_abs_bound",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact round",
+        "apply round",
+        "exact le_floor"
+      ],
+      "ground_truth": "calc\n  |x + y| \u2264 |x| + |y| := abs_add _ _\n  _ \u2264 M + M := add_le_add hx hy\n  _ = 2*M := by ring",
+      "top_lemmas": [
+        [
+          "round",
+          3.4836
+        ],
+        [
+          "le_floor",
+          2.5247
+        ],
+        [
+          "add_comm",
+          2.5116
+        ],
+        [
+          "round_add_intCast",
+          1.8262
+        ],
+        [
+          "round_eq",
+          1.7342
+        ],
+        [
+          "abs_eq_self.mpr",
+          1.3777
+        ],
+        [
+          "abs_sub_round_eq_min",
+          1.3364
+        ],
+        [
+          "floor_lt",
+          1.2678
+        ],
+        [
+          "round_add_natCast",
+          1.2367
+        ],
+        [
+          "cast_one",
+          1.2079
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "ana_bernstein_bounds",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact tsub_le_iff_left",
+        "apply tsub_le_iff_left",
+        "exact map_sub_nsmul"
+      ],
+      "ground_truth": "have h_base : 0 \u2264 1 - x := by linarith; have h_ub : 1 - x \u2264 1 := by linarith; constructor; exact pow_nonneg h_base (by exact_mod_cast hn0); exact pow_le_one _ h_base h_ub",
+      "top_lemmas": [
+        [
+          "tsub_le_iff_left",
+          4.7478
+        ],
+        [
+          "map_sub_nsmul",
+          3.6393
+        ],
+        [
+          "sub_eq_add_neg",
+          2.7385
+        ],
+        [
+          "sub_self_eq_zero_of_ne_top",
+          1.9735
+        ],
+        [
+          "tsub_le_iff_right",
+          1.9607
+        ],
+        [
+          "neg_sub",
+          1.8287
+        ],
+        [
+          "map_add_nsmul",
+          1.8196
+        ],
+        [
+          "zsmul_one",
+          1.8196
+        ],
+        [
+          "map_add_zsmul",
+          1.8196
+        ],
+        [
+          "le_of_lt",
+          1.0
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_ke_classical",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact mul_assoc",
+        "apply mul_assoc",
+        "exact mul_comm"
+      ],
+      "ground_truth": "nlinarith [sq_nonneg v]",
+      "top_lemmas": [
+        [
+          "mul_assoc",
+          5.4193
+        ],
+        [
+          "mul_comm",
+          5.3976
+        ],
+        [
+          "add_left_comm",
+          2.7535
+        ],
+        [
+          "hc.eq_or_lt",
+          2.6991
+        ],
+        [
+          "mul_left_comm",
+          2.0266
+        ],
+        [
+          "zero_mul",
+          2.0182
+        ],
+        [
+          "sSup_mul_distrib",
+          1.3496
+        ],
+        [
+          "sSup_pair",
+          1.3496
+        ],
+        [
+          "iSup_pair",
+          1.3496
+        ],
+        [
+          "mul_sSup_distrib",
+          1.3496
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_rest_energy",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact mul_lt_mul_of_pos_left",
+        "apply mul_lt_mul_of_pos_left",
+        "exact mul_lt_mul_of_pos_right"
+      ],
+      "ground_truth": "nlinarith [sq_nonneg c]",
+      "top_lemmas": [
+        [
+          "mul_lt_mul_of_pos_left",
+          1.9158
+        ],
+        [
+          "mul_lt_mul_of_pos_right",
+          1.9158
+        ],
+        [
+          "\u03b1\u1d52\u1d48",
+          1.6531
+        ],
+        [
+          "add_left_comm",
+          0.9615
+        ],
+        [
+          "mul_lt_mul_right",
+          0.9597
+        ],
+        [
+          "(mul_one",
+          0.9579
+        ],
+        [
+          "mul_lt_mul_of_neg_left",
+          0.9579
+        ],
+        [
+          "mul_lt_mul_of_neg_right",
+          0.9579
+        ],
+        [
+          "Antitone.map_limsSup_of_continuousAt",
+          0.885
+        ],
+        [
+          "ClusterPt.limsInf",
+          0.885
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_galileo_velocity",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact sub_eq_add_neg",
+        "apply sub_eq_add_neg",
+        "exact map_sub_nsmul"
+      ],
+      "ground_truth": "rw [h]; ring",
+      "top_lemmas": [
+        [
+          "sub_eq_add_neg",
+          4.9523
+        ],
+        [
+          "map_sub_nsmul",
+          3.9683
+        ],
+        [
+          "pred_eq_iff_covBy.symm",
+          2.0
+        ],
+        [
+          "eq_iff",
+          2.0
+        ],
+        [
+          "sub_add_cancel",
+          1.9921
+        ],
+        [
+          "neg_eq_iff_add_eq_zero",
+          1.9853
+        ],
+        [
+          "zsmul_one",
+          1.9841
+        ],
+        [
+          "map_add_zsmul",
+          1.9841
+        ],
+        [
+          "map_add_nsmul",
+          1.9841
+        ],
+        [
+          "map_add",
+          1.9774
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_lorentz_bound",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact div_eq_mul_inv",
+        "apply div_eq_mul_inv",
+        "exact div_lt_iff\u2080"
+      ],
+      "ground_truth": "have h_sq_pos : c^2 > 0 := pow_pos hc 2; exact (div_lt_one h_sq_pos).mpr (by nlinarith)",
+      "top_lemmas": [
+        [
+          "div_eq_mul_inv",
+          9.6823
+        ],
+        [
+          "div_lt_iff\u2080",
+          5.8379
+        ],
+        [
+          "lt_div_iff\u2080",
+          1.9427
+        ],
+        [
+          "div_lt_iff_of_neg",
+          1.9427
+        ],
+        [
+          "ne_of_lt",
+          1.941
+        ],
+        [
+          "one_mul",
+          1.9082
+        ],
+        [
+          "mul_comm",
+          1.9053
+        ],
+        [
+          "inv_lt_comm\u2080",
+          0.9886
+        ],
+        [
+          "inv_lt_of_neg",
+          0.9886
+        ],
+        [
+          "lt_inv_comm\u2080",
+          0.9886
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_photon_quantum",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact div_eq_mul_inv",
+        "apply div_eq_mul_inv",
+        "exact mul_div_cancel_right\u2080"
+      ],
+      "ground_truth": "rw [hr]; field_simp [hh.ne.symm]",
+      "top_lemmas": [
+        [
+          "div_eq_mul_inv",
+          11.209
+        ],
+        [
+          "mul_div_cancel_right\u2080",
+          3.4517
+        ],
+        [
+          "div_inv_eq_mul",
+          3.4246
+        ],
+        [
+          "div_eq_iff_eq_mul'",
+          2.5849
+        ],
+        [
+          "div_eq_iff_eq_mul",
+          2.5811
+        ],
+        [
+          "inv_div",
+          2.5714
+        ],
+        [
+          "div_self'",
+          1.7243
+        ],
+        [
+          "div_zero",
+          1.722
+        ],
+        [
+          "Nat.add_div",
+          1.7165
+        ],
+        [
+          "div_div_eq_mul_div",
+          1.7153
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_absolute_time",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact map_sub_nsmul",
+        "apply map_sub_nsmul",
+        "exact sub_eq_add_neg"
+      ],
+      "ground_truth": "rw [h]; ring",
+      "top_lemmas": [
+        [
+          "map_sub_nsmul",
+          3.5905
+        ],
+        [
+          "sub_eq_add_neg",
+          2.6924
+        ],
+        [
+          "map_add",
+          1.8482
+        ],
+        [
+          "Function.iterate_zero_apply",
+          1.8463
+        ],
+        [
+          "map_add_nsmul",
+          1.7952
+        ],
+        [
+          "map_add_zsmul",
+          1.7952
+        ],
+        [
+          "zsmul_one",
+          1.7952
+        ],
+        [
+          "neg_sub",
+          1.7948
+        ],
+        [
+          "b.ext",
+          1.0
+        ],
+        [
+          "contractLeft_algebraMap",
+          0.9912
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_time_dilation",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact (div_sub_div_same",
+        "apply (div_sub_div_same",
+        "exact mul_comm"
+      ],
+      "ground_truth": "have h_sqrt : 0 < Real.sqrt (1 - v^2/c^2) \u2227 Real.sqrt (1 - v^2/c^2) \u2264 1 := by\n  have h_nonneg : 0 \u2264 1 - v^2/c^2 := by\n    have h_sq : v^2/c^2 < 1 := by\n      have h_sq_pos : c^2 > 0 := pow_pos hc 2\n      exact (div_lt_one h_sq_pos).mpr (by nlinarith)\n    nlinarith\n  have h_sqrt_pos : 0 < Real.sqrt (1 - v^2/c^2) := Real.sqrt_pos.mpr (by nlinarith)\n  have h_sqrt_le : Real.sqrt (1 - v^2/c^2) \u2264 1 := Real.sqrt_le_one h_nonneg\n  exact \u27e8h_sqrt_pos, h_sqrt_le\u27e9\napply (one_le_div ?_ h).mpr h_sqrt.2; exact \u27e8h_sqrt.1, h\u27e9",
+      "top_lemmas": [
+        [
+          "(div_sub_div_same",
+          1.7486
+        ],
+        [
+          "mul_comm",
+          1.7345
+        ],
+        [
+          "div_sub_div",
+          1.7345
+        ],
+        [
+          "eq_comm",
+          1.7345
+        ],
+        [
+          "neg_eq_neg_one_mul",
+          1.7148
+        ],
+        [
+          "div_eq_mul_inv",
+          1.7106
+        ],
+        [
+          "hxy.trans",
+          1.6812
+        ],
+        [
+          "if_neg",
+          1.6796
+        ],
+        [
+          "div_add_mod",
+          1.6702
+        ],
+        [
+          "factorial_mul_descFactorial",
+          0.8842
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_debroglie_wavelength",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact mul_apply",
+        "apply mul_apply",
+        "exact mul_eq_map\u2082"
+      ],
+      "ground_truth": "rw [hp]; field_simp [h\u03bb]",
+      "top_lemmas": [
+        [
+          "mul_apply",
+          2.3997
+        ],
+        [
+          "mul_eq_map\u2082",
+          1.9271
+        ],
+        [
+          "Finsupp.sum",
+          1.437
+        ],
+        [
+          "Classical.decEq",
+          1.2495
+        ],
+        [
+          "le_antisymm",
+          0.9995
+        ],
+        [
+          "mem_map",
+          0.9636
+        ],
+        [
+          "LinearMap.mul_apply_apply",
+          0.9636
+        ],
+        [
+          "contextual",
+          0.9627
+        ],
+        [
+          "mul_comm",
+          0.9571
+        ],
+        [
+          "zero_mul",
+          0.9567
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_classical_measure",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact lt_iff_lt",
+        "apply lt_iff_lt",
+        "exact le_iff_forall_pos_lt_add"
+      ],
+      "ground_truth": "constructor; linarith; linarith",
+      "top_lemmas": [
+        [
+          "lt_iff_lt",
+          2.0367
+        ],
+        [
+          "le_iff_forall_pos_lt_add",
+          1.5533
+        ],
+        [
+          "Metric.nhds_basis_ball.frequently_iff",
+          1.4831
+        ],
+        [
+          "eq_or_ne",
+          1.4046
+        ],
+        [
+          "le_antisymm",
+          1.4003
+        ],
+        [
+          "add_comm",
+          1.3716
+        ],
+        [
+          "hx.succ_lt",
+          1.3603
+        ],
+        [
+          "exists_ne",
+          0.8768
+        ],
+        [
+          "div_lt_iff\u2080",
+          0.8642
+        ],
+        [
+          "exists_rat_btwn",
+          0.8301
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_heisenberg_bound",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact \u03b1\u1d52\u1d48",
+        "apply \u03b1\u1d52\u1d48",
+        "exact (nhdsGT_basis_of_exists_gt"
+      ],
+      "ground_truth": "constructor\n\u00b7 by_contra hx; push_neg at hx; have h1 : \u0394x * \u0394p \u2264 0 := mul_nonpos_of_nonpos_of_nonneg hx (by nlinarith); linarith\n\u00b7 by_contra hp; push_neg at hp; have h2 : \u0394x * \u0394p \u2264 0 := mul_nonpos_of_nonneg_of_nonpos (by nlinarith) hp; linarith",
+      "top_lemmas": [
+        [
+          "\u03b1\u1d52\u1d48",
+          2.7158
+        ],
+        [
+          "(nhdsGT_basis_of_exists_gt",
+          1.9666
+        ],
+        [
+          "(hasBasis_nhdsSet_thickening",
+          1.4577
+        ],
+        [
+          "h.exists_pos_eq_mul",
+          1.4248
+        ],
+        [
+          "(hasFDerivWithinAt_univ.2",
+          1.3679
+        ],
+        [
+          "(hasDerivWithinAt_univ.2",
+          1.3679
+        ],
+        [
+          "PredOrder.nhdsLT",
+          0.937
+        ],
+        [
+          "diff_eq",
+          0.937
+        ],
+        [
+          "isTop_iff_isMax",
+          0.8766
+        ],
+        [
+          "Iic_union_Ioi",
+          0.8373
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "logic_contrapositive",
+      "domain": "logic",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact isUnit_of_dvd_unit",
+        "apply isUnit_of_dvd_unit",
+        "exact mul_assoc"
+      ],
+      "ground_truth": "intro hnR hP; apply hnR; apply hQR; apply hPQ; exact hP",
+      "top_lemmas": [
+        [
+          "isUnit_of_dvd_unit",
+          2.5402
+        ],
+        [
+          "mul_assoc",
+          1.8654
+        ],
+        [
+          "dvd_rfl",
+          1.7606
+        ],
+        [
+          "hp.not_isUnit",
+          1.3916
+        ],
+        [
+          "resolve_right",
+          1.3254
+        ],
+        [
+          "Or.inl",
+          1.2745
+        ],
+        [
+          "irreducible_iff",
+          1.2586
+        ],
+        [
+          "isUnit_of_mul_isUnit_left",
+          1.249
+        ],
+        [
+          "not_exists",
+          1.2241
+        ],
+        [
+          "dvd",
+          1.2228
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "logic_cases_or",
+      "domain": "logic",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact geom_mean_le_arith_mean_weighted",
+        "apply geom_mean_le_arith_mean_weighted",
+        "exact div_eq_mul_inv"
+      ],
+      "ground_truth": "rcases h_or with (hP | hQ); exact hPQ hP; exact hQR hQ",
+      "top_lemmas": [
+        [
+          "geom_mean_le_arith_mean_weighted",
+          0.0
+        ],
+        [
+          "div_eq_mul_inv",
+          0.0
+        ],
+        [
+          "LpAddConst",
+          0.0
+        ],
+        [
+          "geom_mean_weighted_of_constant",
+          0.0
+        ],
+        [
+          "Subadditive.lim",
+          0.0
+        ],
+        [
+          "one_div_one",
+          0.0
+        ],
+        [
+          "inv_mul_eq_div",
+          0.0
+        ],
+        [
+          "variationOnFromTo.eq_left_iff",
+          0.0
+        ],
+        [
+          "hpqr.pos'.ne'",
+          0.0
+        ],
+        [
+          "one_div_mul_cancel",
+          0.0
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "logic_demorgan",
+      "domain": "logic",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact isUnit_of_dvd_unit",
+        "apply isUnit_of_dvd_unit",
+        "exact mul_assoc"
+      ],
+      "ground_truth": "constructor\n\u00b7 intro h; by_cases hP : P; right; intro hQ; apply h; exact \u27e8hP, hQ\u27e9; left; exact hP\n\u00b7 intro h hPQ; rcases hPQ with \u27e8hP, hQ\u27e9; rcases h with (hNP | hNQ); exact hNP hP; exact hNQ hQ",
+      "top_lemmas": [
+        [
+          "isUnit_of_dvd_unit",
+          2.6047
+        ],
+        [
+          "mul_assoc",
+          1.9381
+        ],
+        [
+          "dvd",
+          1.8766
+        ],
+        [
+          "dvd_rfl",
+          1.8215
+        ],
+        [
+          "hp.not_isUnit",
+          1.3974
+        ],
+        [
+          "resolve_right",
+          1.3653
+        ],
+        [
+          "Or.inl",
+          1.3215
+        ],
+        [
+          "irreducible_iff",
+          1.3096
+        ],
+        [
+          "isUnit_of_mul_isUnit_left",
+          1.2766
+        ],
+        [
+          "Iff.rfl.and",
+          1.248
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "logic_iff_trans",
+      "domain": "logic",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact geom_mean_le_arith_mean_weighted",
+        "apply geom_mean_le_arith_mean_weighted",
+        "exact div_eq_mul_inv"
+      ],
+      "ground_truth": "constructor; intro hP; exact hQR.mp (hPQ.mp hP); intro hR; exact hPQ.mpr (hQR.mpr hR)",
+      "top_lemmas": [
+        [
+          "geom_mean_le_arith_mean_weighted",
+          0.0
+        ],
+        [
+          "div_eq_mul_inv",
+          0.0
+        ],
+        [
+          "LpAddConst",
+          0.0
+        ],
+        [
+          "geom_mean_weighted_of_constant",
+          0.0
+        ],
+        [
+          "Subadditive.lim",
+          0.0
+        ],
+        [
+          "one_div_one",
+          0.0
+        ],
+        [
+          "inv_mul_eq_div",
+          0.0
+        ],
+        [
+          "variationOnFromTo.eq_left_iff",
+          0.0
+        ],
+        [
+          "hpqr.pos'.ne'",
+          0.0
+        ],
+        [
+          "one_div_mul_cancel",
+          0.0
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "logic_modus_tollens",
+      "domain": "logic",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact isUnit_of_dvd_unit",
+        "apply isUnit_of_dvd_unit",
+        "exact mul_assoc"
+      ],
+      "ground_truth": "intro hP; apply hnR; apply hQR; apply hPQ; exact hP",
+      "top_lemmas": [
+        [
+          "isUnit_of_dvd_unit",
+          2.6261
+        ],
+        [
+          "mul_assoc",
+          1.9296
+        ],
+        [
+          "dvd",
+          1.8662
+        ],
+        [
+          "dvd_rfl",
+          1.8354
+        ],
+        [
+          "hp.not_isUnit",
+          1.3796
+        ],
+        [
+          "resolve_right",
+          1.3706
+        ],
+        [
+          "Or.inl",
+          1.333
+        ],
+        [
+          "irreducible_iff",
+          1.3059
+        ],
+        [
+          "isUnit_of_mul_isUnit_left",
+          1.2998
+        ],
+        [
+          "Iff.rfl.and",
+          1.2388
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "nt_sum_first_n",
+      "domain": "number_theory",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact sum_range_reflect",
+        "apply sum_range_reflect",
+        "exact two_mul"
+      ],
+      "ground_truth": "induction' n with k ih\n\u00b7 simp\n\u00b7 rw [Finset.sum_range_succ, mul_add, add_comm, \u2190 add_assoc, ih]; ring",
+      "top_lemmas": [
+        [
+          "sum_range_reflect",
+          1.4933
+        ],
+        [
+          "two_mul",
+          1.4765
+        ],
+        [
+          "mem_range",
+          1.3544
+        ],
+        [
+          "ENNReal.summable.hasSum",
+          1.3442
+        ],
+        [
+          "cantorSequence_eq_self_sub_sum_cantorToTernary",
+          1.3369
+        ],
+        [
+          "cantorSequence_get_succ",
+          0.767
+        ],
+        [
+          "mul_two",
+          0.7466
+        ],
+        [
+          "Nat.le_sub_one_of_lt",
+          0.7466
+        ],
+        [
+          "sum_congr",
+          0.7466
+        ],
+        [
+          "card_range",
+          0.7466
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "hard_quadratic_formula",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact tsub_le_iff_left"
+      ],
+      "ground_truth": "have h_discr : 4*a*(a*x^2 + b*x + c) = 0 := by rw [h]; ring; nlinarith",
+      "top_lemmas": [
+        [
+          "add_comm",
+          4.4175
+        ],
+        [
+          "tsub_le_iff_left",
+          4.3409
+        ],
+        [
+          "SubNegMonoid.zsmul_neg'",
+          1.8793
+        ],
+        [
+          "sub_eq_add_neg",
+          1.7783
+        ],
+        [
+          "mvfderiv",
+          0.9941
+        ],
+        [
+          "sub_val_of_le",
+          0.9746
+        ],
+        [
+          "Nat.add_sub_cancel",
+          0.9478
+        ],
+        [
+          "natCast_zsmul",
+          0.9397
+        ],
+        [
+          "succ_ascFactorial",
+          0.9218
+        ],
+        [
+          "p.comp_injective",
+          0.9041
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "hard_mvt_inequality",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact map_sub_nsmul",
+        "apply map_sub_nsmul",
+        "exact sub_eq_add_neg"
+      ],
+      "ground_truth": "have h_diff : x^3 - y^3 = (x - y)*(x^2 + x*y + y^2) := by ring; rw [h_diff]; have h_nonpos : x - y \u2264 0 := by linarith; nlinarith [sq_nonneg x, sq_nonneg y]",
+      "top_lemmas": [
+        [
+          "map_sub_nsmul",
+          3.7676
+        ],
+        [
+          "sub_eq_add_neg",
+          2.8417
+        ],
+        [
+          "tsub_le_iff_left",
+          1.9152
+        ],
+        [
+          "neg_sub",
+          1.8998
+        ],
+        [
+          "map_add",
+          1.8893
+        ],
+        [
+          "zsmul_one",
+          1.8838
+        ],
+        [
+          "map_add_nsmul",
+          1.8838
+        ],
+        [
+          "map_add_zsmul",
+          1.8838
+        ],
+        [
+          "sub_eq_sub_iff_add_eq_add",
+          0.9793
+        ],
+        [
+          "Matrix.sub_apply",
+          0.9793
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "hard_telescoping",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact eq_comm",
+        "apply eq_comm",
+        "exact mul_comm"
+      ],
+      "ground_truth": "induction' n with m ih\n\u00b7 simp\n\u00b7 rw [Finset.sum_range_succ, ih]; push_cast; ring",
+      "top_lemmas": [
+        [
+          "eq_comm",
+          3.429
+        ],
+        [
+          "mul_comm",
+          3.429
+        ],
+        [
+          "mul_sub",
+          2.5218
+        ],
+        [
+          "(div_sub_div_same",
+          1.761
+        ],
+        [
+          "div_sub_div",
+          1.7608
+        ],
+        [
+          "div_eq_mul_inv",
+          1.7392
+        ],
+        [
+          "div_add_mod",
+          1.7191
+        ],
+        [
+          "Nat.mul_div_cancel",
+          1.7038
+        ],
+        [
+          "neg_eq_neg_one_mul",
+          1.699
+        ],
+        [
+          "eq_div_of_mul_eq_right",
+          1.6681
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "hard_amgm_sqrt",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact f.map_update_add"
+      ],
+      "ground_truth": "have h_nonneg : (Real.sqrt x - Real.sqrt y)^2 \u2265 0 := pow_two_nonneg _; nlinarith [Real.sq_sqrt hx, Real.sq_sqrt hy]",
+      "top_lemmas": [
+        [
+          "add_comm",
+          1.1504
+        ],
+        [
+          "f.map_update_add",
+          1.1464
+        ],
+        [
+          "ClusterPt.limsSup",
+          0.8117
+        ],
+        [
+          "isGreatest_clusterPt_limsSup",
+          0.8117
+        ],
+        [
+          "(ClusterPt.limsInf).exists_seq_tendsto",
+          0.8117
+        ],
+        [
+          "Antitone.map_limsSup_of_continuousAt",
+          0.8117
+        ],
+        [
+          "hx.le_limsSup",
+          0.8117
+        ],
+        [
+          "ClusterPt.limsInf",
+          0.8117
+        ],
+        [
+          "isLeast_clusterPt_limsInf",
+          0.8117
+        ],
+        [
+          "(MapClusterPt.liminf).exists_seq_tendsto",
+          0.8117
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "hard_cubic_formula_factor",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact map_add_zsmul"
+      ],
+      "ground_truth": "rw [hr] at h; nlinarith",
+      "top_lemmas": [
+        [
+          "add_comm",
+          6.9817
+        ],
+        [
+          "map_add_zsmul",
+          2.972
+        ],
+        [
+          "map_add_const",
+          2.972
+        ],
+        [
+          "map_add_nsmul",
+          2.972
+        ],
+        [
+          "zsmul_one",
+          1.9967
+        ],
+        [
+          "mem_span_insert",
+          1.9737
+        ],
+        [
+          "succ_eq_iff_covBy.symm",
+          1.9507
+        ],
+        [
+          "if_pos",
+          1.0
+        ],
+        [
+          "if_neg",
+          0.9984
+        ],
+        [
+          "(AddConstMapClass.semiconj",
+          0.9984
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "hard_sq_eq_ineq_chain",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact DFunLike.congr_fun",
+        "apply DFunLike.congr_fun",
+        "exact ofReal_re"
+      ],
+      "ground_truth": "have h_sq : (x - 2)^2 = 0 := by nlinarith; nlinarith",
+      "top_lemmas": [
+        [
+          "DFunLike.congr_fun",
+          5.0
+        ],
+        [
+          "ofReal_re",
+          3.0
+        ],
+        [
+          "norm_of_nonneg",
+          2.0
+        ],
+        [
+          "stdPart",
+          2.0
+        ],
+        [
+          "spectrum_algebraMap_eq",
+          2.0
+        ],
+        [
+          "le_antisymm",
+          2.0
+        ],
+        [
+          "DFunLike.ext",
+          2.0
+        ],
+        [
+          "norm_eq_norm_of_isMaxOn_of_ball_subset",
+          1.0
+        ],
+        [
+          "hs.norm_image_sub_le_of_norm_fderivWithin_le",
+          1.0
+        ],
+        [
+          "fderivWithin_univ",
+          1.0
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "hard_poly_interp_two",
+      "domain": "Algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact Polynomial.induction_on'",
+        "apply Polynomial.induction_on'",
+        "exact eval_eq_sum"
+      ],
+      "ground_truth": "refine \u27e8Polynomial.C ((y0*x1 - y1*x0)/(x1 - x0)) + Polynomial.C ((y1 - y0)/(x1 - x0)) * Polynomial.X, ?_, ?_\u27e9\n\u00b7 field_simp [hx]; ring\n\u00b7 field_simp [hx]; ring",
+      "top_lemmas": [
+        [
+          "Polynomial.induction_on'",
+          5.0788
+        ],
+        [
+          "eval_eq_sum",
+          3.1766
+        ],
+        [
+          "comp_C",
+          2.6441
+        ],
+        [
+          "eval",
+          2.4055
+        ],
+        [
+          "neg_nonneg.mp",
+          1.7155
+        ],
+        [
+          "neg_pos.mp",
+          1.7003
+        ],
+        [
+          "Algebra.smul_def",
+          1.5094
+        ],
+        [
+          "eval_eq_sum_range",
+          0.9487
+        ],
+        [
+          "p.tendsto_norm_atTop",
+          0.9439
+        ],
+        [
+          "degree_le_zero_iff.mp",
+          0.9439
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "hard_system_substitution",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact tsub_le_iff_left"
+      ],
+      "ground_truth": "rw [h3] at h1; have hy : y = a/3 := by linarith; rw [hy] at h2; linarith",
+      "top_lemmas": [
+        [
+          "add_comm",
+          8.445
+        ],
+        [
+          "tsub_le_iff_left",
+          4.7729
+        ],
+        [
+          "SubNegMonoid.zsmul_neg'",
+          2.0
+        ],
+        [
+          "sub_eq_add_neg",
+          1.9841
+        ],
+        [
+          "add_assoc",
+          1.8797
+        ],
+        [
+          "one_sub_mul",
+          1.8018
+        ],
+        [
+          "mul_one_sub",
+          1.8018
+        ],
+        [
+          "map_sub_nsmul",
+          1.6932
+        ],
+        [
+          "natCast_zsmul",
+          1.0
+        ],
+        [
+          "sub_val_of_le",
+          0.9924
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "hard_abs_ineq_mul",
+      "domain": "analysis",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact mem_normalizer",
+        "apply mem_normalizer",
+        "exact le_iff_exists_add"
+      ],
+      "ground_truth": "rw [abs_mul]; have h_nonneg_a : 0 \u2264 |a| := abs_nonneg _; have h_nonneg_b : 0 \u2264 |b| := abs_nonneg _; nlinarith",
+      "top_lemmas": [
+        [
+          "mem_normalizer",
+          2.0
+        ],
+        [
+          "le_iff_exists_add",
+          2.0
+        ],
+        [
+          "add_zero",
+          1.0
+        ],
+        [
+          "traceAux_eq",
+          1.0
+        ],
+        [
+          "ihn",
+          1.0
+        ],
+        [
+          "N.lie_mem",
+          1.0
+        ],
+        [
+          "nhds_top_basis.clusterPt_iff_frequently",
+          1.0
+        ],
+        [
+          "(ClusterPt.limsSup).exists_seq_tendsto",
+          1.0
+        ],
+        [
+          "Exists.imp",
+          1.0
+        ],
+        [
+          "rpowIntegrand\u2081\u2082_eq_mul_rpowIntegrand\u2080\u2081",
+          1.0
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "hard_poly_remainder",
+      "domain": "Algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact eval\u2082_C",
+        "apply eval\u2082_C",
+        "exact MvPolynomial.induction_on"
+      ],
+      "ground_truth": "rw [Polynomial.eval_sub, h, Polynomial.eval_C]; ring",
+      "top_lemmas": [
+        [
+          "eval\u2082_C",
+          3.297
+        ],
+        [
+          "MvPolynomial.induction_on",
+          2.6464
+        ],
+        [
+          "mul_sub",
+          2.129
+        ],
+        [
+          "sub_eq_add_neg",
+          1.4117
+        ],
+        [
+          "aeval_C",
+          1.3872
+        ],
+        [
+          "eval\u2082_monomial",
+          1.3466
+        ],
+        [
+          "C_apply",
+          1.3466
+        ],
+        [
+          "aeval_bind\u2081",
+          1.3397
+        ],
+        [
+          "aeval_algHom",
+          1.3213
+        ],
+        [
+          "aroots_def",
+          1.317
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_linear_system_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact div_eq_mul_inv",
+        "apply div_eq_mul_inv",
+        "exact eq_comm"
+      ],
+      "ground_truth": "have hx : x = (a + b)/2 := by linarith; have hy : y = (a - b)/2 := by linarith; exact And.intro hx hy",
+      "top_lemmas": [
+        [
+          "div_eq_mul_inv",
+          5.7783
+        ],
+        [
+          "eq_comm",
+          3.8579
+        ],
+        [
+          "mul_comm",
+          3.8579
+        ],
+        [
+          "Nat.add_div",
+          2.9187
+        ],
+        [
+          "add_div",
+          2.9058
+        ],
+        [
+          "mul_div_cancel_right\u2080",
+          2.8633
+        ],
+        [
+          "(div_sub_div_same",
+          1.9431
+        ],
+        [
+          "div_sub_div",
+          1.9337
+        ],
+        [
+          "neg_eq_neg_one_mul",
+          1.9268
+        ],
+        [
+          "sub_eq_iff_eq_add",
+          0.9859
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_ratio_bound_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact div_eq_mul_inv",
+        "apply div_eq_mul_inv",
+        "exact div_inv_eq_mul"
+      ],
+      "ground_truth": "have h1 : a / b \u2264 1 := (div_le_one hb).mpr h; have h2 : 1 \u2264 b / a := by rw [\u2190 one_le_div ha]; exact h; exact And.intro h1 h2",
+      "top_lemmas": [
+        [
+          "div_eq_mul_inv",
+          14.4534
+        ],
+        [
+          "div_inv_eq_mul",
+          3.8288
+        ],
+        [
+          "inv_div",
+          2.8722
+        ],
+        [
+          "mul_div_cancel_right\u2080",
+          2.8702
+        ],
+        [
+          "div_le_iff\u2080",
+          1.9362
+        ],
+        [
+          "div_le_div_of_nonneg_left",
+          1.9362
+        ],
+        [
+          "eq_or_ne",
+          1.9248
+        ],
+        [
+          "div_eq_iff_eq_mul",
+          1.9156
+        ],
+        [
+          "div_div_eq_mul_div",
+          1.915
+        ],
+        [
+          "div_mul_div_cancel",
+          1.9144
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_sq_factor_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact tsub_le_iff_left"
+      ],
+      "ground_truth": "constructor; ring; ring",
+      "top_lemmas": [
+        [
+          "add_comm",
+          5.4104
+        ],
+        [
+          "tsub_le_iff_left",
+          2.702
+        ],
+        [
+          "SubNegMonoid.zsmul_neg'",
+          1.8742
+        ],
+        [
+          "add_assoc",
+          1.8442
+        ],
+        [
+          "sub_eq_add_neg",
+          1.817
+        ],
+        [
+          "f.map_update_add",
+          1.7381
+        ],
+        [
+          "sub_add_add_cancel",
+          0.9518
+        ],
+        [
+          "sub_val_of_le",
+          0.9506
+        ],
+        [
+          "mvfderiv",
+          0.9499
+        ],
+        [
+          "natCast_zsmul",
+          0.9371
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_cubic_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact tsub_le_iff_left"
+      ],
+      "ground_truth": "constructor; ring; ring",
+      "top_lemmas": [
+        [
+          "add_comm",
+          6.3054
+        ],
+        [
+          "tsub_le_iff_left",
+          2.7563
+        ],
+        [
+          "SubNegMonoid.zsmul_neg'",
+          1.9079
+        ],
+        [
+          "add_assoc",
+          1.8427
+        ],
+        [
+          "sub_eq_add_neg",
+          1.8366
+        ],
+        [
+          "one_sub_mul",
+          1.7285
+        ],
+        [
+          "mul_one_sub",
+          1.7285
+        ],
+        [
+          "f.map_update_add",
+          1.6782
+        ],
+        [
+          "mvfderiv",
+          0.9796
+        ],
+        [
+          "sub_val_of_le",
+          0.9741
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_prod_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact tsub_le_iff_left"
+      ],
+      "ground_truth": "constructor; ring; positivity",
+      "top_lemmas": [
+        [
+          "add_comm",
+          6.8362
+        ],
+        [
+          "tsub_le_iff_left",
+          4.3107
+        ],
+        [
+          "SubNegMonoid.zsmul_neg'",
+          1.8169
+        ],
+        [
+          "sub_eq_add_neg",
+          1.7545
+        ],
+        [
+          "add_assoc",
+          1.6909
+        ],
+        [
+          "one_sub_mul",
+          1.6341
+        ],
+        [
+          "mul_one_sub",
+          1.6341
+        ],
+        [
+          "mvfderiv",
+          0.9275
+        ],
+        [
+          "sub_val_of_le",
+          0.9249
+        ],
+        [
+          "natCast_zsmul",
+          0.9084
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "alg_sqrt_v2",
+      "domain": "algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact Matrix.fromBlocks_multiply",
+        "apply Matrix.fromBlocks_multiply",
+        "exact Matrix.fromBlocks_smul"
+      ],
+      "ground_truth": "have h := Real.sqrt_mul hp q; constructor; exact h; exact Real.sqrt_nonneg _",
+      "top_lemmas": [
+        [
+          "Matrix.fromBlocks_multiply",
+          1.6602
+        ],
+        [
+          "Matrix.fromBlocks_smul",
+          1.0816
+        ],
+        [
+          "Matrix.fromBlocks_transpose",
+          1.0816
+        ],
+        [
+          "mul_sub",
+          1.0724
+        ],
+        [
+          "Antitone.map_limsSup_of_continuousAt",
+          0.7822
+        ],
+        [
+          "ClusterPt.limsSup",
+          0.7822
+        ],
+        [
+          "isGreatest_clusterPt_limsSup",
+          0.7822
+        ],
+        [
+          "(ClusterPt.limsInf).exists_seq_tendsto",
+          0.7822
+        ],
+        [
+          "ClusterPt.limsInf",
+          0.7822
+        ],
+        [
+          "isLeast_clusterPt_limsInf",
+          0.7822
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "poly_degree_v2",
+      "domain": "Algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact Nat.cast_add",
+        "apply Nat.cast_add",
+        "exact C_0"
+      ],
+      "ground_truth": "constructor; rw [Polynomial.degree_add_le]; exact le_rfl; rw [Polynomial.natDegree_add_le]; exact le_rfl",
+      "top_lemmas": [
+        [
+          "Nat.cast_add",
+          1.8872
+        ],
+        [
+          "C_0",
+          1.8761
+        ],
+        [
+          "coeff_add",
+          1.876
+        ],
+        [
+          "mul_ne_zero_iff",
+          1.869
+        ],
+        [
+          "natDegree_zero",
+          1.862
+        ],
+        [
+          "degree_add_eq_right_of_degree_lt",
+          0.9762
+        ],
+        [
+          "AddMonoidAlgebra.sup_support_add_le",
+          0.9571
+        ],
+        [
+          "natDegree_add_le",
+          0.9555
+        ],
+        [
+          "zero_mul",
+          0.9494
+        ],
+        [
+          "ne_zero_of_degree_gt",
+          0.9462
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "poly_deg_mul_v2",
+      "domain": "Algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact degree_mul'",
+        "apply degree_mul'",
+        "exact degree_mul"
+      ],
+      "ground_truth": "constructor; rw [Polynomial.natDegree_mul hp hq]; rw [Polynomial.degree_mul]; exact rfl",
+      "top_lemmas": [
+        [
+          "degree_mul'",
+          3.8015
+        ],
+        [
+          "degree_mul",
+          2.8545
+        ],
+        [
+          "Nat.cast_add",
+          1.9339
+        ],
+        [
+          "map_mul",
+          1.9261
+        ],
+        [
+          "eq_natDegree_of_le_mem_support",
+          1.9261
+        ],
+        [
+          "coeff_add",
+          1.8985
+        ],
+        [
+          "degree_add_eq_left_of_degree_lt",
+          1.8962
+        ],
+        [
+          "natDegree_C_mul_X_pow",
+          1.8931
+        ],
+        [
+          "natDegree_mul_le",
+          1.8895
+        ],
+        [
+          "pow_succ",
+          1.8889
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "poly_monic_v2",
+      "domain": "Algebra",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact leadingCoeff",
+        "apply leadingCoeff",
+        "exact add_comm"
+      ],
+      "ground_truth": "have h := Polynomial.Monic.mul hp hq; constructor; exact h; simp [hp.leadingCoeff, hq.leadingCoeff]",
+      "top_lemmas": [
+        [
+          "leadingCoeff",
+          6.5675
+        ],
+        [
+          "add_comm",
+          2.8535
+        ],
+        [
+          "zero_mul",
+          1.8898
+        ],
+        [
+          "leadingCoeff_mul'",
+          1.8817
+        ],
+        [
+          "Nat.cast_add",
+          1.8687
+        ],
+        [
+          "map_mul",
+          1.8665
+        ],
+        [
+          "eq_natDegree_of_le_mem_support",
+          1.8665
+        ],
+        [
+          "natDegree_mul_le",
+          1.8579
+        ],
+        [
+          "pow_succ",
+          1.8421
+        ],
+        [
+          "leadingCoeff_zero",
+          0.9699
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_newton_gravity_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact \u03b1\u1d52\u1d48",
+        "apply \u03b1\u1d52\u1d48",
+        "exact (nhdsGT_basis_of_exists_gt"
+      ],
+      "ground_truth": "constructor; apply div_pos; apply mul_pos; apply mul_pos; nlinarith [hr]; nlinarith [hr]; nlinarith [hr]; apply div_pos; apply mul_pos; apply mul_pos; nlinarith [hr]; nlinarith [hr]; nlinarith [hr]",
+      "top_lemmas": [
+        [
+          "\u03b1\u1d52\u1d48",
+          2.7158
+        ],
+        [
+          "(nhdsGT_basis_of_exists_gt",
+          1.9666
+        ],
+        [
+          "(hasBasis_nhdsSet_thickening",
+          1.4577
+        ],
+        [
+          "h.exists_pos_eq_mul",
+          1.4248
+        ],
+        [
+          "(hasFDerivWithinAt_univ.2",
+          1.3679
+        ],
+        [
+          "(hasDerivWithinAt_univ.2",
+          1.3679
+        ],
+        [
+          "PredOrder.nhdsLT",
+          0.937
+        ],
+        [
+          "diff_eq",
+          0.937
+        ],
+        [
+          "isTop_iff_isMax",
+          0.8766
+        ],
+        [
+          "Iic_union_Ioi",
+          0.8373
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_einstein_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact tsub_le_iff_left"
+      ],
+      "ground_truth": "have hR := by linarith; constructor; exact hR; positivity",
+      "top_lemmas": [
+        [
+          "add_comm",
+          4.8602
+        ],
+        [
+          "tsub_le_iff_left",
+          4.0506
+        ],
+        [
+          "SubNegMonoid.zsmul_neg'",
+          1.6813
+        ],
+        [
+          "sub_eq_add_neg",
+          1.5946
+        ],
+        [
+          "mvfderiv",
+          0.8857
+        ],
+        [
+          "sub_val_of_le",
+          0.8701
+        ],
+        [
+          "b.ext",
+          0.8681
+        ],
+        [
+          "greatestFib_lt",
+          0.866
+        ],
+        [
+          "TensorialAt.mkHom\u2082_apply",
+          0.8617
+        ],
+        [
+          "contractLeft_algebraMap",
+          0.8606
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_maxwell_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact e.toBasis.det.eq_smul_basis_det",
+        "apply e.toBasis.det.eq_smul_basis_det",
+        "exact thickenedIndicator_apply"
+      ],
+      "ground_truth": "constructor; rw [h]; rw [h]",
+      "top_lemmas": [
+        [
+          "e.toBasis.det.eq_smul_basis_det",
+          2.0
+        ],
+        [
+          "thickenedIndicator_apply",
+          2.0
+        ],
+        [
+          "eq_bot_iff",
+          1.0
+        ],
+        [
+          "iUnion_univ_pi_of_monotone",
+          1.0
+        ],
+        [
+          "span_gramSchmidtNormed",
+          1.0
+        ],
+        [
+          "LinearMap.IsIdempotentElem.ker_eq_range",
+          1.0
+        ],
+        [
+          "Submodule.closure_eq'",
+          1.0
+        ],
+        [
+          "lieBracketWithin_congr_set'",
+          1.0
+        ],
+        [
+          "lieBracketWithin_of_mem_nhdsWithin",
+          1.0
+        ],
+        [
+          "compl_empty_iff",
+          1.0
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_newton_mom_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact e.toBasis.det.eq_smul_basis_det",
+        "apply e.toBasis.det.eq_smul_basis_det",
+        "exact thickenedIndicator_apply"
+      ],
+      "ground_truth": "constructor; rw [ha]; rw [ha, mul_comm]",
+      "top_lemmas": [
+        [
+          "e.toBasis.det.eq_smul_basis_det",
+          2.0
+        ],
+        [
+          "thickenedIndicator_apply",
+          2.0
+        ],
+        [
+          "eq_bot_iff",
+          1.0
+        ],
+        [
+          "iUnion_univ_pi_of_monotone",
+          1.0
+        ],
+        [
+          "span_gramSchmidtNormed",
+          1.0
+        ],
+        [
+          "LinearMap.IsIdempotentElem.ker_eq_range",
+          1.0
+        ],
+        [
+          "Submodule.closure_eq'",
+          1.0
+        ],
+        [
+          "lieBracketWithin_congr_set'",
+          1.0
+        ],
+        [
+          "lieBracketWithin_of_mem_nhdsWithin",
+          1.0
+        ],
+        [
+          "compl_empty_iff",
+          1.0
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_classical_prob_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact comp_id",
+        "apply comp_id",
+        "exact pullback_snd_range"
+      ],
+      "ground_truth": "constructor; linarith; linarith",
+      "top_lemmas": [
+        [
+          "comp_id",
+          1.5121
+        ],
+        [
+          "pullback_snd_range",
+          0.804
+        ],
+        [
+          "pullback_fst_range",
+          0.799
+        ],
+        [
+          "S.zero",
+          0.7978
+        ],
+        [
+          "pullbackIsoProdSubtype_inv_fst",
+          0.7932
+        ],
+        [
+          "pullbackIsoProdSubtype_inv_snd",
+          0.7883
+        ],
+        [
+          "app_isIso_of_stalkFunctor_map_iso",
+          0.786
+        ],
+        [
+          "continuous_iff_isClosed",
+          0.786
+        ],
+        [
+          "CompHausLike.isIso_of_bijective",
+          0.786
+        ],
+        [
+          "(Equiv.ofBijective",
+          0.786
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "era_quantum_born_v2",
+      "domain": "physics",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact tsub_le_iff_left"
+      ],
+      "ground_truth": "constructor; ring; ring",
+      "top_lemmas": [
+        [
+          "add_comm",
+          5.9658
+        ],
+        [
+          "tsub_le_iff_left",
+          2.5264
+        ],
+        [
+          "mvfderiv",
+          1.8369
+        ],
+        [
+          "SubNegMonoid.zsmul_neg'",
+          1.7898
+        ],
+        [
+          "f.map_update_add",
+          1.7355
+        ],
+        [
+          "add_assoc",
+          1.7148
+        ],
+        [
+          "sub_val_of_le",
+          0.9345
+        ],
+        [
+          "Nat.add_sub_cancel",
+          0.9089
+        ],
+        [
+          "natCast_zsmul",
+          0.8949
+        ],
+        [
+          "zpow_natCast",
+          0.8899
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "nt_dvd_trans_v2",
+      "domain": "number_theory",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact add_comm",
+        "apply add_comm",
+        "exact map_add_const"
+      ],
+      "ground_truth": "have h_ac : a \u2223 c := Nat.dvd_trans hab hbc; have h_sum : a \u2223 b + c := by apply Nat.dvd_add hab h_ac; constructor; exact h_ac; exact h_sum",
+      "top_lemmas": [
+        [
+          "add_comm",
+          6.9242
+        ],
+        [
+          "map_add_const",
+          1.9699
+        ],
+        [
+          "map_add_zsmul",
+          1.9699
+        ],
+        [
+          "zsmul_one",
+          1.9699
+        ],
+        [
+          "map_add_nsmul",
+          1.9699
+        ],
+        [
+          "factorial_succ",
+          1.9659
+        ],
+        [
+          "cycleRange_of_le",
+          1.9446
+        ],
+        [
+          "f.map_update_add",
+          1.8951
+        ],
+        [
+          "midpoint_eq_iff",
+          1.0
+        ],
+        [
+          "covBy_succ",
+          1.0
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    },
+    {
+      "name": "nt_euclid_v2",
+      "domain": "number_theory",
+      "success": false,
+      "error": "No proof found among candidates",
+      "proof_steps": [
+        "exact geom_mean_le_arith_mean_weighted",
+        "apply geom_mean_le_arith_mean_weighted",
+        "exact div_eq_mul_inv"
+      ],
+      "ground_truth": "have h_or := hp.dvd_mul.mp h; rcases h_or with (hpa | hpb); left; exact hpa; right; exact hpb",
+      "top_lemmas": [
+        [
+          "geom_mean_le_arith_mean_weighted",
+          0.0
+        ],
+        [
+          "div_eq_mul_inv",
+          0.0
+        ],
+        [
+          "LpAddConst",
+          0.0
+        ],
+        [
+          "geom_mean_weighted_of_constant",
+          0.0
+        ],
+        [
+          "Subadditive.lim",
+          0.0
+        ],
+        [
+          "one_div_one",
+          0.0
+        ],
+        [
+          "inv_mul_eq_div",
+          0.0
+        ],
+        [
+          "variationOnFromTo.eq_left_iff",
+          0.0
+        ],
+        [
+          "hpqr.pos'.ne'",
+          0.0
+        ],
+        [
+          "one_div_mul_cancel",
+          0.0
+        ]
+      ],
+      "num_candidates": 30,
+      "search_time_s": 0.0
+    }
+  ],
+  "elapsed_s": 0.0673525333404541
+}

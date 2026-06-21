@@ -1,0 +1,84 @@
+{
+  "config": {
+    "version": "v2",
+    "hidden_dim": 256,
+    "num_layers": 2,
+    "num_heads": 8,
+    "total_params": 855808,
+    "epochs": 50,
+    "batch_size": 256,
+    "learning_rate": 0.0003,
+    "proof_weight": 2.0,
+    "neg_refresh_every": 3,
+    "num_pairs": 226003,
+    "train_pairs": 203402,
+    "val_pairs": 22601,
+    "proof_loss_type": "InfoNCE",
+    "temperature": 1.0
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "import_loss": 0.67844557762146,
+      "proof_loss": 5.541564594724643,
+      "import_acc": 0.5982269495725632,
+      "cosine_std": 0.075948,
+      "rank": 255,
+      "val_mrr": null,
+      "epoch_time_s": 58.9
+    },
+    {
+      "epoch": 2,
+      "import_loss": 0.6702555418014526,
+      "proof_loss": 5.540474002766159,
+      "import_acc": 0.6247636079788208,
+      "cosine_std": 0.086551,
+      "rank": 255,
+      "val_mrr": null,
+      "epoch_time_s": 94.5
+    },
+    {
+      "epoch": 3,
+      "import_loss": 0.661419153213501,
+      "proof_loss": 5.540299611721399,
+      "import_acc": 0.6276300251483917,
+      "cosine_std": 0.101553,
+      "rank": 255,
+      "val_mrr": null,
+      "epoch_time_s": 56.7
+    },
+    {
+      "epoch": 4,
+      "import_loss": 0.65376877784729,
+      "proof_loss": 5.54024144598523,
+      "import_acc": 0.6273640692234039,
+      "cosine_std": 0.122239,
+      "rank": 255,
+      "val_mrr": null,
+      "epoch_time_s": 51.2
+    },
+    {
+      "epoch": 5,
+      "import_loss": 0.6475182771682739,
+      "proof_loss": 5.540280189154283,
+      "import_acc": 0.6239361613988876,
+      "cosine_std": 0.149869,
+      "rank": 255,
+      "val_mrr": 0.001774122318137057,
+      "epoch_time_s": 47.8
+    },
+    {
+      "epoch": 6,
+      "import_loss": 0.6427043676376343,
+      "proof_loss": 5.540250410523805,
+      "import_acc": 0.6212765872478485,
+      "cosine_std": 0.169683,
+      "rank": 255,
+      "val_mrr": null,
+      "epoch_time_s": 47.9
+    }
+  ],
+  "best_val_mrr": 0.001774122318137057,
+  "best_epoch": 5,
+  "aborted_gate": "D"
+}

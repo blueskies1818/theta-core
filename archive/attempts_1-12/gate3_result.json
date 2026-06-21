@@ -1,0 +1,108 @@
+{
+  "gate": "gate3",
+  "name": "Lemma Novelty Verification",
+  "timestamp": "2026-06-16T15:51:07.506675",
+  "verdict": "FAIL",
+  "thresholds": {
+    "gnn_min": 50,
+    "gnn_tolerance": 5,
+    "gnn_effective_min": 45,
+    "shape_matcher_max": 5
+  },
+  "best_result": {
+    "checkpoint": "checkpoints/explorer_gate3_v4/gnn_final.pt",
+    "training": "50 epochs, curriculum, wave2 pretrained, H anneal 1.0\u21920.0",
+    "training_best_success": "93.8%",
+    "training_final_success": "43.8%",
+    "inference": {
+      "mcts_sims": 500,
+      "gnn_h0_score": 21.4,
+      "shape_matcher_h1_score": 28.6,
+      "theorems_tested": 14,
+      "gnn_passed": 3,
+      "shape_matcher_passed": 4,
+      "gnn_theorems": [
+        "poly_eval_C_add_X",
+        "poly_mul_X_add_C",
+        "poly_derivative_add"
+      ],
+      "shape_matcher_theorems": [
+        "poly_eval_mul_X_sub_C",
+        "poly_eval_derivative_C_mul",
+        "poly_degree_X_pow",
+        "poly_derivative_add"
+      ]
+    }
+  },
+  "all_attempts": [
+    {
+      "checkpoint": "explorer_gate3_v2/gnn_final.pt",
+      "gnn_pct": 14.3,
+      "shape_matcher_pct": 28.6,
+      "gnn_passed": 2,
+      "shape_matcher_passed": 4,
+      "note": "Previous run checkpoint"
+    },
+    {
+      "checkpoint": "explorer_gate3_v4/gnn_final.pt",
+      "gnn_pct": 21.4,
+      "shape_matcher_pct": 28.6,
+      "gnn_passed": 3,
+      "shape_matcher_passed": 4,
+      "mcts_sims": 500,
+      "note": "Best result \u2014 50 epoch curriculum training"
+    },
+    {
+      "checkpoint": "explorer_gate3_v4/gnn_final.pt",
+      "gnn_pct": 14.3,
+      "shape_matcher_pct": 28.6,
+      "gnn_passed": 2,
+      "shape_matcher_passed": 4,
+      "mcts_sims": 1000,
+      "note": "Higher MCTS sims reduced GNN performance"
+    },
+    {
+      "checkpoint": "explorer_gate3_v4/gnn_epoch_40.pt",
+      "gnn_pct": 7.1,
+      "shape_matcher_pct": 21.4,
+      "gnn_passed": 1,
+      "shape_matcher_passed": 3,
+      "note": "Best training epoch (56.25% at H=0.20) failed to generalize"
+    },
+    {
+      "checkpoint": "explorer_wave2/gnn_final.pt",
+      "gnn_pct": 14.3,
+      "shape_matcher_pct": 14.3,
+      "gnn_passed": 2,
+      "shape_matcher_passed": 2,
+      "note": "Base pretrained model without gate2 fine-tuning"
+    }
+  ],
+  "capability_gap": {
+    "primary_issue": "Lemma discrimination \u2014 1.1M param GNN cannot select specific lemmas from 16K Algebra candidates",
+    "documented_in": "CLAUDE.md capability gaps #1 and #4",
+    "recommendation": "Scale GNN to 5-10M parameters for lemma-level discrimination"
+  },
+  "theorems": {
+    "file": "data/raw/gate3_lemma_novelty.jsonl",
+    "total": 14,
+    "proved_by_gnn": [
+      "poly_eval_C_add_X",
+      "poly_mul_X_add_C",
+      "poly_derivative_add"
+    ],
+    "never_proved": [
+      "poly_eval_mul_X_sub_C",
+      "poly_derivative_X_pow",
+      "poly_eval_derivative_C_mul",
+      "poly_natDegree_X_pow",
+      "poly_degree_C_mul_X_pow",
+      "poly_degree_mul_X",
+      "poly_degree_add_eq_left_of_degree_lt",
+      "poly_degree_sub_eq_left_of_degree_lt",
+      "poly_monic_X_sub_C",
+      "poly_monic_X_pow_add",
+      "poly_map_id"
+    ]
+  }
+}

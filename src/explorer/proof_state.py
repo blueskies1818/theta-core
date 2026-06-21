@@ -25,6 +25,7 @@ class TacticType(Enum):
     RING = "ring"  # ring tactic for polynomial identities
     FIELD_SIMP = "field_simp"  # field_simp for field equations
     LINARITH = "linarith"  # linarith for linear arithmetic
+    NLINARITH = "nlinarith"  # nlinarith for nonlinear arithmetic
     SIMP = "simp"  # simplifier with hypotheses
 
 
@@ -78,7 +79,19 @@ class Tactic:
                 return f"field_simp [{', '.join(args)}]"
             return "field_simp"
         elif self.tactic_type == TacticType.LINARITH:
+            args = [a for a in self.args if a]
+            if self.hypothesis:
+                args.append(self.hypothesis)
+            if args:
+                return f"linarith [{', '.join(args)}]"
             return "linarith"
+        elif self.tactic_type == TacticType.NLINARITH:
+            args = [a for a in self.args if a]
+            if self.hypothesis:
+                args.append(self.hypothesis)
+            if args:
+                return f"nlinarith [{', '.join(args)}]"
+            return "nlinarith"
         elif self.tactic_type == TacticType.SIMP:
             args = [a for a in self.args if a]
             if self.hypothesis:
@@ -234,12 +247,14 @@ class ProofState:
             # Rewrite transforms the goal
             if new_goals and (tactic.lemma or tactic.hypothesis or tactic.args):
                 goal = new_goals.pop(0)
+                # Preserve the original goal operators by keeping full text
                 new_goals.insert(0, goal + " (rewritten)")
 
         elif tactic.tactic_type in (
             TacticType.RING,
             TacticType.FIELD_SIMP,
             TacticType.LINARITH,
+            TacticType.NLINARITH,
             TacticType.SIMP,
         ):
             # Automation tactics close the current goal

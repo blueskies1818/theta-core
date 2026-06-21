@@ -1,9 +1,0 @@
-{
-  "best_val_acc": 0.48046875,
-  "best_val_loss": 2.081941083073616,
-  "total_time_s": 569.8016502857208,
-  "num_pairs": 226003,
-  "num_hard_neg_triples": 226003,
-  "train_loss_final": 3.1794101609849172,
-  "val_acc_final": 0.48046875
-}

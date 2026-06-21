@@ -1,0 +1,44 @@
+{
+  "config": {
+    "hidden_dim": 256,
+    "num_layers": 3,
+    "num_heads": 8,
+    "total_params": 1118848,
+    "epochs": 2,
+    "batch_size": 128,
+    "learning_rate": 0.0003,
+    "proof_weight": 0.5,
+    "num_hard_negatives": 5,
+    "neg_refresh_every": 5,
+    "num_pairs": 226003,
+    "train_pairs": 203402,
+    "val_pairs": 22601
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "import_loss": 0.6833381652832031,
+      "proof_loss": 0.6041849409634212,
+      "import_acc": 0.5525399893522263,
+      "proof_acc": 0.49758205651862064,
+      "cosine_std": 0.085965,
+      "rank": 255,
+      "val_mrr": null,
+      "epoch_time_s": 65.1
+    },
+    {
+      "epoch": 2,
+      "import_loss": 0.6750632524490356,
+      "proof_loss": 0.5709760234415906,
+      "import_acc": 0.5310800075531006,
+      "proof_acc": 0.4997666102160448,
+      "cosine_std": 0.125911,
+      "rank": 255,
+      "val_mrr": 1.3855214329688287e-05,
+      "epoch_time_s": 104.2
+    }
+  ],
+  "best_val_mrr": 1.3855214329688287e-05,
+  "best_epoch": 2,
+  "aborted_gate": null
+}

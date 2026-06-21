@@ -1,0 +1,831 @@
+{
+  "model": "full_graph_pretrained.pt",
+  "lemma_index": "enriched (v2, 96.1% recall)",
+  "total_theorems": 64,
+  "verified": 10,
+  "verified_pct": 15.6,
+  "found_unverified": 54,
+  "total_time_s": 3722.1,
+  "baseline_pct": 15.6,
+  "change_pct": 0.0,
+  "theorems": [
+    {
+      "name": "alg_subst_expand",
+      "domain": "algebra",
+      "verified": true,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='h', args=[])",
+        "Tactic(tactic_type=<TacticType.RING: 'ring'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  rw [h]\n  ring",
+      "error": "",
+      "search_time": 25.203969717025757,
+      "num_steps": 2
+    },
+    {
+      "name": "alg_subst_factor",
+      "domain": "algebra",
+      "verified": true,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='h', args=[])",
+        "Tactic(tactic_type=<TacticType.RING: 'ring'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  rw [h]\n  ring",
+      "error": "",
+      "search_time": 14.920412540435791,
+      "num_steps": 2
+    },
+    {
+      "name": "alg_cross_multiply",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.LINARITH: 'linarith'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  linarith",
+      "error": "<stdin>:8:90: error: linarith failed to find a contradiction",
+      "search_time": 62.987162351608276,
+      "num_steps": 1
+    },
+    {
+      "name": "alg_fraction_split",
+      "domain": "algebra",
+      "verified": true,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.RING: 'ring'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  ring",
+      "error": "",
+      "search_time": 8.645283937454224,
+      "num_steps": 1
+    },
+    {
+      "name": "alg_ratio_identity",
+      "domain": "algebra",
+      "verified": true,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.FIELD_SIMP: 'field_simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  field_simp",
+      "error": "",
+      "search_time": 11.156749248504639,
+      "num_steps": 1
+    },
+    {
+      "name": "alg_complete_square",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  simp",
+      "error": "<stdin>:8:85: error: `simp` made no progress",
+      "search_time": 59.01104187965393,
+      "num_steps": 1
+    },
+    {
+      "name": "alg_amgm_two",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='add_comm', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hy', args=[])"
+      ],
+      "proof_text": "  apply add_comm\n  exact hy",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+      "search_time": 63.50468182563782,
+      "num_steps": 2
+    },
+    {
+      "name": "poly_deriv_product",
+      "domain": "Algebra",
+      "verified": true,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  simp",
+      "error": "",
+      "search_time": 11.429912567138672,
+      "num_steps": 1
+    },
+    {
+      "name": "poly_root_factor",
+      "domain": "Algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='h', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='p', args=[])"
+      ],
+      "proof_text": "  rw [h]\n  exact p",
+      "error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+      "search_time": 58.13757133483887,
+      "num_steps": 2
+    },
+    {
+      "name": "poly_degree_leading_term",
+      "domain": "Algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='add_comm', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hq', args=[])"
+      ],
+      "proof_text": "  apply add_comm\n  exact hq",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+      "search_time": 57.67631983757019,
+      "num_steps": 2
+    },
+    {
+      "name": "poly_iterated_deriv",
+      "domain": "Algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='Eq.refl', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  apply Eq.refl\n  simp",
+      "error": "<stdin>:8:20: error(lean.unknownIdentifier): Unknown identifier `Function.iterate`",
+      "search_time": 58.956053495407104,
+      "num_steps": 2
+    },
+    {
+      "name": "ana_triangle_rev",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma='sub_zero', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.RING: 'ring'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  rw [sub_zero]\n  ring",
+      "error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+      "search_time": 58.21734619140625,
+      "num_steps": 2
+    },
+    {
+      "name": "ana_eps_delta",
+      "domain": "analysis",
+      "verified": true,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.LINARITH: 'linarith'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  linarith",
+      "error": "",
+      "search_time": 11.38168978691101,
+      "num_steps": 1
+    },
+    {
+      "name": "ana_cs_two_dim",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='mul_assoc', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  apply mul_assoc\n  simp",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+      "search_time": 57.139649629592896,
+      "num_steps": 2
+    },
+    {
+      "name": "ana_sum_sq_bound",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='mul_assoc', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  apply mul_assoc\n  simp",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+      "search_time": 58.552027225494385,
+      "num_steps": 2
+    },
+    {
+      "name": "ana_abs_prod_pos",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='mul_assoc', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hy', args=[])"
+      ],
+      "proof_text": "  apply mul_assoc\n  exact hy",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_assoc`",
+      "search_time": 58.347252368927,
+      "num_steps": 2
+    },
+    {
+      "name": "ana_sq_mono",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='mul_zero', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='h', args=[])"
+      ],
+      "proof_text": "  apply mul_zero\n  exact h",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_zero`",
+      "search_time": 61.21566867828369,
+      "num_steps": 2
+    },
+    {
+      "name": "ana_ratio_test",
+      "domain": "analysis",
+      "verified": true,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.LINARITH: 'linarith'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  linarith",
+      "error": "",
+      "search_time": 11.326578617095947,
+      "num_steps": 1
+    },
+    {
+      "name": "ana_midpoint_bound",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.LINARITH: 'linarith'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  linarith",
+      "error": "<stdin>:8:97: error: linarith failed to find a contradiction",
+      "search_time": 57.10120987892151,
+      "num_steps": 1
+    },
+    {
+      "name": "ana_sum_abs_bound",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='add_comm', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hy', args=[])"
+      ],
+      "proof_text": "  apply add_comm\n  exact hy",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+      "search_time": 57.158247232437134,
+      "num_steps": 2
+    },
+    {
+      "name": "ana_bernstein_bounds",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='sub_zero', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hn0', args=[])"
+      ],
+      "proof_text": "  apply sub_zero\n  exact hn0",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@sub_zero`",
+      "search_time": 57.45826053619385,
+      "num_steps": 2
+    },
+    {
+      "name": "era_ke_classical",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  simp",
+      "error": "<stdin>:8:56: error: unsolved goals",
+      "search_time": 57.55615735054016,
+      "num_steps": 1
+    },
+    {
+      "name": "era_rest_energy",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='mul_zero', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hc', args=[])"
+      ],
+      "proof_text": "  apply mul_zero\n  exact hc",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_zero`",
+      "search_time": 57.1443145275116,
+      "num_steps": 2
+    },
+    {
+      "name": "era_galileo_velocity",
+      "domain": "physics",
+      "verified": true,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.LINARITH: 'linarith'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  linarith",
+      "error": "",
+      "search_time": 8.95035719871521,
+      "num_steps": 1
+    },
+    {
+      "name": "era_lorentz_bound",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='mul_zero', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hc', args=[])"
+      ],
+      "proof_text": "  apply mul_zero\n  exact hc",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_zero`",
+      "search_time": 57.31764483451843,
+      "num_steps": 2
+    },
+    {
+      "name": "era_photon_quantum",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='hr', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hh', args=[])"
+      ],
+      "proof_text": "  rw [hr]\n  exact hh",
+      "error": "<stdin>:10:2: error: Type mismatch",
+      "search_time": 57.384817600250244,
+      "num_steps": 2
+    },
+    {
+      "name": "era_absolute_time",
+      "domain": "physics",
+      "verified": true,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.LINARITH: 'linarith'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  linarith",
+      "error": "",
+      "search_time": 8.819395303726196,
+      "num_steps": 1
+    },
+    {
+      "name": "era_time_dilation",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.FIELD_SIMP: 'field_simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  field_simp",
+      "error": "<stdin>:8:115: error: unsolved goals",
+      "search_time": 61.0921573638916,
+      "num_steps": 1
+    },
+    {
+      "name": "era_debroglie_wavelength",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='hp', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='h\u03bb', args=[])"
+      ],
+      "proof_text": "  rw [hp]\n  exact h\u03bb",
+      "error": "<stdin>:8:10: error: unexpected token '\u03bb'; expected ')'",
+      "search_time": 56.87157607078552,
+      "num_steps": 2
+    },
+    {
+      "name": "era_classical_measure",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='sub_zero', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='h\u03b5', args=[])"
+      ],
+      "proof_text": "  apply sub_zero\n  exact h\u03b5",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@sub_zero`",
+      "search_time": 57.740134954452515,
+      "num_steps": 2
+    },
+    {
+      "name": "era_heisenberg_bound",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='mul_zero', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='h\u210f', args=[])"
+      ],
+      "proof_text": "  apply mul_zero\n  exact h\u210f",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_zero`",
+      "search_time": 57.53813695907593,
+      "num_steps": 2
+    },
+    {
+      "name": "logic_contrapositive",
+      "domain": "logic",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='Function.id', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hPQ', args=[])"
+      ],
+      "proof_text": "  apply Function.id\n  exact hPQ",
+      "error": "<stdin>:9:8: error(lean.unknownIdentifier): Unknown identifier `Function.id`",
+      "search_time": 59.849000453948975,
+      "num_steps": 2
+    },
+    {
+      "name": "logic_cases_or",
+      "domain": "logic",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.INTRO: 'intro'>, lemma=None, hypothesis='h', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='h_or', args=[])"
+      ],
+      "proof_text": "  intro h\n  exact h_or",
+      "error": "<stdin>:9:8: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce",
+      "search_time": 57.12893986701965,
+      "num_steps": 2
+    },
+    {
+      "name": "logic_demorgan",
+      "domain": "logic",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='prop', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='coe_prop', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='coe_prop', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  apply prop\n  apply coe_prop\n  apply coe_prop\n  simp",
+      "error": "<stdin>:9:8: error(lean.unknownIdentifier): Unknown identifier `prop`",
+      "search_time": 59.31971788406372,
+      "num_steps": 4
+    },
+    {
+      "name": "logic_iff_trans",
+      "domain": "logic",
+      "verified": true,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='hPQ', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hQR', args=[])"
+      ],
+      "proof_text": "  rw [hPQ]\n  exact hQR",
+      "error": "",
+      "search_time": 14.448045492172241,
+      "num_steps": 2
+    },
+    {
+      "name": "logic_modus_tollens",
+      "domain": "logic",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.INTRO: 'intro'>, lemma=None, hypothesis='h', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hnR', args=[])"
+      ],
+      "proof_text": "  intro h\n  exact hnR",
+      "error": "<stdin>:10:2: error: Type mismatch",
+      "search_time": 58.10302472114563,
+      "num_steps": 2
+    },
+    {
+      "name": "nt_sum_first_n",
+      "domain": "number_theory",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='Eq.refl', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='n', args=[])"
+      ],
+      "proof_text": "  apply Eq.refl\n  exact n",
+      "error": "<stdin>:8:26: error: unexpected token 'in'; expected ','",
+      "search_time": 58.23279619216919,
+      "num_steps": 2
+    },
+    {
+      "name": "hard_quadratic_formula",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='h', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='h', args=[])"
+      ],
+      "proof_text": "  rw [h]\n  exact h",
+      "error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+      "search_time": 58.36737251281738,
+      "num_steps": 2
+    },
+    {
+      "name": "hard_mvt_inequality",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='zero_mul', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hxy', args=[])"
+      ],
+      "proof_text": "  apply zero_mul\n  exact hxy",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_mul`",
+      "search_time": 58.75294828414917,
+      "num_steps": 2
+    },
+    {
+      "name": "hard_telescoping",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.LINARITH: 'linarith'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  linarith",
+      "error": "<stdin>:8:22: error: unexpected token 'in'; expected ','",
+      "search_time": 59.153905153274536,
+      "num_steps": 1
+    },
+    {
+      "name": "hard_amgm_sqrt",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='mul_zero', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hx', args=[])"
+      ],
+      "proof_text": "  apply mul_zero\n  exact hx",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_zero`",
+      "search_time": 59.044021129608154,
+      "num_steps": 2
+    },
+    {
+      "name": "hard_cubic_formula_factor",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='h', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hr', args=[])"
+      ],
+      "proof_text": "  rw [h]\n  exact hr",
+      "error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+      "search_time": 60.68271040916443,
+      "num_steps": 2
+    },
+    {
+      "name": "hard_sq_eq_ineq_chain",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='h', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='h', args=[])"
+      ],
+      "proof_text": "  rw [h]\n  exact h",
+      "error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+      "search_time": 59.8422315120697,
+      "num_steps": 2
+    },
+    {
+      "name": "hard_poly_interp_two",
+      "domain": "Algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='Eq.subst', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='p', args=[])"
+      ],
+      "proof_text": "  apply Eq.subst\n  exact p",
+      "error": "<stdin>:10:8: error(lean.unknownIdentifier): Unknown identifier `p`",
+      "search_time": 59.52224802970886,
+      "num_steps": 2
+    },
+    {
+      "name": "hard_system_substitution",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='h1', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='h1', args=[])"
+      ],
+      "proof_text": "  rw [h1]\n  exact h1",
+      "error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+      "search_time": 59.942198038101196,
+      "num_steps": 2
+    },
+    {
+      "name": "hard_abs_ineq_mul",
+      "domain": "analysis",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='zero_mul', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hb', args=[])"
+      ],
+      "proof_text": "  apply zero_mul\n  exact hb",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@zero_mul`",
+      "search_time": 59.79696583747864,
+      "num_steps": 2
+    },
+    {
+      "name": "hard_poly_remainder",
+      "domain": "Algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='h', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='h', args=[])"
+      ],
+      "proof_text": "  rw [h]\n  exact h",
+      "error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+      "search_time": 49.708492040634155,
+      "num_steps": 2
+    },
+    {
+      "name": "alg_linear_system_v2",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='h1', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='h1', args=[])"
+      ],
+      "proof_text": "  rw [h1]\n  exact h1",
+      "error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+      "search_time": 50.090855836868286,
+      "num_steps": 2
+    },
+    {
+      "name": "alg_ratio_bound_v2",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='mul_zero', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='ha', args=[])"
+      ],
+      "proof_text": "  apply mul_zero\n  exact ha",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_zero`",
+      "search_time": 51.3066828250885,
+      "num_steps": 2
+    },
+    {
+      "name": "alg_sq_factor_v2",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='Eq.refl', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  apply Eq.refl\n  simp",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@Eq.refl`",
+      "search_time": 50.91971731185913,
+      "num_steps": 2
+    },
+    {
+      "name": "alg_cubic_v2",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='Eq.refl', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  apply Eq.refl\n  simp",
+      "error": "Proof check timed out",
+      "search_time": 80.66440224647522,
+      "num_steps": 2
+    },
+    {
+      "name": "alg_prod_v2",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='sub_zero', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  apply sub_zero\n  simp",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@sub_zero`",
+      "search_time": 92.06376385688782,
+      "num_steps": 2
+    },
+    {
+      "name": "alg_sqrt_v2",
+      "domain": "algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='Eq.subst', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hq', args=[])"
+      ],
+      "proof_text": "  apply Eq.subst\n  exact hq",
+      "error": "<stdin>:10:2: error: Type mismatch",
+      "search_time": 95.35862374305725,
+      "num_steps": 2
+    },
+    {
+      "name": "poly_degree_v2",
+      "domain": "Algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma='add_comm', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.LINARITH: 'linarith'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  rw [add_comm]\n  linarith",
+      "error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+      "search_time": 63.81976389884949,
+      "num_steps": 2
+    },
+    {
+      "name": "poly_deg_mul_v2",
+      "domain": "Algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='mul_zero', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hq', args=[])"
+      ],
+      "proof_text": "  apply mul_zero\n  exact hq",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@mul_zero`",
+      "search_time": 55.293416023254395,
+      "num_steps": 2
+    },
+    {
+      "name": "poly_monic_v2",
+      "domain": "Algebra",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='add_comm', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hq', args=[])"
+      ],
+      "proof_text": "  apply add_comm\n  exact hq",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+      "search_time": 55.34342169761658,
+      "num_steps": 2
+    },
+    {
+      "name": "era_newton_gravity_v2",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  simp",
+      "error": "<stdin>:8:76: error: unsolved goals",
+      "search_time": 55.60584902763367,
+      "num_steps": 1
+    },
+    {
+      "name": "era_einstein_v2",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='add_comm', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hc', args=[])"
+      ],
+      "proof_text": "  apply add_comm\n  exact hc",
+      "error": "<stdin>:9:2: error: Tactic `apply` failed: could not unify the conclusion of `@add_comm`",
+      "search_time": 55.43775939941406,
+      "num_steps": 2
+    },
+    {
+      "name": "era_maxwell_v2",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='h', args=[])",
+        "Tactic(tactic_type=<TacticType.LINARITH: 'linarith'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  rw [h]\n  linarith",
+      "error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+      "search_time": 56.8039653301239,
+      "num_steps": 2
+    },
+    {
+      "name": "era_newton_mom_v2",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='ha', args=[])",
+        "Tactic(tactic_type=<TacticType.LINARITH: 'linarith'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  rw [ha]\n  linarith",
+      "error": "<stdin>:10:2: error: linarith failed to find a contradiction",
+      "search_time": 97.45427179336548,
+      "num_steps": 2
+    },
+    {
+      "name": "era_classical_prob_v2",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.REWRITE: 'rewrite'>, lemma=None, hypothesis='hsum', args=[])",
+        "Tactic(tactic_type=<TacticType.EXACT: 'exact'>, lemma=None, hypothesis='hp1', args=[])"
+      ],
+      "proof_text": "  rw [hsum]\n  exact hp1",
+      "error": "<stdin>:9:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern",
+      "search_time": 76.96851801872253,
+      "num_steps": 2
+    },
+    {
+      "name": "era_quantum_born_v2",
+      "domain": "physics",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.APPLY: 'apply'>, lemma='Eq.refl', hypothesis=None, args=[])",
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  apply Eq.refl\n  simp",
+      "error": "Proof check timed out",
+      "search_time": 141.6995997428894,
+      "num_steps": 2
+    },
+    {
+      "name": "nt_dvd_trans_v2",
+      "domain": "number_theory",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  simp",
+      "error": "<stdin>:8:74: error: `simp` made no progress",
+      "search_time": 58.33296585083008,
+      "num_steps": 1
+    },
+    {
+      "name": "nt_euclid_v2",
+      "domain": "number_theory",
+      "verified": false,
+      "proof_steps": [
+        "Tactic(tactic_type=<TacticType.SIMP: 'simp'>, lemma=None, hypothesis=None, args=[])"
+      ],
+      "proof_text": "  simp",
+      "error": "<stdin>:8:77: error: `simp` made no progress",
+      "search_time": 63.043787240982056,
+      "num_steps": 1
+    }
+  ]
+}

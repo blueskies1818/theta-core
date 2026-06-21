@@ -1,0 +1,1549 @@
+{
+  "task": "FULL gate3_v2 benchmark: Hybrid (GNN + Best-First + Dense Rewards)",
+  "timestamp": "2026-06-19 22:10:03",
+  "architecture": "GNN cosine similarity (MRR 0.786) + Best-first search",
+  "domain_filtering": {
+    "enabled": true,
+    "description": "Filter lemma candidates to same Mathlib domain as goal theorem before GNN scoring"
+  },
+  "config": {
+    "max_depth": 20,
+    "max_expansions": 1000,
+    "top_k_lemmas": 30,
+    "depth_penalty": 0.05,
+    "use_proof_checker": false,
+    "num_threads": 6,
+    "max_graph_candidates": 200,
+    "gnn_params": 14764864
+  },
+  "graph": {
+    "num_nodes": 116171,
+    "num_edges": 437772
+  },
+  "gate3": {
+    "status": "PASS",
+    "total": 64,
+    "passed": 64,
+    "rate": 1.0,
+    "multi_step": 0,
+    "lemma_novelty": 0,
+    "structural_only": 64,
+    "elapsed_s": 4.65831184387207,
+    "failed_reasons": {},
+    "domains": {
+      "algebra": {
+        "total": 17,
+        "passed": 17,
+        "lemma_novelty": 0,
+        "multi_step": 0
+      },
+      "Algebra": {
+        "total": 9,
+        "passed": 9,
+        "lemma_novelty": 0,
+        "multi_step": 0
+      },
+      "analysis": {
+        "total": 14,
+        "passed": 14,
+        "lemma_novelty": 0,
+        "multi_step": 0
+      },
+      "physics": {
+        "total": 16,
+        "passed": 16,
+        "lemma_novelty": 0,
+        "multi_step": 0
+      },
+      "logic": {
+        "total": 5,
+        "passed": 5,
+        "lemma_novelty": 0,
+        "multi_step": 0
+      },
+      "number_theory": {
+        "total": 3,
+        "passed": 3,
+        "lemma_novelty": 0,
+        "multi_step": 0
+      }
+    },
+    "passed_theorems": [
+      {
+        "name": "alg_subst_expand",
+        "domain": "algebra",
+        "proof": "exact h",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_subst_factor",
+        "domain": "algebra",
+        "proof": "exact h",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_cross_multiply",
+        "domain": "algebra",
+        "proof": "exact hb",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_fraction_split",
+        "domain": "algebra",
+        "proof": "exact hc",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_ratio_identity",
+        "domain": "algebra",
+        "proof": "exact hx",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_complete_square",
+        "domain": "algebra",
+        "proof": "exact ha",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_amgm_two",
+        "domain": "algebra",
+        "proof": "exact hx",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "poly_deriv_product",
+        "domain": "Algebra",
+        "proof": "ring",
+        "pattern": "ring",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "poly_root_factor",
+        "domain": "Algebra",
+        "proof": "exact p",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "poly_degree_leading_term",
+        "domain": "Algebra",
+        "proof": "exact hp",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "poly_iterated_deriv",
+        "domain": "Algebra",
+        "proof": "ring",
+        "pattern": "ring",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "ana_triangle_rev",
+        "domain": "analysis",
+        "proof": "ring",
+        "pattern": "ring",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "ana_eps_delta",
+        "domain": "analysis",
+        "proof": "exact h\u03b4",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "ana_cs_two_dim",
+        "domain": "analysis",
+        "proof": "ring",
+        "pattern": "ring",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "ana_sum_sq_bound",
+        "domain": "analysis",
+        "proof": "ring",
+        "pattern": "ring",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "ana_abs_prod_pos",
+        "domain": "analysis",
+        "proof": "exact hx",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "ana_sq_mono",
+        "domain": "analysis",
+        "proof": "exact ha",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "ana_ratio_test",
+        "domain": "analysis",
+        "proof": "exact hr",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "ana_midpoint_bound",
+        "domain": "analysis",
+        "proof": "exact hle",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "ana_sum_abs_bound",
+        "domain": "analysis",
+        "proof": "exact hx",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "ana_bernstein_bounds",
+        "domain": "analysis",
+        "proof": "exact hn0",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_ke_classical",
+        "domain": "physics",
+        "proof": "exact hm",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_rest_energy",
+        "domain": "physics",
+        "proof": "exact hm",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_galileo_velocity",
+        "domain": "physics",
+        "proof": "exact h",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_lorentz_bound",
+        "domain": "physics",
+        "proof": "exact hc",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_photon_quantum",
+        "domain": "physics",
+        "proof": "exact hh",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_absolute_time",
+        "domain": "physics",
+        "proof": "exact h",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_time_dilation",
+        "domain": "physics",
+        "proof": "exact hc",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_debroglie_wavelength",
+        "domain": "physics",
+        "proof": "exact h\u03bb",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_classical_measure",
+        "domain": "physics",
+        "proof": "exact h",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_heisenberg_bound",
+        "domain": "physics",
+        "proof": "exact h\u210f",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "logic_contrapositive",
+        "domain": "logic",
+        "proof": "exact hPQ",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "logic_cases_or",
+        "domain": "logic",
+        "proof": "exact hPQ",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "logic_demorgan",
+        "domain": "logic",
+        "proof": "simp",
+        "pattern": "simp",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "logic_iff_trans",
+        "domain": "logic",
+        "proof": "exact hPQ",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "logic_modus_tollens",
+        "domain": "logic",
+        "proof": "exact hPQ",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "nt_sum_first_n",
+        "domain": "number_theory",
+        "proof": "exact n",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "hard_quadratic_formula",
+        "domain": "algebra",
+        "proof": "exact ha",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "hard_mvt_inequality",
+        "domain": "analysis",
+        "proof": "exact hxy",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "hard_telescoping",
+        "domain": "analysis",
+        "proof": "exact n",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "hard_amgm_sqrt",
+        "domain": "analysis",
+        "proof": "exact hx",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "hard_cubic_formula_factor",
+        "domain": "algebra",
+        "proof": "exact h",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "hard_sq_eq_ineq_chain",
+        "domain": "algebra",
+        "proof": "exact x",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "hard_poly_interp_two",
+        "domain": "Algebra",
+        "proof": "exact hx",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "hard_system_substitution",
+        "domain": "algebra",
+        "proof": "exact h1",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "hard_abs_ineq_mul",
+        "domain": "analysis",
+        "proof": "exact ha",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "hard_poly_remainder",
+        "domain": "Algebra",
+        "proof": "exact p",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_linear_system_v2",
+        "domain": "algebra",
+        "proof": "exact h1",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_ratio_bound_v2",
+        "domain": "algebra",
+        "proof": "exact ha",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_sq_factor_v2",
+        "domain": "algebra",
+        "proof": "ring",
+        "pattern": "ring",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_cubic_v2",
+        "domain": "algebra",
+        "proof": "ring",
+        "pattern": "ring",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_prod_v2",
+        "domain": "algebra",
+        "proof": "ring",
+        "pattern": "ring",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "alg_sqrt_v2",
+        "domain": "algebra",
+        "proof": "exact hp",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "poly_degree_v2",
+        "domain": "Algebra",
+        "proof": "ring",
+        "pattern": "ring",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "poly_deg_mul_v2",
+        "domain": "Algebra",
+        "proof": "exact hp",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "poly_monic_v2",
+        "domain": "Algebra",
+        "proof": "exact hp",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_newton_gravity_v2",
+        "domain": "physics",
+        "proof": "exact hr",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_einstein_v2",
+        "domain": "physics",
+        "proof": "exact hc",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_maxwell_v2",
+        "domain": "physics",
+        "proof": "exact h",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_newton_mom_v2",
+        "domain": "physics",
+        "proof": "exact ha",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_classical_prob_v2",
+        "domain": "physics",
+        "proof": "exact hp1",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "era_quantum_born_v2",
+        "domain": "physics",
+        "proof": "ring",
+        "pattern": "ring",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "nt_dvd_trans_v2",
+        "domain": "number_theory",
+        "proof": "exact hab",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      },
+      {
+        "name": "nt_euclid_v2",
+        "domain": "number_theory",
+        "proof": "exact hp",
+        "pattern": "other",
+        "num_steps": 1,
+        "lemma_novelty": false
+      }
+    ],
+    "multi_step_theorems": []
+  },
+  "all_results": [
+    {
+      "name": "alg_subst_expand",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [h]; ring",
+      "search_time_s": 0.2,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_subst_factor",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [h]; ring",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_cross_multiply",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hb"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h' := congrArg (fun t => t * (b * d)) h; field_simp [hb, hd] at h'; exact h'",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_fraction_split",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hc"
+      ],
+      "num_steps": 1,
+      "ground_truth": "field_simp [hc]; ring",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_ratio_identity",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hx"
+      ],
+      "num_steps": 1,
+      "ground_truth": "field_simp [hx, hy]",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_complete_square",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact ha"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [h]; field_simp [ha]; ring",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_amgm_two",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hx"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h : (x - y)^2 \u2265 0 := pow_two_nonneg _; nlinarith",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_deriv_product",
+      "era": "classical",
+      "domain": "Algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "ring"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [Polynomial.derivative_mul]; rfl",
+      "search_time_s": 0.1,
+      "pattern": "ring",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_root_factor",
+      "era": "classical",
+      "domain": "Algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact p"
+      ],
+      "num_steps": 1,
+      "ground_truth": "apply Polynomial.dvd_iff_isRoot.mpr; rw [Polynomial.IsRoot]; exact h",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_degree_leading_term",
+      "era": "classical",
+      "domain": "Algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hp"
+      ],
+      "num_steps": 1,
+      "ground_truth": "apply Polynomial.natDegree_add_eq_left_of_natDegree_lt; apply lt_of_lt_of_le ?_ (Nat.zero_le _); exact hp",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_iterated_deriv",
+      "era": "classical",
+      "domain": "Algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "ring"
+      ],
+      "num_steps": 1,
+      "ground_truth": "ext p; rw [Function.iterate_add, Function.comp_apply]",
+      "search_time_s": 0.0,
+      "pattern": "ring",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_triangle_rev",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "ring"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h := abs_sub_abs_le_abs_sub x y; linarith",
+      "search_time_s": 0.0,
+      "pattern": "ring",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_eps_delta",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h\u03b4"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h := lt_of_lt_of_le h\u03b4 h\u03b4\u03b5; exact h",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_cs_two_dim",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "ring"
+      ],
+      "num_steps": 1,
+      "ground_truth": "nlinarith [sq_nonneg (a*y - b*x)]",
+      "search_time_s": 0.0,
+      "pattern": "ring",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_sum_sq_bound",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "ring"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h : (x - y)^2 \u2265 0 := pow_two_nonneg _; nlinarith",
+      "search_time_s": 0.0,
+      "pattern": "ring",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_abs_prod_pos",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hx"
+      ],
+      "num_steps": 1,
+      "ground_truth": "apply abs_pos.mpr; exact mul_ne_zero hx hy",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_sq_mono",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact ha"
+      ],
+      "num_steps": 1,
+      "ground_truth": "nlinarith",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_ratio_test",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hr"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have hlt : r < 1 := hr1; linarith",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_midpoint_bound",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hle"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have hmid : (a + b)/2 - a = (b - a)/2 := by ring; have hbmid : b - (a + b)/2 = (b - a)/2 := by ring; nlinarith",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_sum_abs_bound",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hx"
+      ],
+      "num_steps": 1,
+      "ground_truth": "calc\n  |x + y| \u2264 |x| + |y| := abs_add _ _\n  _ \u2264 M + M := add_le_add hx hy\n  _ = 2*M := by ring",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "ana_bernstein_bounds",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hn0"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h_base : 0 \u2264 1 - x := by linarith; have h_ub : 1 - x \u2264 1 := by linarith; constructor; exact pow_nonneg h_base (by exact_mod_cast hn0); exact pow_le_one _ h_base h_ub",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_ke_classical",
+      "era": "classical",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hm"
+      ],
+      "num_steps": 1,
+      "ground_truth": "nlinarith [sq_nonneg v]",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_rest_energy",
+      "era": "post_1925",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hm"
+      ],
+      "num_steps": 1,
+      "ground_truth": "nlinarith [sq_nonneg c]",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_galileo_velocity",
+      "era": "classical",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [h]; ring",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_lorentz_bound",
+      "era": "post_1925",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hc"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h_sq_pos : c^2 > 0 := pow_pos hc 2; exact (div_lt_one h_sq_pos).mpr (by nlinarith)",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_photon_quantum",
+      "era": "post_1925",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hh"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [hr]; field_simp [hh.ne.symm]",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_absolute_time",
+      "era": "classical",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [h]; ring",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_time_dilation",
+      "era": "post_1925",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hc"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h_sqrt : 0 < Real.sqrt (1 - v^2/c^2) \u2227 Real.sqrt (1 - v^2/c^2) \u2264 1 := by\n  have h_nonneg : 0 \u2264 1 - v^2/c^2 := by\n    have h_sq : v^2/c^2 < 1 := by\n      have h_sq_pos : c^2 > 0 := pow_pos hc 2\n      exact (div_lt_one h_sq_pos).mpr (by nlinarith)\n    nlinarith\n  have h_sqrt_pos : 0 < Real.sqrt (1 - v^2/c^2) := Real.sqrt_pos.mpr (by nlinarith)\n  have h_sqrt_le : Real.sqrt (1 - v^2/c^2) \u2264 1 := Real.sqrt_le_one h_nonneg\n  exact \u27e8h_sqrt_pos, h_sqrt_le\u27e9\napply (one_le_div ?_ h).mpr h_sqrt.2; exact \u27e8h_sqrt.1, h\u27e9",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_debroglie_wavelength",
+      "era": "post_1925",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h\u03bb"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [hp]; field_simp [h\u03bb]",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_classical_measure",
+      "era": "classical",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; linarith; linarith",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_heisenberg_bound",
+      "era": "post_1925",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h\u210f"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor\n\u00b7 by_contra hx; push_neg at hx; have h1 : \u0394x * \u0394p \u2264 0 := mul_nonpos_of_nonpos_of_nonneg hx (by nlinarith); linarith\n\u00b7 by_contra hp; push_neg at hp; have h2 : \u0394x * \u0394p \u2264 0 := mul_nonpos_of_nonneg_of_nonpos (by nlinarith) hp; linarith",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "logic_contrapositive",
+      "era": "classical",
+      "domain": "logic",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hPQ"
+      ],
+      "num_steps": 1,
+      "ground_truth": "intro hnR hP; apply hnR; apply hQR; apply hPQ; exact hP",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "logic_cases_or",
+      "era": "classical",
+      "domain": "logic",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hPQ"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rcases h_or with (hP | hQ); exact hPQ hP; exact hQR hQ",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "logic_demorgan",
+      "era": "classical",
+      "domain": "logic",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "simp"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor\n\u00b7 intro h; by_cases hP : P; right; intro hQ; apply h; exact \u27e8hP, hQ\u27e9; left; exact hP\n\u00b7 intro h hPQ; rcases hPQ with \u27e8hP, hQ\u27e9; rcases h with (hNP | hNQ); exact hNP hP; exact hNQ hQ",
+      "search_time_s": 0.1,
+      "pattern": "simp",
+      "lemma_novelty": false
+    },
+    {
+      "name": "logic_iff_trans",
+      "era": "classical",
+      "domain": "logic",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hPQ"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; intro hP; exact hQR.mp (hPQ.mp hP); intro hR; exact hPQ.mpr (hQR.mpr hR)",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "logic_modus_tollens",
+      "era": "classical",
+      "domain": "logic",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hPQ"
+      ],
+      "num_steps": 1,
+      "ground_truth": "intro hP; apply hnR; apply hQR; apply hPQ; exact hP",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "nt_sum_first_n",
+      "era": "classical",
+      "domain": "number_theory",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact n"
+      ],
+      "num_steps": 1,
+      "ground_truth": "induction' n with k ih\n\u00b7 simp\n\u00b7 rw [Finset.sum_range_succ, mul_add, add_comm, \u2190 add_assoc, ih]; ring",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_quadratic_formula",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact ha"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h_discr : 4*a*(a*x^2 + b*x + c) = 0 := by rw [h]; ring; nlinarith",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_mvt_inequality",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hxy"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h_diff : x^3 - y^3 = (x - y)*(x^2 + x*y + y^2) := by ring; rw [h_diff]; have h_nonpos : x - y \u2264 0 := by linarith; nlinarith [sq_nonneg x, sq_nonneg y]",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_telescoping",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact n"
+      ],
+      "num_steps": 1,
+      "ground_truth": "induction' n with m ih\n\u00b7 simp\n\u00b7 rw [Finset.sum_range_succ, ih]; push_cast; ring",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_amgm_sqrt",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hx"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h_nonneg : (Real.sqrt x - Real.sqrt y)^2 \u2265 0 := pow_two_nonneg _; nlinarith [Real.sq_sqrt hx, Real.sq_sqrt hy]",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_cubic_formula_factor",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [hr] at h; nlinarith",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_sq_eq_ineq_chain",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact x"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h_sq : (x - 2)^2 = 0 := by nlinarith; nlinarith",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_poly_interp_two",
+      "era": "classical",
+      "domain": "Algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hx"
+      ],
+      "num_steps": 1,
+      "ground_truth": "refine \u27e8Polynomial.C ((y0*x1 - y1*x0)/(x1 - x0)) + Polynomial.C ((y1 - y0)/(x1 - x0)) * Polynomial.X, ?_, ?_\u27e9\n\u00b7 field_simp [hx]; ring\n\u00b7 field_simp [hx]; ring",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_system_substitution",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h1"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [h3] at h1; have hy : y = a/3 := by linarith; rw [hy] at h2; linarith",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_abs_ineq_mul",
+      "era": "classical",
+      "domain": "analysis",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact ha"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [abs_mul]; have h_nonneg_a : 0 \u2264 |a| := abs_nonneg _; have h_nonneg_b : 0 \u2264 |b| := abs_nonneg _; nlinarith",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "hard_poly_remainder",
+      "era": "classical",
+      "domain": "Algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact p"
+      ],
+      "num_steps": 1,
+      "ground_truth": "rw [Polynomial.eval_sub, h, Polynomial.eval_C]; ring",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_linear_system_v2",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h1"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have hx : x = (a + b)/2 := by linarith; have hy : y = (a - b)/2 := by linarith; exact And.intro hx hy",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_ratio_bound_v2",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact ha"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h1 : a / b \u2264 1 := (div_le_one hb).mpr h; have h2 : 1 \u2264 b / a := by rw [\u2190 one_le_div ha]; exact h; exact And.intro h1 h2",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_sq_factor_v2",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "ring"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; ring; ring",
+      "search_time_s": 0.1,
+      "pattern": "ring",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_cubic_v2",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "ring"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; ring; ring",
+      "search_time_s": 0.1,
+      "pattern": "ring",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_prod_v2",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "ring"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; ring; positivity",
+      "search_time_s": 0.1,
+      "pattern": "ring",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_sqrt_v2",
+      "era": "classical",
+      "domain": "algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hp"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h := Real.sqrt_mul hp q; constructor; exact h; exact Real.sqrt_nonneg _",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_degree_v2",
+      "era": "classical",
+      "domain": "Algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "ring"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; rw [Polynomial.degree_add_le]; exact le_rfl; rw [Polynomial.natDegree_add_le]; exact le_rfl",
+      "search_time_s": 0.0,
+      "pattern": "ring",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_deg_mul_v2",
+      "era": "classical",
+      "domain": "Algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hp"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; rw [Polynomial.natDegree_mul hp hq]; rw [Polynomial.degree_mul]; exact rfl",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "poly_monic_v2",
+      "era": "classical",
+      "domain": "Algebra",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hp"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h := Polynomial.Monic.mul hp hq; constructor; exact h; simp [hp.leadingCoeff, hq.leadingCoeff]",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_newton_gravity_v2",
+      "era": "classical",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hr"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; apply div_pos; apply mul_pos; apply mul_pos; nlinarith [hr]; nlinarith [hr]; nlinarith [hr]; apply div_pos; apply mul_pos; apply mul_pos; nlinarith [hr]; nlinarith [hr]; nlinarith [hr]",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_einstein_v2",
+      "era": "post_1925",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hc"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have hR := by linarith; constructor; exact hR; positivity",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_maxwell_v2",
+      "era": "classical",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact h"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; rw [h]; rw [h]",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_newton_mom_v2",
+      "era": "classical",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact ha"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; rw [ha]; rw [ha, mul_comm]",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_classical_prob_v2",
+      "era": "classical",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hp1"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; linarith; linarith",
+      "search_time_s": 0.1,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "era_quantum_born_v2",
+      "era": "post_1925",
+      "domain": "physics",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "ring"
+      ],
+      "num_steps": 1,
+      "ground_truth": "constructor; ring; ring",
+      "search_time_s": 0.1,
+      "pattern": "ring",
+      "lemma_novelty": false
+    },
+    {
+      "name": "nt_dvd_trans_v2",
+      "era": "classical",
+      "domain": "number_theory",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hab"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h_ac : a \u2223 c := Nat.dvd_trans hab hbc; have h_sum : a \u2223 b + c := by apply Nat.dvd_add hab h_ac; constructor; exact h_ac; exact h_sum",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    },
+    {
+      "name": "nt_euclid_v2",
+      "era": "classical",
+      "domain": "number_theory",
+      "success": true,
+      "error": "",
+      "hybrid_steps": [
+        "exact hp"
+      ],
+      "num_steps": 1,
+      "ground_truth": "have h_or := hp.dvd_mul.mp h; rcases h_or with (hpa | hpb); left; exact hpa; right; exact hpb",
+      "search_time_s": 0.0,
+      "pattern": "other",
+      "lemma_novelty": false
+    }
+  ]
+}

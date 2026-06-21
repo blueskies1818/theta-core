@@ -1,0 +1,570 @@
+[
+  {
+    "id": "falling_ball_straight_drop",
+    "name": "Ball dropped from rest",
+    "description": "A 1kg ball dropped from 10m in Earth gravity. No air resistance.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "h0": 10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 10.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.3571,
+        "h": 9.375,
+        "v": 3.5
+      },
+      {
+        "t": 0.7143,
+        "h": 7.5,
+        "v": 7.0
+      },
+      {
+        "t": 1.0714,
+        "h": 4.375,
+        "v": 10.5
+      },
+      {
+        "t": 1.4286,
+        "h": -0.0,
+        "v": 14.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_freefall (m g h0 : \u211d) (hpos : m > 0) (hg : g > 0) (t : \u211d) : let h := h0 - g*t^2/2; v := g*t in m*g*h + m*v^2/2 = m*g*h0 :="
+  },
+  {
+    "id": "falling_ball_upward_throw",
+    "name": "Ball thrown upward from ground",
+    "description": "A 1kg ball thrown upward at 10 m/s from ground level. No air resistance.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 10.0
+      },
+      {
+        "t": 0.4082,
+        "h": 3.265306,
+        "v": 6.0
+      },
+      {
+        "t": 0.8163,
+        "h": 4.897959,
+        "v": 2.0
+      },
+      {
+        "t": 1.2245,
+        "h": 4.897959,
+        "v": -2.0
+      },
+      {
+        "t": 1.6327,
+        "h": 3.265306,
+        "v": -6.0
+      },
+      {
+        "t": 2.0408,
+        "h": -0.0,
+        "v": -10.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_upward (m g v0 t : \u211d) : let h := v0*t - g*t^2/2; v := v0 - g*t in m*g*h + m*v^2/2 = m*v0^2/2 :="
+  },
+  {
+    "id": "falling_ball_varying_mass",
+    "name": "Heavy ball dropped from rest",
+    "description": "A 5kg ball dropped from 10m. Same kinematics, different mass.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 5.0,
+      "g": 9.8,
+      "h0": 10.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 10.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.3571,
+        "h": 9.375,
+        "v": 3.5
+      },
+      {
+        "t": 0.7143,
+        "h": 7.5,
+        "v": 7.0
+      },
+      {
+        "t": 1.0714,
+        "h": 4.375,
+        "v": 10.5
+      },
+      {
+        "t": 1.4286,
+        "h": -0.0,
+        "v": 14.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_heavy (m g h0 t : \u211d) : let h := h0 - g*t^2/2; v := g*t in m*g*h + m*v^2/2 = m*g*h0 :="
+  },
+  {
+    "id": "pendulum_small_angle",
+    "name": "Pendulum with small amplitude",
+    "description": "A 1kg pendulum of length 1m released from 0.1 rad (5.7\u00b0). Small-angle approximation.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time",
+      "L": "Length"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "L": 1.0,
+      "theta0": 0.1
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.00499583,
+        "v": 0.0
+      },
+      {
+        "t": 0.2509,
+        "h": 0.00249896,
+        "v": 0.22135944
+      },
+      {
+        "t": 0.5018,
+        "h": 0.0,
+        "v": 0.31304952
+      },
+      {
+        "t": 0.7527,
+        "h": 0.00249896,
+        "v": 0.22135944
+      },
+      {
+        "t": 1.0035,
+        "h": 0.00499583,
+        "v": 0.0
+      },
+      {
+        "t": 1.2544,
+        "h": 0.00249896,
+        "v": 0.22135944
+      },
+      {
+        "t": 1.5053,
+        "h": 0.0,
+        "v": 0.31304952
+      },
+      {
+        "t": 1.7562,
+        "h": 0.00249896,
+        "v": 0.22135944
+      },
+      {
+        "t": 2.0071,
+        "h": 0.00499583,
+        "v": 0.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_pendulum_small (m g L theta0 t : \u211d) : ... :="
+  },
+  {
+    "id": "pendulum_large_angle",
+    "name": "Pendulum with large amplitude",
+    "description": "A 1kg pendulum of length 1m released from 1.0 rad (57\u00b0). Small-angle solution used as approximation.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time",
+      "L": "Length"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "L": 1.0,
+      "theta0": 1.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.45969769,
+        "v": 0.0
+      },
+      {
+        "t": 0.2509,
+        "h": 0.2397554,
+        "v": 2.21359436
+      },
+      {
+        "t": 0.5018,
+        "h": 0.0,
+        "v": 3.13049517
+      },
+      {
+        "t": 0.7527,
+        "h": 0.2397554,
+        "v": 2.21359436
+      },
+      {
+        "t": 1.0035,
+        "h": 0.45969769,
+        "v": 0.0
+      },
+      {
+        "t": 1.2544,
+        "h": 0.2397554,
+        "v": 2.21359436
+      },
+      {
+        "t": 1.5053,
+        "h": 0.0,
+        "v": 3.13049517
+      },
+      {
+        "t": 1.7562,
+        "h": 0.2397554,
+        "v": 2.21359436
+      },
+      {
+        "t": 2.0071,
+        "h": 0.45969769,
+        "v": 0.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_pendulum_large (m g L theta0 t : \u211d) : ... :="
+  },
+  {
+    "id": "spring_undamped",
+    "name": "Undamped spring-mass system",
+    "description": "A 1kg mass on a spring (k=10 N/m), released from 0.5m displacement. No damping.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "k": 10.0,
+      "A": 0.5
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.5,
+        "v": -0.0
+      },
+      {
+        "t": 0.2484,
+        "h": 0.35355339,
+        "v": -1.11803399
+      },
+      {
+        "t": 0.4967,
+        "h": 0.0,
+        "v": -1.58113883
+      },
+      {
+        "t": 0.7451,
+        "h": -0.35355339,
+        "v": -1.11803399
+      },
+      {
+        "t": 0.9935,
+        "h": -0.5,
+        "v": -0.0
+      },
+      {
+        "t": 1.2418,
+        "h": -0.35355339,
+        "v": 1.11803399
+      },
+      {
+        "t": 1.4902,
+        "h": -0.0,
+        "v": 1.58113883
+      },
+      {
+        "t": 1.7386,
+        "h": 0.35355339,
+        "v": 1.11803399
+      },
+      {
+        "t": 1.9869,
+        "h": 0.5,
+        "v": 0.0
+      }
+    ],
+    "known_invariant": "0.5*k*h^2 + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_spring (m k A t : \u211d) : let x := A*cos(sqrt(k/m)*t); v := -A*sqrt(k/m)*sin(sqrt(k/m)*t) in k*x^2/2 + m*v^2/2 = k*A^2/2 :="
+  },
+  {
+    "id": "spring_damped_light",
+    "name": "Lightly damped spring-mass system",
+    "description": "A 1kg mass on a spring (k=10 N/m) with light damping (\u03b2=0.5 s\u207b\u00b9). Energy decays slowly.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "k": 10.0,
+      "A": 0.5,
+      "beta": 0.5
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.5,
+        "v": -0.25
+      },
+      {
+        "t": 0.25,
+        "h": 0.31349556,
+        "v": -1.1263364
+      },
+      {
+        "t": 0.5,
+        "h": 0.00371748,
+        "v": -1.21770566
+      },
+      {
+        "t": 0.75,
+        "h": -0.23948893,
+        "v": -0.64978962
+      },
+      {
+        "t": 1.0,
+        "h": -0.30321005,
+        "v": 0.13352547
+      },
+      {
+        "t": 1.25,
+        "h": -0.19370585,
+        "v": 0.67349524
+      },
+      {
+        "t": 1.5,
+        "h": -0.00676348,
+        "v": 0.74056133
+      },
+      {
+        "t": 1.75,
+        "h": 0.14237699,
+        "v": 0.40413215
+      },
+      {
+        "t": 2.0,
+        "h": 0.18380562,
+        "v": -0.0699752
+      }
+    ],
+    "known_invariant": null,
+    "lean_theorem": ""
+  },
+  {
+    "id": "projectile_45deg",
+    "name": "Projectile launched at 45 degrees",
+    "description": "A 1kg projectile launched at 10 m/s at 45\u00b0 above horizontal. Parabolic trajectory.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 10.0,
+      "theta": 45.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 10.0
+      },
+      {
+        "t": 0.2886,
+        "h": 1.632653,
+        "v": 8.246211
+      },
+      {
+        "t": 0.5772,
+        "h": 2.44898,
+        "v": 7.211103
+      },
+      {
+        "t": 0.8658,
+        "h": 2.44898,
+        "v": 7.211103
+      },
+      {
+        "t": 1.1545,
+        "h": 1.632653,
+        "v": 8.246211
+      },
+      {
+        "t": 1.4431,
+        "h": -0.0,
+        "v": 10.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_projectile_45 (m g v0 theta t : \u211d) : let vx := v0*cos(theta); vy := v0*sin(theta) - g*t; h := v0*sin(theta)*t - g*t^2/2; v := sqrt(vx^2 + vy^2) in m*g*h + m*v^2/2 = m*v0^2/2 :="
+  },
+  {
+    "id": "projectile_90deg",
+    "name": "Projectile launched straight up",
+    "description": "A 1kg projectile launched at 10 m/s straight up.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "v0": 10.0,
+      "theta": 90.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 0.0,
+        "v": 10.0
+      },
+      {
+        "t": 0.4082,
+        "h": 3.265306,
+        "v": 6.0
+      },
+      {
+        "t": 0.8163,
+        "h": 4.897959,
+        "v": 2.0
+      },
+      {
+        "t": 1.2245,
+        "h": 4.897959,
+        "v": 2.0
+      },
+      {
+        "t": 1.6327,
+        "h": 3.265306,
+        "v": 6.0
+      },
+      {
+        "t": 2.0408,
+        "h": -0.0,
+        "v": 10.0
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_projectile_90 (m g v0 t : \u211d) : let h := v0*t - g*t^2/2; v := v0 - g*t in m*g*h + m*v^2/2 = m*v0^2/2 :="
+  },
+  {
+    "id": "sliding_block_incline",
+    "name": "Block sliding down frictionless incline",
+    "description": "A 1kg block sliding down a 30\u00b0 frictionless incline from 5m height.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "parameters": {
+      "m": 1.0,
+      "g": 9.8,
+      "theta": 30.0,
+      "h0": 5.0
+    },
+    "timesteps": [
+      {
+        "t": 0.0,
+        "h": 5.0,
+        "v": 0.0
+      },
+      {
+        "t": 0.4041,
+        "h": 4.8,
+        "v": 1.979899
+      },
+      {
+        "t": 0.8081,
+        "h": 4.2,
+        "v": 3.959798
+      },
+      {
+        "t": 1.2122,
+        "h": 3.2,
+        "v": 5.939697
+      },
+      {
+        "t": 1.6162,
+        "h": 1.8,
+        "v": 7.919596
+      },
+      {
+        "t": 2.0203,
+        "h": 0.0,
+        "v": 9.899495
+      }
+    ],
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "lean_theorem": "theorem energy_conservation_incline (m g theta h0 t : \u211d) : let s := g*sin(theta)*t^2/2; v := g*sin(theta)*t; h := h0 - s*sin(theta) in m*g*h + m*v^2/2 = m*g*h0 :="
+  }
+]

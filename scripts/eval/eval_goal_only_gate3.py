@@ -177,6 +177,15 @@ class GoalOnlyBestFirstSearch:
     ) -> tuple[list, ProofState | None]:
         self._tiebreaker = 0
 
+        # Phase 0: Fast structural pre-check — try structural tactics only
+        # before the expensive lemma retrieval search.  Many theorems
+        # (algebra, basic analysis) are solvable with ring/field_simp/linarith
+        # and hypothesis rewrites alone.
+        if self.proof_checker is not None:
+            result = self._structural_search(theorem_statement)
+            if result is not None:
+                return result
+
         # Retrieve scored lemmas for this theorem
         cache_key = theorem_statement[:200]
         if cache_key not in self._lemma_cache:
@@ -264,28 +273,20 @@ class GoalOnlyBestFirstSearch:
     ) -> list[tuple[Tactic, float]]:
         candidates: list[tuple[Tactic, float]] = []
 
-        # 1. Lemma applications from retrieval
-        for lemma, score in scored_lemmas:
-            candidates.append((Tactic(TacticType.APPLY, lemma=lemma), score))
-            candidates.append((Tactic(TacticType.EXACT, lemma=lemma), score * 0.9))
-            if any(kw in lemma.lower()
-                   for kw in ("add", "mul", "eq", "comm", "assoc", "zero", "one",
-                              "neg", "sub", "div", "ring", "field", "simp")):
-                candidates.append((Tactic(TacticType.REWRITE, lemma=lemma), score * 0.95))
-
-        # 2. Built-in structural tactics
+        # 1. Built-in structural tactics FIRST — they survive truncation
+        # and have scores competitive with lemma retrieval (0.80–0.92).
         hypotheses = state.hypotheses
 
         for hyp_name in list(hypotheses.keys())[:5]:
-            candidates.append((Tactic(TacticType.EXACT, hypothesis=hyp_name), 0.72))
+            candidates.append((Tactic(TacticType.EXACT, hypothesis=hyp_name), 0.85))
 
         for hyp_name, hyp_type in hypotheses.items():
             if "=" in hyp_type or "↔" in hyp_type:
-                candidates.append((Tactic(TacticType.REWRITE, hypothesis=hyp_name), 0.77))
+                candidates.append((Tactic(TacticType.REWRITE, hypothesis=hyp_name), 0.92))
                 break
 
         if state.goals and ("→" in state.goals[0] or "∀" in state.goals[0]):
-            candidates.append((Tactic(TacticType.INTRO, hypothesis="h"), 0.82))
+            candidates.append((Tactic(TacticType.INTRO, hypothesis="h"), 0.90))
 
         for hyp_name, hyp_type in list(hypotheses.items())[:3]:
             if any(op in hyp_type for op in ("=", "≠", "↔", "≤", "≥", "<", ">")):
@@ -298,12 +299,22 @@ class GoalOnlyBestFirstSearch:
             has_implication = "→" in goal or "∀" in goal
             if not has_implication:
                 if any(op in goal for op in ("*", "^", "+", "-", "=")):
-                    candidates.append((Tactic(TacticType.RING), 0.72))
+                    candidates.append((Tactic(TacticType.RING), 0.88))
             if ("/" in goal or "⁻¹" in goal) and not has_implication:
-                candidates.append((Tactic(TacticType.FIELD_SIMP), 0.72))
+                candidates.append((Tactic(TacticType.FIELD_SIMP), 0.85))
             if any(op in goal for op in ("≤", "≥", "<", ">", "=")) and not has_implication:
-                candidates.append((Tactic(TacticType.LINARITH), 0.72))
-            candidates.append((Tactic(TacticType.SIMP), 0.67))
+                candidates.append((Tactic(TacticType.LINARITH), 0.87))
+                candidates.append((Tactic(TacticType.NLINARITH), 0.90))
+            candidates.append((Tactic(TacticType.SIMP), 0.80))
+
+        # 2. Lemma applications from retrieval
+        for lemma, score in scored_lemmas:
+            candidates.append((Tactic(TacticType.APPLY, lemma=lemma), score))
+            candidates.append((Tactic(TacticType.EXACT, lemma=lemma), score * 0.9))
+            if any(kw in lemma.lower()
+                   for kw in ("add", "mul", "eq", "comm", "assoc", "zero", "one",
+                              "neg", "sub", "div", "ring", "field", "simp")):
+                candidates.append((Tactic(TacticType.REWRITE, lemma=lemma), score * 0.95))
 
         max_actions = self.config.top_k_lemmas * 2 + 12
         if len(candidates) > max_actions:
@@ -311,10 +322,122 @@ class GoalOnlyBestFirstSearch:
 
         return candidates
 
+    def _structural_search(
+        self, theorem_statement: str
+    ) -> tuple[list, ProofState | None] | None:
+        """Fast structural pre-check: try only built-in tactics (no lemma retrieval).
+
+        Many theorems are solvable with ring/field_simp/linarith/hypothesis rewrites
+        alone.  This avoids the expensive lemma-chain search for simple cases.
+        Uses a small expansion budget and only structural candidates.
+        """
+        state = ProofState.initial(theorem_statement)
+        heap = [_PrioritizedState(
+            priority=-1.0, depth=0, tiebreaker=0,
+            state=state, steps=[],
+        )]
+        expansions = 0
+        max_exp = min(50, self.config.max_expansions // 4)
+        tiebreaker = 1
+
+        while heap and expansions < max_exp:
+            current = heapq.heappop(heap)
+            state = current.state
+            depth = current.depth
+
+            if state.is_complete:
+                if self.proof_checker is not None and state.steps:
+                    proof_body = ProofState._render_proof(state.steps)
+                    code = wrap_theorem_with_proof(state.theorem_statement, proof_body)
+                    check_results = self.proof_checker.check_batch([code])
+                    if check_results[0].success:
+                        return (state.steps, state)
+                    else:
+                        state.is_complete = False
+                        state.is_dead = True
+                        continue
+                else:
+                    return (state.steps, state)
+
+            if state.is_dead or depth >= 10:
+                continue
+
+            expansions += 1
+
+            # Generate ONLY structural actions (no lemmas)
+            candidates: list[tuple[Tactic, float]] = []
+            hypotheses = state.hypotheses
+
+            for hyp_name in list(hypotheses.keys())[:5]:
+                candidates.append((Tactic(TacticType.EXACT, hypothesis=hyp_name), 0.88))
+
+            for hyp_name, hyp_type in hypotheses.items():
+                if "=" in hyp_type or "↔" in hyp_type:
+                    candidates.append((Tactic(TacticType.REWRITE, hypothesis=hyp_name), 0.95))
+                    break
+
+            if state.goals and ("→" in state.goals[0] or "∀" in state.goals[0]):
+                candidates.append((Tactic(TacticType.INTRO, hypothesis="h"), 0.93))
+
+            if state.goals:
+                goal = state.goals[0]
+                has_impl = "→" in goal or "∀" in goal
+                if not has_impl:
+                    if any(op in goal for op in ("*", "^", "+", "-", "=")):
+                        candidates.append((Tactic(TacticType.RING), 0.92))
+                if ("/" in goal or "⁻¹" in goal) and not has_impl:
+                    candidates.append((Tactic(TacticType.FIELD_SIMP), 0.90))
+                if any(op in goal for op in ("≤", "≥", "<", ">", "=")) and not has_impl:
+                    candidates.append((Tactic(TacticType.LINARITH), 0.90))
+                    candidates.append((Tactic(TacticType.NLINARITH), 0.93))
+                candidates.append((Tactic(TacticType.SIMP), 0.85))
+
+            for tactic, score in candidates:
+                child_state = state.apply_tactic(tactic)
+                if child_state is None:
+                    continue
+                priority = -(score / (1 + (depth + 1) * self.config.depth_penalty))
+                heapq.heappush(heap, _PrioritizedState(
+                    priority=priority, depth=depth + 1,
+                    tiebreaker=tiebreaker,
+                    state=child_state,
+                    steps=current.steps + [tactic],
+                ))
+                tiebreaker += 1
+
+        return None
+
 
 # ---------------------------------------------------------------------------
 # Gate 3 evaluation
 # ---------------------------------------------------------------------------
+
+def _save_intermediate(
+    output_path: Path,
+    results: list[dict],
+    passed: list[dict],
+    n_done: int,
+    n_total: int,
+) -> None:
+    """Save partial results for crash recovery."""
+    partial = {
+        "partial": True,
+        "n_done": n_done,
+        "n_total": n_total,
+        "n_passed": len(passed),
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "results": results,
+        "passed": [
+            {"name": r["name"], "domain": r["domain"], "era": r.get("era", ""),
+             "proof": r.get("proof_steps", []), "pattern": r.get("pattern", ""),
+             "lemma_novelty": r.get("lemma_novelty", False)}
+            for r in passed
+        ],
+    }
+    partial_path = Path(str(output_path) + ".partial")
+    save_json(partial, partial_path)
+    print(f"  [save] Partial results → {partial_path}")
+
 
 def run_gate3(
     encoder: GoalOnlyEncoder,
@@ -351,6 +474,11 @@ def run_gate3(
     t_start = time.time()
     passed = []
     failed_reasons: dict[str, int] = {}
+    max_theorem_time = 300  # 5 min per theorem maximum
+
+    # Track partial results for crash recovery
+    _last_save_time = t_start
+    _save_interval = 120  # save every 2 minutes
 
     for i, t in enumerate(theorems):
         stmt = t["statement"]
@@ -360,7 +488,79 @@ def run_gate3(
         ground_truth = t.get("proof", "?")
 
         t0 = time.time()
-        proof_steps, final_state = search.search(stmt, domain=domain)
+        try:
+            import threading
+
+            search_result: list = [None, None]  # [proof_steps, final_state]
+            search_exception: list = [None]
+
+            def _run_search():
+                try:
+                    steps, st = search.search(stmt, domain=domain)
+                    search_result[0] = steps
+                    search_result[1] = st
+                except Exception as ex:
+                    search_exception[0] = ex
+
+            search_thread = threading.Thread(target=_run_search, daemon=True)
+            search_thread.start()
+            search_thread.join(timeout=max_theorem_time)
+
+            if search_thread.is_alive():
+                # Theorem search taking too long — abandon it
+                proof_steps = []
+                search_time = time.time() - t0
+                ok = False
+                err = f"timed out after {max_theorem_time}s"
+                failed_reasons["search_timeout"] = failed_reasons.get("search_timeout", 0) + 1
+                print(f"  [{i+1:2d}/{len(theorems)}] ✗ {name:45s} "
+                      f"[TIMEOUT    ] {search_time:.1f}s  "
+                      f"ETA: 0m  ({len(passed)} passed)")
+                result = {
+                    "name": name, "era": era, "domain": domain,
+                    "success": False, "error": err,
+                    "proof_steps": [], "num_steps": 0,
+                    "ground_truth": ground_truth,
+                    "search_time_s": round(search_time, 1),
+                    "pattern": "timeout", "lemma_novelty": False,
+                }
+                results.append(result)
+                # Periodic save
+                _now = time.time()
+                if _now - _last_save_time > _save_interval:
+                    _save_intermediate(output_path, results, passed, i + 1, len(theorems))
+                    _last_save_time = _now
+                continue
+            elif search_exception[0] is not None:
+                raise search_exception[0]
+            else:
+                proof_steps, final_state = search_result[0], search_result[1]
+        except Exception as e:
+            proof_steps = []
+            search_time = time.time() - t0
+            ok = False
+            err = f"search crash: {str(e)[:200]}"
+            failed_reasons[f"crash:{type(e).__name__}"] = \
+                failed_reasons.get(f"crash:{type(e).__name__}", 0) + 1
+            print(f"  [{i+1:2d}/{len(theorems)}] ✗ {name:45s} "
+                  f"[CRASH      ] {search_time:.1f}s  "
+                  f"ETA: 0m  ({len(passed)} passed)")
+            print(f"         Error: {type(e).__name__}: {str(e)[:120]}")
+            result = {
+                "name": name, "era": era, "domain": domain,
+                "success": False, "error": err,
+                "proof_steps": [], "num_steps": 0,
+                "ground_truth": ground_truth,
+                "search_time_s": round(search_time, 1),
+                "pattern": "crash", "lemma_novelty": False,
+            }
+            results.append(result)
+            # Periodic save
+            _now = time.time()
+            if _now - _last_save_time > _save_interval:
+                _save_intermediate(output_path, results, passed, i + 1, len(theorems))
+                _last_save_time = _now
+            continue
         search_time = time.time() - t0
 
         if not proof_steps:
@@ -412,6 +612,12 @@ def run_gate3(
             print(f"         Proof: {steps_str}")
             if len(proof_steps) >= 2:
                 print(f"         ★ MULTI-STEP ({len(proof_steps)} steps)")
+
+        # Periodic save for crash recovery
+        _now = time.time()
+        if _now - _last_save_time > _save_interval:
+            _save_intermediate(output_path, results, passed, i + 1, len(theorems))
+            _last_save_time = _now
 
     elapsed = time.time() - t_start
     n_total = len(theorems)
@@ -647,7 +853,7 @@ def main():
         num_threads=args.num_threads,
     )
 
-    checker = BatchChecker(timeout=15, max_workers=8, cache_size=128) if use_pc else None
+    checker = BatchChecker(timeout=15, max_workers=4, cache_size=50000) if use_pc else None
 
     output_path = _project_root / args.output
 

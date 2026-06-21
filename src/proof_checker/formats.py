@@ -15,10 +15,12 @@ open Int
 
 # Full preamble with Mathlib4 imports.
 # Used when mathlib4 is available for richer mathematical domains.
-LEAN_PREAMBLE_MATHLIB = """import Mathlib
+# Uses Mathlib.Tactic instead of full Mathlib for 2x faster check times
+# (1.1s vs 2.1s per unique check).  Covers ring, field_simp, simp, linarith,
+# nlinarith, positivity, norm_num, rw, apply, exact, intro, calc, and more.
+LEAN_PREAMBLE_MATHLIB = """import Mathlib.Tactic
 open Real
 open Set
-open Filter
 open Function
 open Nat
 """

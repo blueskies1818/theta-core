@@ -1,0 +1,94 @@
+{
+  "task": "Gate 3 with complete graph — GNN trained on gate2 data, tested on gate3 lemma-novelty",
+  "timestamp": "2026-06-17",
+  "prior_baseline": {
+    "gnn_score": 0.214,
+    "note": "Prior Gate 3 result with partial graph (Algebra subgraph ~10K nodes)"
+  },
+  "model": {
+    "pretrained": "checkpoints/gnn/full_graph_pretrained.pt",
+    "finetuned": "checkpoints/gnn/gate2_fullgraph_finetuned.pt",
+    "gnn_params": 1118848,
+    "goal_encoder_params": 263424,
+    "graph": "dependency_graph_full (116,171 nodes, 436,460 edges)",
+    "sft_data": "gate2_training.jsonl (60 theorems, 48 train / 12 val)",
+    "sft_epochs": 20,
+    "sft_best_val_top1": 0.083
+  },
+  "test_config": {
+    "theorems": "gate3_lemma_novelty.jsonl (14 theorems)",
+    "mcts_sims": 500,
+    "compare_mode": "H=0.0 (pure GNN) vs H=1.0 (full heuristics)",
+    "repeat": 1
+  },
+  "results_full_graph": {
+    "domain": null,
+    "nodes_in_mcts": 116171,
+    "gnn_h0_proved": 0,
+    "gnn_h0_rate": 0.0,
+    "heuristic_h1_proved": 0,
+    "heuristic_h1_rate": 0.0,
+    "note": "116K candidates too many for GNN to discriminate; all 14 failed"
+  },
+  "results_algebra_subgraph": {
+    "domain": "Algebra",
+    "nodes_in_mcts": 3840,
+    "gnn_h0_proved": 4,
+    "gnn_h0_rate": 0.286,
+    "gnn_h0_theorems": [
+      {"name": "poly_mul_X_add_C", "proof": "simp", "ground_truth": "simp [mul_add]"},
+      {"name": "poly_derivative_add", "proof": "simp", "ground_truth": "simp"},
+      {"name": "poly_degree_X_pow", "proof": "simp", "ground_truth": "simp"},
+      {"name": "poly_map_id", "proof": "simp", "ground_truth": "simp"}
+    ],
+    "heuristic_h1_proved": 3,
+    "heuristic_h1_rate": 0.214,
+    "heuristic_h1_theorems": [
+      {"name": "poly_eval_C_add_X", "proof": "simp", "ground_truth": "simp"},
+      {"name": "poly_eval_derivative_C_mul", "proof": "simp", "ground_truth": "simp"},
+      {"name": "poly_map_id", "proof": "simp", "ground_truth": "simp"}
+    ],
+    "gnn_only": ["poly_mul_X_add_C", "poly_derivative_add", "poly_degree_X_pow"],
+    "heuristic_only": ["poly_eval_C_add_X", "poly_eval_derivative_C_mul"],
+    "both": ["poly_map_id"],
+    "neither": [
+      "poly_eval_mul_X_sub_C", "poly_derivative_X_pow",
+      "poly_degree_C_mul_X_pow", "poly_degree_mul_X",
+      "poly_degree_add_eq_left_of_degree_lt", "poly_degree_sub_eq_left_of_degree_lt",
+      "poly_monic_X_sub_C", "poly_monic_X_pow_add"
+    ],
+    "failed_reason": "Theorems require specific lemma retrieval (derivative_X_pow, natDegree_C_mul_X_pow, degree_add_eq_left_of_degree_lt, etc.) that the GNN cannot retrieve from 3840 candidates."
+  },
+  "shape_matcher": {
+    "simp_solved": 6,
+    "norm_num_solved": 6,
+    "total_theorems": 14,
+    "rate": 0.429,
+    "note": "Shape-matcher rate (43%) exceeds 5% bound. Gate3 polynomial theorems are simpler than physics post1905 theorems — many are solved by `simp` alone because Mathlib4's simp set includes eval_add, eval_C, eval_X."
+  },
+  "comparison": {
+    "gnn_vs_prior": 0.286,
+    "prior": 0.214,
+    "delta": 0.072,
+    "gnn_vs_heuristic": 0.286,
+    "heuristic": 0.214,
+    "delta_gnn_heur": 0.072,
+    "verdict": "GNN 28.6% beats prior 21.4% (+7.2pp) and beats heuristics 21.4% (+7.2pp). But 28.6% < 45% MARGINAL threshold. Gate 3 NOT PASSED."
+  },
+  "analysis": {
+    "gnn_provides_signal": true,
+    "signal_magnitude": "+7.2pp over heuristics",
+    "limiting_factor": "Lemma retrieval for polynomial-specific lemmas (derivative, degree, monic)",
+    "all_proofs_are_simp": "All successful proofs use `simp` — GNN correctly selects it when appropriate",
+    "full_graph_too_large": "116K candidates degrades to 0%. Need better embeddings or candidate pre-filtering",
+    "algebra_subgraph_works": "3840 nodes is tractable — embeddings provide useful signal",
+    "fine_tuning_helped": "GoalEncoder SFT on gate2 boosted val top-1 from ~4.4% to 8.3%",
+    "path_forward": "Need stronger lemma retrieval: larger GNN (5-50M params), better pretraining, or candidate pre-filtering beyond domain subgraph"
+  },
+  "artifacts": {
+    "finetuned_model": "checkpoints/gnn/gate2_fullgraph_finetuned.pt",
+    "csv": "data/eval_gate3_fullgraph.csv",
+    "result_file": "data/gate3_fullgraph_result.json",
+    "finetune_script": "scripts/training/finetune_gate2_fullgraph.py"
+  }
+}

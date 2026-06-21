@@ -1,5 +1,0 @@
-{
-  "gate": "D",
-  "message": "GATE D FAILED at epoch 1: std=0.1382 (need >0.1), rank=197 (need =256)",
-  "timestamp": 1781965811.3997645
-}

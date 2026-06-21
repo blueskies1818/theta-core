@@ -1,0 +1,80 @@
+{
+  "task": "Gate 3: Goal-only encoder + best-first search + Lean checker",
+  "timestamp": "2026-06-21 08:34:41",
+  "architecture": "Goal-only encoder (text embed \u2192 avg pool \u2192 MLP), no GNN graph",
+  "baseline_comparison": {
+    "baseline_proof_rate": 0.156,
+    "this_proof_rate": 0.0,
+    "improvement": -0.156
+  },
+  "encoder": {
+    "params": 483968,
+    "hidden_dim": 256,
+    "vocab_size": 3000
+  },
+  "config": {
+    "max_depth": 10,
+    "max_expansions": 100,
+    "top_k_lemmas": 20,
+    "retrieval_k": 50,
+    "depth_penalty": 0.05,
+    "use_proof_checker": true,
+    "num_threads": 4,
+    "index_size": 226003
+  },
+  "gate3": {
+    "status": "FAIL",
+    "total": 3,
+    "passed": 0,
+    "rate": 0.0,
+    "multi_step": 0,
+    "lemma_novelty": 0,
+    "structural_only": 0,
+    "elapsed_s": 41.5280339717865,
+    "failed_reasons": {
+      "no_proof": 3
+    }
+  },
+  "passed": [],
+  "results": [
+    {
+      "name": "alg_subst_expand",
+      "era": "classical",
+      "domain": "algebra",
+      "success": false,
+      "error": "no proof found",
+      "proof_steps": [],
+      "num_steps": 0,
+      "ground_truth": "rw [h]; ring",
+      "search_time_s": 16.8,
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_subst_factor",
+      "era": "classical",
+      "domain": "algebra",
+      "success": false,
+      "error": "no proof found",
+      "proof_steps": [],
+      "num_steps": 0,
+      "ground_truth": "rw [h]; ring",
+      "search_time_s": 6.2,
+      "pattern": "failed",
+      "lemma_novelty": false
+    },
+    {
+      "name": "alg_cross_multiply",
+      "era": "classical",
+      "domain": "algebra",
+      "success": false,
+      "error": "no proof found",
+      "proof_steps": [],
+      "num_steps": 0,
+      "ground_truth": "have h' := congrArg (fun t => t * (b * d)) h; field_simp [hb, hd] at h'; exact h'",
+      "search_time_s": 18.5,
+      "pattern": "failed",
+      "lemma_novelty": false
+    }
+  ]
+}

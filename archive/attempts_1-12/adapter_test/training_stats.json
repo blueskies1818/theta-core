@@ -1,0 +1,39 @@
+{
+  "config": {
+    "gnn_checkpoint": "checkpoints/gnn/full_graph_pretrained.pt",
+    "num_epochs": 1,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "hard_neg_weight": 0.5,
+    "preservation_weight": 0.1,
+    "margin": 0.3,
+    "temperature": 0.07,
+    "num_threads": 4
+  },
+  "baseline_lp_loss": 0.6860576868057251,
+  "gate_b_threshold": 0.8232692241668701,
+  "best_val_mrr": 0.0001046326962650085,
+  "best_epoch": 1,
+  "aborted_gate": null,
+  "epochs": [
+    {
+      "epoch": 1,
+      "loss": 5.364988,
+      "infonce_loss": 5.026647,
+      "triplet_loss": 0.539621,
+      "lp_loss": 0.685304,
+      "current_lp_loss": 0.683798,
+      "lp_delta_pct": -0.33,
+      "val_mrr": 0.000105,
+      "embed_std": 0.120925,
+      "embed_rank": 224,
+      "lr": 0.0,
+      "time_s": 6.3,
+      "gates": {
+        "B": "PASS",
+        "C": "FAIL",
+        "D": "FAIL"
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "task": "value_net_smoke_test",
+  "blind_ok": 4,
+  "value_ok": 4,
+  "gnn": "checkpoints/gnn/proof_step_pretrained.pt",
+  "value_checkpoint": "checkpoints/value_network.pt",
+  "timestamp": "2026-06-18 19:57:44"
+}
