@@ -1,0 +1,6655 @@
+{
+  "falling_ball_straight_drop": {
+    "scenario": "Ball dropped from rest",
+    "description": "A 1kg ball dropped from 10m in Earth gravity. No air resistance.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "Known scenario falling_ball_straight_drop: time_translation expected"
+      },
+      "confidence": {
+        "time_translation": 1.0
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "falling_ball_upward_throw": {
+    "scenario": "Ball thrown upward from ground",
+    "description": "A 1kg ball thrown upward at 10 m/s from ground level. No air resistance.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "Known scenario falling_ball_upward_throw: time_translation expected"
+      },
+      "confidence": {
+        "time_translation": 1.0
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "falling_ball_varying_mass": {
+    "scenario": "Heavy ball dropped from rest",
+    "description": "A 5kg ball dropped from 10m. Same kinematics, different mass.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "pendulum_small_angle": {
+    "scenario": "Pendulum with small amplitude",
+    "description": "A 1kg pendulum of length 1m released from 0.1 rad (5.7\u00b0). Small-angle approximation.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time",
+      "L": "Length"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "pendulum_large_angle": {
+    "scenario": "Pendulum with large amplitude",
+    "description": "A 1kg pendulum of length 1m released from 1.0 rad (57\u00b0). Small-angle solution used as approximation.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time",
+      "L": "Length"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "spring_undamped": {
+    "scenario": "Undamped spring-mass system",
+    "description": "A 1kg mass on a spring (k=10 N/m), released from 0.5m displacement. No damping.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*k*h^2 + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "spring_damped_light": {
+    "scenario": "Lightly damped spring-mass system",
+    "description": "A 1kg mass on a spring (k=10 N/m) with light damping (\u03b2=0.5 s\u207b\u00b9). Energy decays slowly.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "projectile_45deg": {
+    "scenario": "Projectile launched at 45 degrees",
+    "description": "A 1kg projectile launched at 10 m/s at 45\u00b0 above horizontal. Parabolic trajectory.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "projectile_90deg": {
+    "scenario": "Projectile launched straight up",
+    "description": "A 1kg projectile launched at 10 m/s straight up.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "sliding_block_incline": {
+    "scenario": "Block sliding down frictionless incline",
+    "description": "A 1kg block sliding down a 30\u00b0 frictionless incline from 5m height.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_moon_drop": {
+    "scenario": "Ball dropped on Moon from 10m",
+    "description": "1kg ball dropped from 10m on Moon (g=1.62 m/s^2). No atmosphere.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_mars_drop": {
+    "scenario": "2kg ball dropped on Mars from 15m",
+    "description": "2kg ball dropped from 15m on Mars (g=3.71 m/s^2).",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_mars_upward": {
+    "scenario": "Ball thrown upward on Mars at 8 m/s",
+    "description": "1kg ball thrown upward at 8 m/s on Mars (g=3.71 m/s^2).",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_air_resistance_linear": {
+    "scenario": "Ball dropped with linear air resistance",
+    "description": "1kg ball dropped from 10m with linear drag (k=0.5 s^-1). Energy not conserved - watch it decay.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "freefall_air_resistance_quadratic": {
+    "scenario": "Ball dropped with quadratic air resistance",
+    "description": "1kg ball dropped from 15m with quadratic drag (k=0.15). Energy not conserved.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "freefall_high_g": {
+    "scenario": "Heavy ball on high-gravity planet",
+    "description": "3kg ball dropped from 8m on planet with g=25 m/s^2.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_low_g": {
+    "scenario": "Ball dropped on asteroid (low g)",
+    "description": "1kg ball dropped from 20m with very low gravity g=0.5 m/s^2.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_downward_throw": {
+    "scenario": "Ball thrown downward from height",
+    "description": "1kg ball thrown downward at 10 m/s from 10m height.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_upward_from_height": {
+    "scenario": "Ball thrown upward from elevated position",
+    "description": "2kg ball thrown upward at 5 m/s from 5m height.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_heavy_10kg": {
+    "scenario": "10kg ball dropped from 10m",
+    "description": "10kg ball dropped from 10m. Same kinematics as 1kg but different mass.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "projectile_30deg": {
+    "scenario": "Projectile at 30 degrees",
+    "description": "1kg projectile at 10 m/s, 30 deg above horizontal.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "projectile_60deg": {
+    "scenario": "Projectile at 60 degrees",
+    "description": "1kg projectile at 12 m/s, 60 deg above horizontal.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "projectile_20deg": {
+    "scenario": "Projectile at shallow 20 degrees",
+    "description": "2kg projectile at 15 m/s, 20 deg above horizontal.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "projectile_75deg": {
+    "scenario": "Projectile at steep 75 degrees",
+    "description": "1kg projectile at 8 m/s, 75 deg above horizontal.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "projectile_linear_drag": {
+    "scenario": "Projectile with linear air drag",
+    "description": "1kg projectile launched at 20 m/s, 45 deg, with linear drag (k=0.3). Energy NOT conserved.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "projectile_quadratic_drag": {
+    "scenario": "Projectile with quadratic air drag",
+    "description": "1kg projectile launched at 20 m/s, 45 deg, with quadratic drag (k=0.08). Energy NOT conserved.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "projectile_high_speed": {
+    "scenario": "High-speed projectile",
+    "description": "1kg projectile at 50 m/s, 45 deg.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "projectile_low_speed": {
+    "scenario": "Low-speed heavy projectile",
+    "description": "5kg projectile at 3 m/s, 45 deg.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "projectile_10deg": {
+    "scenario": "Very shallow projectile",
+    "description": "1kg projectile at 10 m/s, 10 deg above horizontal.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "projectile_mars": {
+    "scenario": "Projectile on Mars",
+    "description": "1kg projectile at 10 m/s, 45 deg on Mars (g=3.71).",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "spring_heavily_damped": {
+    "scenario": "Heavily damped spring (overdamped)",
+    "description": "2kg mass on spring (k=20) with heavy damping (beta=10). No oscillation, slow decay.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "spring_forced": {
+    "scenario": "Forced spring oscillator",
+    "description": "1kg mass on spring (k=10) driven by external sinusoidal force F=0.5*sin(2t). Energy not conserved due to external work.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "spring_coupled": {
+    "scenario": "Coupled spring oscillators (one mass observed)",
+    "description": "One mass observed in a coupled 2-mass spring system. Energy transfers between masses.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "spring_stiff": {
+    "scenario": "Stiff spring oscillator",
+    "description": "0.5kg mass on stiff spring (k=100 N/m), released from 0.2m displacement.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*v^2 + 0.5*k*h^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "spring_weak": {
+    "scenario": "Weak spring with heavy mass",
+    "description": "3kg mass on weak spring (k=2 N/m), released from 0.8m displacement.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*v^2 + 0.5*k*h^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "spring_critically_damped": {
+    "scenario": "Critically damped spring",
+    "description": "1kg mass on spring (k=16) with critical damping. Returns to equilibrium fastest without oscillation.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "spring_undamped_v2": {
+    "scenario": "Undamped spring (variant parameters)",
+    "description": "2kg mass on spring (k=25 N/m), released from 0.3m displacement. No damping.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*v^2 + 0.5*k*h^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "spring_medium_damped": {
+    "scenario": "Medium damped spring oscillator",
+    "description": "1.5kg mass on spring (k=15) with medium damping (beta=1.0). Oscillates with decaying amplitude.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "collision_elastic_1d_equal_mass": {
+    "scenario": "1D elastic collision, equal masses",
+    "description": "1kg ball at 5 m/s collides elastically with stationary 1kg ball. After: m1 stops. Before/after piecewise.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "boost_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "boost_x": "No velocity-dependent forces \u2192 Galilean boost symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "boost_x": 0.7
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_elastic_1d_unequal_mass": {
+    "scenario": "1D elastic collision, light hitting heavy",
+    "description": "1kg ball at 5 m/s hits stationary 3kg ball elastically. m1 rebounds backward.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "boost_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "boost_x": "No velocity-dependent forces \u2192 Galilean boost symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "boost_x": 0.7
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_inelastic_equal_mass": {
+    "scenario": "Perfectly inelastic collision, equal masses",
+    "description": "1kg ball at 5 m/s hits stationary 1kg ball, they stick. Kinetic energy NOT conserved (half lost to heat).",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [
+        "boost_x"
+      ],
+      "evidence": {
+        "boost_x": "No velocity-dependent forces \u2192 Galilean boost symmetry"
+      },
+      "confidence": {
+        "boost_x": 0.7
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "collision_elastic_2d_glancing": {
+    "scenario": "2D elastic glancing collision",
+    "description": "1kg ball at 5 m/s glances off stationary 1kg ball. Speed changes (direction change). Energy conserved but observed speed decreases.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "boost_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "boost_x": "No velocity-dependent forces \u2192 Galilean boost symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "boost_x": 0.7
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_elastic_1d_2to1_mass": {
+    "scenario": "1D elastic collision, light hitting medium",
+    "description": "1kg ball at 5 m/s hits stationary 2kg ball elastically.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "boost_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "boost_x": "No velocity-dependent forces \u2192 Galilean boost symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "boost_x": 0.7
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_inelastic_unequal_mass": {
+    "scenario": "Perfectly inelastic collision, heavy hitting light",
+    "description": "2kg ball at 5 m/s hits stationary 1kg ball, they stick. Energy NOT conserved.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [
+        "boost_x"
+      ],
+      "evidence": {
+        "boost_x": "No velocity-dependent forces \u2192 Galilean boost symmetry"
+      },
+      "confidence": {
+        "boost_x": 0.7
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "collision_elastic_headon": {
+    "scenario": "Head-on elastic collision, equal masses",
+    "description": "2kg ball at 3 m/s hits 2kg ball at -1 m/s head-on elastically. They exchange velocities.",
+    "quantities": {
+      "m": "Mass",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "boost_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "boost_x": "No velocity-dependent forces \u2192 Galilean boost symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "boost_x": 0.7
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "incline_20deg": {
+    "scenario": "20-degree frictionless incline",
+    "description": "1kg block sliding down 20 deg frictionless incline from 5m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "incline_45deg": {
+    "scenario": "45-degree frictionless incline",
+    "description": "1kg block sliding down 45 deg frictionless incline from 8m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "incline_60deg": {
+    "scenario": "Steep 60-degree frictionless incline",
+    "description": "2kg block sliding down 60 deg frictionless incline from 6m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "incline_10deg": {
+    "scenario": "Shallow 10-degree frictionless incline",
+    "description": "1kg block sliding down 10 deg frictionless incline from 3m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "incline_20deg_friction": {
+    "scenario": "20-degree incline with friction (mu=0.3)",
+    "description": "1kg block sliding down 20 deg incline with friction mu=0.3.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "incline_30deg_friction": {
+    "scenario": "30-degree incline with friction (mu=0.2)",
+    "description": "1kg block sliding down 30 deg incline with friction mu=0.2 from 6m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "incline_45deg_friction": {
+    "scenario": "45-degree incline with friction (mu=0.4)",
+    "description": "2kg block sliding down 45 deg incline with friction mu=0.4 from 4m.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "incline_15deg_friction": {
+    "scenario": "15-degree incline with friction (mu=0.15)",
+    "description": "1kg block sliding down 15 deg incline with friction mu=0.15.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "mass_spring_gravity": {
+    "scenario": "Mass on vertical spring under gravity",
+    "description": "1kg mass on vertical spring (k=10) under Earth gravity. Combined conserved: 0.5*m*v^2 + 0.5*k*h^2 - m*g*h.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*v^2 + 0.5*k*h^2 - m*g*h",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "Known scenario mass_spring_gravity: time_translation expected"
+      },
+      "confidence": {
+        "time_translation": 1.0
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h + 0.5*k*h^2"
+    }
+  },
+  "pendulum_air_resistance": {
+    "scenario": "Pendulum with air resistance",
+    "description": "1kg pendulum (L=1m) released from 0.3 rad with light air resistance (k=0.2). Energy gradually decays.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time",
+      "L": "Length"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "charged_particle_gravity": {
+    "scenario": "Charged particle in gravity + electric field",
+    "description": "1kg charged particle (q=2C) falling in gravity (g=9.8) + uniform downward E-field (E=3 V/m). Combined conservative force.",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*v^2 + m*g*h + q*E*h",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "mass_spring_damped_gravity": {
+    "scenario": "Damped mass-spring under gravity",
+    "description": "1kg mass on vertical damped spring (k=12, beta=0.8) under gravity. Energy not conserved due to damping.",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [],
+      "evidence": {},
+      "confidence": {}
+    },
+    "groups_matched": [],
+    "derived_invariants": {}
+  },
+  "freefall_g9.8_h10.0_v0.0": {
+    "scenario": "Free fall (g=9.8, h0=10.0, v0=0.0)",
+    "description": "Free fall: m=1.0kg, g=9.8m/s\u00b2, h0=10.0m, v0=0.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h20.0_v0.0": {
+    "scenario": "Free fall (g=9.8, h0=20.0, v0=0.0)",
+    "description": "Free fall: m=2.0kg, g=9.8m/s\u00b2, h0=20.0m, v0=0.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h5.0_v10.0": {
+    "scenario": "Free fall (g=9.8, h0=5.0, v0=10.0)",
+    "description": "Free fall: m=1.0kg, g=9.8m/s\u00b2, h0=5.0m, v0=10.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h0.0_v15.0": {
+    "scenario": "Free fall (g=9.8, h0=0.0, v0=15.0)",
+    "description": "Free fall: m=1.0kg, g=9.8m/s\u00b2, h0=0.0m, v0=15.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h15.0_v-5.0": {
+    "scenario": "Free fall (g=9.8, h0=15.0, v0=-5.0)",
+    "description": "Free fall: m=1.0kg, g=9.8m/s\u00b2, h0=15.0m, v0=-5.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g1.62_h10.0_v0.0": {
+    "scenario": "Free fall (g=1.62, h0=10.0, v0=0.0)",
+    "description": "Free fall: m=1.0kg, g=1.62m/s\u00b2, h0=10.0m, v0=0.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g3.72_h10.0_v0.0": {
+    "scenario": "Free fall (g=3.72, h0=10.0, v0=0.0)",
+    "description": "Free fall: m=1.0kg, g=3.72m/s\u00b2, h0=10.0m, v0=0.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h50.0_v0.0": {
+    "scenario": "Free fall (g=9.8, h0=50.0, v0=0.0)",
+    "description": "Free fall: m=0.5kg, g=9.8m/s\u00b2, h0=50.0m, v0=0.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h30.0_v20.0": {
+    "scenario": "Free fall (g=9.8, h0=30.0, v0=20.0)",
+    "description": "Free fall: m=3.0kg, g=9.8m/s\u00b2, h0=30.0m, v0=20.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h10.0_v5.0": {
+    "scenario": "Free fall (g=9.8, h0=10.0, v0=5.0)",
+    "description": "Free fall: m=1.0kg, g=9.8m/s\u00b2, h0=10.0m, v0=5.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h2.0_v2.0": {
+    "scenario": "Free fall (g=9.8, h0=2.0, v0=2.0)",
+    "description": "Free fall: m=1.0kg, g=9.8m/s\u00b2, h0=2.0m, v0=2.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h100.0_v0.0": {
+    "scenario": "Free fall (g=9.8, h0=100.0, v0=0.0)",
+    "description": "Free fall: m=1.0kg, g=9.8m/s\u00b2, h0=100.0m, v0=0.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g25.0_h10.0_v0.0": {
+    "scenario": "Free fall (g=25.0, h0=10.0, v0=0.0)",
+    "description": "Free fall: m=1.0kg, g=25.0m/s\u00b2, h0=10.0m, v0=0.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g1.0_h10.0_v0.0": {
+    "scenario": "Free fall (g=1.0, h0=10.0, v0=0.0)",
+    "description": "Free fall: m=1.0kg, g=1.0m/s\u00b2, h0=10.0m, v0=0.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h8.0_v12.0": {
+    "scenario": "Free fall (g=9.8, h0=8.0, v0=12.0)",
+    "description": "Free fall: m=1.5kg, g=9.8m/s\u00b2, h0=8.0m, v0=12.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h12.0_v-3.0": {
+    "scenario": "Free fall (g=9.8, h0=12.0, v0=-3.0)",
+    "description": "Free fall: m=0.8kg, g=9.8m/s\u00b2, h0=12.0m, v0=-3.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h6.0_v8.0": {
+    "scenario": "Free fall (g=9.8, h0=6.0, v0=8.0)",
+    "description": "Free fall: m=2.5kg, g=9.8m/s\u00b2, h0=6.0m, v0=8.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "freefall_g9.8_h25.0_v25.0": {
+    "scenario": "Free fall (g=9.8, h0=25.0, v0=25.0)",
+    "description": "Free fall: m=1.0kg, g=9.8m/s\u00b2, h0=25.0m, v0=25.0m/s",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "projectile_g9.8_v20.0_theta45.0": {
+    "scenario": "Projectile motion (v0=20.0, \u03b8=45.0\u00b0)",
+    "description": "Projectile: v0=20.0m/s, \u03b8=45.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*y + 0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "rotation_xy"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "rotation_xy": 0.8
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*vx^2 + 0.5*m*vy^2 + m*g*y",
+      "space_translation_x": "m*vx",
+      "rotation_xy": "(m*vx)*y - (m*vy)*x"
+    }
+  },
+  "projectile_g9.8_v30.0_theta30.0": {
+    "scenario": "Projectile motion (v0=30.0, \u03b8=30.0\u00b0)",
+    "description": "Projectile: v0=30.0m/s, \u03b8=30.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*y + 0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "rotation_xy"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "rotation_xy": 0.8
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*vx^2 + 0.5*m*vy^2 + m*g*y",
+      "space_translation_x": "m*vx",
+      "rotation_xy": "(m*vx)*y - (m*vy)*x"
+    }
+  },
+  "projectile_g9.8_v15.0_theta60.0": {
+    "scenario": "Projectile motion (v0=15.0, \u03b8=60.0\u00b0)",
+    "description": "Projectile: v0=15.0m/s, \u03b8=60.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*y + 0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "rotation_xy"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "rotation_xy": 0.8
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*vx^2 + 0.5*m*vy^2 + m*g*y",
+      "space_translation_x": "m*vx",
+      "rotation_xy": "(m*vx)*y - (m*vy)*x"
+    }
+  },
+  "projectile_g9.8_v25.0_theta15.0": {
+    "scenario": "Projectile motion (v0=25.0, \u03b8=15.0\u00b0)",
+    "description": "Projectile: v0=25.0m/s, \u03b8=15.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*y + 0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "rotation_xy"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "rotation_xy": 0.8
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*vx^2 + 0.5*m*vy^2 + m*g*y",
+      "space_translation_x": "m*vx",
+      "rotation_xy": "(m*vx)*y - (m*vy)*x"
+    }
+  },
+  "projectile_g9.8_v20.0_theta75.0": {
+    "scenario": "Projectile motion (v0=20.0, \u03b8=75.0\u00b0)",
+    "description": "Projectile: v0=20.0m/s, \u03b8=75.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*y + 0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "rotation_xy"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "rotation_xy": 0.8
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*vx^2 + 0.5*m*vy^2 + m*g*y",
+      "space_translation_x": "m*vx",
+      "rotation_xy": "(m*vx)*y - (m*vy)*x"
+    }
+  },
+  "projectile_g9.8_v50.0_theta45.0": {
+    "scenario": "Projectile motion (v0=50.0, \u03b8=45.0\u00b0)",
+    "description": "Projectile: v0=50.0m/s, \u03b8=45.0\u00b0, m=2.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*y + 0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "rotation_xy"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "rotation_xy": 0.8
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*vx^2 + 0.5*m*vy^2 + m*g*y",
+      "space_translation_x": "m*vx",
+      "rotation_xy": "(m*vx)*y - (m*vy)*x"
+    }
+  },
+  "projectile_g1.62_v10.0_theta45.0": {
+    "scenario": "Projectile motion (v0=10.0, \u03b8=45.0\u00b0)",
+    "description": "Projectile: v0=10.0m/s, \u03b8=45.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*y + 0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "rotation_xy"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "rotation_xy": 0.8
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*vx^2 + 0.5*m*vy^2 + m*g*y",
+      "space_translation_x": "m*vx",
+      "rotation_xy": "(m*vx)*y - (m*vy)*x"
+    }
+  },
+  "projectile_g3.72_v15.0_theta45.0": {
+    "scenario": "Projectile motion (v0=15.0, \u03b8=45.0\u00b0)",
+    "description": "Projectile: v0=15.0m/s, \u03b8=45.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*y + 0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "rotation_xy"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "rotation_xy": 0.8
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*vx^2 + 0.5*m*vy^2 + m*g*y",
+      "space_translation_x": "m*vx",
+      "rotation_xy": "(m*vx)*y - (m*vy)*x"
+    }
+  },
+  "projectile_g9.8_v10.0_theta45.0": {
+    "scenario": "Projectile motion (v0=10.0, \u03b8=45.0\u00b0)",
+    "description": "Projectile: v0=10.0m/s, \u03b8=45.0\u00b0, m=0.5kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*y + 0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "rotation_xy"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "rotation_xy": 0.8
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*vx^2 + 0.5*m*vy^2 + m*g*y",
+      "space_translation_x": "m*vx",
+      "rotation_xy": "(m*vx)*y - (m*vy)*x"
+    }
+  },
+  "projectile_g9.8_v40.0_theta45.0": {
+    "scenario": "Projectile motion (v0=40.0, \u03b8=45.0\u00b0)",
+    "description": "Projectile: v0=40.0m/s, \u03b8=45.0\u00b0, m=3.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*y + 0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "rotation_xy"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "rotation_xy": 0.8
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*vx^2 + 0.5*m*vy^2 + m*g*y",
+      "space_translation_x": "m*vx",
+      "rotation_xy": "(m*vx)*y - (m*vy)*x"
+    }
+  },
+  "pendulum_L1.0_theta10.0": {
+    "scenario": "Pendulum (L=1.0m, \u03b80=10.0\u00b0)",
+    "description": "Pendulum: L=1.0m, \u03b80=10.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "L": "Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "pendulum_L1.0_theta20.0": {
+    "scenario": "Pendulum (L=1.0m, \u03b80=20.0\u00b0)",
+    "description": "Pendulum: L=1.0m, \u03b80=20.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "L": "Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "pendulum_L2.0_theta15.0": {
+    "scenario": "Pendulum (L=2.0m, \u03b80=15.0\u00b0)",
+    "description": "Pendulum: L=2.0m, \u03b80=15.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "L": "Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "pendulum_L0.5_theta10.0": {
+    "scenario": "Pendulum (L=0.5m, \u03b80=10.0\u00b0)",
+    "description": "Pendulum: L=0.5m, \u03b80=10.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "L": "Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "pendulum_L1.5_theta25.0": {
+    "scenario": "Pendulum (L=1.5m, \u03b80=25.0\u00b0)",
+    "description": "Pendulum: L=1.5m, \u03b80=25.0\u00b0, m=2.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "L": "Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "pendulum_L1.0_theta5.0": {
+    "scenario": "Pendulum (L=1.0m, \u03b80=5.0\u00b0)",
+    "description": "Pendulum: L=1.0m, \u03b80=5.0\u00b0, m=1.0kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "L": "Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "pendulum_L3.0_theta10.0": {
+    "scenario": "Pendulum (L=3.0m, \u03b80=10.0\u00b0)",
+    "description": "Pendulum: L=3.0m, \u03b80=10.0\u00b0, m=0.5kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "L": "Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "pendulum_L0.3_theta15.0": {
+    "scenario": "Pendulum (L=0.3m, \u03b80=15.0\u00b0)",
+    "description": "Pendulum: L=0.3m, \u03b80=15.0\u00b0, m=0.5kg",
+    "quantities": {
+      "m": "Mass",
+      "g": "Accel",
+      "L": "Length",
+      "h": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "m*g*h + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "spring_k10.0_m1.0_A0.5": {
+    "scenario": "Spring-mass (k=10.0, m=1.0, A=0.5)",
+    "description": "Spring: k=10.0N/m, m=1.0kg, A=0.5m",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "x": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*k*x^2 + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "spring_k20.0_m1.0_A0.3": {
+    "scenario": "Spring-mass (k=20.0, m=1.0, A=0.3)",
+    "description": "Spring: k=20.0N/m, m=1.0kg, A=0.3m",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "x": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*k*x^2 + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "spring_k5.0_m2.0_A0.5": {
+    "scenario": "Spring-mass (k=5.0, m=2.0, A=0.5)",
+    "description": "Spring: k=5.0N/m, m=2.0kg, A=0.5m",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "x": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*k*x^2 + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "spring_k10.0_m0.5_A0.5": {
+    "scenario": "Spring-mass (k=10.0, m=0.5, A=0.5)",
+    "description": "Spring: k=10.0N/m, m=0.5kg, A=0.5m",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "x": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*k*x^2 + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "spring_k50.0_m1.0_A0.2": {
+    "scenario": "Spring-mass (k=50.0, m=1.0, A=0.2)",
+    "description": "Spring: k=50.0N/m, m=1.0kg, A=0.2m",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "x": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*k*x^2 + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "spring_k2.0_m1.0_A1.0": {
+    "scenario": "Spring-mass (k=2.0, m=1.0, A=1.0)",
+    "description": "Spring: k=2.0N/m, m=1.0kg, A=1.0m",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "x": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*k*x^2 + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "spring_k15.0_m3.0_A0.4": {
+    "scenario": "Spring-mass (k=15.0, m=3.0, A=0.4)",
+    "description": "Spring: k=15.0N/m, m=3.0kg, A=0.4m",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "x": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*k*x^2 + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "spring_k10.0_m1.0_A0.1": {
+    "scenario": "Spring-mass (k=10.0, m=1.0, A=0.1)",
+    "description": "Spring: k=10.0N/m, m=1.0kg, A=0.1m",
+    "quantities": {
+      "m": "Mass",
+      "k": "Force/Length",
+      "x": "Length",
+      "v": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*k*x^2 + 0.5*m*v^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "collision_m1_1.0_m2_1.0_v1i_2.0_v2i_-1.0": {
+    "scenario": "Elastic collision (m1=1.0, m2=1.0)",
+    "description": "1D elastic collision: m1=1.0kg, m2=1.0kg, v1i=2.0m/s, v2i=-1.0m/s",
+    "quantities": {
+      "m1": "Mass",
+      "m2": "Mass",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_m1_1.0_m2_2.0_v1i_2.0_v2i_0.0": {
+    "scenario": "Elastic collision (m1=1.0, m2=2.0)",
+    "description": "1D elastic collision: m1=1.0kg, m2=2.0kg, v1i=2.0m/s, v2i=0.0m/s",
+    "quantities": {
+      "m1": "Mass",
+      "m2": "Mass",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_m1_2.0_m2_1.0_v1i_2.0_v2i_0.0": {
+    "scenario": "Elastic collision (m1=2.0, m2=1.0)",
+    "description": "1D elastic collision: m1=2.0kg, m2=1.0kg, v1i=2.0m/s, v2i=0.0m/s",
+    "quantities": {
+      "m1": "Mass",
+      "m2": "Mass",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_m1_1.0_m2_3.0_v1i_3.0_v2i_-1.0": {
+    "scenario": "Elastic collision (m1=1.0, m2=3.0)",
+    "description": "1D elastic collision: m1=1.0kg, m2=3.0kg, v1i=3.0m/s, v2i=-1.0m/s",
+    "quantities": {
+      "m1": "Mass",
+      "m2": "Mass",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_m1_1.0_m2_1.0_v1i_5.0_v2i_0.0": {
+    "scenario": "Elastic collision (m1=1.0, m2=1.0)",
+    "description": "1D elastic collision: m1=1.0kg, m2=1.0kg, v1i=5.0m/s, v2i=0.0m/s",
+    "quantities": {
+      "m1": "Mass",
+      "m2": "Mass",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_m1_1.0_m2_1.0_v1i_3.0_v2i_-3.0": {
+    "scenario": "Elastic collision (m1=1.0, m2=1.0)",
+    "description": "1D elastic collision: m1=1.0kg, m2=1.0kg, v1i=3.0m/s, v2i=-3.0m/s",
+    "quantities": {
+      "m1": "Mass",
+      "m2": "Mass",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_m1_0.5_m2_2.0_v1i_4.0_v2i_-2.0": {
+    "scenario": "Elastic collision (m1=0.5, m2=2.0)",
+    "description": "1D elastic collision: m1=0.5kg, m2=2.0kg, v1i=4.0m/s, v2i=-2.0m/s",
+    "quantities": {
+      "m1": "Mass",
+      "m2": "Mass",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_m1_3.0_m2_0.5_v1i_1.0_v2i_0.0": {
+    "scenario": "Elastic collision (m1=3.0, m2=0.5)",
+    "description": "1D elastic collision: m1=3.0kg, m2=0.5kg, v1i=1.0m/s, v2i=0.0m/s",
+    "quantities": {
+      "m1": "Mass",
+      "m2": "Mass",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_m1_1.0_m2_4.0_v1i_2.0_v2i_-0.5": {
+    "scenario": "Elastic collision (m1=1.0, m2=4.0)",
+    "description": "1D elastic collision: m1=1.0kg, m2=4.0kg, v1i=2.0m/s, v2i=-0.5m/s",
+    "quantities": {
+      "m1": "Mass",
+      "m2": "Mass",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "collision_m1_2.0_m2_2.0_v1i_1.0_v2i_-2.0": {
+    "scenario": "Elastic collision (m1=2.0, m2=2.0)",
+    "description": "1D elastic collision: m1=2.0kg, m2=2.0kg, v1i=1.0m/s, v2i=-2.0m/s",
+    "quantities": {
+      "m1": "Mass",
+      "m2": "Mass",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "e_field_q1.0_m1.0_E1.0_vx0_0_vy5_0": {
+    "scenario": "Uniform E field (q=1.0, m=1.0, E=1.0)",
+    "description": "Charged particle in E field: q=1.0C, m=1.0kg, E=1.0N/C",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*x",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "e_field_q2.0_m1.0_E1.0_vx0_0_vy3_0": {
+    "scenario": "Uniform E field (q=2.0, m=1.0, E=1.0)",
+    "description": "Charged particle in E field: q=2.0C, m=1.0kg, E=1.0N/C",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*x",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "e_field_q1.0_m2.0_E1.0_vx0_0_vy5_0": {
+    "scenario": "Uniform E field (q=1.0, m=2.0, E=1.0)",
+    "description": "Charged particle in E field: q=1.0C, m=2.0kg, E=1.0N/C",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*x",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "e_field_q-1.0_m1.0_E1.0_vx0_0_vy5_0": {
+    "scenario": "Uniform E field (q=-1.0, m=1.0, E=1.0)",
+    "description": "Charged particle in E field: q=-1.0C, m=1.0kg, E=1.0N/C",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*x",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "e_field_q1.0_m1.0_E3.0_vx2_0_vy2_0": {
+    "scenario": "Uniform E field (q=1.0, m=1.0, E=3.0)",
+    "description": "Charged particle in E field: q=1.0C, m=1.0kg, E=3.0N/C",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*x",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "e_field_q1.0_m1.0_E0.5_vx3_0_vy0_0": {
+    "scenario": "Uniform E field (q=1.0, m=1.0, E=0.5)",
+    "description": "Charged particle in E field: q=1.0C, m=1.0kg, E=0.5N/C",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*x",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "e_field_q1.0_m0.5_E2.0_vx0_0_vy4_0": {
+    "scenario": "Uniform E field (q=1.0, m=0.5, E=2.0)",
+    "description": "Charged particle in E field: q=1.0C, m=0.5kg, E=2.0N/C",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*x",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "e_field_q-2.0_m1.0_E2.0_vx1_0_vy3_0": {
+    "scenario": "Uniform E field (q=-2.0, m=1.0, E=2.0)",
+    "description": "Charged particle in E field: q=-2.0C, m=1.0kg, E=2.0N/C",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*x",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "e_field_q1.0_m1.0_E5.0_vxn2_0_vy5_0": {
+    "scenario": "Uniform E field (q=1.0, m=1.0, E=5.0)",
+    "description": "Charged particle in E field: q=1.0C, m=1.0kg, E=5.0N/C",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*x",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "e_field_q1.0_m1.0_E1.0_vx4_0_vy0_0": {
+    "scenario": "Uniform E field (q=1.0, m=1.0, E=1.0)",
+    "description": "Charged particle in E field: q=1.0C, m=1.0kg, E=1.0N/C",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*x",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "b_field_q1.0_m1.0_B1.0_vx5_0_vy0_0": {
+    "scenario": "Uniform B field (q=1.0, m=1.0, B=1.0)",
+    "description": "Charged particle in B field: q=1.0C, m=1.0kg, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "b_field_q1.0_m1.0_B2.0_vx3_0_vy0_0": {
+    "scenario": "Uniform B field (q=1.0, m=1.0, B=2.0)",
+    "description": "Charged particle in B field: q=1.0C, m=1.0kg, B=2.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "b_field_q-1.0_m1.0_B1.0_vx5_0_vy0_0": {
+    "scenario": "Uniform B field (q=-1.0, m=1.0, B=1.0)",
+    "description": "Charged particle in B field: q=-1.0C, m=1.0kg, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "b_field_q1.0_m0.5_B1.0_vx5_0_vy0_0": {
+    "scenario": "Uniform B field (q=1.0, m=0.5, B=1.0)",
+    "description": "Charged particle in B field: q=1.0C, m=0.5kg, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "b_field_q2.0_m1.0_B1.0_vx5_0_vy0_0": {
+    "scenario": "Uniform B field (q=2.0, m=1.0, B=1.0)",
+    "description": "Charged particle in B field: q=2.0C, m=1.0kg, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "b_field_q1.0_m2.0_B1.0_vx5_0_vy0_0": {
+    "scenario": "Uniform B field (q=1.0, m=2.0, B=1.0)",
+    "description": "Charged particle in B field: q=1.0C, m=2.0kg, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "b_field_q1.0_m1.0_B0.5_vx5_0_vy3_0": {
+    "scenario": "Uniform B field (q=1.0, m=1.0, B=0.5)",
+    "description": "Charged particle in B field: q=1.0C, m=1.0kg, B=0.5T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "b_field_q1.0_m1.0_B3.0_vx10_0_vy0_0": {
+    "scenario": "Uniform B field (q=1.0, m=1.0, B=3.0)",
+    "description": "Charged particle in B field: q=1.0C, m=1.0kg, B=3.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "b_field_q-2.0_m1.0_B2.0_vx4_0_vy2_0": {
+    "scenario": "Uniform B field (q=-2.0, m=1.0, B=2.0)",
+    "description": "Charged particle in B field: q=-2.0C, m=1.0kg, B=2.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "b_field_q1.0_m1.0_B1.0_vx3_0_vy4_0": {
+    "scenario": "Uniform B field (q=1.0, m=1.0, B=1.0)",
+    "description": "Charged particle in B field: q=1.0C, m=1.0kg, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "eb_combined_q1.0_m1.0_E1.0_B1.0": {
+    "scenario": "E\u00d7B drift (q=1.0, m=1.0, E=1.0, B=1.0)",
+    "description": "E\u00d7B drift: q=1.0C, m=1.0kg, E=1.0N/C, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*y",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "eb_combined_q1.0_m1.0_E2.0_B1.0": {
+    "scenario": "E\u00d7B drift (q=1.0, m=1.0, E=2.0, B=1.0)",
+    "description": "E\u00d7B drift: q=1.0C, m=1.0kg, E=2.0N/C, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*y",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "eb_combined_q1.0_m1.0_E1.0_B2.0": {
+    "scenario": "E\u00d7B drift (q=1.0, m=1.0, E=1.0, B=2.0)",
+    "description": "E\u00d7B drift: q=1.0C, m=1.0kg, E=1.0N/C, B=2.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*y",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "eb_combined_q-1.0_m1.0_E1.0_B1.0": {
+    "scenario": "E\u00d7B drift (q=-1.0, m=1.0, E=1.0, B=1.0)",
+    "description": "E\u00d7B drift: q=-1.0C, m=1.0kg, E=1.0N/C, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*y",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "eb_combined_q1.0_m2.0_E1.0_B1.0": {
+    "scenario": "E\u00d7B drift (q=1.0, m=2.0, E=1.0, B=1.0)",
+    "description": "E\u00d7B drift: q=1.0C, m=2.0kg, E=1.0N/C, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*y",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "eb_combined_q2.0_m1.0_E1.0_B1.0": {
+    "scenario": "E\u00d7B drift (q=2.0, m=1.0, E=1.0, B=1.0)",
+    "description": "E\u00d7B drift: q=2.0C, m=1.0kg, E=1.0N/C, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*y",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "eb_combined_q1.0_m1.0_E0.5_B3.0": {
+    "scenario": "E\u00d7B drift (q=1.0, m=1.0, E=0.5, B=3.0)",
+    "description": "E\u00d7B drift: q=1.0C, m=1.0kg, E=0.5N/C, B=3.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*y",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "eb_combined_q1.0_m1.0_E3.0_B0.5": {
+    "scenario": "E\u00d7B drift (q=1.0, m=1.0, E=3.0, B=0.5)",
+    "description": "E\u00d7B drift: q=1.0C, m=1.0kg, E=3.0N/C, B=0.5T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*y",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "eb_combined_q1.0_m0.5_E2.0_B1.0": {
+    "scenario": "E\u00d7B drift (q=1.0, m=0.5, E=2.0, B=1.0)",
+    "description": "E\u00d7B drift: q=1.0C, m=0.5kg, E=2.0N/C, B=1.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*y",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "eb_combined_q-2.0_m1.0_E1.0_B2.0": {
+    "scenario": "E\u00d7B drift (q=-2.0, m=1.0, E=1.0, B=2.0)",
+    "description": "E\u00d7B drift: q=-2.0C, m=1.0kg, E=1.0N/C, B=2.0T",
+    "quantities": {
+      "q": "Scalar",
+      "m": "Mass",
+      "E": "Force",
+      "B": "Force/Velocity",
+      "x": "Length",
+      "y": "Length",
+      "vx": "Velocity",
+      "vy": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m*(vx^2 + vy^2) - q*E*y",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "rotation_xy",
+        "u1_phase"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry",
+        "space_translation_x": "x-coordinate present, no x-dependent potential",
+        "space_translation_y": "y-coordinate present, no y-dependent potential",
+        "rotation_xy": "Both x and y coordinates present \u2192 rotation symmetry in xy plane",
+        "u1_phase": "Electric charge q present \u2192 U(1) gauge symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95,
+        "space_translation_x": 0.85,
+        "space_translation_y": 0.85,
+        "rotation_xy": 0.8,
+        "u1_phase": 0.9
+      }
+    },
+    "groups_matched": [
+      "u1"
+    ],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h",
+      "u1_phase": "q"
+    }
+  },
+  "coulomb_q11.0_q2-1.0_m11.0_m21.0_r02.0": {
+    "scenario": "Coulomb system (q1=1.0, q2=-1.0)",
+    "description": "Coulomb: q1=1.0, q2=-1.0, m1=1.0, m2=1.0, r0=2.0",
+    "quantities": {
+      "q1": "Scalar",
+      "q2": "Scalar",
+      "m1": "Mass",
+      "m2": "Mass",
+      "k": "Force*Length^2",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2 + k*q1*q2 / (abs(x2 - x1))",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "coulomb_q12.0_q2-1.0_m11.0_m21.0_r02.0": {
+    "scenario": "Coulomb system (q1=2.0, q2=-1.0)",
+    "description": "Coulomb: q1=2.0, q2=-1.0, m1=1.0, m2=1.0, r0=2.0",
+    "quantities": {
+      "q1": "Scalar",
+      "q2": "Scalar",
+      "m1": "Mass",
+      "m2": "Mass",
+      "k": "Force*Length^2",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2 + k*q1*q2 / (abs(x2 - x1))",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "coulomb_q11.0_q2-1.0_m12.0_m21.0_r03.0": {
+    "scenario": "Coulomb system (q1=1.0, q2=-1.0)",
+    "description": "Coulomb: q1=1.0, q2=-1.0, m1=2.0, m2=1.0, r0=3.0",
+    "quantities": {
+      "q1": "Scalar",
+      "q2": "Scalar",
+      "m1": "Mass",
+      "m2": "Mass",
+      "k": "Force*Length^2",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2 + k*q1*q2 / (abs(x2 - x1))",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "coulomb_q1-1.0_q2-1.0_m11.0_m21.0_r02.0": {
+    "scenario": "Coulomb system (q1=-1.0, q2=-1.0)",
+    "description": "Coulomb: q1=-1.0, q2=-1.0, m1=1.0, m2=1.0, r0=2.0",
+    "quantities": {
+      "q1": "Scalar",
+      "q2": "Scalar",
+      "m1": "Mass",
+      "m2": "Mass",
+      "k": "Force*Length^2",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2 + k*q1*q2 / (abs(x2 - x1))",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "coulomb_q11.0_q21.0_m11.0_m21.0_r02.0": {
+    "scenario": "Coulomb system (q1=1.0, q2=1.0)",
+    "description": "Coulomb: q1=1.0, q2=1.0, m1=1.0, m2=1.0, r0=2.0",
+    "quantities": {
+      "q1": "Scalar",
+      "q2": "Scalar",
+      "m1": "Mass",
+      "m2": "Mass",
+      "k": "Force*Length^2",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2 + k*q1*q2 / (abs(x2 - x1))",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "coulomb_q11.0_q2-2.0_m11.0_m20.5_r01.0": {
+    "scenario": "Coulomb system (q1=1.0, q2=-2.0)",
+    "description": "Coulomb: q1=1.0, q2=-2.0, m1=1.0, m2=0.5, r0=1.0",
+    "quantities": {
+      "q1": "Scalar",
+      "q2": "Scalar",
+      "m1": "Mass",
+      "m2": "Mass",
+      "k": "Force*Length^2",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2 + k*q1*q2 / (abs(x2 - x1))",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "coulomb_q13.0_q2-1.0_m11.0_m23.0_r05.0": {
+    "scenario": "Coulomb system (q1=3.0, q2=-1.0)",
+    "description": "Coulomb: q1=3.0, q2=-1.0, m1=1.0, m2=3.0, r0=5.0",
+    "quantities": {
+      "q1": "Scalar",
+      "q2": "Scalar",
+      "m1": "Mass",
+      "m2": "Mass",
+      "k": "Force*Length^2",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2 + k*q1*q2 / (abs(x2 - x1))",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "coulomb_q11.0_q2-1.0_m11.0_m21.0_r05.0": {
+    "scenario": "Coulomb system (q1=1.0, q2=-1.0)",
+    "description": "Coulomb: q1=1.0, q2=-1.0, m1=1.0, m2=1.0, r0=5.0",
+    "quantities": {
+      "q1": "Scalar",
+      "q2": "Scalar",
+      "m1": "Mass",
+      "m2": "Mass",
+      "k": "Force*Length^2",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2 + k*q1*q2 / (abs(x2 - x1))",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "coulomb_q12.0_q2-3.0_m12.0_m21.0_r03.0": {
+    "scenario": "Coulomb system (q1=2.0, q2=-3.0)",
+    "description": "Coulomb: q1=2.0, q2=-3.0, m1=2.0, m2=1.0, r0=3.0",
+    "quantities": {
+      "q1": "Scalar",
+      "q2": "Scalar",
+      "m1": "Mass",
+      "m2": "Mass",
+      "k": "Force*Length^2",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2 + k*q1*q2 / (abs(x2 - x1))",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "coulomb_q1-2.0_q21.0_m10.5_m22.0_r04.0": {
+    "scenario": "Coulomb system (q1=-2.0, q2=1.0)",
+    "description": "Coulomb: q1=-2.0, q2=1.0, m1=0.5, m2=2.0, r0=4.0",
+    "quantities": {
+      "q1": "Scalar",
+      "q2": "Scalar",
+      "m1": "Mass",
+      "m2": "Mass",
+      "k": "Force*Length^2",
+      "x1": "Length",
+      "x2": "Length",
+      "v1": "Velocity",
+      "v2": "Velocity",
+      "t": "Time"
+    },
+    "known_invariant": "0.5*m1*v1^2 + 0.5*m2*v2^2 + k*q1*q2 / (abs(x2 - x1))",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + 0.5*k*h^2"
+    }
+  },
+  "induced_emf_B01.0_alpha0.2_A1.0": {
+    "scenario": "Induced EMF (B0=1.0, \u03b1=0.2, A=1.0)",
+    "description": "Induced EMF: changing B field, B0=1.0T, alpha=0.2T/s, A=1.0m\u00b2",
+    "quantities": {
+      "B": "Force/Velocity",
+      "Phi": "Energy",
+      "epsilon": "Energy",
+      "I": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "abs(epsilon)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "induced_emf_B02.0_alpha0.5_A1.0": {
+    "scenario": "Induced EMF (B0=2.0, \u03b1=0.5, A=1.0)",
+    "description": "Induced EMF: changing B field, B0=2.0T, alpha=0.5T/s, A=1.0m\u00b2",
+    "quantities": {
+      "B": "Force/Velocity",
+      "Phi": "Energy",
+      "epsilon": "Energy",
+      "I": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "abs(epsilon)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "induced_emf_B01.0_alpha0.1_A2.0": {
+    "scenario": "Induced EMF (B0=1.0, \u03b1=0.1, A=2.0)",
+    "description": "Induced EMF: changing B field, B0=1.0T, alpha=0.1T/s, A=2.0m\u00b2",
+    "quantities": {
+      "B": "Force/Velocity",
+      "Phi": "Energy",
+      "epsilon": "Energy",
+      "I": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "abs(epsilon)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "induced_emf_B00.5_alpha0.3_A1.5": {
+    "scenario": "Induced EMF (B0=0.5, \u03b1=0.3, A=1.5)",
+    "description": "Induced EMF: changing B field, B0=0.5T, alpha=0.3T/s, A=1.5m\u00b2",
+    "quantities": {
+      "B": "Force/Velocity",
+      "Phi": "Energy",
+      "epsilon": "Energy",
+      "I": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "abs(epsilon)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "induced_emf_B01.0_alpha0.5_A0.5": {
+    "scenario": "Induced EMF (B0=1.0, \u03b1=0.5, A=0.5)",
+    "description": "Induced EMF: changing B field, B0=1.0T, alpha=0.5T/s, A=0.5m\u00b2",
+    "quantities": {
+      "B": "Force/Velocity",
+      "Phi": "Energy",
+      "epsilon": "Energy",
+      "I": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "abs(epsilon)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "induced_emf_B03.0_alpha0.1_A2.0": {
+    "scenario": "Induced EMF (B0=3.0, \u03b1=0.1, A=2.0)",
+    "description": "Induced EMF: changing B field, B0=3.0T, alpha=0.1T/s, A=2.0m\u00b2",
+    "quantities": {
+      "B": "Force/Velocity",
+      "Phi": "Energy",
+      "epsilon": "Energy",
+      "I": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "abs(epsilon)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "induced_emf_B00.2_alpha0.05_A3.0": {
+    "scenario": "Induced EMF (B0=0.2, \u03b1=0.05, A=3.0)",
+    "description": "Induced EMF: changing B field, B0=0.2T, alpha=0.05T/s, A=3.0m\u00b2",
+    "quantities": {
+      "B": "Force/Velocity",
+      "Phi": "Energy",
+      "epsilon": "Energy",
+      "I": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "abs(epsilon)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "induced_emf_B01.0_alpha0.3_A1.0": {
+    "scenario": "Induced EMF (B0=1.0, \u03b1=0.3, A=1.0)",
+    "description": "Induced EMF: changing B field, B0=1.0T, alpha=0.3T/s, A=1.0m\u00b2",
+    "quantities": {
+      "B": "Force/Velocity",
+      "Phi": "Energy",
+      "epsilon": "Energy",
+      "I": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "abs(epsilon)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "induced_emf_B01.5_alpha0.4_A1.0": {
+    "scenario": "Induced EMF (B0=1.5, \u03b1=0.4, A=1.0)",
+    "description": "Induced EMF: changing B field, B0=1.5T, alpha=0.4T/s, A=1.0m\u00b2",
+    "quantities": {
+      "B": "Force/Velocity",
+      "Phi": "Energy",
+      "epsilon": "Energy",
+      "I": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "abs(epsilon)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "induced_emf_B00.1_alpha1.0_A1.0": {
+    "scenario": "Induced EMF (B0=0.1, \u03b1=1.0, A=1.0)",
+    "description": "Induced EMF: changing B field, B0=0.1T, alpha=1.0T/s, A=1.0m\u00b2",
+    "quantities": {
+      "B": "Force/Velocity",
+      "Phi": "Energy",
+      "epsilon": "Energy",
+      "I": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "abs(epsilon)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isothermal_n1.0_T300.0_V0.0249_0.05": {
+    "scenario": "Isothermal process (T=300.0K)",
+    "description": "Isothermal: n=1.0mol, T=300.0K, V: 0.0249\u21920.0500m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P*V",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isothermal_n1.0_T400.0_V0.0332_0.06": {
+    "scenario": "Isothermal process (T=400.0K)",
+    "description": "Isothermal: n=1.0mol, T=400.0K, V: 0.0332\u21920.0600m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P*V",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isothermal_n1.0_T200.0_V0.0166_0.03": {
+    "scenario": "Isothermal process (T=200.0K)",
+    "description": "Isothermal: n=1.0mol, T=200.0K, V: 0.0166\u21920.0300m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P*V",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isothermal_n2.0_T300.0_V0.0498_0.08": {
+    "scenario": "Isothermal process (T=300.0K)",
+    "description": "Isothermal: n=2.0mol, T=300.0K, V: 0.0498\u21920.0800m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P*V",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isothermal_n1.0_T300.0_V0.0125_0.03": {
+    "scenario": "Isothermal process (T=300.0K)",
+    "description": "Isothermal: n=1.0mol, T=300.0K, V: 0.0125\u21920.0300m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P*V",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isothermal_n0.5_T300.0_V0.0125_0.03": {
+    "scenario": "Isothermal process (T=300.0K)",
+    "description": "Isothermal: n=0.5mol, T=300.0K, V: 0.0125\u21920.0300m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P*V",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isothermal_n1.0_T350.0_V0.0194_0.04": {
+    "scenario": "Isothermal process (T=350.0K)",
+    "description": "Isothermal: n=1.0mol, T=350.0K, V: 0.0194\u21920.0400m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P*V",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isothermal_n1.0_T250.0_V0.026_0.05": {
+    "scenario": "Isothermal process (T=250.0K)",
+    "description": "Isothermal: n=1.0mol, T=250.0K, V: 0.0260\u21920.0500m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P*V",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isothermal_n2.0_T500.0_V0.0831_0.12": {
+    "scenario": "Isothermal process (T=500.0K)",
+    "description": "Isothermal: n=2.0mol, T=500.0K, V: 0.0831\u21920.1200m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P*V",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isothermal_n3.0_T300.0_V0.0748_0.1": {
+    "scenario": "Isothermal process (T=300.0K)",
+    "description": "Isothermal: n=3.0mol, T=300.0K, V: 0.0748\u21920.1000m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P*V",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "adiabatic_gamma1_4_V0.0249_0.05": {
+    "scenario": "Adiabatic process (\u03b3=1.4)",
+    "description": "Adiabatic: \u03b3=1.4, V: 0.0249\u21920.0500m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V^1.4",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "adiabatic_gamma1_4_V0.0332_0.06": {
+    "scenario": "Adiabatic process (\u03b3=1.4)",
+    "description": "Adiabatic: \u03b3=1.4, V: 0.0332\u21920.0600m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V^1.4",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "adiabatic_gamma1_4_V0.0125_0.04": {
+    "scenario": "Adiabatic process (\u03b3=1.4)",
+    "description": "Adiabatic: \u03b3=1.4, V: 0.0125\u21920.0400m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V^1.4",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "adiabatic_gamma1_67_V0.0249_0.04": {
+    "scenario": "Adiabatic process (\u03b3=1.67)",
+    "description": "Adiabatic: \u03b3=1.67, V: 0.0249\u21920.0400m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V^1.67",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "adiabatic_gamma1_4_V0.0498_0.08": {
+    "scenario": "Adiabatic process (\u03b3=1.4)",
+    "description": "Adiabatic: \u03b3=1.4, V: 0.0498\u21920.0800m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V^1.4",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "adiabatic_gamma1_4_V0.03_0.015": {
+    "scenario": "Adiabatic process (\u03b3=1.4)",
+    "description": "Adiabatic: \u03b3=1.4, V: 0.0300\u21920.0150m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V^1.4",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "adiabatic_gamma1_4_V0.0277_0.05": {
+    "scenario": "Adiabatic process (\u03b3=1.4)",
+    "description": "Adiabatic: \u03b3=1.4, V: 0.0277\u21920.0500m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V^1.4",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "adiabatic_gamma1_4_V0.0249_0.06": {
+    "scenario": "Adiabatic process (\u03b3=1.4)",
+    "description": "Adiabatic: \u03b3=1.4, V: 0.0249\u21920.0600m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V^1.4",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "adiabatic_gamma1_4_V0.02_0.01": {
+    "scenario": "Adiabatic process (\u03b3=1.4)",
+    "description": "Adiabatic: \u03b3=1.4, V: 0.0200\u21920.0100m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V^1.4",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "adiabatic_gamma1_67_V0.0332_0.05": {
+    "scenario": "Adiabatic process (\u03b3=1.67)",
+    "description": "Adiabatic: \u03b3=1.67, V: 0.0332\u21920.0500m\u00b3",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V^1.67",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isobaric_P100000.0_T300.0_500.0": {
+    "scenario": "Isobaric process (P=100000.0Pa)",
+    "description": "Isobaric: P=100000.0Pa, T: 300.0\u2192500.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isobaric_P100000.0_T200.0_400.0": {
+    "scenario": "Isobaric process (P=100000.0Pa)",
+    "description": "Isobaric: P=100000.0Pa, T: 200.0\u2192400.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isobaric_P100000.0_T300.0_600.0": {
+    "scenario": "Isobaric process (P=100000.0Pa)",
+    "description": "Isobaric: P=100000.0Pa, T: 300.0\u2192600.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isobaric_P200000.0_T300.0_450.0": {
+    "scenario": "Isobaric process (P=200000.0Pa)",
+    "description": "Isobaric: P=200000.0Pa, T: 300.0\u2192450.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isobaric_P50000.0_T300.0_500.0": {
+    "scenario": "Isobaric process (P=50000.0Pa)",
+    "description": "Isobaric: P=50000.0Pa, T: 300.0\u2192500.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isobaric_P100000.0_T500.0_300.0": {
+    "scenario": "Isobaric process (P=100000.0Pa)",
+    "description": "Isobaric: P=100000.0Pa, T: 500.0\u2192300.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isobaric_P150000.0_T400.0_700.0": {
+    "scenario": "Isobaric process (P=150000.0Pa)",
+    "description": "Isobaric: P=150000.0Pa, T: 400.0\u2192700.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isobaric_P80000.0_T250.0_550.0": {
+    "scenario": "Isobaric process (P=80000.0Pa)",
+    "description": "Isobaric: P=80000.0Pa, T: 250.0\u2192550.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isobaric_P100000.0_T300.0_400.0": {
+    "scenario": "Isobaric process (P=100000.0Pa)",
+    "description": "Isobaric: P=100000.0Pa, T: 300.0\u2192400.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isobaric_P100000.0_T600.0_350.0": {
+    "scenario": "Isobaric process (P=100000.0Pa)",
+    "description": "Isobaric: P=100000.0Pa, T: 600.0\u2192350.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "W": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isochoric_V0.0249_T300.0_500.0": {
+    "scenario": "Isochoric process (V=0.0249m\u00b3)",
+    "description": "Isochoric: V=0.0249m\u00b3, T: 300.0\u2192500.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isochoric_V0.05_T300.0_400.0": {
+    "scenario": "Isochoric process (V=0.05m\u00b3)",
+    "description": "Isochoric: V=0.05m\u00b3, T: 300.0\u2192400.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isochoric_V0.0249_T300.0_600.0": {
+    "scenario": "Isochoric process (V=0.0249m\u00b3)",
+    "description": "Isochoric: V=0.0249m\u00b3, T: 300.0\u2192600.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isochoric_V0.01_T200.0_500.0": {
+    "scenario": "Isochoric process (V=0.01m\u00b3)",
+    "description": "Isochoric: V=0.01m\u00b3, T: 200.0\u2192500.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isochoric_V0.0249_T300.0_450.0": {
+    "scenario": "Isochoric process (V=0.0249m\u00b3)",
+    "description": "Isochoric: V=0.0249m\u00b3, T: 300.0\u2192450.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isochoric_V0.03_T350.0_650.0": {
+    "scenario": "Isochoric process (V=0.03m\u00b3)",
+    "description": "Isochoric: V=0.03m\u00b3, T: 350.0\u2192650.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isochoric_V0.02_T300.0_700.0": {
+    "scenario": "Isochoric process (V=0.02m\u00b3)",
+    "description": "Isochoric: V=0.02m\u00b3, T: 300.0\u2192700.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isochoric_V0.015_T250.0_400.0": {
+    "scenario": "Isochoric process (V=0.015m\u00b3)",
+    "description": "Isochoric: V=0.015m\u00b3, T: 250.0\u2192400.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isochoric_V0.04_T300.0_500.0": {
+    "scenario": "Isochoric process (V=0.04m\u00b3)",
+    "description": "Isochoric: V=0.04m\u00b3, T: 300.0\u2192500.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "isochoric_V0.05_T400.0_600.0": {
+    "scenario": "Isochoric process (V=0.05m\u00b3)",
+    "description": "Isochoric: V=0.05m\u00b3, T: 400.0\u2192600.0K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "P/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "carnot_Th600.0_Tc300.0_g1_4": {
+    "scenario": "Carnot cycle (Th=600.0K, Tc=300.0K)",
+    "description": "Carnot cycle: Th=600.0K, Tc=300.0K, \u03b7=-2.0000",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "carnot_Th800.0_Tc300.0_g1_4": {
+    "scenario": "Carnot cycle (Th=800.0K, Tc=300.0K)",
+    "description": "Carnot cycle: Th=800.0K, Tc=300.0K, \u03b7=-2.0282",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "carnot_Th500.0_Tc300.0_g1_4": {
+    "scenario": "Carnot cycle (Th=500.0K, Tc=300.0K)",
+    "description": "Carnot cycle: Th=500.0K, Tc=300.0K, \u03b7=-1.8109",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "carnot_Th600.0_Tc200.0_g1_4": {
+    "scenario": "Carnot cycle (Th=600.0K, Tc=200.0K)",
+    "description": "Carnot cycle: Th=600.0K, Tc=200.0K, \u03b7=-1.9749",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "carnot_Th600.0_Tc300.0_g1_67": {
+    "scenario": "Carnot cycle (Th=600.0K, Tc=300.0K)",
+    "description": "Carnot cycle: Th=600.0K, Tc=300.0K, \u03b7=-2.0515",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": null,
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "entropy_T300.0_V0.01_0.05": {
+    "scenario": "Entropy change (T=300.0K)",
+    "description": "Entropy change: T=300.0K, V: 0.01\u21920.05m\u00b3, \u0394S=13.3809J/K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "delta_S": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "delta_S / log(V)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "entropy_T400.0_V0.01_0.03": {
+    "scenario": "Entropy change (T=400.0K)",
+    "description": "Entropy change: T=400.0K, V: 0.01\u21920.03m\u00b3, \u0394S=9.1339J/K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "delta_S": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "delta_S / log(V)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "entropy_T300.0_V0.01_0.04": {
+    "scenario": "Entropy change (T=300.0K)",
+    "description": "Entropy change: T=300.0K, V: 0.01\u21920.04m\u00b3, \u0394S=23.0513J/K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "delta_S": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "delta_S / log(V)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "entropy_T200.0_V0.02_0.08": {
+    "scenario": "Entropy change (T=200.0K)",
+    "description": "Entropy change: T=200.0K, V: 0.02\u21920.08m\u00b3, \u0394S=11.5257J/K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "delta_S": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "delta_S / log(V)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "entropy_T300.0_V0.01_0.06": {
+    "scenario": "Entropy change (T=300.0K)",
+    "description": "Entropy change: T=300.0K, V: 0.01\u21920.06m\u00b3, \u0394S=7.4483J/K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "delta_S": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "delta_S / log(V)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "entropy_T500.0_V0.01_0.07": {
+    "scenario": "Entropy change (T=500.0K)",
+    "description": "Entropy change: T=500.0K, V: 0.01\u21920.07m\u00b3, \u0394S=16.1783J/K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "delta_S": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "delta_S / log(V)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "entropy_T350.0_V0.005_0.03": {
+    "scenario": "Entropy change (T=350.0K)",
+    "description": "Entropy change: T=350.0K, V: 0.005\u21920.03m\u00b3, \u0394S=29.7934J/K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "delta_S": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "delta_S / log(V)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "entropy_T300.0_V0.02_0.1": {
+    "scenario": "Entropy change (T=300.0K)",
+    "description": "Entropy change: T=300.0K, V: 0.02\u21920.1m\u00b3, \u0394S=13.3809J/K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "delta_S": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "delta_S / log(V)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "entropy_T300.0_V0.01_0.03": {
+    "scenario": "Entropy change (T=300.0K)",
+    "description": "Entropy change: T=300.0K, V: 0.01\u21920.03m\u00b3, \u0394S=27.4016J/K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "delta_S": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "delta_S / log(V)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "entropy_T450.0_V0.015_0.06": {
+    "scenario": "Entropy change (T=450.0K)",
+    "description": "Entropy change: T=450.0K, V: 0.015\u21920.06m\u00b3, \u0394S=5.7628J/K",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "V": "Length^3",
+      "T": "Scalar",
+      "Q": "Energy",
+      "delta_S": "Energy",
+      "t": "Time"
+    },
+    "known_invariant": "delta_S / log(V)",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "ideal_gas_varied_n1.0": {
+    "scenario": "Ideal gas varied path (n=1.0)",
+    "description": "Ideal gas varied path: n=1.0mol",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "ideal_gas_varied_n2.0": {
+    "scenario": "Ideal gas varied path (n=2.0)",
+    "description": "Ideal gas varied path: n=2.0mol",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  },
+  "ideal_gas_varied_n0.5": {
+    "scenario": "Ideal gas varied path (n=0.5)",
+    "description": "Ideal gas varied path: n=0.5mol",
+    "quantities": {
+      "n": "Scalar",
+      "R": "Energy",
+      "P": "Force/Length^2",
+      "V": "Length^3",
+      "T": "Scalar",
+      "t": "Time"
+    },
+    "known_invariant": "P*V/T",
+    "symmetry_detection": {
+      "active_symmetries": [
+        "time_translation"
+      ],
+      "evidence": {
+        "time_translation": "No external time-dependent forces \u2192 time translation symmetry"
+      },
+      "confidence": {
+        "time_translation": 0.95
+      }
+    },
+    "groups_matched": [],
+    "derived_invariants": {
+      "time_translation": "0.5*m*v^2 + m*g*h"
+    }
+  }
+}
