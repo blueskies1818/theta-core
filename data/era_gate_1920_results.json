@@ -1,0 +1,197 @@
+{
+  "experiment": "SPACETIME_ERA_GATE_CONFIGURABLE",
+  "description": "Pre-1920 training -> post-1920 metric discovery",
+  "era_cutoff": 1920,
+  "cutoff_label": "Classical + SR + Early Quantum (pre-1920)",
+  "training_domains": [
+    "classical_em",
+    "collision",
+    "early_quantum_bohr",
+    "gravity",
+    "special_relativity",
+    "spring",
+    "thermodynamics"
+  ],
+  "test_scenarios_count": 7,
+  "excluded_scenarios": [
+    {
+      "id": "muon_time_dilation",
+      "name": "Muon time dilation",
+      "era": 1905
+    },
+    {
+      "id": "velocity_addition",
+      "name": "Velocity addition",
+      "era": 1905
+    },
+    {
+      "id": "relativistic_momentum",
+      "name": "Relativistic momentum",
+      "era": 1905
+    },
+    {
+      "id": "length_contraction",
+      "name": "Length contraction",
+      "era": 1905
+    },
+    {
+      "id": "doppler_shift",
+      "name": "Doppler shift",
+      "era": 1905
+    },
+    {
+      "id": "twin_paradox",
+      "name": "Twin paradox",
+      "era": 1905
+    },
+    {
+      "id": "mass_energy",
+      "name": "E=mc^2",
+      "era": 1905
+    },
+    {
+      "id": "spacetime_interval",
+      "name": "Spacetime interval",
+      "era": 1905
+    }
+  ],
+  "not_taught": "Domain physics from eras after the cutoff",
+  "proposer_params": 5623,
+  "discovery_threshold": 0.9,
+  "total_scenarios": 7,
+  "spacetime_verified": 0,
+  "scenarios": [
+    {
+      "scenario_id": "qed_fine_structure",
+      "scenario_name": "QED Fine Structure",
+      "description": "alpha=e^2/(hbar*c) invariant",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "coupling",
+          "e"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "t / t",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.0009765625
+    },
+    {
+      "scenario_id": "compton_scattering",
+      "scenario_name": "Compton Scattering",
+      "description": "dlambda/(1-cos(theta))=lambda_c",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "dlambda",
+          "one_minus_cos",
+          "theta"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "t / t",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.0006642341613769531
+    },
+    {
+      "scenario_id": "dirac_spinor_norm",
+      "scenario_name": "Dirac Spinor Norm",
+      "description": "psi_dagger*psi=rho invariant",
+      "group_detected": false,
+      "detected_groups": [],
+      "best_metric": null,
+      "best_expression": null,
+      "best_constancy": 0.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 6.175041198730469e-05
+    },
+    {
+      "scenario_id": "qcd_asymptotic_freedom",
+      "scenario_name": "QCD Asymptotic Freedom",
+      "description": "alpha_s*log(Q/Lambda)~1",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "Q",
+          "alpha_s",
+          "log_Q"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "t / t",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.0004909038543701172
+    },
+    {
+      "scenario_id": "electroweak_mixing",
+      "scenario_name": "Electroweak Mixing",
+      "description": "gp/g=tan(theta_W) invariant",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "g",
+          "gp"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "g / gp",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.0004220008850097656
+    },
+    {
+      "scenario_id": "higgs_mechanism",
+      "scenario_name": "Higgs Mechanism",
+      "description": "phi^2-v^2/2 invariant",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "V",
+          "phi",
+          "phi_sq"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "t / t",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.0008873939514160156
+    },
+    {
+      "scenario_id": "neutrino_oscillation",
+      "scenario_name": "Neutrino Oscillation",
+      "description": "phase*E/L=const invariant",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "L",
+          "phase",
+          "prob"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "t / t",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.0012192726135253906
+    }
+  ]
+}

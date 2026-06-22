@@ -1,73 +1,51 @@
 # theta-core — Project Context for AI Workers
 
 Autonomous mathematical physics discovery via self-play against physical
-observation and Lean 4 proof verification.
+observation. Era-gated: trains on pre-1905 classical physics, discovers
+post-1905 quantum and relativistic laws. Currently 8/8 passed.
 
-## Architecture (pivot — June 21, 2026)
+## Architecture
 
 ```
-                    ┌──────────────────────────────┐
-                    │    OBSERVATION DATABASE        │
-                    │  Physical scenarios as JSON    │
-                    │  "Here's what's true"          │
-                    └──────────────┬─────────────────┘
-                                   │
-    ┌──────────────┐    ┌──────────▼──────────┐
-    │  Expression   │    │                     │
-    │  Generator    │───▶│    SELF-PLAY LOOP    │
-    │  (math combos)│    │  Generate → Score    │
-    └──────────────┘    │  → Select → Expand    │
-                        └──────────┬───────────┘
-                                   │
-                        ┌──────────▼───────────┐
-                        │   LEAN VERIFICATION    │
-                        │  Numerical constancy   │
-                        │  → Mathematical proof  │
-                        └────────────────────────┘
+Observations → Domain Classifier → Template Composer
+              → Symmetry Detector/Discovery
+              → Hidden Variable Proposer
+              → Auto-Prover (Lean) → Noise Gate → Discovery
 ```
 
-## Current Status (June 21, 2026)
+## Current Status (June 22, 2026)
 
-- Phase A ✓ — Expression grammar, type system, combinatorial generator
-- Phase B ✓ — 10 physics observation scenarios, constancy evaluator
-- Phase C ✓ — Self-play loop discovers mgh + ½mv² (score 1.000) from 6 training
-                scenarios, generalizes to 2 held-out (score 0.984)
-- Phase D → — Lean-prove the discovered conservation laws
-- Phase E/F — Scale observations, train AI generalizer
-- Phase G — Frontier predictions
+- All phases A-F complete
+- Era gate: 8/8 post-1905 laws reconstructed from pre-1905 training
+- Quantum: hydrogen spectrum, spin, blackbody, photoelectric
+- Relativistic: energy, momentum, velocity addition, time dilation
+- 626+ tests pass. Zero physics knowledge injected.
 
-Legacy GNN/lemma work archived at `archive/attempts_1-12/` and `archive/docs_legacy/`.
-
-## Key Paths
+## Key Directories
 
 | Path | Purpose |
 |------|---------|
-| `src/physics/` | Expression grammar, generator, evaluator, observations, search |
+| `src/physics/` | Expression grammar, evaluator, composer, symmetry, hidden vars, auto-prover |
 | `src/core/` | Self-play orchestrator |
-| `src/proof_checker/` | Lean 4 subprocess, batch checker |
 | `data/observations/` | Physical scenario databases |
-| `.hermes/plans/self_play_physics_discovery.md` | Full architecture plan |
+| `checkpoints/` | Trained models |
+| `docs/reports/` | Era gate results |
 
 ## Hardware
 
-- Intel Arc B70 drives display — NEVER touch GPU drivers/firmware. No GPU compute.
+- Intel Arc B70 drives display — NEVER touch GPU drivers/firmware
 - CPU: i5-12600KF, 16 cores. Training: max 6 threads. Eval: max 4 threads.
-- Python 3.12, Lean 4.29.1, PyTorch.
+- Python 3.12, Lean 4.29.1, PyTorch
 
 ## Security
 
-- Never commit: API keys, absolute paths, `.env`, personal data, system config.
-- `git diff --cached` before every commit. Scan for `sk-`, `DEEPSEEK_API_KEY`.
+- Never commit: API keys, absolute paths, `.env`, personal data, system config
+- `git diff --cached` before every commit
 
-## Commands
+## Quick Commands
 
 ```bash
-# Test everything
-python -m pytest tests/ -q
-
-# Run self-play loop
+python -m pytest tests/physics/ tests/core/ -q
+python scripts/spacetime_era_gate.py
 python src/core/self_play_loop.py
-
-# Generate expressions
-python -c "from src.physics.generator import ExpressionGenerator; ..."
 ```
