@@ -58,6 +58,7 @@ class ExpressionSearch:
         top_k: int = 50,
         discovery_threshold: float = 0.95,
         min_discovery_depth: int = 2,
+        target_dim: str = "Energy",
         **kwargs,
     ) -> None:
         self.quantities = quantities
@@ -71,7 +72,7 @@ class ExpressionSearch:
         self.min_discovery_depth = min_discovery_depth
 
         self._evaluator = ExpressionEvaluator()
-        self.target_dim = Dimension.named("Energy")
+        self.target_dim = Dimension.named(target_dim)
 
         # Build leaf expressions
         self._dim_lookup: dict[str, Dimension] = dict(quantities)
@@ -150,7 +151,7 @@ class ExpressionSearch:
         At each depth: generate candidates, score them, keep top beam_width,
         expand only those. This dramatically narrows the search space.
         """
-        Energy = Dimension.named("Energy")
+        Energy = self.target_dim
         beam_width = self.top_k
         dynamic_quantities = self._get_dynamic_quantities()
 
@@ -227,7 +228,7 @@ class ExpressionSearch:
                     s = self._score_expression(child)
                     self._scored[child] = s
                     cd = self._dimension_of(child)
-                    if cd == Energy and s > self._best_score:
+                    if cd == Energy and s > self._best_score and self._is_nontrivial(child, d + 1):
                         self._best_score = s
                         self._best_expr = child
                         self._best_depth = d + 1

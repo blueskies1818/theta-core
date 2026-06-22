@@ -1,0 +1,532 @@
+{
+  "experiment": "extended_era_gate",
+  "description": "8 new post-1905 scenarios + 2 classical verification",
+  "timestamp": 1782097869.1920745,
+  "config": {
+    "discovery_threshold": 0.9,
+    "seed": 42,
+    "n_sigma": 3.0
+  },
+  "results": [
+    {
+      "scenario_id": "angular_momentum",
+      "scenario_name": "Angular momentum E = E0*n^2",
+      "domain": "quantum",
+      "category": "quantum",
+      "known_invariant": "E / n^2",
+      "hidden_variable_hidden": "n",
+      "baseline": {
+        "discovered": false,
+        "expression": "2*E",
+        "score": 0.5598334942438425
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "integer_n",
+        "transform": "identity",
+        "confidence": 0.9966273903846741,
+        "num_tried": 3,
+        "all": [
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.9966273903846741,
+            "rationale": "Error shape suggests integer_n with identity in quantum domain (quantities: E)"
+          },
+          {
+            "type": "half_integer",
+            "name": "j",
+            "transform": "identity",
+            "confidence": 0.55,
+            "rationale": "Linear residuals in quantum system \u2014 could be (n+1/2) harmonic oscillator pattern"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.4,
+            "rationale": "Generic hidden integer variable (fallback)"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "E/n/n",
+        "score": 1.0
+      },
+      "noise_gate": {
+        "floor": 0.6810569226599988,
+        "threshold": 0.6810569226599988,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 2.1718990802764893
+    },
+    {
+      "scenario_id": "spin_measurement",
+      "scenario_name": "Spin measurement E = E0*n",
+      "domain": "quantum",
+      "category": "quantum",
+      "known_invariant": "E / n",
+      "hidden_variable_hidden": "n",
+      "baseline": {
+        "discovered": false,
+        "expression": "0.5*E+E-E",
+        "score": 0.6782438971547536
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "integer_n",
+        "transform": "identity",
+        "confidence": 0.9966273903846741,
+        "num_tried": 3,
+        "all": [
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.9966273903846741,
+            "rationale": "Error shape suggests integer_n with identity in quantum domain (quantities: E)"
+          },
+          {
+            "type": "half_integer",
+            "name": "j",
+            "transform": "identity",
+            "confidence": 0.55,
+            "rationale": "Linear residuals in quantum system \u2014 could be (n+1/2) harmonic oscillator pattern"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.4,
+            "rationale": "Generic hidden integer variable (fallback)"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "E/n",
+        "score": 0.9732516623044656
+      },
+      "noise_gate": {
+        "floor": 0.6733100952264208,
+        "threshold": 0.6733100952264208,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 1.8611633777618408
+    },
+    {
+      "scenario_id": "blackbody_peak",
+      "scenario_name": "Blackbody E_photon/T = const (Wien)",
+      "domain": "quantum",
+      "category": "quantum",
+      "known_invariant": "E_photon / T",
+      "hidden_variable_hidden": "none",
+      "baseline": {
+        "discovered": true,
+        "expression": "E_photon/T",
+        "score": 1.0
+      },
+      "error_analysis": {
+        "shape": "",
+        "confidence": 0.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "",
+        "transform": "",
+        "confidence": 0.0,
+        "num_tried": 0,
+        "all": []
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "E_photon/T",
+        "score": 1.0
+      },
+      "noise_gate": {
+        "floor": 0.60435607626104,
+        "threshold": 0.60435607626104,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 0.41259121894836426
+    },
+    {
+      "scenario_id": "photoelectric",
+      "scenario_name": "Photoelectric K_max = h*f - phi",
+      "domain": "quantum",
+      "category": "quantum",
+      "known_invariant": "K_max + phi",
+      "hidden_variable_hidden": "phi",
+      "baseline": {
+        "discovered": false,
+        "expression": "0.5*K_max+K_max*f/f",
+        "score": 0.6142371595635169
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "integer_n",
+        "transform": "identity",
+        "confidence": 0.9909555315971375,
+        "num_tried": 3,
+        "all": [
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.9909555315971375,
+            "rationale": "Error shape suggests integer_n with identity in quantum domain (quantities: f)"
+          },
+          {
+            "type": "half_integer",
+            "name": "j",
+            "transform": "identity",
+            "confidence": 0.55,
+            "rationale": "Linear residuals in quantum system \u2014 could be (n+1/2) harmonic oscillator pattern"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.4,
+            "rationale": "Generic hidden integer variable (fallback)"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": false,
+        "expression": "0.5*K_max+K_max*f/f",
+        "score": 0.6142371595635169
+      },
+      "noise_gate": {
+        "floor": 0.0,
+        "threshold": 0.0,
+        "passes": false
+      },
+      "closed_loop_success": false,
+      "errors": [],
+      "timing_seconds": 2.3017144203186035
+    },
+    {
+      "scenario_id": "velocity_addition",
+      "scenario_name": "Velocity addition (u'+v)/(1+u'v/c\u00b2)",
+      "domain": "relativistic",
+      "category": "relativistic",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "hidden_variable_hidden": "c",
+      "baseline": {
+        "discovered": false,
+        "expression": "",
+        "score": 0.0
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "integer_n",
+        "transform": "identity",
+        "confidence": 0.9994493126869202,
+        "num_tried": 2,
+        "all": [
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.9994493126869202,
+            "rationale": "Error shape suggests integer_n with identity in relativistic domain (quantities: v, t, x)"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.4,
+            "rationale": "Generic hidden integer variable (fallback)"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": false,
+        "expression": "",
+        "score": 0.0
+      },
+      "noise_gate": {
+        "floor": 0.0,
+        "threshold": 0.0,
+        "passes": false
+      },
+      "closed_loop_success": false,
+      "errors": [],
+      "timing_seconds": 1.2789666652679443
+    },
+    {
+      "scenario_id": "relativistic_momentum",
+      "scenario_name": "Relativistic momentum p = gamma*m*v",
+      "domain": "relativistic",
+      "category": "relativistic",
+      "known_invariant": "E^2 - (p*c)^2",
+      "hidden_variable_hidden": "gamma",
+      "baseline": {
+        "discovered": false,
+        "expression": "0.5*E/p*p",
+        "score": 0.5762210129051274
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "integer_n",
+        "transform": "squared",
+        "confidence": 0.9992374181747437,
+        "num_tried": 2,
+        "all": [
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.9992374181747437,
+            "rationale": "Error shape suggests integer_n with squared in relativistic domain (quantities: m, v, E, c, p)"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.65,
+            "rationale": "Linear residuals suggest counting/index pattern"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": false,
+        "expression": "0.5*E/p*p",
+        "score": 0.5762210129051274
+      },
+      "noise_gate": {
+        "floor": 0.0,
+        "threshold": 0.0,
+        "passes": false
+      },
+      "closed_loop_success": false,
+      "errors": [],
+      "timing_seconds": 2.686061382293701
+    },
+    {
+      "scenario_id": "time_dilation",
+      "scenario_name": "Time dilation delta_t = gamma*delta_tau",
+      "domain": "relativistic",
+      "category": "relativistic",
+      "known_invariant": "(c*t)^2 - x^2",
+      "hidden_variable_hidden": "gamma",
+      "baseline": {
+        "discovered": false,
+        "expression": "",
+        "score": 0.0
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "integer_n",
+        "transform": "identity",
+        "confidence": 0.9996811151504517,
+        "num_tried": 2,
+        "all": [
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.9996811151504517,
+            "rationale": "Error shape suggests integer_n with identity in relativistic domain (quantities: v, t, x, c, tau)"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.4,
+            "rationale": "Generic hidden integer variable (fallback)"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": false,
+        "expression": "",
+        "score": 0.0
+      },
+      "noise_gate": {
+        "floor": 0.0,
+        "threshold": 0.0,
+        "passes": false
+      },
+      "closed_loop_success": false,
+      "errors": [],
+      "timing_seconds": 1.748532772064209
+    },
+    {
+      "scenario_id": "doppler_shift",
+      "scenario_name": "Relativistic Doppler shift",
+      "domain": "relativistic",
+      "category": "relativistic",
+      "known_invariant": "f / sqrt((1-beta)/(1+beta))",
+      "hidden_variable_hidden": "gamma",
+      "baseline": {
+        "discovered": false,
+        "expression": "",
+        "score": 0.0
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "integer_n",
+        "transform": "identity",
+        "confidence": 0.9984967708587646,
+        "num_tried": 2,
+        "all": [
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.9984967708587646,
+            "rationale": "Error shape suggests integer_n with identity in relativistic domain (quantities: v, t, c, f)"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.4,
+            "rationale": "Generic hidden integer variable (fallback)"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": false,
+        "expression": "",
+        "score": 0.0
+      },
+      "noise_gate": {
+        "floor": 0.0,
+        "threshold": 0.0,
+        "passes": false
+      },
+      "closed_loop_success": false,
+      "errors": [],
+      "timing_seconds": 1.5971176624298096
+    },
+    {
+      "scenario_id": "simple_pendulum",
+      "scenario_name": "Simple pendulum (L=1.0m, theta0=10\u00b0)",
+      "domain": "gravity",
+      "category": "classical",
+      "known_invariant": "m*g*h + 0.5*m*v^2",
+      "hidden_variable_hidden": "none",
+      "baseline": {
+        "discovered": true,
+        "expression": "0.5*h/h*m*g*L",
+        "score": 1.0
+      },
+      "error_analysis": {
+        "shape": "",
+        "confidence": 0.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "",
+        "transform": "",
+        "confidence": 0.0,
+        "num_tried": 0,
+        "all": []
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "0.5*h/h*m*g*L",
+        "score": 1.0
+      },
+      "noise_gate": {
+        "floor": 0.6712951698391864,
+        "threshold": 0.80307876407779,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 0.514270544052124
+    },
+    {
+      "scenario_id": "mass_spring",
+      "scenario_name": "Mass-spring (k=10.0, m=1.0, A=0.5)",
+      "domain": "spring",
+      "category": "classical",
+      "known_invariant": "0.5*k*x^2 + 0.5*m*v^2",
+      "hidden_variable_hidden": "none",
+      "baseline": {
+        "discovered": true,
+        "expression": "-1*k*x*x+-1*v*m*v",
+        "score": 0.9999992749336054
+      },
+      "error_analysis": {
+        "shape": "",
+        "confidence": 0.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "",
+        "transform": "",
+        "confidence": 0.0,
+        "num_tried": 0,
+        "all": []
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "-1*k*x*x+-1*v*m*v",
+        "score": 0.9999992749336054
+      },
+      "noise_gate": {
+        "floor": 0.6604937082962131,
+        "threshold": 0.95,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 0.4877445697784424
+    }
+  ],
+  "summary": {
+    "total_scenarios": 10,
+    "quantum": 4,
+    "relativistic": 4,
+    "classical": 2,
+    "verified_discoveries": 5,
+    "quantum_verified": 3,
+    "relativistic_verified": 0,
+    "classical_pass": 2,
+    "acceptance": {
+      "at_least_5_of_8": false,
+      "zero_false_positives": true
+    }
+  }
+}
