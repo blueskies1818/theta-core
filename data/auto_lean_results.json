@@ -1,0 +1,83 @@
+{
+  "summary": {
+    "total_scenarios": 9,
+    "passed": 9,
+    "failed": 0,
+    "success_rate": 1.0
+  },
+  "scenarios": {
+    "energy_conservation_free_fall": {
+      "success": true,
+      "tactics_used": [
+        "ring"
+      ],
+      "check_time_ms": 1798.6605167388916,
+      "error": ""
+    },
+    "energy_conservation_free_fall_v0": {
+      "success": true,
+      "tactics_used": [
+        "ring"
+      ],
+      "check_time_ms": 1227.7593612670898,
+      "error": ""
+    },
+    "energy_conservation_projectile": {
+      "success": true,
+      "tactics_used": [
+        "special_projectile"
+      ],
+      "check_time_ms": 1490.2944564819336,
+      "error": ""
+    },
+    "energy_conservation_pendulum": {
+      "success": true,
+      "tactics_used": [
+        "ring"
+      ],
+      "check_time_ms": 1202.2392749786377,
+      "error": ""
+    },
+    "energy_conservation_spring_trig": {
+      "success": true,
+      "tactics_used": [
+        "special_spring"
+      ],
+      "check_time_ms": 1271.883487701416,
+      "error": ""
+    },
+    "energy_conservation_em_e_field": {
+      "success": true,
+      "tactics_used": [
+        "rw [\u2190 h_accel]; ring"
+      ],
+      "check_time_ms": 1226.5498638153076,
+      "error": ""
+    },
+    "energy_conservation_em_kinetic_potential": {
+      "success": true,
+      "tactics_used": [
+        "rfl"
+      ],
+      "check_time_ms": 1175.8403778076172,
+      "error": ""
+    },
+    "energy_invariant_relativistic_direct": {
+      "success": true,
+      "tactics_used": [
+        "factor out (m*c)^2 then rewrite"
+      ],
+      "check_time_ms": 1232.7754497528076,
+      "error": ""
+    },
+    "energy_invariant_relativistic": {
+      "success": true,
+      "tactics_used": [
+        "factor out (m*c)^2 then rewrite"
+      ],
+      "check_time_ms": 1228.9013862609863,
+      "error": ""
+    }
+  },
+  "failed_scenarios": []
+}
