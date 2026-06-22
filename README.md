@@ -82,45 +82,90 @@ Observations → Domain Classifier → Template Composer
 # Run all tests (626+)
 python -m pytest tests/physics/ tests/core/ -q
 
-# Run the full era gate experiment
-# Trains on pre-1905 physics, tests on post-1905 discoveries
+# Run the full era gate experiment (pre-1905 train → post-1905 test)
 python scripts/spacetime_era_gate.py
 
 # Run with a different knowledge cutoff year
 python scripts/spacetime_era_gate.py --era-cutoff 1920
 
-# Run self-play physics discovery on a single domain
-python src/core/self_play_loop.py --domain gravity
-
-# Train a domain template generator
-python scripts/training/train_composer.py --domain em
-
-# Run hidden variable discovery on a specific scenario
-python -c "
-from src.physics.hidden_variables import HiddenVariableDiscovery
-discovery = HiddenVariableDiscovery('data/observations/hydrogen_balmer.json')
-result = discovery.run()
-print(f'Discovered: {result.expression} (score={result.score:.4f})')
-"
-
 # Generate synthetic observation data for a new domain
-python scripts/build/generate_observations.py --domain quantum --count 50
+python scripts/build/generate_observations.py --domain em --count 50
+```
+
+## Training from Scratch (Era-Gated)
+
+The system must be trained with era-gated knowledge. Every component has a
+`--era-cutoff YEAR` flag that restricts training data to pre-cutoff physics.
+
+### 1. Generate pre-1905 observation data
+
+```bash
+# Classical mechanics (Newton, pre-1905)
+python scripts/build/generate_observations.py --domain mechanics --count 50
+
+# Classical electromagnetism (Maxwell, pre-1905)
+python scripts/build/generate_observations.py --domain em --count 50
+
+# Thermodynamics (ideal gas, pre-1905)
+python scripts/build/generate_observations.py --domain thermal --count 50
+```
+
+### 2. Train domain template generators (era-gated)
+
+```bash
+# Each template trains ONLY on its domain's pre-1905 data
+python scripts/training/train_composer.py --domain gravity --era-cutoff 1905
+python scripts/training/train_composer.py --domain spring --era-cutoff 1905
+python scripts/training/train_composer.py --domain em --era-cutoff 1905
+python scripts/training/train_composer.py --domain thermal --era-cutoff 1905
+```
+
+### 3. Train the symmetry classifier
+
+```bash
+# Learns Galilean symmetries (time, space, rotation) — pre-1905 only
+python scripts/training/train_symmetry_classifier.py --era-cutoff 1905
+```
+
+### 4. Train the hidden variable proposer
+
+```bash
+# Learns integer, ratio, group, and metric patterns from pre-1905 physics
+python scripts/training/train_hidden_vars.py --era-cutoff 1905
+```
+
+### 5. Train the proof predictor
+
+```bash
+# Learns Lean tactic selection from synthetic algebra (era-independent math)
+python scripts/training/train_proof_predictor.py
+```
+
+### 6. Run the era gate evaluation
+
+```bash
+# Full pipeline: train→test, measures how many post-1905 laws are discovered
+python scripts/spacetime_era_gate.py --era-cutoff 1905
+
+# Compare different knowledge cutoffs
+python scripts/spacetime_era_gate.py --era-cutoff 1905 --output data/era_1905.json
+python scripts/spacetime_era_gate.py --era-cutoff 1920 --output data/era_1920.json
 ```
 
 ### Configurable Era Gate
 
-The era knowledge cutoff is a single configurable variable. Change it to test
-how well the system generalizes from different historical baselines:
+The era knowledge cutoff is a single variable across all training scripts.
+Change it to test generalization from different historical baselines:
 
 ```bash
 # Pre-1905 (default) — no quantum, no relativity
-python scripts/spacetime_era_gate.py --era-cutoff 1905
+--era-cutoff 1905
 
-# Pre-1920 — includes special relativity and early quantum
-python scripts/spacetime_era_gate.py --era-cutoff 1920
+# Pre-1920 — includes special relativity and early quantum (Bohr model)
+--era-cutoff 1920
 
 # Pre-1950 — includes QED and nuclear physics
-python scripts/spacetime_era_gate.py --era-cutoff 1950
+--era-cutoff 1950
 ```
 
 Each cutoff gates which domains, symmetries, and training scenarios are available.
