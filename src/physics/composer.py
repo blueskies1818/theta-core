@@ -72,6 +72,7 @@ QUANTITY_VOCAB = [
     "P", "V", "T", "S", "n", "R", "B", "W", "Q",
     "m1", "v1", "m2", "v2", "x1", "x2", "epsilon",
     "hbar", "omega", "c", "p", "gamma",
+    "lambda", "vx", "vy", "theta", "delta_x", "delta_p", "tau",
 ]
 
 QTY_TO_IDX = {q: i for i, q in enumerate(QUANTITY_VOCAB)}

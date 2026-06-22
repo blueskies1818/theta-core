@@ -56,6 +56,7 @@ from src.physics.symmetry import (
     build_u1_group,
     build_su2_group,
     build_symmetry_training_data,
+    build_diverse_symmetry_examples,
     train_symmetry_classifier,
     run_symmetry_smoke_test,
 )
@@ -127,6 +128,7 @@ __all__ = [
     "build_u1_group",
     "build_su2_group",
     "build_symmetry_training_data",
+    "build_diverse_symmetry_examples",
     "train_symmetry_classifier",
     "run_symmetry_smoke_test",
     # Symmetry discovery module

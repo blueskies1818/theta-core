@@ -681,6 +681,24 @@ class SymmetryDetector:
         "inelastic_collision_1d": [GeneratorKind.TIME_TRANSLATION],
         # Combined systems
         "mass_spring_gravity": [GeneratorKind.TIME_TRANSLATION],
+        # ── Post-1905 scenarios ────────────────────────────────────────
+        # Muon lifetime: relativistic BOOST symmetry, not time translation
+        # (muons decay — time is NOT homogeneous in the rest frame)
+        "muon_lifetime_dilation": [
+            GeneratorKind.BOOST_X,
+        ],
+        # Mercury perihelion: central potential → rotation only
+        # (not time translation in GR — Schwarzschild geometry breaks it)
+        "mercury_perihelion": [
+            GeneratorKind.ROTATION_XY,
+        ],
+        # Hydrogen Balmer: no continuous time translation (quantized states)
+        # Interference phase symmetry from wave mechanics
+        "hydrogen_balmer": [],
+        # Double-slit: PHASE symmetry from quantum interference
+        "debroglie_doubleslit": [],
+        # Uncertainty principle: phase-space symmetry (canonical)
+        "heisenberg_uncertainty": [],
     }
 
     def __init__(
@@ -696,8 +714,7 @@ class SymmetryDetector:
 
     def _load_classifier(self, path: str) -> None:
         """Lazy-load the symmetry classifier."""
-        import torch
-        self._classifier = torch.load(path, map_location="cpu", weights_only=False)
+        self._classifier = SymmetryClassifier.load(path)
 
     def detect(self, obs: Observation) -> SymmetryDetection:
         """Detect symmetries present in a single observation.
@@ -727,14 +744,17 @@ class SymmetryDetector:
 
         # ── Rule-based detection ──────────────────────────────────────────
 
-        # Time translation: almost always present in conservative systems
-        # Only absent if there are explicit time-dependent external forces
+        # Time translation: present in conservative systems with no
+        # time-dependent external forces. Respect explicit is_conservative flag.
         if obs.external_forces is None or len(obs.external_forces) == 0:
-            active.append(GeneratorKind.TIME_TRANSLATION)
-            evidence[GeneratorKind.TIME_TRANSLATION] = (
-                "No external time-dependent forces → time translation symmetry"
-            )
-            confidence[GeneratorKind.TIME_TRANSLATION] = 0.95
+            # Only default to TIME_TRANSLATION if not explicitly non-conservative
+            is_conservative = getattr(obs, 'is_conservative', None)
+            if is_conservative is not False:  # True or None (unknown)
+                active.append(GeneratorKind.TIME_TRANSLATION)
+                evidence[GeneratorKind.TIME_TRANSLATION] = (
+                    "No external time-dependent forces → time translation symmetry"
+                )
+                confidence[GeneratorKind.TIME_TRANSLATION] = 0.95
 
         # Space translation: check which spatial coordinates appear
         quantities = set(obs.quantities.keys())
@@ -820,9 +840,58 @@ class SymmetryDetector:
         confidence: dict[GeneratorKind, float],
         obs: Observation,
     ) -> None:
-        """Refine rule-based detections with classifier output."""
-        # Placeholder for classifier integration
-        pass
+        """Refine rule-based detections with classifier output.
+
+        Uses the trained ML classifier to:
+        1. Add symmetries the rule-based system missed (e.g., boosts in
+           relativistic systems, phase symmetry in quantum systems)
+        2. Reduce confidence in TIME_TRANSLATION when the classifier
+           strongly disagrees (e.g., for systems where time translation
+           is not the dominant symmetry)
+        """
+        from src.physics.composer import QUANTITY_VOCAB, QTY_TO_IDX
+
+        if self._classifier is None:
+            return
+
+        # Build quantity feature vector
+        all_vars = set(obs.quantities.keys()) | set(obs.parameters.keys())
+        vec = [1.0 if q in all_vars else 0.0 for q in QUANTITY_VOCAB]
+
+        # Get classifier predictions
+        probs = self._classifier.predict(vec)
+
+        for i, gen in enumerate(SYMMETRY_CLASSES):
+            prob = probs[i]
+
+            if gen in active:
+                # Already detected — adjust confidence with classifier
+                if prob < 0.3:
+                    # Classifier strongly disagrees — reduce confidence
+                    if confidence.get(gen, 1.0) > 0.5:
+                        confidence[gen] = max(confidence[gen] * 0.5, 0.2)
+                        evidence[gen] = (
+                            f"{evidence[gen]}; classifier disagrees "
+                            f"(prob={prob:.2f})"
+                        )
+            elif prob > 0.6:
+                # Classifier found a symmetry the rules missed
+                active.append(gen)
+                evidence[gen] = (
+                    f"ML classifier detected (prob={prob:.2f})"
+                )
+                confidence[gen] = prob
+
+        # Special case: if classifier predicts NO time translation
+        # and confidence was already lowered, remove it entirely
+        tt_idx = SYMMETRY_CLASSES.index(GeneratorKind.TIME_TRANSLATION)
+        tt_prob = probs[tt_idx]
+        if (GeneratorKind.TIME_TRANSLATION in active
+                and tt_prob < 0.15
+                and confidence.get(GeneratorKind.TIME_TRANSLATION, 0.0) < 0.5):
+            active.remove(GeneratorKind.TIME_TRANSLATION)
+            evidence.pop(GeneratorKind.TIME_TRANSLATION, None)
+            confidence.pop(GeneratorKind.TIME_TRANSLATION, None)
 
     def detect_from_database(
         self, db: ObservationDatabase
@@ -1228,6 +1297,7 @@ SYMMETRY_CLASSES = [
     GeneratorKind.SPACE_TRANSLATION_Y,
     GeneratorKind.SPACE_TRANSLATION_Z,
     GeneratorKind.ROTATION_XY,
+    GeneratorKind.BOOST_X,
     GeneratorKind.U1_PHASE,
     GeneratorKind.SU2_WEAK,
 ]
@@ -1292,6 +1362,102 @@ def build_symmetry_training_data(
         features.append(vec)
         labels.append(label)
 
+    return features, labels
+
+
+def build_diverse_symmetry_examples() -> tuple[list[list[float]], list[list[int]]]:
+    """Build explicit diverse training examples for the symmetry classifier.
+
+    Includes post-1905 scenarios where TIME_TRANSLATION is NOT the answer,
+    preventing the classifier from becoming a default TIME_TRANSLATION machine.
+
+    Returns:
+        (features, labels) where:
+        - features: list of binary quantity vectors (indexed by QUANTITY_VOCAB)
+        - labels: list of multi-label vectors (indexed by SYMMETRY_CLASSES)
+    """
+    from src.physics.composer import QUANTITY_VOCAB
+
+    def make_vec(*quantities: str) -> list[float]:
+        """Create a binary quantity feature vector from quantity names."""
+        qset = set(quantities)
+        return [1.0 if q in qset else 0.0 for q in QUANTITY_VOCAB]
+
+    def make_label(**kwargs: bool) -> list[int]:
+        """Create a multi-hot label vector from symmetry name→bool mapping."""
+        label_map = {g: kwargs.get(g.name, False) for g in SYMMETRY_CLASSES}
+        return [1 if label_map[g] else 0 for g in SYMMETRY_CLASSES]
+
+    examples: list[tuple[list[float], list[int]]] = []
+
+    # ── Pre-1905: conservative mechanics (TIME_TRANSLATION) ────────────────
+    # Free fall — energy conserved
+    examples.append((
+        make_vec("m", "g", "h", "v", "t"),
+        make_label(TIME_TRANSLATION=True),
+    ))
+    # Projectile — energy + x-momentum conserved
+    examples.append((
+        make_vec("m", "g", "x", "y", "vx", "vy", "t"),
+        make_label(TIME_TRANSLATION=True, SPACE_TRANSLATION_X=True),
+    ))
+    # Spring — energy conserved
+    examples.append((
+        make_vec("m", "k", "x", "v", "t"),
+        make_label(TIME_TRANSLATION=True),
+    ))
+    # EM — energy + U(1) gauge
+    examples.append((
+        make_vec("m", "q", "E", "v", "x", "t"),
+        make_label(TIME_TRANSLATION=True, U1_PHASE=True),
+    ))
+    # Pendulum — energy conserved
+    examples.append((
+        make_vec("m", "g", "L", "theta", "omega", "t"),
+        make_label(TIME_TRANSLATION=True),
+    ))
+    # Collision — energy conserved (elastic)
+    examples.append((
+        make_vec("m1", "v1", "m2", "v2", "t"),
+        make_label(TIME_TRANSLATION=True, SPACE_TRANSLATION_X=True),
+    ))
+
+    # ── Post-1905: scenarios where TIME_TRANSLATION gets 0.0 ───────────────
+    # Muon lifetime — BOOST symmetry, time dilation → NO time translation
+    examples.append((
+        make_vec("v", "c", "gamma", "tau", "E", "p", "t"),
+        make_label(BOOST_X=True),  # TIME_TRANSLATION=False
+    ))
+    # Double-slit interference — phase symmetry, no continuous energy
+    examples.append((
+        make_vec("lambda", "p", "hbar", "E", "t"),
+        make_label(),  # No continuous symmetries from classical set
+    ))
+    # Hydrogen Balmer — quantized, no continuous time translation
+    examples.append((
+        make_vec("n", "lambda", "E", "R", "t"),
+        make_label(),  # No continuous symmetries
+    ))
+    # Uncertainty — phase-space symmetry, not time translation
+    examples.append((
+        make_vec("delta_x", "delta_p", "hbar", "t"),
+        make_label(),  # No classical continuous symmetry
+    ))
+
+    # ── Also add mechanics variants with only non-TIME_TRANSLATION features ─
+    # System with ONLY x and v but no mass — can't be time conservative
+    examples.append((
+        make_vec("x", "v", "t"),
+        make_label(SPACE_TRANSLATION_X=True),
+    ))
+    # System with y coordinate only, no time translation (velocity-dependent)
+    examples.append((
+        make_vec("y", "vy", "t"),
+        make_label(SPACE_TRANSLATION_Y=True),
+    ))
+
+    features = [f for f, _ in examples]
+    labels = [l for _, l in examples]
     return features, labels
 
 

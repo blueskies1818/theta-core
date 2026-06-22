@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Train the symmetry classifier on all observation databases.
+"""Train the symmetry classifier on all observation databases + diverse examples.
 
-Generates training data from Phase A-E scenarios, trains a small MLP
-(~100K params) to classify which symmetries are present in a system
-given only its quantity set.
+Generates training data from Phase A-E scenarios and explicit post-1905 examples
+to prevent the classifier from becoming a default TIME_TRANSLATION machine.
 
 Output: checkpoints/symmetry_classifier.pt
 """
@@ -16,6 +15,7 @@ import torch
 from src.physics.symmetry import (
     SymmetryClassifier,
     build_symmetry_training_data,
+    build_diverse_symmetry_examples,
     train_symmetry_classifier,
 )
 
@@ -45,6 +45,13 @@ def main() -> None:
         all_labels.extend(labels)
         print(f"    → {len(features)} examples")
 
+    # ── Add diverse (post-1905) examples ───────────────────────────────────
+    print("\nAdding diverse training examples (post-1905 symmetry labels)...")
+    div_features, div_labels = build_diverse_symmetry_examples()
+    all_features.extend(div_features)
+    all_labels.extend(div_labels)
+    print(f"    → {len(div_features)} diverse examples added")
+
     # Deduplicate by feature vector
     seen: set[tuple] = set()
     dedup_features: list[list[float]] = []
@@ -61,10 +68,12 @@ def main() -> None:
 
     # Print class distribution
     from src.physics.symmetry import SYMMETRY_CLASS_LABELS
-    label_sums = [sum(lab[i] for lab in dedup_labels) for i in range(len(dedup_labels[0]))]
+    label_sums = [sum(lab[i] for lab in dedup_labels)
+                  for i in range(len(dedup_labels[0]))]
     print("\nClass distribution:")
     for name, count in zip(SYMMETRY_CLASS_LABELS, label_sums):
-        print(f"  {name}: {count}/{len(dedup_labels)} ({100*count/max(1,len(dedup_labels)):.1f}%)")
+        pct = 100 * count / max(1, len(dedup_labels))
+        print(f"  {name}: {count}/{len(dedup_labels)} ({pct:.1f}%)")
 
     # Train
     print("\nTraining symmetry classifier...")
@@ -82,12 +91,15 @@ def main() -> None:
 
     # Quick eval
     print("\nEvaluation on training data:")
-    for i in range(min(5, len(dedup_features))):
+    for i in range(min(8, len(dedup_features))):
         probs = clf.predict(dedup_features[i])
         true = dedup_labels[i]
         pred = [1 if p > 0.5 else 0 for p in probs]
         acc = sum(1 for a, b in zip(pred, true) if a == b) / len(true)
         print(f"  Example {i}: true={true}, pred={pred}, acc={acc:.3f}")
+
+    # Print label meanings
+    print(f"\nLabel order: {SYMMETRY_CLASS_LABELS}")
 
 
 if __name__ == "__main__":

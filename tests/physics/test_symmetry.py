@@ -561,7 +561,7 @@ class TestSymmetryClassifier:
             assert len(labels) == 1
             from src.physics.composer import NUM_QUANTITIES
             assert len(features[0]) == NUM_QUANTITIES  # dynamic
-            assert len(labels[0]) == 7  # 7 symmetry classes
+            assert len(labels[0]) == len(SYMMETRY_CLASSES)  # dynamic
         finally:
             Path(tmp.name).unlink(missing_ok=True)
 
