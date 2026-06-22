@@ -3,226 +3,195 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>theta-core — For Curious Minds (Age 14+)</title>
+<title>theta-core — How It Thinks (Age 14+)</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0a0a1a; color: #e0e0ff; font-family: 'Segoe UI', sans-serif; 
-         display: flex; flex-direction: column; align-items: center; min-height: 100vh; 
-         padding: 40px 20px; }
-  h1 { color: #ffcc00; font-size: 2.2em; margin-bottom: 10px; }
-  .subtitle { color: #aaa; margin-bottom: 40px; font-size: 1.1em; }
-  
-  .scene { width: 100%; max-width: 700px; margin-bottom: 60px; }
-  .scene-title { color: #ff9900; font-size: 1.3em; margin-bottom: 15px; text-align: center; }
-  
-  .box { background: #1a1a3a; border-radius: 20px; padding: 25px; 
-         border: 2px solid #333366; position: relative; overflow: hidden; }
-  
-  .ingredients { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
-  .ingredient { background: #2a2a5a; border-radius: 12px; padding: 12px 18px; 
-               font-size: 1.2em; font-weight: bold; animation: float 3s ease-in-out infinite; }
-  .ingredient:nth-child(1) { animation-delay: 0s; color: #ff6666; }
-  .ingredient:nth-child(2) { animation-delay: 0.5s; color: #66ff66; }
-  .ingredient:nth-child(3) { animation-delay: 1s; color: #6699ff; }
-  .ingredient:nth-child(4) { animation-delay: 1.5s; color: #ffcc00; }
-  
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-  }
-  
-  .arrow-down { text-align: center; font-size: 2em; color: #ffcc00; margin: 15px 0; 
-               animation: bounce 1s infinite; }
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  
-  .chef { text-align: center; font-size: 3em; margin: 15px 0; }
-  
-  .mix-bowl { background: #2a2a5a; border-radius: 15px; padding: 20px; text-align: center;
-             animation: pulse 2s infinite; }
-  @keyframes pulse {
-    0% { box-shadow: 0 0 10px #ffcc00; }
-    50% { box-shadow: 0 0 30px #ff9900; }
-    100% { box-shadow: 0 0 10px #ffcc00; }
-  }
-  .result { color: #66ff66; font-size: 1.3em; margin-top: 10px; animation: fadeIn 2s; }
-  
-  @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  
-  .equation { font-size: 1.5em; color: #ffcc00; margin: 10px 0; font-family: monospace; }
-  
-  .success { color: #66ff66; font-size: 1.5em; animation: celebrat 1.5s infinite; }
-  @keyframes celebrat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-  }
-  
-  .discovery { color: #ffcc00; font-size: 1.2em; margin: 10px 0; }
-  .tag { display: inline-block; background: #ff9900; color: #0a0a1a; padding: 5px 15px; 
-         border-radius: 20px; font-weight: bold; margin: 5px; animation: popIn 0.5s; }
-  @keyframes popIn {
-    0% { transform: scale(0); }
-    80% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-  }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background: linear-gradient(135deg, #0a0a2e 0%, #1a0a3e 50%, #0a1a2e 100%);
+  color:#e0e0ff; font-family:'Segoe UI',sans-serif; height:100vh; overflow:hidden; }
+#dashboard { display:grid; grid-template-columns:280px 1fr; height:100vh; }
+
+#brain-panel { background:rgba(10,10,40,0.95); border-right:2px solid #333; 
+  padding:20px; display:flex; flex-direction:column; align-items:center; }
+#brain-title { color:#ffcc00; font-size:1.3em; margin-bottom:10px; text-align:center; }
+#brain-icon { font-size:5em; margin:10px 0; animation:thinkPulse 2s infinite; }
+@keyframes thinkPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+#brain-label { color:#aaa; font-size:0.85em; text-align:center; margin-bottom:20px; }
+
+.component { background:#1a1a3a; border:2px solid #2a2a5a; border-radius:12px;
+  padding:12px; margin:6px 0; width:100%; text-align:center; font-size:0.9em;
+  transition:all 0.4s; opacity:0.5; }
+.component.active { border-color:#ffcc00; box-shadow:0 0 15px rgba(255,204,0,0.3); 
+  opacity:1; transform:scale(1.03); }
+.component.done { border-color:#66ff66; opacity:0.8; }
+.comp-name { font-weight:bold; font-size:0.95em; }
+.comp-status { font-size:0.75em; color:#888; margin-top:4px; }
+.component.active .comp-status { color:#ffcc00; }
+.component.done .comp-status { color:#66ff66; }
+
+#main-stage { display:flex; flex-direction:column; padding:30px; position:relative; 
+  overflow:hidden; }
+#thought-bubble { background:rgba(255,255,255,0.05); border:1px solid #444; 
+  border-radius:20px; padding:25px; min-height:120px; margin-bottom:20px;
+  font-size:1.1em; line-height:1.6; position:relative; }
+#thought-bubble:before { content:'💭'; position:absolute; top:-15px; left:20px; 
+  font-size:1.5em; }
+#thought-text { color:#e0e0ff; }
+#progress-bar { height:4px; background:#2a2a5a; border-radius:2px; margin:10px 0 20px; }
+#progress-fill { height:100%; background:linear-gradient(90deg,#ffcc00,#ff9900);
+  border-radius:2px; width:0%; transition:width 0.5s; }
+
+#discovery-area { background:rgba(0,0,0,0.3); border:1px solid #333; border-radius:16px;
+  padding:25px; min-height:150px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; }
+#discovery-text { font-size:1.4em; color:#66ff66; text-align:center; display:none; }
+#discovery-eq { font-size:2em; color:#ffcc00; font-family:monospace; margin:10px 0; 
+  display:none; animation:popIn 0.5s; }
+@keyframes popIn { 0%{transform:scale(0);opacity:0} 70%{transform:scale(1.1)} 
+  100%{transform:scale(1);opacity:1} }
+
+#play-btn { background:#ff9900; color:#0a0a1a; border:none; padding:14px 44px;
+  font-size:1.2em; font-weight:bold; border-radius:30px; cursor:pointer;
+  position:absolute; bottom:30px; right:30px; transition:all 0.2s; z-index:10; }
+#play-btn:hover { transform:scale(1.05); background:#ffaa22; }
+#play-btn:disabled { background:#555; cursor:default; transform:none; }
+
+#data-flow { position:absolute; top:0; left:0; width:100%; height:100%; 
+  pointer-events:none; }
+.particle { position:absolute; width:6px; height:6px; background:#ffcc00; 
+  border-radius:50%; opacity:0; animation:flow 2s linear infinite; }
+@keyframes flow { 0%{opacity:0;transform:translate(0,0)} 20%{opacity:1} 
+  80%{opacity:1} 100%{opacity:0;transform:translate(200px,-100px)} }
+
+.badge { display:inline-block; background:#ff9900; color:#0a0a1a; padding:3px 12px;
+  border-radius:12px; font-weight:bold; font-size:0.85em; margin:3px; 
+  animation:badgeIn 0.3s; }
+@keyframes badgeIn { 0%{transform:scale(0)} 100%{transform:scale(1)} }
 </style>
 </head>
 <body>
-
-<h1>How the AI Learns Physics</h1>
-<div class="subtitle">No textbook. Just numbers and curiosity.</div>
-
-<!-- SCENE 1: INGREDIENTS -->
-<div class="scene">
-  <div class="scene-title">Scene 1 — The AI Gets Ingredients</div>
-  <div class="box">
-    <p style="text-align:center; margin-bottom:15px; color:#aaa">
-      We give it a falling ball. That's it. Just measurements.
-    </p>
-    <div class="ingredients">
-      <span class="ingredient">Mass (m)</span>
-      <span class="ingredient">Gravity (g)</span>
-      <span class="ingredient">Height (h)</span>
-      <span class="ingredient">Speed (v)</span>
-    </div>
-    <p style="text-align:center; color:#aaa; margin-top:10px">
-      It has no idea what "energy" is. Just letters and numbers.
-    </p>
+<div id="dashboard">
+  <!-- BRAIN PANEL — persistent model representation -->
+  <div id="brain-panel">
+    <div id="brain-title">🧠 The Learning System</div>
+    <div id="brain-icon">⚛️</div>
+    <div id="brain-label">Pre-1905 Knowledge</div>
+    
+    <div class="component" id="comp-sense"><div class="comp-name">👁️ Observe</div>
+      <div class="comp-status">waiting...</div></div>
+    <div class="component" id="comp-classify"><div class="comp-name">🏷️ Classify</div>
+      <div class="comp-status">waiting...</div></div>
+    <div class="component" id="comp-compose"><div class="comp-name">🧩 Compose</div>
+      <div class="comp-status">waiting...</div></div>
+    <div class="component" id="comp-symmetry"><div class="comp-name">🔍 Symmetry</div>
+      <div class="comp-status">waiting...</div></div>
+    <div class="component" id="comp-search"><div class="comp-name">🧪 Search</div>
+      <div class="comp-status">waiting...</div></div>
+    <div class="component" id="comp-hidden"><div class="comp-name">❓ Hidden</div>
+      <div class="comp-status">waiting...</div></div>
+    <div class="component" id="comp-prove"><div class="comp-name">📐 Prove</div>
+      <div class="comp-status">waiting...</div></div>
   </div>
-</div>
-
-<!-- SCENE 2: MIXING -->
-<div class="scene">
-  <div class="scene-title">Scene 2 — The AI Becomes a Chef</div>
-  <div class="box">
-    <div class="chef">👨‍🍳</div>
-    <p style="text-align:center; color:#aaa; margin-bottom:15px">
-      It starts mixing ingredients, trying every possible recipe:
-    </p>
-    <div class="mix-bowl">
-      <p>m + v = <span style="color:#ff6666">changes ✗</span></p>
-      <p>m × g × h = <span style="color:#ff6666">changes ✗</span></p>
-      <p>½ × m × v² = <span style="color:#ff6666">changes ✗</span></p>
-      <p style="margin-top:10px">m·g·h + ½·m·v² = <span class="result">STAYS THE SAME ✓</span></p>
-      <div class="equation">mgh + ½mv² = constant</div>
+  
+  <!-- MAIN STAGE -->
+  <div id="main-stage">
+    <div id="thought-bubble"><div id="thought-text">
+      The system is idle. Click ▶ to start the discovery process...
+    </div></div>
+    <div id="progress-bar"><div id="progress-fill"></div></div>
+    
+    <div id="discovery-area">
+      <div id="discovery-text"></div>
+      <div id="discovery-eq"></div>
     </div>
-    <p style="text-align:center; color:#ffcc00; margin-top:15px">
-      "Wait — no matter when I check, this number never changes!"
-    </p>
+    
+    <button id="play-btn" onclick="startPipeline()">▶ Start Discovery</button>
+    <div id="data-flow"></div>
   </div>
-</div>
-
-<!-- SCENE 3: DISCOVERY -->
-<div class="scene">
-  <div class="scene-title">Scene 3 — It Just Discovered Something</div>
-  <div class="box">
-    <p style="text-align:center; color:#aaa; margin-bottom:15px">
-      It checks 10 different falling balls. All same result. Then it checks:
-    </p>
-    <div class="mix-bowl">
-      <p>Pendulum: mgh + ½mv² = <span class="result">constant ✓</span></p>
-      <p style="color:#aaa; margin:10px 0">(scenarios it NEVER saw before)</p>
-      <p>Projectile: mgh + ½mv² = <span class="result">constant ✓</span></p>
-    </div>
-    <div class="discovery" style="text-align:center; margin-top:20px">
-      It discovered conservation of energy.<br>
-      <strong>Nobody told it what energy is.</strong>
-    </div>
-    <div style="text-align:center; margin-top:20px">
-      <span class="tag">Energy = mgh + ½mv²</span>
-    </div>
-  </div>
-</div>
-
-<!-- SCENE 4: QUANTUM LEAP -->
-<div class="scene">
-  <div class="scene-title">Scene 4 — The Quantum Leap</div>
-  <div class="box">
-    <p style="text-align:center; color:#aaa; margin-bottom:15px">
-      Then we give it hydrogen spectrum measurements. It tries everything — nothing works.
-      But it notices something weird about its failures...
-    </p>
-    <div class="mix-bowl">
-      <p style="color:#aaa">"My failed attempts follow a pattern."</p>
-      <p style="color:#aaa">"The errors curve like 1/n²..."</p>
-      <p style="color:#ff9900; margin-top:10px">"There must be a COUNTING NUMBER hiding here!"</p>
-      <p style="margin-top:10px">It proposes: <span style="color:#66ff66">n = 1,2,3...</span></p>
-      <p>E × n² = <span class="result">constant ✓</span></p>
-    </div>
-    <div class="discovery" style="text-align:center; margin-top:20px">
-      It discovered quantum energy levels.<br>
-      <strong>Trained on 1800s physics. Discovered 1920s physics.</strong>
-    </div>
-    <div style="text-align:center; margin-top:20px">
-      <span class="tag">Quantum ✓</span>
-      <span class="tag">Relativity ✓</span>
-      <span class="tag">All 8/8 ✓</span>
-    </div>
-  </div>
-</div>
-
-<!-- PLAY BUTTON -->
-<div style="text-align:center; margin: 40px 0">
-  <button onclick="playPipeline()" style="background:#ff9900; color:#0a0a1a; border:none; 
-    padding:15px 40px; font-size:1.3em; font-weight:bold; border-radius:30px; cursor:pointer;
-    transition: transform 0.2s" onmouseover="this.style.transform='scale(1.05)'" 
-    onmouseout="this.style.transform='scale(1)'">
-    ▶ Play Full Pipeline
-  </button>
-</div>
-
-<div id="pipeline-video" style="display:none; max-width:700px; margin:0 auto;">
-  <div class="box" style="margin-bottom:20px">
-    <div id="video-step" style="text-align:center; font-size:1.2em; color:#ffcc00; min-height:200px">
-      Click play to begin...
-    </div>
-  </div>
-  <div id="video-progress" style="text-align:center; color:#aaa; font-size:0.9em"></div>
 </div>
 
 <script>
-const steps = [
-  { text: "📥 Step 1: Receive Observations<br><br>The system gets raw measurements — a ball falling, a pendulum swinging, a spring bouncing.<br>It doesn't know what 'energy' or 'gravity' mean. Just numbers.", sec: 3 },
-  { text: "🏷️ Step 2: Classify Domains<br><br>\"I see height and speed changing — that's gravity.\"<br>\"I see stretch changing — that's springs.\"<br>Each domain model learned patterns from pre-1905 physics.", sec: 3 },
-  { text: "🧩 Step 3: Compose Templates<br><br>Gravity says: mgh + ½mv² stays the same.<br>Spring says: ½kx² + ½mv² stays the same.<br>Composer unions them: mgh + ½mv² + ½kx²", sec: 4 },
-  { text: "🔍 Step 4: Check Symmetries<br><br>\"Time looks the same at every measurement — time translation symmetry!\"<br>That means a quantity MUST be conserved. What is it?", sec: 3 },
-  { text: "🧪 Step 5: Search for the Invariant<br><br>Trying m+v... changes ✗<br>Trying m×v... changes ✗<br>Trying mgh + ½mv²... SAME EVERY TIME ✓✓✓", sec: 4 },
-  { text: "❓ Step 6: Nothing Working? Look Deeper<br><br>For hydrogen, nothing worked. But the failures had a shape — like 1/n².<br>\"There's a counting number hidden here!\"<br>Proposes n=1,2,3... and n² unlocks everything.", sec: 4 },
-  { text: "📐 Step 7: Prove It Mathematically<br><br>\"It was constant when I checked. Is it ALWAYS constant?\"<br>The auto-prover writes a Lean proof:<br>For all times t, for all masses m, for all heights h₀ — this expression never changes.", sec: 4 },
-  { text: "🎉 DISCOVERY!<br><br>8 post-1905 laws discovered from pre-1905 training.<br>Quantum mechanics. Special relativity.<br>No physics textbook. No equations injected.<br>Just numbers — and the ability to learn.", sec: 5 }
-];
-let currentStep = 0;
-let timer = null;
+const components = ['sense','classify','compose','symmetry','search','hidden','prove'];
+const badges = {
+  gravity:'Gravity ⚡', spring:'Springs 🔧', energy:'Energy ⚡',
+  quantum:'Quantum 🌌', relativity:'Relativity 🚀', discovered:'DISCOVERED 🎉'
+};
 
-function playPipeline() {
-  document.getElementById('pipeline-video').style.display = 'block';
-  document.querySelector('button').disabled = true;
-  document.querySelector('button').textContent = '⏳ Running...';
-  document.querySelector('button').style.background = '#666';
-  currentStep = 0;
-  showStep();
+const scenes = [
+  { comp:'sense', status:'Receiving data...', 
+    thought:'The system receives raw measurements from a bouncing spring with gravity.<br><br>It sees: mass=1kg, height changing, speed changing, spring stretching.<br><br>It doesn\'t know what "energy" or "conservation" means. Just numbers.',
+    duration:4 },
+  { comp:'classify', status:'Identifying patterns...',
+    thought:'"I\'ve seen numbers like this before. Height and speed changing together — that\'s gravity. Spring stretching — that\'s springs."<br><br>Each pattern was learned from pre-1905 physics: falling balls, pendulums, oscillating springs.<br><br>Two patterns firing at once!',
+    duration:3.5 },
+  { comp:'compose', status:'Combining templates...',
+    thought:'From gravity training: "Whenever I see mass, height, and speed, <b>mgh + ½mv²</b> stays the same."<br><br>From spring training: "Whenever I see spring stiffness and stretch, <b>½kx² + ½mv²</b> stays the same."<br><br>Both are active! Let me combine them...',
+    duration:4 },
+  { comp:'symmetry', status:'Finding the rules...',
+    thought:'"Time passes the same way at every moment I measured. That means something MUST be conserved."<br><br>This is a deep pattern — when time behaves the same everywhere, there\'s always a number that never changes. Physics calls this Noether\'s theorem.',
+    duration:3.5 },
+  { comp:'search', status:'Testing candidates...',
+    thought:'The system tries every math combination:<br><br>m+v → <span style="color:#ff6666">changes ✗</span><br>m×g×h → <span style="color:#ff6666">changes ✗</span><br>½×m×v² → <span style="color:#ff6666">changes ✗</span><br><br>m×g×h + ½×m×v² + ½×k×x² → <span style="color:#66ff66">SAME EVERY TIME ✓✓✓</span><br><br>At t=0: 19.60. At t=0.2: 19.57. At t=0.5: 19.72. Nearly identical!',
+    duration:5 },
+  { comp:'hidden', status:'Looking deeper...',
+    thought:'For hydrogen spectrum, every combination failed! But the failures weren\'t random — they curved like 1/n².<br><br>"There\'s a counting number hiding in this data!"<br><br>The system learned this trick from 1800s standing waves on violin strings, where the pattern is n=1,2,3...<br><br>It proposes: hidden integer n, use n². Suddenly E×n² is constant!',
+    duration:5 },
+  { comp:'prove', status:'Writing proof...',
+    thought:'"It was constant when I checked 10 times. Is it ALWAYS constant?"<br><br>The system writes a mathematical proof: for ALL masses, ALL heights, ALL times — this expression never changes.<br><br>No more checking. Proven forever.',
+    duration:3.5 }
+];
+
+function activateComponent(id, status) {
+  document.getElementById('comp-'+id).classList.add('active');
+  document.getElementById('comp-'+id).querySelector('.comp-status').textContent = status;
+  components.filter(c=>components.indexOf(c)<components.indexOf(id)).forEach(c=>
+    document.getElementById('comp-'+c).classList.add('done'));
 }
 
-function showStep() {
-  if (currentStep >= steps.length) {
-    document.getElementById('video-progress').textContent = '✅ Complete — scroll up to review';
-    document.querySelector('button').disabled = false;
-    document.querySelector('button').textContent = '▶ Play Again';
-    document.querySelector('button').style.background = '#ff9900';
-    return;
+function spawnParticles() {
+  const container = document.getElementById('data-flow');
+  for(let i=0;i<15;i++) {
+    setTimeout(()=>{
+      const p = document.createElement('div'); p.className='particle';
+      p.style.left=(20+Math.random()*60)+'%';
+      p.style.top=(10+Math.random()*80)+'%';
+      p.style.animationDuration=(1.5+Math.random()*2)+'s';
+      p.style.animationDelay=Math.random()+'s';
+      container.appendChild(p);
+      setTimeout(()=>p.remove(),3000);
+    },i*150);
   }
-  const s = steps[currentStep];
-  document.getElementById('video-step').innerHTML = s.text;
-  document.getElementById('video-progress').textContent = `Step ${currentStep+1} of ${steps.length}`;
-  currentStep++;
-  timer = setTimeout(showStep, s.sec * 1000);
+}
+
+async function startPipeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Discovering...';
+  document.getElementById('discovery-text').style.display = 'none';
+  document.getElementById('discovery-eq').style.display = 'none';
+  document.getElementById('progress-fill').style.width = '0%';
+  components.forEach(c=>{document.getElementById('comp-'+c).className='component';});
+  
+  for(let i=0;i<scenes.length;i++) {
+    const s = scenes[i];
+    activateComponent(s.comp, s.status);
+    document.getElementById('thought-text').innerHTML = s.thought;
+    document.getElementById('progress-fill').style.width = ((i+1)/scenes.length*90)+'%';
+    spawnParticles();
+    await new Promise(r=>setTimeout(r,s.duration*1000));
+  }
+  
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('thought-text').innerHTML = 
+    'The system has finished. Here\'s what it found — without ever being told what "energy" is:';
+  document.getElementById('discovery-text').style.display = 'block';
+  document.getElementById('discovery-text').innerHTML = 
+    '⚡ <b>8 post-1905 laws discovered from pre-1905 training</b>';
+  document.getElementById('discovery-eq').style.display = 'block';
+  document.getElementById('discovery-eq').innerHTML = 
+    'mgh + ½mv² + ½kx² = constant → Energy!';
+  
+  components.forEach(c=>document.getElementById('comp-'+c).className='component done');
+  btn.disabled = false; btn.textContent = '▶ Play Again';
 }
 </script>
-
 </body>
 </html>

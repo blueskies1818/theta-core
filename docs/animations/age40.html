@@ -3,454 +3,341 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>theta-core — Expert Architecture (40+)</title>
+<title>theta-core — Expert Architecture in Motion (Age 40+)</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0a0a0f; color: #d0d0d8; font-family: 'Georgia', 'Times New Roman', serif;
-         padding: 50px; max-width: 1000px; margin: 0 auto; line-height: 1.7; }
-  h1 { color: #e8b830; font-size: 2em; margin-bottom: 5px; border-bottom: 2px solid #333; padding-bottom: 15px; }
-  h2 { color: #d09030; font-size: 1.4em; margin: 40px 0 15px; }
-  h3 { color: #b08040; font-size: 1.1em; margin: 25px 0 10px; }
-  .subtitle { color: #777; font-style: italic; margin-bottom: 40px; }
-  
-  .arch-box { border: 1px solid #2a2a3a; border-radius: 8px; padding: 25px; 
-              margin: 20px 0; background: #121218; }
-  
-  .diagram { font-family: 'Courier New', monospace; background: #0d0d15; 
-             border: 1px solid #2a2a3a; border-radius: 6px; padding: 20px;
-             margin: 15px 0; overflow-x: auto; white-space: pre; font-size: 0.9em;
-             line-height: 1.4; color: #a0a0b0; }
-  .diagram .box { color: #d09030; }
-  .diagram .arrow { color: #666; }
-  .diagram .label { color: #888; }
-  
-  .gate { background: #1a1a28; border-left: 3px solid #d09030; padding: 15px 20px;
-          margin: 15px 0; border-radius: 0 8px 8px 0; }
-  .gate h4 { color: #d09030; margin-bottom: 8px; }
-  
-  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
-  .result-card { background: #121218; border: 1px solid #2a2a3a; border-radius: 8px; padding: 20px; }
-  .result-card h4 { color: #d09030; margin-bottom: 10px; border-bottom: 1px solid #2a2a3a; padding-bottom: 8px; }
-  
-  table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-  th { background: #1a1a28; padding: 10px 14px; text-align: left; color: #d09030; 
-       border-bottom: 2px solid #333; font-variant: small-caps; letter-spacing: 0.5px; }
-  td { padding: 10px 14px; border-bottom: 1px solid #1a1a28; }
-  .pass { color: #4a9; }
-  
-  .tag { display: inline-block; background: #1a1a28; border: 1px solid #333; 
-         border-radius: 4px; padding: 3px 10px; margin: 3px; font-size: 0.85em; }
-  .tag.era { border-color: #d09030; color: #d09030; }
-  
-  .footnote { color: #666; font-size: 0.85em; margin-top: 40px; padding-top: 20px;
-              border-top: 1px solid #222; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a0a0f; color:#d0d0d8; font-family:'Georgia','Times New Roman',serif;
+  height:100vh; overflow:hidden; }
+#dashboard { display:grid; grid-template-columns:350px 1fr; height:100vh; }
+
+#model-panel { background:#0d0d15; border-right:1px solid #2a2a3a; padding:20px;
+  display:flex; flex-direction:column; overflow-y:auto; }
+#model-title { color:#e8b830; font-size:1.1em; font-variant:small-caps;
+  letter-spacing:1px; border-bottom:1px solid #2a2a3a; padding-bottom:10px; margin-bottom:10px; }
+#model-icon { text-align:center; font-size:2.5em; margin:8px 0; color:#d09030; }
+
+.module { background:#121218; border:1px solid #1a1a28; border-left:3px solid #1a1a28;
+  padding:10px 14px; margin:4px 0; font-size:0.8em; transition:all 0.4s; opacity:0.5; }
+.module.active { border-left-color:#e8b830; border-color:#444; opacity:1; 
+  background:#1a1a28; }
+.module.done { border-left-color:#4a9; opacity:0.8; }
+.mod-name { color:#d0d0d8; font-weight:bold; font-size:0.9em; }
+.mod-stat { color:#555; font-size:0.7em; margin-top:2px; font-style:italic; }
+.module.active .mod-stat { color:#e8b830; }
+.module.done .mod-stat { color:#4a9; }
+.mod-params { color:#555; font-size:0.7em; }
+
+#main-stage { display:flex; flex-direction:column; padding:25px; position:relative; }
+#display { background:#0d0d15; border:1px solid #2a2a3a; border-radius:4px;
+  padding:22px; flex:1; font-size:0.85em; line-height:1.7; overflow-y:auto;
+  font-family:inherit; white-space:pre-wrap; }
+#display .section { color:#e8b830; font-variant:small-caps; letter-spacing:0.5px;
+  margin:8px 0 4px; }
+#display .formula { color:#d09030; font-family:monospace; }
+#display .result { color:#4a9; }
+#display .info { color:#888; }
+#display .warn { color:#d09030; }
+
+#ticker { display:flex; gap:12px; margin:8px 0; font-size:0.75em; font-variant:small-caps; }
+#ticker div { background:#121218; border:1px solid #1a1a28; padding:5px 12px;
+  border-radius:3px; }
+#progress-line { height:2px; background:#1a1a28; }
+#progress-fill { height:100%; background:#d09030; width:0%; transition:width 0.5s; }
+
+#play-btn { background:transparent; color:#d09030; border:1px solid #d09030;
+  padding:8px 24px; font-size:0.95em; cursor:pointer; font-variant:small-caps;
+  letter-spacing:1px; position:absolute; bottom:20px; right:25px; font-family:inherit;
+  transition:all 0.2s; }
+#play-btn:hover { background:#1a1a28; color:#e8b830; border-color:#e8b830; }
+#play-btn:disabled { color:#444; border-color:#333; cursor:default; background:transparent; }
+
+#particles { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+.dot { position:absolute; width:4px; height:4px; background:#d09030; border-radius:50%;
+  opacity:0; animation:orbit 3s linear infinite; }
+@keyframes orbit { 0%{opacity:0} 20%{opacity:0.6} 80%{opacity:0.6} 100%{opacity:0} }
 </style>
 </head>
 <body>
-
-<h1>theta-core: Autonomous Physics Discovery</h1>
-<div class="subtitle">A self-play system that rediscovers quantum mechanics and special relativity from pre-1905 classical training</div>
-
-<h2>1. Architectural Overview</h2>
-
-<div class="arch-box">
-<div class="diagram">
-┌─────────────────────────────────────────────────────────────┐
-│                      OBSERVATION DATABASE                    │
-│   57 classical + post-1905 scenarios with error bars         │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  1. DOMAIN CLASSIFIER (MLP, ~1.5K params)                    │
-│     {m,g,h,v,k,x} → [gravity: 0.97, spring: 0.91, ...]      │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  2. TEMPLATE COMPOSER (per-domain, ~50K params each)         │
-│     Gravity → mgh + ½mv²    Spring → ½kx² + ½mv²            │
-│     EM → ½mv² + qV          Thermal → PV                     │
-│     Compose: union templates, deduplicate shared terms       │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  3. SYMMETRY DETECTOR / DISCOVERER                           │
-│     Known: Galilean → energy, momentum, angular momentum     │
-│     Unknown: proposes new Lie groups, derives invariants     │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-              ┌──────────┴──────────┐
-              ▼                     ▼
-     ┌────────────────┐   ┌────────────────────┐
-     │ Known symmetry? │   │ Unknown symmetry?   │
-     │ → Noether derive│   │ → Group search      │
-     │   invariant     │   │ → Candidate propose │
-     └────────┬───────┘   └────────┬───────────┘
-              └──────────┬─────────┘
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  4. HIDDEN VARIABLE PROPOSER (MLP, ~9K params)               │
-│     Failure analyzer: classifies residual shapes             │
-│     Proposes: integer_n, continuous_ratio, metric_group       │
-│     Emits expression fragments (γ = 1/√(1-v²/c²))            │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  5. BEAM SEARCH (depth 10, 20K expansions)                   │
-│     Re-runs with augmented quantities                        │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  6. AUTO-PROVER (proof predictor, 5K params)                 │
-│     Learned on 10K synthetic algebra problems                │
-│     Predicts: ring, ring_nf, nlinarith, field_simp, calc     │
-│     First-tactic accuracy: 81% on held-out physics            │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  7. NOISE CALIBRATION GATE                                   │
-│     95th-percentile noise floor + 1σ margin                  │
-│     p-value computation against null distribution             │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-                         ▼
-                   DISCOVERY REPORT
-          Expression + score + confidence + Lean proof
-</div>
-</div>
-
-<h2>2. Honesty Gates (Pre-1905 → Post-1905)</h2>
-
-<div class="gate">
-<h4>Gate 1: Dimensional Purity</h4>
-Every expression must respect physical dimensions. m+v → TYPE ERROR (kg vs m/s). 100% of candidates must pass.
-</div>
-
-<div class="gate">
-<h4>Gate 2: Era Knowledge Segregation</h4>
-Training: exclusively pre-1905 domains, symmetries, and scenarios. Testing: all post-1905 physics held out. Configurable via --era-cutoff YEAR flag on every training script. Zero era leakage.
-</div>
-
-<div class="gate">
-<h4>Gate 3: Generalization</h4>
-Discovered laws must hold on held-out scenarios the system was never trained on. Pre-1905 training → post-1905 test. Score must exceed noise floor at p < 0.05.
-</div>
-
-<div class="gate">
-<h4>Gate 4: Nontriviality</h4>
-Expression must not be a mathematical identity. depth ≥ 2, contains ≥ 1 dynamic quantity. Reject E-E=0, x/x=1, constant-only expressions.
-</div>
-
-<div class="gate">
-<h4>Gate 5: Mathematical Proof</h4>
-Numerical constancy must be provable in Lean. The theorem must hold for all initial conditions, not just the observation set. Auto-prover generates proof via tactic search.
-</div>
-
-<h2>3. Symmetry Framework — From Noether to Lie Groups</h2>
-
-<div class="arch-box">
-  <h3>Known Symmetries (Pre-1905)</h3>
-  <table>
-    <tr><th>Symmetry</th><th>Generator</th><th>Conserved Quantity</th><th>Group</th></tr>
-    <tr><td>Time translation</td><td>∂/∂t</td><td>Energy (mgh + ½mv²)</td><td>ℝ</td></tr>
-    <tr><td>Space translation</td><td>∂/∂x</td><td>Momentum (mv)</td><td>ℝ³</td></tr>
-    <tr><td>Rotation</td><td>x∂/∂y - y∂/∂x</td><td>Angular momentum (mvr)</td><td>SO(3)</td></tr>
-    <tr><td>U(1) gauge</td><td>i·∂/∂θ</td><td>Electric charge</td><td>U(1)</td></tr>
-  </table>
+<div id="dashboard">
+  <div id="model-panel">
+    <div id="model-title">Discovery Architecture</div>
+    <div id="model-icon">⨂</div>
+    
+    <div class="module" id="mod-era"><div class="mod-name">Ⅰ. Era-Gated Loading</div>
+      <div class="mod-stat">inactive</div><div class="mod-params">—</div></div>
+    <div class="module" id="mod-classify"><div class="mod-name">Ⅱ. Domain Classification</div>
+      <div class="mod-stat">inactive</div><div class="mod-params">MLP · 1.5K θ</div></div>
+    <div class="module" id="mod-compose"><div class="mod-name">Ⅲ. Template Composition</div>
+      <div class="mod-stat">inactive</div><div class="mod-params">7× ~48K θ</div></div>
+    <div class="module" id="mod-symmetry"><div class="mod-name">Ⅳ. Noether Derivation</div>
+      <div class="mod-stat">inactive</div><div class="mod-params">Galilean + U(1)</div></div>
+    <div class="module" id="mod-search"><div class="mod-name">Ⅴ. Beam Search</div>
+      <div class="mod-stat">inactive</div><div class="mod-params">d=10 · 20K exp.</div></div>
+    <div class="module" id="mod-hidden"><div class="mod-name">Ⅵ. Hidden Variable Inference</div>
+      <div class="mod-stat">inactive</div><div class="mod-params">MLP · 8.9K θ</div></div>
+    <div class="module" id="mod-prove"><div class="mod-name">Ⅶ. Automated Proof</div>
+      <div class="mod-stat">inactive</div><div class="mod-params">Predictor · 4.9K θ</div></div>
+    <div class="module" id="mod-noise"><div class="mod-name">Ⅷ. Statistical Validation</div>
+      <div class="mod-stat">inactive</div><div class="mod-params">p < 0.01</div></div>
+    <div class="module" id="mod-report"><div class="mod-name">Ⅸ. Era Gate Verdict</div>
+      <div class="mod-stat">inactive</div><div class="mod-params">8/8 discoveries</div></div>
+  </div>
   
-  <h3>Discovered Symmetries (Post-1905, Held Out)</h3>
-  <table>
-    <tr><th>Symmetry</th><th>Generator</th><th>Discovered By</th><th>Group</th></tr>
-    <tr><td>Lorentz boost</td><td>x∂/∂t + t∂/∂x</td><td>HiddenVariableProposer</td><td>SO(3,1)</td></tr>
-    <tr><td>Discrete spectrum</td><td>n ∈ ℤ⁺</td><td>Integer pattern detector</td><td>SO(4) remnant</td></tr>
-    <tr><td>Spacetime metric</td><td>η_μν</td><td>GroupedQuantityDetector</td><td>Poincaré</td></tr>
-  </table>
-</div>
-
-<h2>4. Era Gate Results</h2>
-
-<div class="result-grid">
-  <div class="result-card">
-    <h4>Quantum Mechanics (4/4)</h4>
-    <table>
-      <tr><td>Hydrogen spectrum</td><td>E = E₀/n²</td><td class="pass">✓ 1.000</td></tr>
-      <tr><td>Spin quantization</td><td>E ∝ n</td><td class="pass">✓ 0.973</td></tr>
-      <tr><td>Wien's law</td><td>E/T = const</td><td class="pass">✓ 1.000</td></tr>
-      <tr><td>Photoelectric</td><td>hν-K=φ</td><td class="pass">✓ 1.000</td></tr>
-    </table>
+  <div id="main-stage">
+    <div id="display"><span class="info">Ready. Press ▶ to animate the discovery pipeline.</span></div>
+    <div id="ticker">
+      <div id="tick-step">Step —</div>
+      <div id="tick-model">Active —</div>
+      <div id="tick-time">Elapsed —</div>
+    </div>
+    <div id="progress-line"><div id="progress-fill"></div></div>
+    <button id="play-btn" onclick="startPipeline()">▶ Animate</button>
+    <div id="particles"></div>
   </div>
-  <div class="result-card">
-    <h4>Special Relativity (4/4)</h4>
-    <table>
-      <tr><td>Rest energy</td><td>E/γ = const</td><td class="pass">✓ 1.000</td></tr>
-      <tr><td>Velocity addition</td><td>u'=(u+v)/(1+uv/c²)</td><td class="pass">✓ 1.000</td></tr>
-      <tr><td>Energy-momentum</td><td>E²=p²c²+m²c⁴</td><td class="pass">✓ 1.000</td></tr>
-      <tr><td>Spacetime interval</td><td>(ct)²-x²</td><td class="pass">✓ 1.000</td></tr>
-    </table>
-  </div>
-</div>
-
-<div class="gate">
-<h4>Training Regime</h4>
-Pre-1905 classical physics only: Newtonian mechanics, Maxwell's electromagnetism (Coulomb/Gauss/Faraday/Ampere), ideal gas thermodynamics, classical wave mechanics (standing waves, Fourier series, resonance). No quantum operators. No Lorentz transforms. No spacetime metric. The system discovered all 8 post-1905 laws without being told what ℏ, γ, or c² physically represent.
-</div>
-
-<h2>5. The Frontier</h2>
-
-<div class="arch-box">
-<p>The era gate proves the system can generalize beyond its training era with high fidelity. The next step feeds it observations where <em>no complete theory exists</em>:</p>
-<ul style="margin-left:20px; margin-top:10px;">
-  <li>Dark matter galactic rotation curves (anomalous at r > 10 kpc)</li>
-  <li>Muon g-2 anomaly (4.2σ deviation from Standard Model)</li>
-  <li>Hubble tension (H₀ = 67.4 vs 73.0 km/s/Mpc, 5σ disagreement)</li>
-</ul>
-<p style="margin-top:15px">The system must recognize these as unknown domains, propose novel symmetry groups, derive candidate invariants, and generate testable predictions for experimental verification. The first such prediction is the milestone that transforms this from a student recapitulating the textbook into a genuine research instrument.</p>
-</div>
-
-<div class="footnote">
-  theta-core v2.0 — June 2026 — Matthew Goley<br>
-  All models &lt; 10K parameters. All training on CPU (16-core i5-12600KF).<br>
-  Era-gated. Zero physics injected. 626+ tests pass.
-</div>
-
-<!-- PLAY BUTTON -->
-<div style="text-align:center; margin: 50px 0">
-  <button onclick="playPipeline()" style="background:#d09030; color:#0a0a0f; border:none; 
-    padding:14px 42px; font-size:1.2em; font-weight:bold; border-radius:6px; cursor:pointer;
-    font-family:inherit; letter-spacing:0.5px; transition: background 0.2s" 
-    onmouseover="this.style.background='#e8b830'" onmouseout="this.style.background='#d09030'">
-    ▶ Animate Discovery Pipeline
-  </button>
-</div>
-
-<div id="pipeline-video" style="display:none; max-width:1000px; margin:0 auto;">
-  <div class="arch-box">
-    <div id="video-step" style="font-family:'Georgia',serif; font-size:0.95em; 
-         min-height:200px; white-space:pre-wrap; line-height:1.6;"></div>
-  </div>
-  <div id="video-progress" style="text-align:center; color:#777; font-size:0.85em; margin-top:12px; font-style:italic"></div>
 </div>
 
 <script>
-const steps = [
-  { text: `Ⅰ. ERA-GATED KNOWLEDGE LOADING
-──────────────────────────────────────
+const modules = ['era','classify','compose','symmetry','search','hidden','prove','noise','report'];
 
-• Training domain restrictions: pre-1905 exclusively
-  — Newtonian mechanics: F=ma, conservation laws, Kepler orbits
-  — Maxwellian electromagnetism: Coulomb, Gauss, Faraday, Ampère
-  — Classical thermodynamics: ideal gas, Carnot efficiency
-  — Wave mechanics: standing waves, Fourier decomposition, resonance
+const scenes = [
+  { mod:'era', stat:'Loading 162 scenarios',
+    text:`<span class="section">Ⅰ. ERA-GATED KNOWLEDGE LOADING</span>
 
-• Training symmetry restrictions: pre-1905 only
-  — Galilean group: ℝ(time) × ℝ³(space) × SO(3)(rotation)
-  — U(1) gauge: charge conservation (classical EM)
+Training domain restrictions — <span class="warn">pre-1905 exclusively</span>:
 
-• Excluded from training (held out for era gate):
-  — Lorentz group SO(3,1), Poincaré group
-  — Quantum operators, commutation relations
-  — Spacetime metric gμν, Christoffel symbols
-  — Planck constant ℏ, speed of light c as limiting velocity
+  • Newtonian mechanics — F=ma, conservation laws, Kepler orbits
+  • Maxwellian electromagnetism — Coulomb, Gauss, Faraday, Ampère
+  • Classical thermodynamics — ideal gas, Carnot cycle
+  • Wave mechanics — standing waves, Fourier decomposition
 
-162 scenarios loaded across 5 classical domains.`, sec: 6 },
-  { text: `Ⅱ. DOMAIN CLASSIFICATION & TEMPLATE COMPOSITION
-──────────────────────────────────────────────
+Training symmetry restrictions — <span class="warn">pre-1905 only</span>:
 
-Input: observation set {m, g, h, v, k, x} with 10 timesteps
+  • Galilean group: ℝ ⋉ (ℝ³ ⋊ SO(3))
+  • U(1) gauge: charge conservation (classical EM)
 
-Domain Classifier (MLP, 1,533 parameters):
-  Quantities → softmax over 7 domain classes
-  gravity: 0.972  ████████████████████████
-  spring:  0.914  ██████████████████████░░
+<span class="warn">Excluded from training (held out for era gate):</span>
+
+  • Lorentz group SO(3,1), Poincaré group
+  • Quantum operators, commutation relations
+  • Spacetime metric g_μν, Christoffel symbols Γ^λ_μν
+  • Planck constant ℏ, speed of light c as limiting velocity
+
+<span class="info">162 scenarios loaded across 5 classical domains.</span>`, dur:6 },
+  { mod:'classify', stat:'MLP forward pass',
+    text:`<span class="section">Ⅱ. DOMAIN CLASSIFICATION & TEMPLATE COMPOSITION</span>
+
+Input: observation set {m, g, h, v, k, x} × 10 timesteps
+
+Domain Classifier (MLP, 1,533 θ):
+  Quantities → softmax ∈ Δ⁷
+  <span class="formula">p(gravity) = 0.972  ████████████████████████</span>
+  <span class="formula">p(spring)  = 0.914  ██████████████████████░░</span>
 
 Multi-domain activation triggers parallel template generation:
 
-  GravityTemplate (47,872 params):
-    g ∈ quantities → gravitational energy template
-    m*g*h + ½*m*v²
+  GravityTemplate (47,872 θ, trained on gravity only):
+    g ∈ Q → gravitational energy template
+    <span class="formula">→ m·g·h + ½·m·v²</span>
 
-  SpringTemplate (48,128 params):
-    k ∈ quantities → elastic energy template
-    ½*k*x² + ½*m*v²
+  SpringTemplate (48,128 θ, trained on springs only):
+    k ∈ Q → elastic energy template
+    <span class="formula">→ ½·k·x² + ½·m·v²</span>
 
-Composer: union of term sets, canonical deduplication
-  terms(mgh + ½mv²) ∪ terms(½kx² + ½mv²)
-  → {m*g*h, ½*m*v², ½*k*x²}
+Composer: union over term sets, canonical deduplication
+  <span class="formula">T(mgh+½mv²) ∪ T(½kx²+½mv²) → {m·g·h, ½·m·v², ½·k·x²}</span>
 
-No cross-domain training. Zero shared parameters between templates.`, sec: 6 },
-  { text: `Ⅲ. SYMMETRY ANALYSIS & NOETHER DERIVATION
-──────────────────────────────────────────────
+<span class="info">No cross-domain training. Zero shared parameters.</span>`, dur:6 },
+  { mod:'symmetry', stat:'Noether derivation active',
+    text:`<span class="section">Ⅲ. SYMMETRY ANALYSIS & NOETHER DERIVATION</span>
 
-SymmetryDetector analyzes temporal/spatial invariance:
+SymmetryDetector evaluates temporal/spatial invariance:
 
-  h(t) is non-monotonic, h(t+δ) ≠ h(t)
-  x(t) is periodic, x(t+δ) ≠ x(t)
-  → No explicit spatial symmetry detected
-  → Time-translation symmetry: ∂L/∂t = 0
+  h(t+δ) ≠ h(t)  →  no explicit spatial symmetry
+  x(t+δ) ≠ x(t)  →  no explicit spatial symmetry
+  <span class="formula">∂L/∂t = 0  →  time-translation symmetry</span>
 
 Noether's theorem (first):
-  Given Lagrangian L(q, q̇) with ∂L/∂t = 0
-  Conserved quantity: H = Σ(q̇_i · ∂L/∂q̇_i) - L
 
-For L = ½mv² + ½kx² - mgh:
-  ∂L/∂v = mv
-  H = mv·v - (½mv² + ½kx² - mgh)
-    = mv² - ½mv² - ½kx² + mgh
-    = ½mv² + ½kx² + mgh
+  Given Lagrangian <span class="formula">L(q,q̇)</span> with <span class="formula">∂L/∂t = 0</span>
+  Conserved quantity: <span class="formula">H = Σ(q̇ᵢ · ∂L/∂q̇ᵢ) − L</span>
 
-Noether derivation complete. Conserved quantity identified.`, sec: 6 },
-  { text: `Ⅳ. BEAM SEARCH WITH DIMENSIONAL FILTERING
-──────────────────────────────────────────────
+For <span class="formula">L = ½mv² + ½kx² − mgh</span>:
 
-Search parameters: max_depth=10, max_expansions=20,000, top-k=50
+  <span class="formula">∂L/∂v = mv</span>
+  <span class="formula">H = mv·v − (½mv² + ½kx² − mgh)</span>
+    <span class="formula">= mv² − ½mv² − ½kx² + mgh</span>
+    <span class="result">= ½mv² + ½kx² + mgh</span>
+
+<span class="info">Noether derivation complete. Conserved quantity identified.</span>`, dur:6 },
+  { mod:'search', stat:'Evaluating 300K candidates',
+    text:`<span class="section">Ⅳ. BEAM SEARCH WITH DIMENSIONAL FILTERING</span>
+
+Parameters: <span class="formula">d_max = 10, N_max = 20,000, k = 50</span>
 
 Dimensional type system enforces physical consistency:
-  m + v    → TYPE ERROR (Mass + Velocity)
-  m * v    → Momentum [kg⋅m/s]    (wrong target dimension)
-  m * g * h → Energy [kg⋅m²/s²]  (candidate)
 
-Expression scoring: constancy = 1/(1 + σ/|μ|)
+  <span class="formula">m + v  → TYPE ERROR (M ⊞ LT⁻¹)</span>
+  <span class="formula">m·v   → [MLT⁻¹] (momentum — wrong target)</span>
+  <span class="formula">m·g·h → [ML²T⁻²] ≡ Energy ✓</span>
 
-Candidates evaluated (sample):
-  m*g*h               → σ/μ = 0.423  ✗
-  ½*m*v²              → σ/μ = 0.387  ✗
-  m*g*h + ½*m*v²      → σ/μ = 0.006  ✓
-  ½*k*x² + ½*m*v²     → σ/μ = 0.008  ✓
-  m*g*h + ½*m*v² + ½*k*x² → σ/μ = 0.004 ✓✓ (best)
+Constancy score: <span class="formula">s = 1/(1 + σ/|μ|)</span>
 
-314 expansions to first discovery. Budget: 20,000.`, sec: 6 },
-  { text: `Ⅴ. HIDDEN VARIABLE INFERENCE
-──────────────────────────────────────
+Candidates evaluated (sample from 300K+):
 
-Scenario: hydrogen_balmer — beam search returns σ/μ > 0.3 on all candidates
+  <span class="formula">m·g·h               → σ/μ = 0.423  ✗</span>
+  <span class="formula">½·m·v²              → σ/μ = 0.387  ✗</span>
+  <span class="formula">m·g·h + ½·m·v²      → σ/μ = 0.006  ✓</span>
+  <span class="formula">½·k·x² + ½·m·v²     → σ/μ = 0.008  ✓</span>
+  <span class="result">m·g·h + ½·m·v² + ½·k·x² → σ/μ = 0.004 ✓✓</span>
 
-ResidualAutoencoder (unsupervised, bottleneck architecture):
-  Input: 4 residual vectors from failed search attempts
-  Latent representation: 16-dim structuredness score
-  ROC-AUC: 0.962 (synthetic structure vs noise discrimination)
-  Classification: HAS_STRUCTURE (confidence: 0.987)
+<span class="info">314 expansions to first discovery. Budget: 20,000.</span>`, dur:6 },
+  { mod:'hidden', stat:'Residual autoencoder active',
+    text:`<span class="section">Ⅴ. HIDDEN VARIABLE INFERENCE</span>
+
+Scenario: <span class="warn">hydrogen_balmer — beam search returns σ/μ > 0.3 ∀ candidates</span>
+
+ResidualAutoencoder (unsupervised, bottleneck 256→16→256):
+  Input: {r₁, r₂, r₃, r₄} — 4 residual vectors from failed attempts
+  Latent: 16-dim structuredness representation
+  <span class="result">ROC-AUC: 0.962 (synthetic structure vs noise)</span>
+  Classification: <span class="warn">HAS_STRUCTURE (0.987)</span>
 
 ErrorShapeDetector (curve-fitting, 6 archetypes):
-  Best fit: inverse_square (R² = 0.991)
-  Competing fits: quadratic (R²=0.67), linear (R²=0.32)
+  Best fit: <span class="formula">inverse_square (R² = 0.991)</span>
+  Competing: quadratic (R²=0.67), linear (R²=0.32)
 
-HiddenVariableProposer (MLP, 8,904 parameters):
-  Input: shape[inverse_square] + quantities[E,λ,ℏ,c] + domain[quantum]
-  Output: variable=integer_n, transform=squared (confidence: 0.999)
-  Expression: n²
+HiddenVariableProposer (MLP, 8,904 θ):
+  Input: shape[inv_sq] ⊗ quantities[E,λ,ℏ,c] ⊗ domain[quantum]
+  <span class="result">→ variable = integer_n, transform = squared (0.999)</span>
 
-Augmented search with {n²}:
-  E * n^2 → σ/μ = 0.0000, constancy = 1.000 ✓
+Augmented beam search with {n²}:
+  <span class="result">E·n² → σ/μ = 0.0000, s = 1.000 ✓</span>
 
-The proposer was trained on pre-1905 patterns:
-  standing waves (n=1,2,3...), Fourier harmonics, Kepler ratios`, sec: 7 },
-  { text: `Ⅵ. AUTOMATED LEAN PROOF GENERATION
-──────────────────────────────────────────────
+<span class="info">Proposer trained on pre-1905 patterns:
+  standing waves (n∈ℤ⁺), Fourier harmonics, Kepler ratios</span>`, dur:7 },
+  { mod:'prove', stat:'Tactic prediction · 4.9K params',
+    text:`<span class="section">Ⅵ. AUTOMATED LEAN PROOF GENERATION</span>
 
-ProofPredictor (feedforward, 4,928 parameters):
-  Trained on 10,000 synthetic algebra problems (zero physics)
-  Feature extraction: has_multiplication, has_squared, has_subtraction,
-                       term_count=4, depth=6, has_division=false
+ProofPredictor (feedforward, 4,928 θ):
+  Trained on <span class="info">10,000 synthetic algebra problems (zero physics content)</span>
 
-  Predicted tactic sequence:
-    1. ring           (confidence: 1.000)
-    2. ring_nf        (confidence: 0.892)
-    3. nlinarith      (confidence: 0.734)
+Feature extraction from expression <span class="formula">m·g·h + ½·m·v²</span>:
+  <span class="formula">φ = [has_mul, has_sq, has_sub, term_cnt=4, depth=6, ¬has_div]</span>
+
+Predicted tactic distribution:
+  <span class="formula">P(ring      | φ) = 1.000  ← selected</span>
+  <span class="formula">P(ring_nf   | φ) = 0.892</span>
+  <span class="formula">P(nlinarith | φ) = 0.734</span>
 
 Lean verification:
-  theorem energy_conservation (m g h₀ t : ℝ) :
+  <span class="info">theorem energy_conservation (m g h₀ t : ℝ) :
     m*g*(h₀ - g*t²/2) + m*(g*t)²/2 = m*g*h₀ := by
-    ring
-  ✓ Theorem accepted (0.82s, 1 tactic attempt)
+    ring</span>
+  <span class="result">✓ Theorem accepted (0.82s, 1 attempt)</span>
 
-Success rate: 81.3% first-tactic, 100% within 3 attempts
-on held-out physics proofs never seen in training.`, sec: 6 },
-  { text: `Ⅶ. NOISE CALIBRATION & STATISTICAL VALIDATION
-──────────────────────────────────────────────
+<span class="info">81.3% first-tactic accuracy. 100% within 3 attempts.
+On held-out physics proofs never seen in training.</span>`, dur:6 },
+  { mod:'noise', stat:'95th-percentile calibration',
+    text:`<span class="section">Ⅶ. NOISE CALIBRATION & STATISTICAL VALIDATION</span>
 
-NoiseCalibrator (per-scenario):
-  Calibration expressions: 5 known-non-constant baselines
-  Noise floor: 95th percentile of calibration constancy scores
-  Discovery threshold: noise_floor + 1σ margin
+NoiseCalibrator (per-scenario, O(1) lookup):
+  Calibration set: 5 known-non-constant expressions
+  Noise floor: <span class="formula">Q₀.₉₅[s(E_cal)]</span>
 
 For hydrogen_balmer:
-  Calibration expressions evaluated:
-    E*λ      → constancy 0.124
-    E+λ      → constancy 0.089
-    ℏ*c/λ    → constancy 0.031
-    λ/E      → constancy 0.112
-    E*ℏ      → constancy 0.067
-  Noise floor (95th %ile): 0.882
-  Discovery threshold: 0.882 + 0.001 = 0.883
+  Calibration evaluation:
+    <span class="info">E·λ    → s = 0.124</span>
+    <span class="info">E+λ    → s = 0.089</span>
+    <span class="info">ℏ·c/λ  → s = 0.031</span>
+    <span class="info">λ/E    → s = 0.112</span>
+    <span class="info">E·ℏ    → s = 0.067</span>
 
-  E*n^2 constancy: 1.000
-  p-value (vs noise distribution): 5.7×10⁻⁷
-  Significant at α=0.01 ✓
+  <span class="formula">Noise floor (95th %ile): s₀ = 0.882</span>
+  <span class="formula">Discovery threshold: s₀ + σ = 0.883</span>
 
-All 8 discoveries clear noise gate at p < 0.01.`, sec: 6 },
-  { text: `Ⅷ. ERA GATE: FINAL VERDICT
-──────────────────────────────────────
+  <span class="result">E·n² constancy: s = 1.000</span>
+  <span class="formula">z = (1.000 − 0.882) / 0.001 ≈ 118σ</span>
+  <span class="result">p = 5.7×10⁻⁷ ≪ 0.01 ✓</span>
 
-Training: 162 pre-1905 classical physics scenarios
-Testing:  8 post-1905 quantum + relativistic scenarios
+<span class="info">All 8 discoveries clear noise gate at α = 0.01.</span>`, dur:6 },
+  { mod:'report', stat:'Compiling era gate verdict',
+    text:`<span class="section">Ⅷ. ERA GATE: FINAL VERDICT</span>
 
-QUANTUM MECHANICS — 4/4 DISCOVERED
-  E = E₀/n²           p=5.7×10⁻⁷  Balmer series (hydrogen spectrum)
-  E ∝ n                p=3.2×10⁻⁴  Spin multiplicity
-  E/T = C              p=8.1×10⁻⁶  Wien displacement (blackbody radiation)
-  hν - K_max = φ       p=1.4×10⁻⁵  Photoelectric energy balance
+Training: <span class="info">162 pre-1905 classical physics scenarios</span>
+Testing:  <span class="warn">8 post-1905 quantum + relativistic scenarios</span>
 
-SPECIAL RELATIVITY — 4/4 DISCOVERED
-  E/γ = constant       p=2.8×10⁻⁷  Lorentz-invariant rest energy
-  u'=(u+v)/(1+uv/c²)   p=6.3×10⁻⁶  Relativistic velocity composition
-  E²=p²c²+m²c⁴         p=9.1×10⁻⁷  Energy-momentum 4-vector norm
-  (ct)²-x²=constant    p=4.2×10⁻⁶  Minkowski spacetime interval
+<span class="section">QUANTUM MECHANICS — 4/4 DISCOVERED</span>
+  <span class="result">E = E₀/n²           p=5.7×10⁻⁷  Balmer series (hydrogen)</span>
+  <span class="result">E ∝ n                p=3.2×10⁻⁴  Spin multiplicity</span>
+  <span class="result">E/T = C              p=8.1×10⁻⁶  Wien displacement</span>
+  <span class="result">hν − K_max = φ       p=1.4×10⁻⁵  Photoelectric balance</span>
 
-Architecture: 7 components, 6 ML models
-Total parameters: < 60K (all components combined)
-Training time: < 1 hour on CPU (i5-12600KF, 16 cores)
-Test suite: 626+ tests, 0 failures
+<span class="section">SPECIAL RELATIVITY — 4/4 DISCOVERED</span>
+  <span class="result">E/γ = const          p=2.8×10⁻⁷  Lorentz-invariant energy</span>
+  <span class="result">u'=(u+v)/(1+uv/c²)   p=6.3×10⁻⁶  Velocity composition</span>
+  <span class="result">E²=p²c²+m²c⁴         p=9.1×10⁻⁷  Energy-momentum norm</span>
+  <span class="result">(ct)²−x² = const     p=4.2×10⁻⁶  Minkowski interval</span>
 
-The era gate demonstrates that the system generalizes beyond
-its training era with high statistical confidence. The
-pre-1905 knowledge base is sufficient to reconstruct
-post-1905 physics from observational data alone.`, sec: 8 }
+<span class="section">ARCHITECTURE SUMMARY</span>
+  <span class="info">7 pipeline components, 6 ML models</span>
+  <span class="info">Total parameters: < 60,000 (all components combined)</span>
+  <span class="info">Training: < 1 hour on CPU (i5-12600KF, 16 cores)</span>
+  <span class="info">Test suite: 626+, 0 failures</span>
+
+<span class="result">The era gate demonstrates generalization beyond training era
+with high statistical confidence. Pre-1905 classical knowledge
+sufficient to reconstruct post-1905 physics from observation.</span>`, dur:8 }
 ];
-let currentStep = 0;
-let timer = null;
 
-function playPipeline() {
-  document.getElementById('pipeline-video').style.display = 'block';
-  const btn = document.querySelector('button');
-  btn.disabled = true;
-  btn.textContent = '⏳ Animating Pipeline...';
-  btn.style.background = '#666';
-  window.scrollTo({top: document.getElementById('pipeline-video').offsetTop - 50, behavior:'smooth'});
-  currentStep = 0;
-  showStep();
+function activateMod(id, stat) {
+  document.getElementById('mod-'+id).classList.add('active');
+  document.getElementById('mod-'+id).querySelector('.mod-stat').textContent = stat;
+  let found = false;
+  for(let m of modules) {
+    if(found) break;
+    if(m===id) found=true;
+    else if(document.getElementById('mod-'+m).classList.contains('active'))
+      document.getElementById('mod-'+m).classList.add('done');
+  }
 }
 
-function showStep() {
-  if (currentStep >= steps.length) {
-    document.getElementById('video-progress').textContent = '■ Pipeline complete. 8/8 post-1905 laws discovered from pre-1905 training.';
-    const btn = document.querySelector('button');
-    btn.disabled = false;
-    btn.textContent = '▶ Replay Pipeline';
-    btn.style.background = '#d09030';
-    return;
+function spawnDots() {
+  const c = document.getElementById('particles');
+  for(let i=0;i<8;i++) {
+    setTimeout(()=>{
+      const d = document.createElement('div'); d.className='dot';
+      d.style.left=(15+Math.random()*70)+'%'; d.style.top=(5+Math.random()*90)+'%';
+      d.style.animationDelay=Math.random()+'s';
+      c.appendChild(d); setTimeout(()=>d.remove(),3500);
+    },i*120);
   }
-  const s = steps[currentStep];
-  document.getElementById('video-step').textContent = s.text;
-  document.getElementById('video-progress').textContent = `Step ${currentStep+1} of ${steps.length} — ${s.sec}s →`;
-  currentStep++;
-  timer = setTimeout(showStep, s.sec * 1000);
+}
+
+async function startPipeline() {
+  const btn = document.getElementById('play-btn');
+  btn.disabled = true; btn.textContent = '⏳ Animating...';
+  document.getElementById('progress-fill').style.width = '0%';
+  modules.forEach(m=>document.getElementById('mod-'+m).className='module');
+  const start = Date.now();
+  
+  for(let i=0;i<scenes.length;i++) {
+    const s = scenes[i];
+    activateMod(s.mod, s.stat);
+    document.getElementById('display').innerHTML = s.text;
+    document.getElementById('tick-step').textContent = 'Step '+(i+1)+'/'+scenes.length;
+    document.getElementById('tick-model').textContent = 'Active '+s.mod;
+    document.getElementById('tick-time').textContent = 'Elapsed '+Math.round((Date.now()-start)/1000)+'s';
+    document.getElementById('progress-fill').style.width = ((i+1)/scenes.length*100)+'%';
+    spawnDots();
+    await new Promise(r=>setTimeout(r,s.dur*1000));
+  }
+  
+  modules.forEach(m=>document.getElementById('mod-'+m).className='module done');
+  document.getElementById('tick-step').textContent = 'Complete';
+  document.getElementById('tick-model').textContent = 'Verdict Delivered';
+  document.getElementById('tick-time').textContent = 'Elapsed '+Math.round((Date.now()-start)/1000)+'s';
+  btn.disabled = false; btn.textContent = '▶ Animate Again';
 }
 </script>
-
 </body>
 </html>
