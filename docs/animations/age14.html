@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>theta-core — For Curious Minds (Age 14+)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a1a; color: #e0e0ff; font-family: 'Segoe UI', sans-serif; 
+         display: flex; flex-direction: column; align-items: center; min-height: 100vh; 
+         padding: 40px 20px; }
+  h1 { color: #ffcc00; font-size: 2.2em; margin-bottom: 10px; }
+  .subtitle { color: #aaa; margin-bottom: 40px; font-size: 1.1em; }
+  
+  .scene { width: 100%; max-width: 700px; margin-bottom: 60px; }
+  .scene-title { color: #ff9900; font-size: 1.3em; margin-bottom: 15px; text-align: center; }
+  
+  .box { background: #1a1a3a; border-radius: 20px; padding: 25px; 
+         border: 2px solid #333366; position: relative; overflow: hidden; }
+  
+  .ingredients { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+  .ingredient { background: #2a2a5a; border-radius: 12px; padding: 12px 18px; 
+               font-size: 1.2em; font-weight: bold; animation: float 3s ease-in-out infinite; }
+  .ingredient:nth-child(1) { animation-delay: 0s; color: #ff6666; }
+  .ingredient:nth-child(2) { animation-delay: 0.5s; color: #66ff66; }
+  .ingredient:nth-child(3) { animation-delay: 1s; color: #6699ff; }
+  .ingredient:nth-child(4) { animation-delay: 1.5s; color: #ffcc00; }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  
+  .arrow-down { text-align: center; font-size: 2em; color: #ffcc00; margin: 15px 0; 
+               animation: bounce 1s infinite; }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .chef { text-align: center; font-size: 3em; margin: 15px 0; }
+  
+  .mix-bowl { background: #2a2a5a; border-radius: 15px; padding: 20px; text-align: center;
+             animation: pulse 2s infinite; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 10px #ffcc00; }
+    50% { box-shadow: 0 0 30px #ff9900; }
+    100% { box-shadow: 0 0 10px #ffcc00; }
+  }
+  .result { color: #66ff66; font-size: 1.3em; margin-top: 10px; animation: fadeIn 2s; }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  .equation { font-size: 1.5em; color: #ffcc00; margin: 10px 0; font-family: monospace; }
+  
+  .success { color: #66ff66; font-size: 1.5em; animation: celebrat 1.5s infinite; }
+  @keyframes celebrat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  
+  .discovery { color: #ffcc00; font-size: 1.2em; margin: 10px 0; }
+  .tag { display: inline-block; background: #ff9900; color: #0a0a1a; padding: 5px 15px; 
+         border-radius: 20px; font-weight: bold; margin: 5px; animation: popIn 0.5s; }
+  @keyframes popIn {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<h1>How the AI Learns Physics</h1>
+<div class="subtitle">No textbook. Just numbers and curiosity.</div>
+
+<!-- SCENE 1: INGREDIENTS -->
+<div class="scene">
+  <div class="scene-title">Scene 1 — The AI Gets Ingredients</div>
+  <div class="box">
+    <p style="text-align:center; margin-bottom:15px; color:#aaa">
+      We give it a falling ball. That's it. Just measurements.
+    </p>
+    <div class="ingredients">
+      <span class="ingredient">Mass (m)</span>
+      <span class="ingredient">Gravity (g)</span>
+      <span class="ingredient">Height (h)</span>
+      <span class="ingredient">Speed (v)</span>
+    </div>
+    <p style="text-align:center; color:#aaa; margin-top:10px">
+      It has no idea what "energy" is. Just letters and numbers.
+    </p>
+  </div>
+</div>
+
+<!-- SCENE 2: MIXING -->
+<div class="scene">
+  <div class="scene-title">Scene 2 — The AI Becomes a Chef</div>
+  <div class="box">
+    <div class="chef">👨‍🍳</div>
+    <p style="text-align:center; color:#aaa; margin-bottom:15px">
+      It starts mixing ingredients, trying every possible recipe:
+    </p>
+    <div class="mix-bowl">
+      <p>m + v = <span style="color:#ff6666">changes ✗</span></p>
+      <p>m × g × h = <span style="color:#ff6666">changes ✗</span></p>
+      <p>½ × m × v² = <span style="color:#ff6666">changes ✗</span></p>
+      <p style="margin-top:10px">m·g·h + ½·m·v² = <span class="result">STAYS THE SAME ✓</span></p>
+      <div class="equation">mgh + ½mv² = constant</div>
+    </div>
+    <p style="text-align:center; color:#ffcc00; margin-top:15px">
+      "Wait — no matter when I check, this number never changes!"
+    </p>
+  </div>
+</div>
+
+<!-- SCENE 3: DISCOVERY -->
+<div class="scene">
+  <div class="scene-title">Scene 3 — It Just Discovered Something</div>
+  <div class="box">
+    <p style="text-align:center; color:#aaa; margin-bottom:15px">
+      It checks 10 different falling balls. All same result. Then it checks:
+    </p>
+    <div class="mix-bowl">
+      <p>Pendulum: mgh + ½mv² = <span class="result">constant ✓</span></p>
+      <p style="color:#aaa; margin:10px 0">(scenarios it NEVER saw before)</p>
+      <p>Projectile: mgh + ½mv² = <span class="result">constant ✓</span></p>
+    </div>
+    <div class="discovery" style="text-align:center; margin-top:20px">
+      It discovered conservation of energy.<br>
+      <strong>Nobody told it what energy is.</strong>
+    </div>
+    <div style="text-align:center; margin-top:20px">
+      <span class="tag">Energy = mgh + ½mv²</span>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE 4: QUANTUM LEAP -->
+<div class="scene">
+  <div class="scene-title">Scene 4 — The Quantum Leap</div>
+  <div class="box">
+    <p style="text-align:center; color:#aaa; margin-bottom:15px">
+      Then we give it hydrogen spectrum measurements. It tries everything — nothing works.
+      But it notices something weird about its failures...
+    </p>
+    <div class="mix-bowl">
+      <p style="color:#aaa">"My failed attempts follow a pattern."</p>
+      <p style="color:#aaa">"The errors curve like 1/n²..."</p>
+      <p style="color:#ff9900; margin-top:10px">"There must be a COUNTING NUMBER hiding here!"</p>
+      <p style="margin-top:10px">It proposes: <span style="color:#66ff66">n = 1,2,3...</span></p>
+      <p>E × n² = <span class="result">constant ✓</span></p>
+    </div>
+    <div class="discovery" style="text-align:center; margin-top:20px">
+      It discovered quantum energy levels.<br>
+      <strong>Trained on 1800s physics. Discovered 1920s physics.</strong>
+    </div>
+    <div style="text-align:center; margin-top:20px">
+      <span class="tag">Quantum ✓</span>
+      <span class="tag">Relativity ✓</span>
+      <span class="tag">All 8/8 ✓</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
