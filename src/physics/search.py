@@ -52,8 +52,8 @@ class ExpressionSearch:
         train_observations: list[Observation],
         *,
         scalar_constants: list[str] | None = None,
-        max_depth: int = 6,
-        max_expansions: int = 10_000,
+        max_depth: int = 10,
+        max_expansions: int = 20_000,
         depth_discount: float = 0.95,
         top_k: int = 50,
         discovery_threshold: float = 0.95,
@@ -87,6 +87,8 @@ class ExpressionSearch:
         self._best_expr: str = ""
         self._best_score: float = 0.0
         self._best_depth: int = 0
+        self._expansions_at_last_improvement: int = 0
+        self._early_stopping_patience: int = 2000
 
     def _score_expression(self, expr_str: str) -> float:
         if not self.train_observations:
@@ -167,7 +169,7 @@ class ExpressionSearch:
                 beam.append((name, s, 1))
 
         # Beam iterations (up to max_depth-1 to leave room for Phase 2 combinations)
-        max_beam_depth = min(self.max_depth - 1, 6)
+        max_beam_depth = min(self.max_depth - 1, 10)
         for gen_depth in range(2, max_beam_depth + 1):
             if self._expansion_count >= self.max_expansions:
                 break
@@ -207,6 +209,11 @@ class ExpressionSearch:
                     self._best_score = score
                     self._best_expr = expr_str
                     self._best_depth = d
+                    self._expansions_at_last_improvement = self._expansion_count
+
+            # Early stopping: if no expression improved in last 2000 expansions
+            if self._expansion_count - self._expansions_at_last_improvement >= self._early_stopping_patience:
+                break
 
         # Phase 2: Try all pairs of Energy terms added together
 
@@ -232,6 +239,7 @@ class ExpressionSearch:
                         self._best_score = s
                         self._best_expr = child
                         self._best_depth = d + 1
+                        self._expansions_at_last_improvement = self._expansion_count
                     energy_terms.append((child, s, d + 1))
 
         energy_terms.sort(key=lambda x: -x[1])
@@ -255,6 +263,7 @@ class ExpressionSearch:
                         self._best_score = score
                         self._best_expr = sum_str
                         self._best_depth = depth
+                        self._expansions_at_last_improvement = self._expansion_count
                     if score >= self.discovery_threshold:
                         break
 
@@ -269,6 +278,7 @@ class ExpressionSearch:
                         self._best_score = score
                         self._best_expr = sum_str
                         self._best_depth = depth
+                        self._expansions_at_last_improvement = self._expansion_count
                     if score >= self.discovery_threshold:
                         break
 
@@ -283,6 +293,7 @@ class ExpressionSearch:
                         self._best_score = score
                         self._best_expr = sum_str
                         self._best_depth = depth
+                        self._expansions_at_last_improvement = self._expansion_count
                     if score >= self.discovery_threshold:
                         break
 

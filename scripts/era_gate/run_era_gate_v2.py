@@ -161,7 +161,7 @@ def run_era_gate_v2(
     post1905_db_path: str = "data/observations/post1905_test.json",
     *,
     max_expansions: int = 20_000,
-    max_depth: int = 6,
+    max_depth: int = 10,
     discovery_threshold: float = 0.90,
     top_k: int = 50,
     noise_level: NoiseLevel = NoiseLevel.LOW,

@@ -278,7 +278,7 @@ def run_pre1905_training(
     db_paths: list[Path],
     *,
     max_expansions: int = 5_000,
-    max_depth: int = 6,
+    max_depth: int = 10,
     discovery_threshold: float = 0.90,
     seed: int = SEED,
 ) -> list[DiscoveryRecord]:
@@ -475,7 +475,7 @@ def generate_pre1905_candidates(observations: list[Observation]) -> list[str]:
         search = ExpressionSearch(
             quantities=qty_dim_map,
             train_observations=list(observations),
-            max_depth=5,
+            max_depth=8,
             max_expansions=500,
             top_k=30,
             discovery_threshold=0.5,  # lower threshold to generate more
@@ -891,7 +891,7 @@ def run_era_gate(
             search = ExpressionSearch(
                 quantities=quantities,
                 train_observations=train,
-                max_depth=6,
+                max_depth=10,
                 max_expansions=5_000,
                 discovery_threshold=0.95,
                 top_k=50,
@@ -947,7 +947,7 @@ def run_era_gate(
             train_ids=train_ids,
             test_ids=test_ids,
             max_expansions=5_000,
-            max_depth=6,
+            max_depth=10,
             discovery_threshold=0.90,
             seed=seed,
         )

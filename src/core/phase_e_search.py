@@ -27,7 +27,7 @@ def run_phase_e(
     train_count: int = 45,
     test_count: int = 10,
     max_expansions: int = 20_000,
-    max_depth: int = 7,
+    max_depth: int = 10,
     discovery_threshold: float = 0.95,
     top_k: int = 50,
     seed: int = 42,

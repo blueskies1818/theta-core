@@ -50,8 +50,8 @@ class TestSearchInitialization:
     def test_creates_search_engine(self, quantities, train_obs_gravitational) -> None:
         search = ExpressionSearch(quantities, train_obs_gravitational)
         assert search is not None
-        assert search.max_depth == 6
-        assert search.max_expansions == 10_000
+        assert search.max_depth == 10
+        assert search.max_expansions == 20_000
 
     def test_custom_parameters(self, quantities, train_obs_gravitational) -> None:
         search = ExpressionSearch(

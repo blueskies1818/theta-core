@@ -227,7 +227,7 @@ def run_beam_search_focused():
             train_ids=gravity_train,
             test_ids=gravity_test,
             max_expansions=10_000,
-            max_depth=6,
+            max_depth=10,
             discovery_threshold=0.90,
             seed=42,
         )

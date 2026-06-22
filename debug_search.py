@@ -26,7 +26,7 @@ for obs in train_obs:
 
 search = ExpressionSearch(
     quantities=quantities, train_observations=train_obs,
-    max_depth=6, max_expansions=5000, discovery_threshold=0.95, top_k=50,
+    max_depth=10, max_expansions=20000, discovery_threshold=0.95, top_k=50,
 )
 
 dyn = search._get_dynamic_quantities()

@@ -34,7 +34,7 @@ def main():
         train_ids=train_ids,
         test_ids=test_ids,
         max_expansions=20_000,
-        max_depth=6,
+        max_depth=10,
         discovery_threshold=0.90,
         top_k=50,
         seed=42,

@@ -347,7 +347,7 @@ def load_db_scenario(
 # ═══════════════════════════════════════════════════════════════════════════
 
 def make_beam_search_fn(
-    max_depth: int = 6,
+    max_depth: int = 10,
     max_expansions: int = 5000,
     discovery_threshold: float = DISCOVERY_THRESHOLD,
     target_dim: str = "Energy",
