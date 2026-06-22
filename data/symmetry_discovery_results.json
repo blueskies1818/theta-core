@@ -1,0 +1,197 @@
+{
+  "training": {
+    "scenarios": 5,
+    "accuracy": 0.8,
+    "correct": 4,
+    "partial": 0,
+    "failed": 1,
+    "details": [
+      {
+        "scenario_id": "training_time_only",
+        "known_matched": [],
+        "discovery_triggered": true,
+        "predicted_generators": [
+          "time_translation"
+        ],
+        "score": 0.9884093165397643,
+        "recall": 1.0,
+        "precision": 1.0,
+        "status": "correct"
+      },
+      {
+        "scenario_id": "training_time_plus_rotation",
+        "known_matched": [],
+        "discovery_triggered": true,
+        "predicted_generators": [
+          "time_translation",
+          "rotation_xy",
+          "boost_x",
+          "boost_y"
+        ],
+        "score": 0.8360611117680866,
+        "recall": 1.0,
+        "precision": 0.5,
+        "status": "failed"
+      },
+      {
+        "scenario_id": "training_lorentz_u1",
+        "known_matched": [
+          "u1"
+        ],
+        "discovery_triggered": true,
+        "predicted_generators": [
+          "time_translation",
+          "space_translation_x",
+          "space_translation_y",
+          "space_translation_z",
+          "rotation_xy",
+          "rotation_xz",
+          "rotation_yz",
+          "boost_x",
+          "boost_y",
+          "boost_z",
+          "u1_phase"
+        ],
+        "score": 0.9900103449821471,
+        "recall": 1.0,
+        "precision": 1.0,
+        "status": "correct"
+      },
+      {
+        "scenario_id": "heldout_lorentz_su2_broken",
+        "known_matched": [],
+        "discovery_triggered": true,
+        "predicted_generators": [
+          "time_translation",
+          "space_translation_x",
+          "space_translation_y",
+          "space_translation_z",
+          "rotation_xy",
+          "rotation_xz",
+          "rotation_yz",
+          "boost_x",
+          "boost_y",
+          "boost_z"
+        ],
+        "score": 0.9915296733379364,
+        "recall": 1.0,
+        "precision": 1.0,
+        "status": "correct"
+      },
+      {
+        "scenario_id": "training_galilean_newtonian",
+        "known_matched": [],
+        "discovery_triggered": true,
+        "predicted_generators": [
+          "time_translation",
+          "space_translation_x",
+          "space_translation_y",
+          "space_translation_z",
+          "rotation_xy",
+          "rotation_xz",
+          "rotation_yz",
+          "boost_x",
+          "boost_y",
+          "boost_z"
+        ],
+        "score": 0.9849448680877685,
+        "recall": 1.0,
+        "precision": 1.0,
+        "status": "correct"
+      }
+    ]
+  },
+  "heldout": {
+    "accuracy": 1.0,
+    "correct": 1,
+    "details": [
+      {
+        "scenario_id": "heldout_lorentz_su2_broken",
+        "known_matched": [],
+        "discovery_triggered": true,
+        "predicted_generators": [
+          "time_translation",
+          "space_translation_x",
+          "space_translation_y",
+          "space_translation_z",
+          "rotation_xy",
+          "rotation_xz",
+          "rotation_yz",
+          "boost_x",
+          "boost_y",
+          "boost_z"
+        ],
+        "score": 0.9915296733379364,
+        "recall": 1.0,
+        "precision": 1.0,
+        "status": "correct"
+      }
+    ]
+  },
+  "acceptance_checks": {
+    "galilean_rediscovery": {
+      "passed": true,
+      "predicted": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "space_translation_z",
+        "rotation_xy",
+        "rotation_xz",
+        "rotation_yz",
+        "boost_x",
+        "boost_y",
+        "boost_z"
+      ],
+      "expected": [
+        "time_translation",
+        "boost_y",
+        "rotation_xy",
+        "space_translation_z",
+        "rotation_yz",
+        "boost_x",
+        "boost_z",
+        "space_translation_x",
+        "rotation_xz",
+        "space_translation_y"
+      ],
+      "score": 0.9849448680877685
+    },
+    "poincare_rediscovery": {
+      "passed": true,
+      "predicted_count": 11,
+      "poincare_count": 10,
+      "score": 0.9900103449821471
+    },
+    "su2_broken_correct": {
+      "passed": true,
+      "su2_excluded": true,
+      "predicted": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "space_translation_z",
+        "rotation_xy",
+        "rotation_xz",
+        "rotation_yz",
+        "boost_x",
+        "boost_y",
+        "boost_z"
+      ],
+      "expected": [
+        "time_translation",
+        "boost_y",
+        "rotation_xy",
+        "space_translation_z",
+        "rotation_yz",
+        "boost_x",
+        "boost_z",
+        "space_translation_x",
+        "rotation_xz",
+        "space_translation_y"
+      ],
+      "score": 0.9915296733379364
+    }
+  },
+  "all_passed": true
+}

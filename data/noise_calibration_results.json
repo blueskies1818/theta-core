@@ -19,69 +19,69 @@
     "LOW": {
       "noise_level": "LOW",
       "sigma_pct": 0.01,
-      "aggregate_noise_floor": 0.474087,
-      "aggregate_threshold": 0.924375,
-      "min_threshold": 0.862445,
-      "max_threshold": 0.999,
+      "aggregate_noise_floor": 0.733247,
+      "aggregate_threshold": 0.877969,
+      "min_threshold": 0.730093,
+      "max_threshold": 0.95,
       "per_scenario": {
         "falling_ball_straight_drop": {
-          "noise_floor": 0.5453548614960804,
-          "sigma_floor": 0.12403102225606029,
-          "threshold": 0.9174479282642612,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.1261744747677978,
+          "threshold": 0.95,
           "num_calibration_exprs": 75
         },
         "falling_ball_upward_throw": {
-          "noise_floor": 0.3359953580000605,
-          "sigma_floor": 0.2521571258391806,
-          "threshold": 0.999,
+          "noise_floor": 0.6447435886856282,
+          "sigma_floor": 0.25221736859581934,
+          "threshold": 0.8969609572814475,
           "num_calibration_exprs": 75
         },
         "falling_ball_varying_mass": {
-          "noise_floor": 0.5453548614960804,
-          "sigma_floor": 0.12403102225606029,
-          "threshold": 0.9174479282642612,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.1261744747677978,
+          "threshold": 0.95,
           "num_calibration_exprs": 75
         },
         "pendulum_small_angle": {
-          "noise_floor": 0.4961689364417617,
-          "sigma_floor": 0.126746734342403,
-          "threshold": 0.8764091394689706,
+          "noise_floor": 0.6077216832725034,
+          "sigma_floor": 0.12237172178085998,
+          "threshold": 0.7300934050533634,
           "num_calibration_exprs": 75
         },
         "pendulum_large_angle": {
-          "noise_floor": 0.49221097095034194,
-          "sigma_floor": 0.1497084279163581,
-          "threshold": 0.9413362546994163,
+          "noise_floor": 0.642648939184319,
+          "sigma_floor": 0.11727598253270399,
+          "threshold": 0.759924921717023,
           "num_calibration_exprs": 75
         },
         "spring_undamped": {
-          "noise_floor": 0.2282980411840412,
-          "sigma_floor": 0.2395546779439009,
-          "threshold": 0.9469620750157439,
+          "noise_floor": 0.6077206434981088,
+          "sigma_floor": 0.24028746320480304,
+          "threshold": 0.8480081067029119,
           "num_calibration_exprs": 70
         },
         "spring_damped_light": {
-          "noise_floor": 0.2858039263067912,
-          "sigma_floor": 0.19221376262295706,
-          "threshold": 0.8624452141756623,
+          "noise_floor": 0.6077190439407381,
+          "sigma_floor": 0.1937118065139223,
+          "threshold": 0.8014308504546603,
           "num_calibration_exprs": 70
         },
         "projectile_45deg": {
-          "noise_floor": 0.6824033950294847,
-          "sigma_floor": 0.1534042131408534,
-          "threshold": 0.999,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.1528517231355333,
+          "threshold": 0.95,
           "num_calibration_exprs": 75
         },
         "projectile_90deg": {
-          "noise_floor": 0.5816157221409992,
-          "sigma_floor": 0.09636265113466201,
-          "threshold": 0.8707036755449853,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.09628876312795638,
+          "threshold": 0.9462887631279564,
           "num_calibration_exprs": 75
         },
         "sliding_block_incline": {
-          "noise_floor": 0.5476608944135839,
-          "sigma_floor": 0.12177940745157474,
-          "threshold": 0.9129991167683081,
+          "noise_floor": 0.8219192019459085,
+          "sigma_floor": 0.1250602913108896,
+          "threshold": 0.9469794932567981,
           "num_calibration_exprs": 75
         }
       }
@@ -89,69 +89,69 @@
     "MEDIUM": {
       "noise_level": "MEDIUM",
       "sigma_pct": 0.03,
-      "aggregate_noise_floor": 0.47569,
-      "aggregate_threshold": 0.921776,
-      "min_threshold": 0.859762,
-      "max_threshold": 0.999,
+      "aggregate_noise_floor": 0.732426,
+      "aggregate_threshold": 0.878616,
+      "min_threshold": 0.731767,
+      "max_threshold": 0.95,
       "per_scenario": {
         "falling_ball_straight_drop": {
-          "noise_floor": 0.5448600469518491,
-          "sigma_floor": 0.12341939994551668,
-          "threshold": 0.9151182467883991,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.12978429401427286,
+          "threshold": 0.95,
           "num_calibration_exprs": 75
         },
         "falling_ball_upward_throw": {
-          "noise_floor": 0.3382970085506877,
-          "sigma_floor": 0.24858102063137424,
-          "threshold": 0.999,
+          "noise_floor": 0.6391468278496487,
+          "sigma_floor": 0.24879531098489704,
+          "threshold": 0.8879421388345458,
           "num_calibration_exprs": 75
         },
         "falling_ball_varying_mass": {
-          "noise_floor": 0.5448600469518491,
-          "sigma_floor": 0.12341939994551668,
-          "threshold": 0.9151182467883991,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.12978429401427286,
+          "threshold": 0.95,
           "num_calibration_exprs": 75
         },
         "pendulum_small_angle": {
-          "noise_floor": 0.5085661086563024,
-          "sigma_floor": 0.1170653873002813,
-          "threshold": 0.8597622705571463,
+          "noise_floor": 0.6077216832725034,
+          "sigma_floor": 0.12404499561723548,
+          "threshold": 0.7317666788897389,
           "num_calibration_exprs": 75
         },
         "pendulum_large_angle": {
-          "noise_floor": 0.49386556622433847,
-          "sigma_floor": 0.1475508754924795,
-          "threshold": 0.9365181927017769,
+          "noise_floor": 0.6424378955022517,
+          "sigma_floor": 0.1246828368454315,
+          "threshold": 0.7671207323476832,
           "num_calibration_exprs": 75
         },
         "spring_undamped": {
-          "noise_floor": 0.22979915633780387,
-          "sigma_floor": 0.2379465294986011,
-          "threshold": 0.9436387448336072,
+          "noise_floor": 0.6077206434981088,
+          "sigma_floor": 0.2396260741642667,
+          "threshold": 0.8473467176623756,
           "num_calibration_exprs": 70
         },
         "spring_damped_light": {
-          "noise_floor": 0.2860776818934134,
-          "sigma_floor": 0.19199114317795815,
-          "threshold": 0.8620511114272879,
+          "noise_floor": 0.6077190439407381,
+          "sigma_floor": 0.1983323823767668,
+          "threshold": 0.8060514263175049,
           "num_calibration_exprs": 70
         },
         "projectile_45deg": {
-          "noise_floor": 0.6814217226325507,
-          "sigma_floor": 0.1522861243333097,
-          "threshold": 0.999,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.15060973775094114,
+          "threshold": 0.95,
           "num_calibration_exprs": 75
         },
         "projectile_90deg": {
-          "noise_floor": 0.5812838510897758,
-          "sigma_floor": 0.09622378150194424,
-          "threshold": 0.8699551955956085,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.0959345879141768,
+          "threshold": 0.9459345879141767,
           "num_calibration_exprs": 75
         },
         "sliding_block_incline": {
-          "noise_floor": 0.5478665356916165,
-          "sigma_floor": 0.12324423974399346,
-          "threshold": 0.9175992549235968,
+          "noise_floor": 0.8195099023422178,
+          "sigma_floor": 0.1331029291603401,
+          "threshold": 0.95,
           "num_calibration_exprs": 75
         }
       }
@@ -159,69 +159,69 @@
     "HIGH": {
       "noise_level": "HIGH",
       "sigma_pct": 0.05,
-      "aggregate_noise_floor": 0.476277,
-      "aggregate_threshold": 0.922237,
-      "min_threshold": 0.862892,
-      "max_threshold": 0.999,
+      "aggregate_noise_floor": 0.731535,
+      "aggregate_threshold": 0.877269,
+      "min_threshold": 0.724649,
+      "max_threshold": 0.95,
       "per_scenario": {
         "falling_ball_straight_drop": {
-          "noise_floor": 0.5440919901846062,
-          "sigma_floor": 0.12381978783654052,
-          "threshold": 0.9155513536942277,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.13446649335677854,
+          "threshold": 0.95,
           "num_calibration_exprs": 75
         },
         "falling_ball_upward_throw": {
-          "noise_floor": 0.34037443680915286,
-          "sigma_floor": 0.2451674820341659,
-          "threshold": 0.999,
+          "noise_floor": 0.6335236806078808,
+          "sigma_floor": 0.24556793864588736,
+          "threshold": 0.8790916192537681,
           "num_calibration_exprs": 75
         },
         "falling_ball_varying_mass": {
-          "noise_floor": 0.5440919901846062,
-          "sigma_floor": 0.1238197878365405,
-          "threshold": 0.9155513536942277,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.13446649335677854,
+          "threshold": 0.95,
           "num_calibration_exprs": 75
         },
         "pendulum_small_angle": {
-          "noise_floor": 0.5126323048592641,
-          "sigma_floor": 0.11823160612468472,
-          "threshold": 0.8673271232333183,
+          "noise_floor": 0.6077216832725034,
+          "sigma_floor": 0.11692693773753708,
+          "threshold": 0.7246486210100405,
           "num_calibration_exprs": 75
         },
         "pendulum_large_angle": {
-          "noise_floor": 0.4967673987187273,
-          "sigma_floor": 0.14187946206717358,
-          "threshold": 0.922405784920248,
+          "noise_floor": 0.6420371479474974,
+          "sigma_floor": 0.13252288376276897,
+          "threshold": 0.7745600317102664,
           "num_calibration_exprs": 75
         },
         "spring_undamped": {
-          "noise_floor": 0.2310839620153588,
-          "sigma_floor": 0.23652192946701367,
-          "threshold": 0.9406497504163998,
+          "noise_floor": 0.6077206434981088,
+          "sigma_floor": 0.23789007147674923,
+          "threshold": 0.8456107149748581,
           "num_calibration_exprs": 70
         },
         "spring_damped_light": {
-          "noise_floor": 0.28578455559976895,
-          "sigma_floor": 0.1923692317688554,
-          "threshold": 0.862892250906335,
+          "noise_floor": 0.6077190439407381,
+          "sigma_floor": 0.19551514255881197,
+          "threshold": 0.80323418649955,
           "num_calibration_exprs": 70
         },
         "projectile_45deg": {
-          "noise_floor": 0.6797297196968174,
-          "sigma_floor": 0.15057758746166475,
-          "threshold": 0.999,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.1477859766537998,
+          "threshold": 0.95,
           "num_calibration_exprs": 75
         },
         "projectile_90deg": {
-          "noise_floor": 0.5806332098829223,
-          "sigma_floor": 0.09610985606974044,
-          "threshold": 0.8689627780921436,
+          "noise_floor": 0.85,
+          "sigma_floor": 0.09554679204872259,
+          "threshold": 0.9455467920487226,
           "num_calibration_exprs": 75
         },
         "sliding_block_incline": {
-          "noise_floor": 0.5475765338933761,
-          "sigma_floor": 0.1278172391695886,
-          "threshold": 0.931028251402142,
+          "noise_floor": 0.8166315840752576,
+          "sigma_floor": 0.13759780644646635,
+          "threshold": 0.95,
           "num_calibration_exprs": 75
         }
       }

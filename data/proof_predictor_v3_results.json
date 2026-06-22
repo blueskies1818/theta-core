@@ -1,0 +1,525 @@
+{
+  "version": "v3",
+  "training": {
+    "num_synthetic_examples": 15000,
+    "num_tactics": 22,
+    "num_features": 30,
+    "train_accuracy": 0.9992592334747314,
+    "val_accuracy": 1.0,
+    "best_epoch": 15,
+    "training_time_seconds": 2.0,
+    "generation_time_seconds": 1.0,
+    "model_parameters": 8998,
+    "model_size_bytes": 44389,
+    "tactic_distribution": {
+      "rw [h]; rw [cos_2x]; ring": 33,
+      "linarith": 1643,
+      "field_simp; ring; nlinarith": 1393,
+      "ring": 3490,
+      "induction n; simp; ring": 298,
+      "rw [tan_eq]; field_simp; ring": 63,
+      "induction n; simp; ring_nf": 24,
+      "rw [deriv_pow]; ring": 905,
+      "ring_nf; nlinarith": 821,
+      "norm_num; ring": 617,
+      "field_simp; ring": 1984,
+      "rw [h1]; rw [h2]; ring_nf; nlinarith": 833,
+      "rw [h]; ring": 17,
+      "rw [h]; rw [sin_add]; ring": 210,
+      "nlinarith": 418,
+      "rw [integral_pow]; ring": 689,
+      "rw [deriv_mul]; ring": 93,
+      "ring_nf": 457,
+      "expand; ring; nlinarith": 266,
+      "field_simp; nlinarith": 388,
+      "simp; ring": 358
+    },
+    "tactic_vocab": [
+      "ring",
+      "ring_nf",
+      "field_simp; ring",
+      "nlinarith",
+      "linarith",
+      "rw [h]; ring",
+      "rw [h]; field_simp; ring",
+      "expand; ring; nlinarith",
+      "simp; ring",
+      "norm_num; ring",
+      "ring_nf; nlinarith",
+      "field_simp; nlinarith",
+      "rw [deriv_pow]; ring",
+      "rw [deriv_mul]; ring",
+      "rw [integral_pow]; ring",
+      "rw [tan_eq]; field_simp; ring",
+      "rw [h]; rw [cos_2x]; ring",
+      "rw [h]; rw [sin_add]; ring",
+      "induction n; simp; ring",
+      "induction n; simp; ring_nf",
+      "field_simp; ring; nlinarith",
+      "rw [h1]; rw [h2]; ring_nf; nlinarith"
+    ]
+  },
+  "evaluation": {
+    "total_test_cases": 16,
+    "first_tactic_accuracy": 0.8125,
+    "top3_tactic_accuracy": 1.0,
+    "first_tactic_correct": 13,
+    "top3_correct": 16,
+    "per_case_results": [
+      {
+        "name": "deriv_kinetic_energy",
+        "domain": "calculus",
+        "predicted_first": "rw [integral_pow]; ring",
+        "predicted_top3": [
+          "rw [integral_pow]; ring",
+          "rw [deriv_mul]; ring",
+          "rw [deriv_pow]; ring"
+        ],
+        "confidences": [
+          0.5870580077171326,
+          0.3579419255256653,
+          0.031003504991531372
+        ],
+        "first_correct": false,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "rw [deriv_pow]; ring",
+          "rw [deriv_mul]; ring"
+        ],
+        "must_not_predict": [
+          "ring"
+        ],
+        "feature_has_deriv": 1.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "deriv_cubic",
+        "domain": "calculus",
+        "predicted_first": "rw [deriv_pow]; ring",
+        "predicted_top3": [
+          "rw [deriv_pow]; ring",
+          "induction n; simp; ring",
+          "rw [deriv_mul]; ring"
+        ],
+        "confidences": [
+          0.9978777170181274,
+          0.0016790764639154077,
+          0.00023448393039871007
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "rw [deriv_pow]; ring"
+        ],
+        "must_not_predict": [
+          "ring"
+        ],
+        "feature_has_deriv": 1.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "deriv_product_power",
+        "domain": "calculus",
+        "predicted_first": "rw [deriv_mul]; ring",
+        "predicted_top3": [
+          "rw [deriv_mul]; ring",
+          "rw [deriv_pow]; ring",
+          "induction n; simp; ring"
+        ],
+        "confidences": [
+          0.8150311708450317,
+          0.17014634609222412,
+          0.005743131972849369
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "rw [deriv_mul]; ring",
+          "rw [deriv_pow]; ring"
+        ],
+        "must_not_predict": [
+          "ring"
+        ],
+        "feature_has_deriv": 1.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "integral_polynomial",
+        "domain": "calculus",
+        "predicted_first": "rw [integral_pow]; ring",
+        "predicted_top3": [
+          "rw [integral_pow]; ring",
+          "nlinarith",
+          "induction n; simp; ring"
+        ],
+        "confidences": [
+          0.9995431900024414,
+          0.0003786279703490436,
+          3.812225622823462e-05
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "rw [integral_pow]; ring"
+        ],
+        "must_not_predict": [
+          "ring",
+          "ring_nf"
+        ],
+        "feature_has_deriv": 0.0,
+        "feature_has_integral": 1.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "quantum_normalization",
+        "domain": "quantum",
+        "predicted_first": "rw [h]; rw [sin_add]; ring",
+        "predicted_top3": [
+          "rw [h]; rw [sin_add]; ring",
+          "rw [tan_eq]; field_simp; ring",
+          "rw [h]; rw [cos_2x]; ring"
+        ],
+        "confidences": [
+          0.5218117237091064,
+          0.3087109625339508,
+          0.10181935131549835
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "rw [h]; rw [sin_add]; ring",
+          "rw [h]; ring",
+          "rw [integral_pow]; ring"
+        ],
+        "must_not_predict": [
+          "ring"
+        ],
+        "feature_has_deriv": 0.0,
+        "feature_has_integral": 1.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "relativistic_addition",
+        "domain": "relativistic",
+        "predicted_first": "field_simp; nlinarith",
+        "predicted_top3": [
+          "field_simp; nlinarith",
+          "rw [integral_pow]; ring",
+          "nlinarith"
+        ],
+        "confidences": [
+          0.5415112972259521,
+          0.30257275700569153,
+          0.1208367794752121
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "field_simp; ring",
+          "field_simp; ring; nlinarith",
+          "field_simp; nlinarith"
+        ],
+        "must_not_predict": [
+          "ring"
+        ],
+        "feature_has_deriv": 0.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "lagrangian_eom",
+        "domain": "mechanics",
+        "predicted_first": "rw [integral_pow]; ring",
+        "predicted_top3": [
+          "rw [integral_pow]; ring",
+          "rw [deriv_mul]; ring",
+          "rw [deriv_pow]; ring"
+        ],
+        "confidences": [
+          0.682290256023407,
+          0.20741166174411774,
+          0.058505602180957794
+        ],
+        "first_correct": false,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "rw [deriv_pow]; ring",
+          "rw [deriv_mul]; ring"
+        ],
+        "must_not_predict": [
+          "ring"
+        ],
+        "feature_has_deriv": 1.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "oscillating_charge_normalization",
+        "domain": "em",
+        "predicted_first": "rw [h]; ring",
+        "predicted_top3": [
+          "rw [h]; ring",
+          "rw [h]; rw [cos_2x]; ring",
+          "field_simp; ring; nlinarith"
+        ],
+        "confidences": [
+          0.5104758143424988,
+          0.4651693105697632,
+          0.00901844073086977
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "rw [h]; ring",
+          "rw [h]; rw [cos_2x]; ring"
+        ],
+        "must_not_predict": [
+          "ring"
+        ],
+        "feature_has_deriv": 0.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "double_angle_em",
+        "domain": "em",
+        "predicted_first": "rw [h]; rw [sin_add]; ring",
+        "predicted_top3": [
+          "rw [h]; rw [sin_add]; ring",
+          "rw [h]; rw [cos_2x]; ring",
+          "rw [tan_eq]; field_simp; ring"
+        ],
+        "confidences": [
+          0.9917680025100708,
+          0.007499498315155506,
+          0.0002969763008877635
+        ],
+        "first_correct": false,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "rw [h]; rw [cos_2x]; ring"
+        ],
+        "must_not_predict": [
+          "ring",
+          "ring_nf"
+        ],
+        "feature_has_deriv": 0.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "induction_arith_sum",
+        "domain": "induction",
+        "predicted_first": "induction n; simp; ring",
+        "predicted_top3": [
+          "induction n; simp; ring",
+          "induction n; simp; ring_nf",
+          "rw [deriv_pow]; ring"
+        ],
+        "confidences": [
+          0.9993040561676025,
+          0.00032055340125225484,
+          0.00018062866001855582
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "induction n; simp; ring"
+        ],
+        "must_not_predict": [
+          "ring",
+          "nlinarith"
+        ],
+        "feature_has_deriv": 0.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 1.0
+      },
+      {
+        "name": "induction_sum_cubes",
+        "domain": "induction",
+        "predicted_first": "induction n; simp; ring",
+        "predicted_top3": [
+          "induction n; simp; ring",
+          "induction n; simp; ring_nf",
+          "rw [deriv_pow]; ring"
+        ],
+        "confidences": [
+          0.8765625357627869,
+          0.11994164437055588,
+          0.0021296851336956024
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "induction n; simp; ring_nf",
+          "induction n; simp; ring"
+        ],
+        "must_not_predict": [
+          "ring",
+          "nlinarith"
+        ],
+        "feature_has_deriv": 0.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 1.0
+      },
+      {
+        "name": "field_ring_nlinarith_complex",
+        "domain": "algebra",
+        "predicted_first": "field_simp; ring; nlinarith",
+        "predicted_top3": [
+          "field_simp; ring; nlinarith",
+          "field_simp; nlinarith",
+          "field_simp; ring"
+        ],
+        "confidences": [
+          0.9911344051361084,
+          0.002370646456256509,
+          0.0022168683353811502
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "field_simp; ring; nlinarith",
+          "expand; ring; nlinarith"
+        ],
+        "must_not_predict": [],
+        "feature_has_deriv": 0.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "ring_fails_need_nlinarith",
+        "domain": "algebra",
+        "predicted_first": "nlinarith",
+        "predicted_top3": [
+          "nlinarith",
+          "ring_nf; nlinarith",
+          "field_simp; nlinarith"
+        ],
+        "confidences": [
+          0.9909974336624146,
+          0.00374824577011168,
+          0.0014578745467588305
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "nlinarith",
+          "ring_nf; nlinarith"
+        ],
+        "must_not_predict": [
+          "ring"
+        ],
+        "feature_has_deriv": 0.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "tan_identity",
+        "domain": "trig",
+        "predicted_first": "rw [tan_eq]; field_simp; ring",
+        "predicted_top3": [
+          "rw [tan_eq]; field_simp; ring",
+          "rw [h]; rw [sin_add]; ring",
+          "rw [deriv_pow]; ring"
+        ],
+        "confidences": [
+          0.9943757057189941,
+          0.0030989423394203186,
+          0.001318046124652028
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "rw [tan_eq]; field_simp; ring"
+        ],
+        "must_not_predict": [
+          "ring",
+          "ring_nf"
+        ],
+        "feature_has_deriv": 0.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "sum_to_product_sin_add",
+        "domain": "trig",
+        "predicted_first": "rw [h]; rw [sin_add]; ring",
+        "predicted_top3": [
+          "rw [h]; rw [sin_add]; ring",
+          "rw [tan_eq]; field_simp; ring",
+          "rw [h1]; rw [h2]; ring_nf; nlinarith"
+        ],
+        "confidences": [
+          0.992218017578125,
+          0.005422148387879133,
+          0.0008584429160691798
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "rw [h]; rw [sin_add]; ring"
+        ],
+        "must_not_predict": [
+          "ring"
+        ],
+        "feature_has_deriv": 0.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      },
+      {
+        "name": "multi_domain_deriv_field",
+        "domain": "multi",
+        "predicted_first": "rw [deriv_pow]; ring",
+        "predicted_top3": [
+          "rw [deriv_pow]; ring",
+          "rw [deriv_mul]; ring",
+          "induction n; simp; ring"
+        ],
+        "confidences": [
+          0.9987702965736389,
+          0.000780071655754,
+          0.00016693903307896107
+        ],
+        "first_correct": true,
+        "top3_correct": true,
+        "not_predicted_ring": true,
+        "expected": [
+          "rw [deriv_pow]; ring",
+          "rw [integral_pow]; ring",
+          "field_simp; ring"
+        ],
+        "must_not_predict": [
+          "ring"
+        ],
+        "feature_has_deriv": 1.0,
+        "feature_has_integral": 0.0,
+        "feature_has_induction": 0.0
+      }
+    ]
+  },
+  "acceptance": {
+    "first_tactic_gt_55pct": true,
+    "top3_tactic_gt_80pct": true,
+    "no_ring_defaulting": true,
+    "model_size_kb": 43.3486328125
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "training": {
+    "n_train": 11000,
+    "n_val": 500,
+    "feature_dim": 25,
+    "label_distribution": {
+      "ring": 3745,
+      "ring_nf": 1100,
+      "field_simp; ring": 1971,
+      "nlinarith": 1088,
+      "rw; ring": 1103,
+      "expand; ring; nlinarith": 1110,
+      "rw; field_simp; ring": 883
+    },
+    "model_params": 5135,
+    "final_train_acc": 1.0,
+    "final_val_acc": 1.0,
+    "history": {
+      "train_loss": 0.00033043170933987396,
+      "train_acc": 1.0,
+      "val_loss": 2.9802318834981634e-08,
+      "val_acc": 1.0
+    }
+  },
+  "evaluation": {
+    "tests": [
+      {
+        "name": "energy_conservation_free_fall",
+        "domain": "mechanics",
+        "predicted_first": "ring",
+        "predicted_top3": [
+          "ring",
+          "field_simp; ring",
+          "rw; ring"
+        ],
+        "confidences": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "expected": [
+          "ring",
+          "ring_nf"
+        ],
+        "first_correct": true,
+        "top3_correct": true
+      },
+      {
+        "name": "energy_conservation_free_fall_v0",
+        "domain": "mechanics",
+        "predicted_first": "ring",
+        "predicted_top3": [
+          "ring",
+          "rw; ring",
+          "rw; field_simp; ring"
+        ],
+        "confidences": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "expected": [
+          "ring",
+          "ring_nf"
+        ],
+        "first_correct": true,
+        "top3_correct": true
+      },
+      {
+        "name": "energy_conservation_projectile",
+        "domain": "mechanics",
+        "predicted_first": "ring",
+        "predicted_top3": [
+          "ring",
+          "rw; ring",
+          "ring_nf"
+        ],
+        "confidences": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "expected": [
+          "ring",
+          "ring_nf",
+          "rw; ring"
+        ],
+        "first_correct": true,
+        "top3_correct": true
+      },
+      {
+        "name": "energy_conservation_em_kinetic_potential",
+        "domain": "em",
+        "predicted_first": "ring",
+        "predicted_top3": [
+          "ring",
+          "rw; field_simp; ring",
+          "rw; ring"
+        ],
+        "confidences": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "expected": [
+          "ring",
+          "nlinarith",
+          "field_simp; ring"
+        ],
+        "first_correct": true,
+        "top3_correct": true
+      },
+      {
+        "name": "energy_invariant_relativistic_direct",
+        "domain": "relativistic",
+        "predicted_first": "ring",
+        "predicted_top3": [
+          "ring",
+          "field_simp; ring",
+          "rw; ring"
+        ],
+        "confidences": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "expected": [
+          "ring",
+          "ring_nf",
+          "rw; ring",
+          "expand; ring; nlinarith"
+        ],
+        "first_correct": true,
+        "top3_correct": true
+      }
+    ],
+    "first_tactic_correct": 5,
+    "top3_tactic_correct": 5,
+    "total": 5,
+    "first_tactic_accuracy": 1.0,
+    "top3_tactic_accuracy": 1.0
+  },
+  "acceptance": {
+    "first_tactic_gt_60pct": true,
+    "top3_tactic_gt_85pct": true,
+    "no_scenario_matching": true,
+    "model_size_kb": 28.380859375
+  }
+}
