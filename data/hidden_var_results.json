@@ -1,0 +1,100 @@
+[
+  {
+    "scenario": "Hydrogen Balmer (n hidden)",
+    "error_shape": "inverse_square",
+    "shape_confidence": 0.9911472872328738,
+    "mean_cv": 0.13047151696057788,
+    "discovered_by_search": false,
+    "num_proposals": 2,
+    "top_proposals": [
+      {
+        "type": "integer_n",
+        "transform": "squared",
+        "confidence": 0.999768078327179
+      },
+      {
+        "type": "integer_n",
+        "transform": "identity",
+        "confidence": 0.6
+      }
+    ],
+    "expected_var": "integer_n",
+    "expected_transform": "squared",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Particle in box (n hidden)",
+    "error_shape": "quadratic",
+    "shape_confidence": 1.0,
+    "mean_cv": 0.5898602420577849,
+    "discovered_by_search": false,
+    "num_proposals": 2,
+    "top_proposals": [
+      {
+        "type": "integer_n",
+        "transform": "squared",
+        "confidence": 0.9999440908432007
+      },
+      {
+        "type": "integer_n",
+        "transform": "inv_squared",
+        "confidence": 0.5
+      }
+    ],
+    "expected_var": "integer_n",
+    "expected_transform": "squared",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Harmonic oscillator (n hidden)",
+    "error_shape": "linear",
+    "shape_confidence": 1.0,
+    "mean_cv": 0.43534469102080475,
+    "discovered_by_search": false,
+    "num_proposals": 3,
+    "top_proposals": [
+      {
+        "type": "integer_n",
+        "transform": "identity",
+        "confidence": 0.9999668598175049
+      },
+      {
+        "type": "half_integer",
+        "transform": "identity",
+        "confidence": 0.55
+      },
+      {
+        "type": "integer_n",
+        "transform": "squared",
+        "confidence": 0.4
+      }
+    ],
+    "expected_var": "half_integer",
+    "expected_transform": "identity",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Simple pendulum (no hidden var)",
+    "error_shape": "quadratic",
+    "shape_confidence": 0.48511938756688827,
+    "mean_cv": 1.882559203990753,
+    "discovered_by_search": true,
+    "num_proposals": 0,
+    "top_proposals": [],
+    "expected_var": null,
+    "expected_transform": null,
+    "status": "PASS"
+  },
+  {
+    "scenario": "Free fall (no hidden var)",
+    "error_shape": "quadratic",
+    "shape_confidence": 1.0,
+    "mean_cv": 0.4582199654053161,
+    "discovered_by_search": true,
+    "num_proposals": 0,
+    "top_proposals": [],
+    "expected_var": null,
+    "expected_transform": null,
+    "status": "PASS"
+  }
+]
