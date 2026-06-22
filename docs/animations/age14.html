@@ -166,5 +166,63 @@
   </div>
 </div>
 
+<!-- PLAY BUTTON -->
+<div style="text-align:center; margin: 40px 0">
+  <button onclick="playPipeline()" style="background:#ff9900; color:#0a0a1a; border:none; 
+    padding:15px 40px; font-size:1.3em; font-weight:bold; border-radius:30px; cursor:pointer;
+    transition: transform 0.2s" onmouseover="this.style.transform='scale(1.05)'" 
+    onmouseout="this.style.transform='scale(1)'">
+    ▶ Play Full Pipeline
+  </button>
+</div>
+
+<div id="pipeline-video" style="display:none; max-width:700px; margin:0 auto;">
+  <div class="box" style="margin-bottom:20px">
+    <div id="video-step" style="text-align:center; font-size:1.2em; color:#ffcc00; min-height:200px">
+      Click play to begin...
+    </div>
+  </div>
+  <div id="video-progress" style="text-align:center; color:#aaa; font-size:0.9em"></div>
+</div>
+
+<script>
+const steps = [
+  { text: "📥 Step 1: Receive Observations<br><br>The system gets raw measurements — a ball falling, a pendulum swinging, a spring bouncing.<br>It doesn't know what 'energy' or 'gravity' mean. Just numbers.", sec: 3 },
+  { text: "🏷️ Step 2: Classify Domains<br><br>\"I see height and speed changing — that's gravity.\"<br>\"I see stretch changing — that's springs.\"<br>Each domain model learned patterns from pre-1905 physics.", sec: 3 },
+  { text: "🧩 Step 3: Compose Templates<br><br>Gravity says: mgh + ½mv² stays the same.<br>Spring says: ½kx² + ½mv² stays the same.<br>Composer unions them: mgh + ½mv² + ½kx²", sec: 4 },
+  { text: "🔍 Step 4: Check Symmetries<br><br>\"Time looks the same at every measurement — time translation symmetry!\"<br>That means a quantity MUST be conserved. What is it?", sec: 3 },
+  { text: "🧪 Step 5: Search for the Invariant<br><br>Trying m+v... changes ✗<br>Trying m×v... changes ✗<br>Trying mgh + ½mv²... SAME EVERY TIME ✓✓✓", sec: 4 },
+  { text: "❓ Step 6: Nothing Working? Look Deeper<br><br>For hydrogen, nothing worked. But the failures had a shape — like 1/n².<br>\"There's a counting number hidden here!\"<br>Proposes n=1,2,3... and n² unlocks everything.", sec: 4 },
+  { text: "📐 Step 7: Prove It Mathematically<br><br>\"It was constant when I checked. Is it ALWAYS constant?\"<br>The auto-prover writes a Lean proof:<br>For all times t, for all masses m, for all heights h₀ — this expression never changes.", sec: 4 },
+  { text: "🎉 DISCOVERY!<br><br>8 post-1905 laws discovered from pre-1905 training.<br>Quantum mechanics. Special relativity.<br>No physics textbook. No equations injected.<br>Just numbers — and the ability to learn.", sec: 5 }
+];
+let currentStep = 0;
+let timer = null;
+
+function playPipeline() {
+  document.getElementById('pipeline-video').style.display = 'block';
+  document.querySelector('button').disabled = true;
+  document.querySelector('button').textContent = '⏳ Running...';
+  document.querySelector('button').style.background = '#666';
+  currentStep = 0;
+  showStep();
+}
+
+function showStep() {
+  if (currentStep >= steps.length) {
+    document.getElementById('video-progress').textContent = '✅ Complete — scroll up to review';
+    document.querySelector('button').disabled = false;
+    document.querySelector('button').textContent = '▶ Play Again';
+    document.querySelector('button').style.background = '#ff9900';
+    return;
+  }
+  const s = steps[currentStep];
+  document.getElementById('video-step').innerHTML = s.text;
+  document.getElementById('video-progress').textContent = `Step ${currentStep+1} of ${steps.length}`;
+  currentStep++;
+  timer = setTimeout(showStep, s.sec * 1000);
+}
+</script>
+
 </body>
 </html>
