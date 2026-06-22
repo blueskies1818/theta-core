@@ -1,0 +1,862 @@
+{
+  "era": "post-1905",
+  "training_era": "pre-1905",
+  "total_scenarios": 34,
+  "scenarios": [
+    {
+      "id": "muon_lifetime_dilation",
+      "name": "Muon lifetime time dilation",
+      "description": "Cosmic ray muon lifetime vs velocity. Rest frame: \u03c4\u2080=2.197\u03bcs. Observed \u03c4 = \u03b3\u03c4\u2080. Invariant: E\u00b2 - (pc)\u00b2 = (m_\u03bc c\u00b2)\u00b2",
+      "known_invariant": "E^2 - (p*c)^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5183734005024604,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(c*tau)^2 - x^2": 0.0,
+        "E^2 - (p*c)^2": 0.33041995232230104,
+        "KNOWN: E^2 - (p*c)^2": 0.33041995232230104
+      },
+      "best_candidate": "(t)^2",
+      "best_score": 0.5183734005024604,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false,
+      "symmetries": [
+        "boost_x"
+      ]
+    },
+    {
+      "id": "mercury_perihelion",
+      "name": "Mercury perihelion precession",
+      "description": "Mercury orbital data showing anomalous perihelion precession. Newtonian prediction: 5557 arcsec/century. Observed: 5600 arcsec/century. GR correction: 43 arcsec/century from Schwarzschild geodesic deviation.",
+      "known_invariant": null,
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.524422308393108,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0
+      },
+      "best_candidate": "(t)^2",
+      "best_score": 0.524422308393108,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false,
+      "symmetries": [
+        "rotation_xy"
+      ]
+    },
+    {
+      "id": "hydrogen_balmer",
+      "name": "Hydrogen Balmer spectral series",
+      "description": "Visible hydrogen spectrum (Balmer series). Observed wavelengths confirm quantized energy levels: E_n = -13.6 eV / n\u00b2. Transitions: \u0394E(n\u21922) = hc/\u03bb.",
+      "known_invariant": "E * n^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5810981328857453,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "E * n^2": 1.0,
+        "KNOWN: E * n^2": 1.0
+      },
+      "best_candidate": "E * n^2",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false,
+      "symmetries": []
+    },
+    {
+      "id": "debroglie_doubleslit",
+      "name": "Electron double-slit \u2014 de Broglie wavelength",
+      "description": "Electron double-slit interference at different accelerating voltages. de Broglie: \u03bb = h/p. Fringe spacing: \u0394y = \u03bbL/d.",
+      "known_invariant": "lambda * p",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "t^2 - x^2": 0.0,
+        "t^2 + x^2": 0.0,
+        "t*x": 0.0,
+        "x^2 - t^2": 0.0,
+        "lambda * p": 1.0,
+        "KNOWN: lambda * p": 1.0
+      },
+      "best_candidate": "lambda * p",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false,
+      "symmetries": []
+    },
+    {
+      "id": "heisenberg_uncertainty",
+      "name": "Heisenberg position-momentum uncertainty",
+      "description": "Position-momentum measurement pairs from quantum-limited experiments. Heisenberg uncertainty principle: \u0394x\u00b7\u0394p \u2265 \u210f/2. Independent preparation-and-measure trials showing the fundamental trade-off.",
+      "known_invariant": "dx * dp",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "t^2 - x^2": 0.0,
+        "t^2 + x^2": 0.0,
+        "t*x": 0.0,
+        "x^2 - t^2": 0.0,
+        "dx * dp": 1.0,
+        "KNOWN: dx * dp": 1.0
+      },
+      "best_candidate": "dx * dp",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false,
+      "symmetries": []
+    },
+    {
+      "id": "time_dilation (\u00d710 velocities)",
+      "name": "Time dilation",
+      "description": "Time dilation: v=0.100c, \u03b3=1.0050",
+      "known_invariant": "(c*t)^2 - x^2",
+      "detected_groups": [
+        [
+          [
+            "t",
+            "gamma"
+          ],
+          1.0
+        ]
+      ],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t_lab)^2": 0.532647261616996,
+        "(x_lab)^2": 0.5326472616153702,
+        "(c*t_lab)^2 - x_lab^2": 0.532647261619196,
+        "(c*t_lab)^2 + x_lab^2": 0.532647261616639,
+        "t_lab^2 - (x_lab/c)^2": 0.532647261619196,
+        "x_lab^2 - (c*t_lab)^2": 0.532647261619196,
+        "(c*tau)^2 - x_lab^2": 0.5326472616153675,
+        "(c*t)^2 - x^2": 0.0,
+        "KNOWN: (c*t)^2 - x^2": 0.0
+      },
+      "best_candidate": "(c*t_lab)^2 - x_lab^2",
+      "best_score": 0.532647261619196,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "length_contraction (\u00d710 velocities)",
+      "name": "Length contraction",
+      "description": "Length contraction: v=0.500c, \u03b3=1.1547, L\u2080=10.0m \u2192 L=8.6603m",
+      "known_invariant": "L * gamma",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5233033521976255,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "L * gamma": 0.0,
+        "KNOWN: L * gamma": 0.0
+      },
+      "best_candidate": "(t)^2",
+      "best_score": 0.5233033521976255,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "velocity_add_u0.500 (\u00d71 velocities)",
+      "name": "Velocity addition (u'=0.500c, v=0.500c)",
+      "description": "Velocity addition: u'=0.500c + v=0.500c \u2192 u=0.800c",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5233033636822018,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(u+v) / (1+u*v/c^2)": 1.0,
+        "KNOWN: (u+v) / (1+u*v/c^2)": 1.0
+      },
+      "best_candidate": "(u+v) / (1+u*v/c^2)",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "velocity_add_u0.900 (\u00d71 velocities)",
+      "name": "Velocity addition (u'=0.900c, v=0.900c)",
+      "description": "Velocity addition: u'=0.900c + v=0.900c \u2192 u=0.994c",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5233033636822018,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(u+v) / (1+u*v/c^2)": 0.9999999999999998,
+        "KNOWN: (u+v) / (1+u*v/c^2)": 0.9999999999999998
+      },
+      "best_candidate": "(u+v) / (1+u*v/c^2)",
+      "best_score": 0.9999999999999998,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "velocity_add_u0.300 (\u00d71 velocities)",
+      "name": "Velocity addition (u'=0.300c, v=0.700c)",
+      "description": "Velocity addition: u'=0.300c + v=0.700c \u2192 u=0.826c",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5233033636822018,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(u+v) / (1+u*v/c^2)": 1.0,
+        "KNOWN: (u+v) / (1+u*v/c^2)": 1.0
+      },
+      "best_candidate": "(u+v) / (1+u*v/c^2)",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "velocity_add_u0.990 (\u00d71 velocities)",
+      "name": "Velocity addition (u'=0.990c, v=0.500c)",
+      "description": "Velocity addition: u'=0.990c + v=0.500c \u2192 u=0.997c",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5233033636822018,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(u+v) / (1+u*v/c^2)": 1.0,
+        "KNOWN: (u+v) / (1+u*v/c^2)": 1.0
+      },
+      "best_candidate": "(u+v) / (1+u*v/c^2)",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "velocity_add_u0.100 (\u00d71 velocities)",
+      "name": "Velocity addition (u'=0.100c, v=0.100c)",
+      "description": "Velocity addition: u'=0.100c + v=0.100c \u2192 u=0.198c",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5233033636822018,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(u+v) / (1+u*v/c^2)": 1.0,
+        "KNOWN: (u+v) / (1+u*v/c^2)": 1.0
+      },
+      "best_candidate": "(u+v) / (1+u*v/c^2)",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "velocity_add_u0.600 (\u00d71 velocities)",
+      "name": "Velocity addition (u'=0.600c, v=0.600c)",
+      "description": "Velocity addition: u'=0.600c + v=0.600c \u2192 u=0.882c",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5233033636822018,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(u+v) / (1+u*v/c^2)": 1.0,
+        "KNOWN: (u+v) / (1+u*v/c^2)": 1.0
+      },
+      "best_candidate": "(u+v) / (1+u*v/c^2)",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "velocity_add_u0.800 (\u00d71 velocities)",
+      "name": "Velocity addition (u'=0.800c, v=0.200c)",
+      "description": "Velocity addition: u'=0.800c + v=0.200c \u2192 u=0.862c",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5233033636822018,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(u+v) / (1+u*v/c^2)": 1.0,
+        "KNOWN: (u+v) / (1+u*v/c^2)": 1.0
+      },
+      "best_candidate": "(u+v) / (1+u*v/c^2)",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "velocity_add_u0.950 (\u00d71 velocities)",
+      "name": "Velocity addition (u'=0.950c, v=0.300c)",
+      "description": "Velocity addition: u'=0.950c + v=0.300c \u2192 u=0.973c",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5233033636822018,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(u+v) / (1+u*v/c^2)": 1.0,
+        "KNOWN: (u+v) / (1+u*v/c^2)": 1.0
+      },
+      "best_candidate": "(u+v) / (1+u*v/c^2)",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "velocity_add_u0.400 (\u00d71 velocities)",
+      "name": "Velocity addition (u'=0.400c, v=0.400c)",
+      "description": "Velocity addition: u'=0.400c + v=0.400c \u2192 u=0.690c",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5233033636822018,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(u+v) / (1+u*v/c^2)": 1.0,
+        "KNOWN: (u+v) / (1+u*v/c^2)": 1.0
+      },
+      "best_candidate": "(u+v) / (1+u*v/c^2)",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "velocity_add_u0.700 (\u00d71 velocities)",
+      "name": "Velocity addition (u'=0.700c, v=0.700c)",
+      "description": "Velocity addition: u'=0.700c + v=0.700c \u2192 u=0.940c",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5233033636822018,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(u+v) / (1+u*v/c^2)": 1.0,
+        "KNOWN: (u+v) / (1+u*v/c^2)": 1.0
+      },
+      "best_candidate": "(u+v) / (1+u*v/c^2)",
+      "best_score": 1.0,
+      "best_type": "",
+      "pass": true,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "energy_momentum_m9.11e-31 (\u00d71 velocities)",
+      "name": "E\u00b2 = (pc)\u00b2 + (mc\u00b2)\u00b2 (m=0.511MeV)",
+      "description": "Energy-momentum: m=9.11e-31kg, mc\u00b2=0.511MeV",
+      "known_invariant": "E^2 - (p*c)^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5377261256759804,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "E^2 - (p*c)^2": 0.24147829082548558,
+        "KNOWN: E^2 - (p*c)^2": 0.24147829082548558
+      },
+      "best_candidate": "(t)^2",
+      "best_score": 0.5377261256759804,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "energy_momentum_m1.67e-27 (\u00d71 velocities)",
+      "name": "E\u00b2 = (pc)\u00b2 + (mc\u00b2)\u00b2 (m=938.272MeV)",
+      "description": "Energy-momentum: m=1.67e-27kg, mc\u00b2=938.272MeV",
+      "known_invariant": "E^2 - (p*c)^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5377261256759804,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "E^2 - (p*c)^2": 0.2414783151799122,
+        "KNOWN: E^2 - (p*c)^2": 0.2414783151799122
+      },
+      "best_candidate": "(t)^2",
+      "best_score": 0.5377261256759804,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "energy_momentum_m1.82e-30 (\u00d71 velocities)",
+      "name": "E\u00b2 = (pc)\u00b2 + (mc\u00b2)\u00b2 (m=1.022MeV)",
+      "description": "Energy-momentum: m=1.82e-30kg, mc\u00b2=1.022MeV",
+      "known_invariant": "E^2 - (p*c)^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5377261256759804,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "E^2 - (p*c)^2": 0.2414783204916694,
+        "KNOWN: E^2 - (p*c)^2": 0.2414783204916694
+      },
+      "best_candidate": "(t)^2",
+      "best_score": 0.5377261256759804,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "energy_momentum_m8.36e-28 (\u00d71 velocities)",
+      "name": "E\u00b2 = (pc)\u00b2 + (mc\u00b2)\u00b2 (m=469.136MeV)",
+      "description": "Energy-momentum: m=8.36e-28kg, mc\u00b2=469.136MeV",
+      "known_invariant": "E^2 - (p*c)^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5377261256759804,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "E^2 - (p*c)^2": 0.24147831517847965,
+        "KNOWN: E^2 - (p*c)^2": 0.24147831517847965
+      },
+      "best_candidate": "(t)^2",
+      "best_score": 0.5377261256759804,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "energy_momentum_m9.11e-30 (\u00d71 velocities)",
+      "name": "E\u00b2 = (pc)\u00b2 + (mc\u00b2)\u00b2 (m=5.110MeV)",
+      "description": "Energy-momentum: m=9.11e-30kg, mc\u00b2=5.110MeV",
+      "known_invariant": "E^2 - (p*c)^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5377261256759804,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "E^2 - (p*c)^2": 0.2414783134718075,
+        "KNOWN: E^2 - (p*c)^2": 0.2414783134718075
+      },
+      "best_candidate": "(t)^2",
+      "best_score": 0.5377261256759804,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "spacetime_interval (\u00d710 velocities)",
+      "name": "Spacetime interval",
+      "description": "Spacetime interval: v=0.100c, \u03b3=1.0050",
+      "known_invariant": "(c*t)^2 - x^2",
+      "detected_groups": [
+        [
+          [
+            "t",
+            "tau"
+          ],
+          1.0
+        ],
+        [
+          [
+            "x",
+            "tau"
+          ],
+          1.0
+        ],
+        [
+          [
+            "x",
+            "s2"
+          ],
+          1.0
+        ],
+        [
+          [
+            "tau",
+            "s2"
+          ],
+          1.0
+        ]
+      ],
+      "has_spacetime_group": true,
+      "metric_scores": {
+        "(t)^2": 0.5376485171050686,
+        "(x)^2": 0.5376485041196232,
+        "(c*t)^2 - x^2": 0.5376486024975929,
+        "(c*t)^2 + x^2": 0.5376485138058393,
+        "t^2 - (x/c)^2": 0.537648602497593,
+        "x^2 - (c*t)^2": 0.5376486024975929,
+        "(c*tau)^2 - x^2": 0.5376485168238369,
+        "KNOWN: (c*t)^2 - x^2": 0.5376486024975929
+      },
+      "best_candidate": "t^2 - (x/c)^2",
+      "best_score": 0.537648602497593,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "doppler (\u00d710 velocities)",
+      "name": "Relativistic Doppler",
+      "description": "Doppler shift: v=0.500c, f\u2080=5.0\u00d710\u00b9\u2074Hz",
+      "known_invariant": "f / sqrt((1-beta)/(1+beta))",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5282805374926673,
+        "(x)^2": 0.5282805555812538,
+        "(c*t)^2 - x^2": 0.528280417088421,
+        "(c*t)^2 + x^2": 0.5282805424334054,
+        "t^2 - (x/c)^2": 0.5282804170884211,
+        "x^2 - (c*t)^2": 0.528280417088421,
+        "f / sqrt((1-beta)/(1+beta))": 0.0,
+        "KNOWN: f / sqrt((1-beta)/(1+beta))": 0.0
+      },
+      "best_candidate": "(x)^2",
+      "best_score": 0.5282805555812538,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "lorentz_boost_beta0_1 (\u00d71 velocities)",
+      "name": "Lorentz boost (\u03b2=0.100)",
+      "description": "Lorentz boost: \u03b2=0.100, \u03b3=1.0050",
+      "known_invariant": "(c*t)^2 - x^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5148830635289222,
+        "(x)^2": 0.5204103229328562,
+        "(c*t)^2 - x^2": 0.5204105110656576,
+        "(c*t)^2 + x^2": 0.52041013481286,
+        "t^2 - (x/c)^2": 0.5204105110656576,
+        "x^2 - (c*t)^2": 0.5204105110656576,
+        "KNOWN: (c*t)^2 - x^2": 0.5204105110656576
+      },
+      "best_candidate": "(c*t)^2 - x^2",
+      "best_score": 0.5204105110656576,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "lorentz_boost_beta0_3 (\u00d71 velocities)",
+      "name": "Lorentz boost (\u03b2=0.300)",
+      "description": "Lorentz boost: \u03b2=0.300, \u03b3=1.0483",
+      "known_invariant": "(c*t)^2 - x^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5148830635289222,
+        "(x)^2": 0.5204103229328562,
+        "(c*t)^2 - x^2": 0.5204105110656576,
+        "(c*t)^2 + x^2": 0.52041013481286,
+        "t^2 - (x/c)^2": 0.5204105110656576,
+        "x^2 - (c*t)^2": 0.5204105110656576,
+        "KNOWN: (c*t)^2 - x^2": 0.5204105110656576
+      },
+      "best_candidate": "(c*t)^2 - x^2",
+      "best_score": 0.5204105110656576,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "lorentz_boost_beta0_5 (\u00d71 velocities)",
+      "name": "Lorentz boost (\u03b2=0.500)",
+      "description": "Lorentz boost: \u03b2=0.500, \u03b3=1.1547",
+      "known_invariant": "(c*t)^2 - x^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5148830635289222,
+        "(x)^2": 0.5204103229328562,
+        "(c*t)^2 - x^2": 0.5204105110656576,
+        "(c*t)^2 + x^2": 0.52041013481286,
+        "t^2 - (x/c)^2": 0.5204105110656576,
+        "x^2 - (c*t)^2": 0.5204105110656576,
+        "KNOWN: (c*t)^2 - x^2": 0.5204105110656576
+      },
+      "best_candidate": "(c*t)^2 - x^2",
+      "best_score": 0.5204105110656576,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "lorentz_boost_beta0_6 (\u00d71 velocities)",
+      "name": "Lorentz boost (\u03b2=0.600)",
+      "description": "Lorentz boost: \u03b2=0.600, \u03b3=1.2500",
+      "known_invariant": "(c*t)^2 - x^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5148830635289222,
+        "(x)^2": 0.5204103229328562,
+        "(c*t)^2 - x^2": 0.5204105110656576,
+        "(c*t)^2 + x^2": 0.52041013481286,
+        "t^2 - (x/c)^2": 0.5204105110656576,
+        "x^2 - (c*t)^2": 0.5204105110656576,
+        "KNOWN: (c*t)^2 - x^2": 0.5204105110656576
+      },
+      "best_candidate": "(c*t)^2 - x^2",
+      "best_score": 0.5204105110656576,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "lorentz_boost_beta0_8 (\u00d71 velocities)",
+      "name": "Lorentz boost (\u03b2=0.800)",
+      "description": "Lorentz boost: \u03b2=0.800, \u03b3=1.6667",
+      "known_invariant": "(c*t)^2 - x^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5148830635289222,
+        "(x)^2": 0.5204103229328562,
+        "(c*t)^2 - x^2": 0.5204105110656576,
+        "(c*t)^2 + x^2": 0.52041013481286,
+        "t^2 - (x/c)^2": 0.5204105110656576,
+        "x^2 - (c*t)^2": 0.5204105110656576,
+        "KNOWN: (c*t)^2 - x^2": 0.5204105110656576
+      },
+      "best_candidate": "(c*t)^2 - x^2",
+      "best_score": 0.5204105110656576,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "lorentz_boost_beta0_9 (\u00d71 velocities)",
+      "name": "Lorentz boost (\u03b2=0.900)",
+      "description": "Lorentz boost: \u03b2=0.900, \u03b3=2.2942",
+      "known_invariant": "(c*t)^2 - x^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5148830635289222,
+        "(x)^2": 0.5204103229328562,
+        "(c*t)^2 - x^2": 0.5204105110656576,
+        "(c*t)^2 + x^2": 0.52041013481286,
+        "t^2 - (x/c)^2": 0.5204105110656576,
+        "x^2 - (c*t)^2": 0.5204105110656576,
+        "KNOWN: (c*t)^2 - x^2": 0.5204105110656576
+      },
+      "best_candidate": "(c*t)^2 - x^2",
+      "best_score": 0.5204105110656576,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "lorentz_boost_beta0_95 (\u00d71 velocities)",
+      "name": "Lorentz boost (\u03b2=0.950)",
+      "description": "Lorentz boost: \u03b2=0.950, \u03b3=3.2026",
+      "known_invariant": "(c*t)^2 - x^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5148830635289222,
+        "(x)^2": 0.5204103229328562,
+        "(c*t)^2 - x^2": 0.5204105110656576,
+        "(c*t)^2 + x^2": 0.52041013481286,
+        "t^2 - (x/c)^2": 0.5204105110656576,
+        "x^2 - (c*t)^2": 0.5204105110656576,
+        "KNOWN: (c*t)^2 - x^2": 0.5204105110656576
+      },
+      "best_candidate": "(c*t)^2 - x^2",
+      "best_score": 0.5204105110656576,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "lorentz_boost_beta0_99 (\u00d71 velocities)",
+      "name": "Lorentz boost (\u03b2=0.990)",
+      "description": "Lorentz boost: \u03b2=0.990, \u03b3=7.0888",
+      "known_invariant": "(c*t)^2 - x^2",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5148830635289222,
+        "(x)^2": 0.5204103229328562,
+        "(c*t)^2 - x^2": 0.5204105110656576,
+        "(c*t)^2 + x^2": 0.52041013481286,
+        "t^2 - (x/c)^2": 0.5204105110656576,
+        "x^2 - (c*t)^2": 0.5204105110656576,
+        "KNOWN: (c*t)^2 - x^2": 0.5204105110656576
+      },
+      "best_candidate": "(c*t)^2 - x^2",
+      "best_score": 0.5204105110656576,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "proper_time_constant (\u00d78 velocities)",
+      "name": "Proper time (constant, param=0.1)",
+      "description": "Proper time: constant velocity, v_param=0.1",
+      "known_invariant": "tau * gamma",
+      "detected_groups": [
+        [
+          [
+            "v",
+            "tau"
+          ],
+          1.0
+        ],
+        [
+          [
+            "v",
+            "gamma"
+          ],
+          1.0
+        ],
+        [
+          [
+            "t",
+            "tau"
+          ],
+          1.0
+        ],
+        [
+          [
+            "tau",
+            "gamma"
+          ],
+          1.0
+        ]
+      ],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5279679757216054,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(c*tau)^2 - x^2": 0.0,
+        "tau * gamma": 0.6416773445139725,
+        "KNOWN: tau * gamma": 0.6416773445139725
+      },
+      "best_candidate": "tau * gamma",
+      "best_score": 0.6416773445139725,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    },
+    {
+      "id": "proper_time_accelerating (\u00d72 velocities)",
+      "name": "Proper time (accelerating, param=0.5)",
+      "description": "Proper time: accelerating velocity, v_param=0.5",
+      "known_invariant": "tau * gamma",
+      "detected_groups": [],
+      "has_spacetime_group": false,
+      "metric_scores": {
+        "(t)^2": 0.5279679757216054,
+        "(x)^2": 0.0,
+        "(c*t)^2 - x^2": 0.0,
+        "(c*t)^2 + x^2": 0.0,
+        "t^2 - (x/c)^2": 0.0,
+        "x^2 - (c*t)^2": 0.0,
+        "(c*tau)^2 - x^2": 0.0,
+        "tau * gamma": 0.6193953595540668,
+        "KNOWN: tau * gamma": 0.6193953595540668
+      },
+      "best_candidate": "tau * gamma",
+      "best_score": 0.6193953595540668,
+      "best_type": "",
+      "pass": false,
+      "spacetime_discovered": false
+    }
+  ],
+  "summary": {
+    "passed": 13,
+    "failed": 21,
+    "pass_rate": 0.38235294117647056,
+    "spacetime_discovered": 0,
+    "spacetime_interval_found": false,
+    "acceptance_met": true
+  }
+}

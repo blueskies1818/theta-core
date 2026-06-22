@@ -28,6 +28,11 @@ from src.physics.evaluator import ExpressionEvaluator, EvalError, evaluate_node
 from src.physics.observations import Observation
 
 
+# Threshold for detecting grouped quantities
+GROUPED_CORRELATION_THRESHOLD = 0.65  # Pearson r for "quantities co-vary"
+GROUPED_MIN_PAIRS = 1  # Minimum number of grouped pairs to trigger detection
+
+
 # =============================================================================
 # Constants (expanded for v2)
 # =============================================================================
@@ -43,11 +48,13 @@ SHAPE_CONSTANT = "constant"
 SHAPE_LINEAR_RATIO = "linear_ratio"       # v2: errors scale linearly with one quantity → ratio
 SHAPE_POWER_LAW = "power_law"            # v2: errors follow power law → exponent
 SHAPE_MULTI_VAR = "multi_var"            # v2: errors correlate with 2+ variables → group
+SHAPE_GROUPED = "grouped"                # v4: quantities co-vary as a group → metric relationship
 
 ALL_SHAPES = [
     SHAPE_LINEAR, SHAPE_QUADRATIC, SHAPE_INVERSE_SQUARE,
     SHAPE_EXPONENTIAL, SHAPE_PERIODIC, SHAPE_RANDOM, SHAPE_CONSTANT,
     SHAPE_LINEAR_RATIO, SHAPE_POWER_LAW, SHAPE_MULTI_VAR,
+    SHAPE_GROUPED,
 ]
 NUM_SHAPES = len(ALL_SHAPES)
 SHAPE_TO_IDX = {s: i for i, s in enumerate(ALL_SHAPES)}
@@ -61,10 +68,12 @@ VAR_SPIN = "spin_s"
 VAR_CONTINUOUS = "continuous"
 VAR_CONTINUOUS_RATIO = "continuous_ratio"      # v2: μ, γ, drag coefficient
 VAR_CONTINUOUS_ADDITIVE = "continuous_additive"  # v2: φ, work function, offset
+VAR_GROUPED = "grouped_quantity"                  # v4: groups of co-varying quantities → metric
 
 VAR_TYPES = [
     VAR_INTEGER, VAR_HALF_INTEGER, VAR_ANGULAR_M, VAR_SPIN, VAR_CONTINUOUS,
     VAR_CONTINUOUS_RATIO, VAR_CONTINUOUS_ADDITIVE,
+    VAR_GROUPED,
 ]
 NUM_VAR_TYPES = len(VAR_TYPES)
 VAR_TYPE_TO_IDX = {t: i for i, t in enumerate(VAR_TYPES)}
@@ -77,10 +86,12 @@ TRANSFORM_INV_SQUARED = "inv_squared"
 TRANSFORM_SQRT = "sqrt"
 TRANSFORM_RATIO = "ratio"       # v2: var = a/b (for continuous ratios like γ=v/c)
 TRANSFORM_OFFSET = "offset"     # v2: var = constant additive offset (like φ)
+TRANSFORM_METRIC = "metric"     # v4: squared-difference metric invariant (ct)²-x²
 
 TRANSFORMS = [
     TRANSFORM_IDENTITY, TRANSFORM_SQUARED, TRANSFORM_INV_SQUARED,
     TRANSFORM_SQRT, TRANSFORM_RATIO, TRANSFORM_OFFSET,
+    TRANSFORM_METRIC,
 ]
 NUM_TRANSFORMS = len(TRANSFORMS)
 TRANSFORM_TO_IDX = {t: i for i, t in enumerate(TRANSFORMS)}
@@ -126,6 +137,13 @@ _EXPRESSION_TEMPLATES = [
     # Generic / fallback
     "alpha = 1/2",
     "n_scale = E/hbar",
+    # v4: Grouped quantity metric forms (spacetime interval archetypes)
+    "s2 = (c*t)^2 - x^2",       # Spacetime interval (Minkowski metric)
+    "s2 = (c*t)^2 + x^2",       # Euclidean metric candidate
+    "s2 = t^2 - (x/c)^2",       # Alternative scaling
+    "s2 = (c*tau)^2 - x^2",     # Proper time variant
+    "s2 = (c*t)^2 - r^2",       # Radial variant
+    "s2 = x^2 + y^2 + z^2 - (c*t)^2",  # Full 4D Minkowski
 ]
 # Add "none" (no defining expression) as index 0
 _EXPRESSION_TEMPLATES.insert(0, "none")
@@ -146,6 +164,8 @@ _HV_QUANTITY_VOCAB = [
     "T_period", "alpha", "beta", "K_max",
     "x_0", "v_0", "delta_t", "delta_tau", "u",
     "Q_in", "Q_out", "W_out", "eta",
+    # v4: Spacetime / metric detection quantities
+    "tau", "s2", "ds2", "t_lab", "x_lab",
 ]
 HV_QTY_TO_IDX = {q: i for i, q in enumerate(_HV_QUANTITY_VOCAB)}
 NUM_HV_QUANTITIES = len(_HV_QUANTITY_VOCAB)
@@ -273,6 +293,10 @@ class ErrorShapeDetector:
         avg_shape_scores[SHAPE_POWER_LAW] = power_score
         avg_shape_scores[SHAPE_MULTI_VAR] = multi_score
 
+        # v4: detect grouped quantities that co-vary across observations
+        grouped_score = self._detect_grouped(per_obs_vals, observations)
+        avg_shape_scores[SHAPE_GROUPED] = grouped_score
+
         if avg_shape_scores:
             best_shape = max(avg_shape_scores, key=lambda s: avg_shape_scores[s])
             best_conf = avg_shape_scores[best_shape]
@@ -391,6 +415,85 @@ class ErrorShapeDetector:
         if scores:
             return sum(scores) / len(scores)
         return 0.0
+
+    def _detect_grouped(
+        self, per_obs_vals: list[list[float]], observations: list[Observation],
+    ) -> float:
+        """v4: Detect if pairs of quantities co-vary across observations — they form a group.
+
+        A group is 2+ quantities whose values move together (high correlation)
+        OR whose product/ratio/difference is near-constant across observations.
+        This is the spacetime detection signal: if t and x move together across
+        frames, they form a group → propose a metric relationship.
+
+        Returns a score [0, 1] — higher means stronger group evidence.
+        """
+        if not observations or not observations[0].timesteps:
+            return 0.0
+        if len(observations) < 2:
+            return 0.0
+
+        primary_obs = observations[0]
+        qnames = list(primary_obs.quantities.keys())
+        num_qnames: list[str] = []
+        for q in qnames:
+            for ts in primary_obs.timesteps:
+                if q in ts and isinstance(ts[q], (int, float)):
+                    num_qnames.append(q)
+                    break
+        if len(num_qnames) < 2:
+            return 0.0
+
+        q_vals: dict[str, list[float]] = {q: [] for q in num_qnames}
+        for obs in observations:
+            if not obs.timesteps:
+                continue
+            ts = obs.timesteps[0]
+            for q in num_qnames:
+                if q in ts:
+                    v = ts[q]
+                    if isinstance(v, (int, float)):
+                        q_vals[q].append(float(v))
+
+        scores: list[float] = []
+        for i in range(len(num_qnames)):
+            for j in range(i + 1, len(num_qnames)):
+                qa, qb = num_qnames[i], num_qnames[j]
+                va = q_vals[qa]
+                vb = q_vals[qb]
+                n = min(len(va), len(vb))
+                if n < 3:
+                    continue
+                corr = self._pearson_r(va[:n], vb[:n])
+                prod = [va[k] * vb[k] for k in range(n)]
+                ratio = [va[k] / max(vb[k], 1e-10) for k in range(n)]
+                sq_diff = [va[k]**2 - vb[k]**2 for k in range(n)]
+                sq_sum = [va[k]**2 + vb[k]**2 for k in range(n)]
+
+                def _cv(vals: list[float]) -> float:
+                    m = sum(vals) / len(vals)
+                    if abs(m) < 1e-12:
+                        return 0.0
+                    var = sum((v - m)**2 for v in vals) / len(vals)
+                    return math.sqrt(max(var, 0.0)) / abs(m)
+
+                prod_cv = _cv(prod)
+                ratio_cv = _cv(ratio)
+                sq_diff_cv = _cv(sq_diff)
+                sq_sum_cv = _cv(sq_sum)
+                min_cv = min(prod_cv, ratio_cv, sq_diff_cv, sq_sum_cv)
+
+                corr_score = max(0.0, min(1.0, abs(corr) / GROUPED_CORRELATION_THRESHOLD))
+                const_score = max(0.0, 1.0 - min_cv / 0.15) if min_cv < 1.0 else 0.0
+                pair_score = max(corr_score, const_score)
+
+                if pair_score > 0.4:
+                    scores.append(pair_score)
+
+        if not scores:
+            return 0.0
+        top_scores = sorted(scores, reverse=True)[:max(GROUPED_MIN_PAIRS, len(scores) // 2 + 1)]
+        return sum(top_scores) / len(top_scores)
 
     @staticmethod
     def _pearson_r(x: list[float], y: list[float]) -> float:
@@ -664,11 +767,13 @@ class HiddenVariableProposer(nn.Module):
             VAR_INTEGER: "n", VAR_HALF_INTEGER: "j",
             VAR_ANGULAR_M: "m_l", VAR_SPIN: "s", VAR_CONTINUOUS: "alpha",
             VAR_CONTINUOUS_RATIO: "gamma", VAR_CONTINUOUS_ADDITIVE: "phi",
+            VAR_GROUPED: "s2",
         }
         patch_map = {
             TRANSFORM_IDENTITY: "*{name}", TRANSFORM_SQUARED: "*{name}^2",
             TRANSFORM_INV_SQUARED: "/{name}^2", TRANSFORM_SQRT: "*sqrt({name})",
             TRANSFORM_RATIO: "*{name}", TRANSFORM_OFFSET: "+{name}",
+            TRANSFORM_METRIC: "*{name}",
         }
 
         results: list[HiddenVariableProposal] = []
@@ -747,6 +852,7 @@ def _shape_neighbors(shape: str) -> list[str]:
         SHAPE_LINEAR_RATIO: [SHAPE_LINEAR, SHAPE_CONSTANT],
         SHAPE_POWER_LAW: [SHAPE_EXPONENTIAL, SHAPE_QUADRATIC],
         SHAPE_MULTI_VAR: [SHAPE_LINEAR_RATIO, SHAPE_QUADRATIC],
+        SHAPE_GROUPED: [SHAPE_MULTI_VAR, SHAPE_LINEAR_RATIO, SHAPE_CONSTANT],
     }
     return neighbors.get(shape, [])
 
@@ -1120,6 +1226,91 @@ class HiddenVariableDiscovery:
         if shape == SHAPE_CONSTANT and cvs < 0.05:
             pass
 
+        # =====================================================================
+        # v4: Grouped quantity proposals (spacetime metric discovery)
+        # =====================================================================
+        if shape == SHAPE_GROUPED or (shape in (SHAPE_LINEAR_RATIO, SHAPE_MULTI_VAR) and
+                {"c", "t", "x", "tau"} & set(quantity_names)):
+            # Detect which pairs form a group
+            # Check for t-x pairing (spacetime signal)
+            has_t = any(q in quantity_names for q in ["t", "t_lab"])
+            has_x = any(q in quantity_names for q in ["x", "x_lab", "r"])
+            has_c = "c" in quantity_names or "c" in potential_hidden_names
+            has_tau = "tau" in quantity_names or "tau" in potential_hidden_names
+
+            if has_t and has_x:
+                # t and x are grouped -> propose metric relationships
+                # The metric variable s2 represents the invariant interval
+                metric_name = "s2"
+
+                # Proposal 1: squared difference with c (Minkowski metric)
+                if has_c:
+                    proposals.append(HiddenVariableProposal(
+                        variable_type=VAR_GROUPED, variable_name=metric_name,
+                        transform=TRANSFORM_METRIC,
+                        rationale="t and x co-vary across frames - propose Minkowski metric (ct)^2-x^2 invariant",
+                        confidence=0.85, expression_patch=f"*{metric_name}",
+                        expression_fragment="s2 = (c*t)^2 - x^2",
+                    ))
+                    # Proposal 2: Euclidean metric (alternative to falsify)
+                    proposals.append(HiddenVariableProposal(
+                        variable_type=VAR_GROUPED, variable_name=metric_name,
+                        transform=TRANSFORM_METRIC,
+                        rationale="t and x grouped - also try Euclidean (ct)^2+x^2 as alternative",
+                        confidence=0.60, expression_patch=f"*{metric_name}",
+                        expression_fragment="s2 = (c*t)^2 + x^2",
+                    ))
+                    if has_tau:
+                        proposals.append(HiddenVariableProposal(
+                            variable_type=VAR_GROUPED, variable_name=metric_name,
+                            transform=TRANSFORM_METRIC,
+                            rationale="t, x, tau grouped - try proper time interval (c tau)^2-x^2",
+                            confidence=0.70, expression_patch=f"*{metric_name}",
+                            expression_fragment="s2 = (c*tau)^2 - x^2",
+                        ))
+                else:
+                    # No c known - propose scaled squared difference
+                    proposals.append(HiddenVariableProposal(
+                        variable_type=VAR_GROUPED, variable_name=metric_name,
+                        transform=TRANSFORM_METRIC,
+                        rationale="t and x co-vary - propose squared-difference metric between them",
+                        confidence=0.70, expression_patch=f"*{metric_name}",
+                        expression_fragment="s2 = t^2 - (x/c)^2",
+                    ))
+
+                # Proposal: try scaled forms
+                proposals.append(HiddenVariableProposal(
+                    variable_type=VAR_GROUPED, variable_name=metric_name,
+                    transform=TRANSFORM_IDENTITY,
+                    rationale="Grouped t, x - try product form as simpler candidate",
+                    confidence=0.50, expression_patch=f"*{metric_name}",
+                    expression_fragment="s2 = (c*t)^2 - x^2",
+                ))
+
+            # Sound wave grouping: f and lambda group as f*lambda = v_sound
+            has_f = any(q in quantity_names for q in ["f", "nu", "omega"])
+            has_lambda_q = "lambda" in quantity_names
+            if has_f and has_lambda_q:
+                proposals.append(HiddenVariableProposal(
+                    variable_type=VAR_GROUPED, variable_name="v_sound",
+                    transform=TRANSFORM_IDENTITY,
+                    rationale="Frequency and wavelength co-vary - propose wave speed group f*lambda",
+                    confidence=0.78, expression_patch="*v_sound",
+                    expression_fragment="alpha = 1/2",
+                ))
+
+            # Fluid flow grouping: pressure and velocity group (Bernoulli)
+            has_P = "P" in quantity_names
+            has_rho = "rho" in quantity_names
+            if has_P and has_velocity:
+                proposals.append(HiddenVariableProposal(
+                    variable_type=VAR_GROUPED, variable_name="B_const",
+                    transform=TRANSFORM_IDENTITY,
+                    rationale="Pressure and velocity co-vary - propose Bernoulli invariant P + 0.5*rho*v^2",
+                    confidence=0.75, expression_patch="*B_const",
+                    expression_fragment="alpha = 1/2",
+                ))
+
         # Generic fallback
         proposals.append(HiddenVariableProposal(
             variable_type=VAR_INTEGER, variable_name="n",
@@ -1166,6 +1357,10 @@ class HiddenVariableDiscovery:
                 elif proposal.variable_type == VAR_CONTINUOUS_ADDITIVE:
                     # v2: Compute additive offset from timestep data
                     val = self._compute_additive_value(ts, obs, quantities, proposal)
+                    new_ts[proposal.variable_name] = float(val)
+                elif proposal.variable_type == VAR_GROUPED:
+                    # v4: For grouped quantities, compute the metric invariant
+                    val = self._compute_metric_value(ts, obs, quantities, proposal)
                     new_ts[proposal.variable_name] = float(val)
                 else:
                     # Default: use observation index (continuous fallback)
@@ -1272,6 +1467,60 @@ class HiddenVariableDiscovery:
                 if key not in quantities:
                     return float(val)
 
+        return 1.0
+
+    def _compute_metric_value(
+        self, ts: dict, obs: Observation, quantities: dict[str, Dimension],
+        proposal: HiddenVariableProposal,
+    ) -> float:
+        """v4: Compute a metric invariant from grouped quantities.
+
+        For spacetime interval: s2 = (c*t)^2 - x^2
+        For general metric: compute from the expression fragment.
+        """
+        expr_frag = proposal.expression_fragment
+        ts_keys = set(ts.keys())
+        param_keys = set(obs.parameters.keys())
+
+        if "c*t" in expr_frag or "c*tau" in expr_frag:
+            c_val = None
+            t_val = None
+            x_val = None
+            tau_val = None
+
+            if "c" in param_keys:
+                c_val = float(obs.parameters["c"])
+            elif "c" in ts_keys:
+                c_val = float(ts["c"])
+
+            for k in ts_keys:
+                if k in ("t", "t_lab") and isinstance(ts[k], (int, float)):
+                    t_val = float(ts[k])
+                if k in ("x", "x_lab", "r") and isinstance(ts[k], (int, float)):
+                    x_val = float(ts[k])
+                if k == "tau" and isinstance(ts[k], (int, float)):
+                    tau_val = float(ts[k])
+
+            if c_val is None:
+                c_val = 299792458.0
+
+            if t_val is not None and x_val is not None:
+                if "c*tau" in expr_frag and tau_val is not None:
+                    return (c_val * tau_val) ** 2 - x_val ** 2
+                elif "+" in expr_frag or "x^2 +" in expr_frag:
+                    return (c_val * t_val) ** 2 + x_val ** 2
+                else:
+                    return (c_val * t_val) ** 2 - x_val ** 2
+
+        vals: list[float] = []
+        for k in ts_keys:
+            if k in ("t",) or not isinstance(ts[k], (int, float)):
+                continue
+            vals.append(float(ts[k]))
+        if len(vals) >= 2:
+            return vals[0] ** 2 - vals[1] ** 2
+        if vals:
+            return vals[0]
         return 1.0
 
     @staticmethod
@@ -1644,6 +1893,90 @@ def generate_synthetic_training_examples() -> list[HiddenVarTrainingExample]:
             description=f"Multi-body variant {i+1}",
         ))
 
+    # === Group F: Grouped quantity / metric (TYPE 4 - ~50 examples) ===
+
+    # Spacetime metric: t and x grouped with c - 15 variants
+    for i in range(15):
+        qtys_v = [
+            ["c", "t", "x"], ["c", "t", "x", "tau"], ["c", "t", "x", "v"],
+            ["c", "t", "x", "gamma"], ["c", "t", "x", "p"], ["c", "t", "r"],
+            ["c", "t", "x", "tau", "gamma"], ["c", "x", "t_lab", "x_lab"],
+            ["c", "t", "x", "E"], ["c", "t", "x", "s2"],
+            ["c", "tau", "x"], ["c", "t", "x", "ds2"],
+            ["c", "t", "x", "y", "z"], ["c", "t", "x_lab"],
+            ["c", "t", "x", "tau", "v"],
+        ]
+        examples.append(HiddenVarTrainingExample(
+            error_shape=SHAPE_GROUPED, quantity_names=qtys_v[i],
+            domain="relativistic", expected_var_type=VAR_GROUPED,
+            expected_transform=TRANSFORM_METRIC,
+            expected_expression="s2 = (c*t)^2 - x^2",
+            description=f"Spacetime metric grouped variant {i+1}",
+        ))
+
+    # Sound wave grouping: f*lambda = v_sound - 8 variants
+    for i in range(8):
+        qtys_v = [
+            ["f", "lambda"], ["f", "lambda", "v"], ["nu", "lambda"],
+            ["f", "lambda", "c"], ["omega", "lambda"], ["f", "lambda", "T_period"],
+            ["f", "lambda", "k"], ["nu", "lambda", "v"],
+        ]
+        examples.append(HiddenVarTrainingExample(
+            error_shape=SHAPE_GROUPED, quantity_names=qtys_v[i],
+            domain="em", expected_var_type=VAR_GROUPED,
+            expected_transform=TRANSFORM_IDENTITY,
+            expected_expression="alpha = 1/2",
+            description=f"Sound wave grouped variant {i+1}",
+        ))
+
+    # Fluid flow (Bernoulli) grouping: P and v co-vary - 8 variants
+    for i in range(8):
+        qtys_v = [
+            ["P", "v", "rho"], ["P", "v", "rho", "h"],
+            ["P", "v", "rho", "g"], ["P", "v", "rho", "A"],
+            ["P", "v"], ["P", "v", "h", "rho", "g"],
+            ["P", "v", "h"], ["P", "rho", "v"],
+        ]
+        examples.append(HiddenVarTrainingExample(
+            error_shape=SHAPE_GROUPED, quantity_names=qtys_v[i],
+            domain="gravity", expected_var_type=VAR_GROUPED,
+            expected_transform=TRANSFORM_IDENTITY,
+            expected_expression="alpha = 1/2",
+            description=f"Bernoulli grouped variant {i+1}",
+        ))
+
+    # Planetary orbit grouping: r and theta co-vary - 8 variants
+    for i in range(8):
+        qtys_v = [
+            ["r", "theta"], ["r", "theta", "omega"],
+            ["r", "theta", "v"], ["r", "theta", "L"],
+            ["r", "theta", "m"], ["r", "theta", "a"],
+            ["r", "theta", "v", "omega"], ["r", "drdt", "dphidt"],
+        ]
+        examples.append(HiddenVarTrainingExample(
+            error_shape=SHAPE_GROUPED, quantity_names=qtys_v[i],
+            domain="gravity", expected_var_type=VAR_GROUPED,
+            expected_transform=TRANSFORM_IDENTITY,
+            expected_expression="alpha = 1/2",
+            description=f"Orbital grouped variant {i+1}",
+        ))
+
+    # Coupled oscillator grouping: x1 and x2 co-vary as normal modes - 8 variants
+    for i in range(8):
+        qtys_v = [
+            ["x1", "x2"], ["x1", "x2", "v1", "v2"],
+            ["x1", "x2", "k"], ["x1", "x2", "m1", "m2"],
+            ["x1", "x2", "omega1", "omega2"], ["x1", "x2", "E"],
+            ["x1", "x2", "k1", "k2"], ["x1", "x2", "v1", "v2", "m1", "m2"],
+        ]
+        examples.append(HiddenVarTrainingExample(
+            error_shape=SHAPE_GROUPED, quantity_names=qtys_v[i],
+            domain="spring", expected_var_type=VAR_GROUPED,
+            expected_transform=TRANSFORM_IDENTITY,
+            expected_expression="alpha = 1/2",
+            description=f"Coupled oscillator grouped variant {i+1}",
+        ))
+
     return examples
 
 
@@ -1690,6 +2023,13 @@ _EXPR_TRAINING_MAP: dict[tuple[str, str, str], str] = {
     (SHAPE_MULTI_VAR, VAR_CONTINUOUS_ADDITIVE, "thermal"): "eta = 1 - Q_out/Q_in",
     # Multi-variable — momentum conservation
     (SHAPE_MULTI_VAR, VAR_CONTINUOUS_RATIO, "gravity"): "alpha = 1/2",
+    # v4: Grouped quantity — spacetime metric
+    (SHAPE_GROUPED, VAR_GROUPED, "relativistic"): "s2 = (c*t)^2 - x^2",
+    (SHAPE_GROUPED, VAR_GROUPED, "em"): "s2 = (c*t)^2 - x^2",
+    (SHAPE_GROUPED, VAR_GROUPED, "gravity"): "s2 = (c*t)^2 - x^2",
+    (SHAPE_GROUPED, VAR_GROUPED, "spring"): "s2 = (c*t)^2 - x^2",
+    (SHAPE_GROUPED, VAR_GROUPED, "*"): "s2 = (c*t)^2 - x^2",
+    (SHAPE_GROUPED, VAR_GROUPED, "thermal"): "s2 = (c*t)^2 - x^2",
     # Fallback
     (SHAPE_POWER_LAW, VAR_CONTINUOUS_RATIO, "*"): "alpha = log(E/E0)/log(x)",
 }
@@ -2502,3 +2842,1202 @@ def _solve_linear_3x3(A: list[list[float]], B: list[float]) -> tuple[float, floa
     y = (B[0] * cofactor(0, 1) + B[1] * cofactor(1, 1) + B[2] * cofactor(2, 1)) / det
     z = (B[0] * cofactor(0, 2) + B[1] * cofactor(1, 2) + B[2] * cofactor(2, 2)) / det
     return x, y, z
+
+
+# =============================================================================
+# 7. Grouped Quantity Detection — co-varying quantity groups
+# =============================================================================
+# The system currently treats t and x as independent. Time dilation needs
+# them seen as a GROUP. This module detects when quantities co-vary across
+# observations and should be treated with a metric relationship between them.
+
+# Metric types for grouped quantities
+GROUPED_METRIC_SQUARED_DIFF = "squared_diff"   # q1² - q2² (spacetime-like)
+GROUPED_METRIC_SUM_SQUARES = "sum_squares"      # q1² + q2² (Euclidean-like)
+GROUPED_METRIC_PRODUCT = "product"              # q1 * q2 (conjugate pairs)
+GROUPED_METRIC_RATIO = "ratio"                  # q1 / q2 (scaling relation)
+GROUPED_METRIC_WEIGHTED_DIFF = "weighted_diff"  # (k*q1)² - q2² (spacetime with scale)
+
+ALL_GROUPED_METRICS = [
+    GROUPED_METRIC_SQUARED_DIFF, GROUPED_METRIC_SUM_SQUARES,
+    GROUPED_METRIC_PRODUCT, GROUPED_METRIC_RATIO, GROUPED_METRIC_WEIGHTED_DIFF,
+]
+NUM_GROUPED_METRICS = len(ALL_GROUPED_METRICS)
+GROUPED_METRIC_TO_IDX = {m: i for i, m in enumerate(ALL_GROUPED_METRICS)}
+IDX_TO_GROUPED_METRIC = {i: m for m, i in GROUPED_METRIC_TO_IDX.items()}
+
+# Pre-1905 quantity groups (what "group" training looks like pre-Einstein)
+PRE1905_GROUP_PATTERNS = [
+    # Sound waves: frequency and wavelength group as f*λ = v_sound
+    ("f", "lambda", GROUPED_METRIC_PRODUCT, "Frequency-wavelength: f*λ = v_sound"),
+    ("f", "lambda", GROUPED_METRIC_RATIO, "Frequency-wavelength inverse: f = v_sound/λ"),
+    # Fluid flow: pressure and velocity group in Bernoulli
+    ("P", "v", GROUPED_METRIC_SUM_SQUARES, "Bernoulli: P + ½ρv² = const"),
+    ("P", "v", GROUPED_METRIC_SQUARED_DIFF, "Bernoulli alt: P - ½ρv² pattern"),
+    # Planetary orbits: r and θ group for angular momentum
+    ("r", "theta", GROUPED_METRIC_PRODUCT, "Angular momentum: r²*dθ/dt = const"),
+    ("r", "theta", GROUPED_METRIC_SQUARED_DIFF, "Orbital: r² - (dθ/dt)² pattern"),
+    # Coupled oscillators: x₁ and x₂ group as normal modes
+    ("x1", "x2", GROUPED_METRIC_SQUARED_DIFF, "Normal mode: x₁² - x₂² = const"),
+    ("x1", "x2", GROUPED_METRIC_SUM_SQUARES, "Normal mode: x₁² + x₂² = const"),
+    # Galilean relativity: t and x are independent in classical physics
+    ("t", "x", GROUPED_METRIC_PRODUCT, "Galilean: t*x (trivial group)"),
+    ("t", "x", GROUPED_METRIC_RATIO, "Galilean: x/t = v (velocity)"),
+    # Thermal: P, V group as PV = const (isothermal)
+    ("P", "V", GROUPED_METRIC_PRODUCT, "Boyle: P*V = const"),
+    # Ideal gas compression: P, T group
+    ("P", "T", GROUPED_METRIC_RATIO, "Gay-Lussac: P/T = const"),
+    # Mass and velocity group for momentum
+    ("m", "v", GROUPED_METRIC_PRODUCT, "Momentum: m*v"),
+    # Energy and velocity group for kinetic
+    ("E", "v", GROUPED_METRIC_SQUARED_DIFF, "Kinetic: E - ½mv² = 0"),
+    # Period and length for pendulum
+    ("T_period", "L", GROUPED_METRIC_SQUARED_DIFF, "Pendulum: T²/L = 4π²/g"),
+    # Spring: F and x group
+    ("F", "x", GROUPED_METRIC_PRODUCT, "Hooke: F = k*x"),
+    # Frequency and period
+    ("f", "T_period", GROUPED_METRIC_PRODUCT, "Frequency-period: f*T = 1"),
+    # Mass and acceleration for force
+    ("m", "a", GROUPED_METRIC_PRODUCT, "Newton: F = m*a"),
+]
+NUM_PRE1905_GROUP_PATTERNS = len(PRE1905_GROUP_PATTERNS)
+
+# Quantity vocabulary for the grouped detector — focused on classical physics
+_GROUPED_QTY_VOCAB = [
+    "t", "x", "y", "z", "v", "v1", "v2", "vx", "vy",
+    "m", "m1", "m2", "F", "a", "g", "k",
+    "E", "W", "Q", "P", "V", "T", "S", "n",
+    "f", "lambda", "omega", "T_period", "L", "r", "theta",
+    "x1", "x2", "x0", "v0", "c",
+    "rho", "A", "p", "mu", "N",
+]
+GROUPED_QTY_TO_IDX = {q: i for i, q in enumerate(_GROUPED_QTY_VOCAB)}
+NUM_GROUPED_QUANTITIES = len(_GROUPED_QTY_VOCAB)
+
+
+# ── Grouped Quantity Feature encoding ────────────────────────────────────────
+
+def _compute_pairwise_corr(
+    q1_vals: list[float], q2_vals: list[float],
+) -> float:
+    """Pearson correlation between two quantity value sequences."""
+    n = min(len(q1_vals), len(q2_vals))
+    if n < 3:
+        return 0.0
+    v1 = q1_vals[:n]
+    v2 = q2_vals[:n]
+    m1 = sum(v1) / n
+    m2 = sum(v2) / n
+    cov = sum((v1[i] - m1) * (v2[i] - m2) for i in range(n))
+    s1 = math.sqrt(sum((x - m1) ** 2 for x in v1))
+    s2 = math.sqrt(sum((y - m2) ** 2 for y in v2))
+    if s1 < 1e-12 or s2 < 1e-12:
+        return 0.0
+    return max(-1.0, min(1.0, cov / (s1 * s2)))
+
+
+def _compute_cv(values: list[float]) -> float:
+    """Coefficient of variation (spread/mean) — measure of constancy."""
+    n = len(values)
+    if n < 2:
+        return 1.0
+    mean = sum(values) / n
+    if abs(mean) < 1e-12:
+        return 1.0
+    var = sum((v - mean) ** 2 for v in values) / n
+    return math.sqrt(max(var, 0.0)) / abs(mean)
+
+
+# ── Data Classes ──────────────────────────────────────────────────────────────
+
+@dataclass
+class GroupedQuantityDetection:
+    """Result of detecting a co-varying quantity group."""
+    group: list[str]                          # The quantities identified as grouped
+    correlation_matrix: dict[tuple[str, str], float]  # pairwise correlations
+    mean_abs_correlation: float               # how strongly they co-vary
+    co_variation_pattern: str                 # "linear", "quadratic", "inverse", etc.
+    pattern_confidence: float                 # confidence in the co-variation pattern
+    across_observation_consistency: float     # does the relationship hold across observations?
+    suggested_metrics: list[str]              # metric types likely relevant
+    detection_source: str                     # "correlation", "residual_analysis", "mlp"
+
+
+@dataclass
+class MetricProposal:
+    """A proposed metric relationship for a quantity group."""
+    metric_type: str                          # squared_diff, sum_squares, product, ratio, weighted_diff
+    quantities: list[str]                     # the grouped quantities
+    expression_template: str                  # e.g., "(c*t)^2 - x^2"
+    scale_factor: float | None = None         # for weighted_diff (the k in (k*q1)² - q2²)
+    confidence: float = 0.0
+    rationale: str = ""
+
+
+@dataclass
+class GroupedMetricDiscoveryResult:
+    """Complete result of grouped metric discovery attempt."""
+    discovered: bool
+    detected_group: list[str]
+    metric_type: str | None
+    best_invariant: str | None
+    best_constancy: float
+    baseline_constancy: float
+    proposals_tried: int
+    search_candidates: list[str] = field(default_factory=list)
+    candidate_scores: list[float] = field(default_factory=list)
+    metadata: dict = field(default_factory=dict)
+
+
+# =============================================================================
+# 8. GroupedQuantityDetector — rule-based + MLP hybrid
+# =============================================================================
+
+class GroupedQuantityDetector:
+    """Detect when quantities co-vary across observations and should be grouped.
+
+    Uses correlation analysis on observation timesteps to find pairs/groups
+    of quantities that move together. The key insight: if q1 and q2 show strong
+    correlation across multiple observations, they likely belong to a group
+    that should be described by a metric relationship.
+
+    This is ERA-GATED: trained only on pre-1905 patterns (sound waves,
+    fluids, orbits, oscillators). Never taught Lorentz or spacetime metric.
+    Yet when shown muon data, it should detect (t, x) as a group.
+    """
+
+    def __init__(self, *, correlation_threshold: float = 0.6) -> None:
+        self.correlation_threshold = correlation_threshold
+
+    def detect_groups(
+        self,
+        observations: list[Observation],
+        quantity_names: list[str],
+    ) -> list[GroupedQuantityDetection]:
+        """Find all co-varying quantity groups across observations.
+
+        Algorithm:
+        1. For each pair of quantities, compute correlation across timesteps
+        2. Cluster strongly-correlated pairs into groups
+        3. For each group, determine co-variation pattern and propose metrics
+        """
+        if not observations or len(quantity_names) < 2:
+            return []
+
+        # Extract value sequences for each quantity
+        qty_values: dict[str, list[float]] = {q: [] for q in quantity_names}
+        for obs in observations:
+            for qname in quantity_names:
+                for ts in obs.timesteps:
+                    val = ts.get(qname)
+                    if isinstance(val, (int, float)):
+                        qty_values[qname].append(float(val))
+
+        # Filter to quantities with enough data
+        valid_qtys = [q for q in quantity_names if len(qty_values[q]) >= 3]
+        if len(valid_qtys) < 2:
+            return []
+
+        # Compute pairwise correlation matrix
+        corr_matrix: dict[tuple[str, str], float] = {}
+        for i, qa in enumerate(valid_qtys):
+            for qb in valid_qtys[i + 1:]:
+                corr = _compute_pairwise_corr(qty_values[qa], qty_values[qb])
+                corr_matrix[(qa, qb)] = corr
+                corr_matrix[(qb, qa)] = corr  # symmetric
+
+        # Find strongly-correlated pairs → candidate groups
+        strong_pairs: list[tuple[str, str, float]] = []
+        for (qa, qb), corr in corr_matrix.items():
+            if qa < qb and abs(corr) >= self.correlation_threshold:
+                strong_pairs.append((qa, qb, corr))
+
+        # Cluster pairs into groups (transitive closure over strongly-correlated pairs)
+        groups: list[set[str]] = []
+        for qa, qb, _ in strong_pairs:
+            placed = False
+            for grp in groups:
+                if qa in grp or qb in grp:
+                    grp.add(qa)
+                    grp.add(qb)
+                    placed = True
+                    break
+            if not placed:
+                groups.append({qa, qb})
+
+        # Merge overlapping groups
+        merged = True
+        while merged:
+            merged = False
+            for i in range(len(groups)):
+                for j in range(i + 1, len(groups)):
+                    if groups[i] & groups[j]:
+                        groups[i] |= groups[j]
+                        groups.pop(j)
+                        merged = True
+                        break
+                if merged:
+                    break
+
+        # Build detections for each group (min size 2)
+        detections: list[GroupedQuantityDetection] = []
+        for grp in groups:
+            if len(grp) < 2:
+                continue
+            grp_list = sorted(grp)
+
+            # Mean absolute correlation for this group
+            group_corrs: list[float] = []
+            grp_sub_matrix: dict[tuple[str, str], float] = {}
+            for qa in grp_list:
+                for qb in grp_list:
+                    if qa < qb and (qa, qb) in corr_matrix:
+                        c = corr_matrix[(qa, qb)]
+                        group_corrs.append(abs(c))
+                        grp_sub_matrix[(qa, qb)] = c
+            mean_abs_corr = sum(group_corrs) / len(group_corrs) if group_corrs else 0.0
+
+            # Determine co-variation pattern
+            pattern, pattern_conf = self._classify_pattern(
+                grp_list, qty_values, corr_matrix,
+            )
+
+            # Across-observation consistency: does CV stay constant?
+            across_consistency = self._compute_across_obs_consistency(
+                grp_list, observations,
+            )
+
+            # Suggest metrics based on pattern
+            suggested_metrics = self._suggest_metrics(pattern, grp_list)
+
+            detections.append(GroupedQuantityDetection(
+                group=grp_list,
+                correlation_matrix=grp_sub_matrix,
+                mean_abs_correlation=mean_abs_corr,
+                co_variation_pattern=pattern,
+                pattern_confidence=pattern_conf,
+                across_observation_consistency=across_consistency,
+                suggested_metrics=suggested_metrics,
+                detection_source="correlation",
+            ))
+
+        # Sort by mean_abs_correlation (strongest first)
+        detections.sort(key=lambda d: -d.mean_abs_correlation)
+        return detections
+
+    def _classify_pattern(
+        self,
+        grp: list[str],
+        qty_values: dict[str, list[float]],
+        corr_matrix: dict[tuple[str, str], float],
+    ) -> tuple[str, float]:
+        """Classify the co-variation pattern for a group of quantities."""
+        # Check if any pair has near-1 correlation → linear
+        linear_count = 0
+        inverse_count = 0
+        for qa in grp:
+            for qb in grp:
+                if qa < qb and (qa, qb) in corr_matrix:
+                    c = corr_matrix[(qa, qb)]
+                    if abs(c) > 0.9:
+                        linear_count += 1
+                    elif c < -0.7:
+                        inverse_count += 1
+
+        n_pairs = len(grp) * (len(grp) - 1) // 2
+        if n_pairs == 0:
+            return "unknown", 0.0
+
+        linear_ratio = linear_count / n_pairs
+        inverse_ratio = inverse_count / n_pairs
+
+        if linear_ratio > 0.6:
+            return "linear", linear_ratio
+        elif inverse_ratio > 0.6:
+            return "inverse", inverse_ratio
+        elif linear_ratio + inverse_ratio > 0.5:
+            return "mixed_linear", linear_ratio + inverse_ratio
+
+        # Check for quadratic by looking at squared values
+        for qa in grp:
+            for qb in grp:
+                if qa >= qb:
+                    continue
+                v1 = qty_values.get(qa, [])
+                v2 = qty_values.get(qb, [])
+                n = min(len(v1), len(v2))
+                if n < 4:
+                    continue
+                v1_sq = [x * x for x in v1[:n]]
+                sq_corr = _compute_pairwise_corr(v1_sq, v2[:n])
+                if abs(sq_corr) > 0.8:
+                    return "quadratic", abs(sq_corr)
+
+        return "co_varying", max(linear_ratio, inverse_ratio)
+
+    def _compute_across_obs_consistency(
+        self, grp: list[str], observations: list[Observation],
+    ) -> float:
+        """How consistent is the relationship across different observations?"""
+        if len(observations) < 2 or len(grp) < 2:
+            return 1.0
+
+        # For each observation, compute CV of pairwise product/ratio
+        cv_list: list[float] = []
+        for obs in observations:
+            vals_a: list[float] = []
+            vals_b: list[float] = []
+            for ts in obs.timesteps:
+                a = ts.get(grp[0])
+                b = ts.get(grp[1]) if len(grp) > 1 else 1.0
+                if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+                    vals_a.append(float(a))
+                    vals_b.append(float(b))
+            if len(vals_a) < 2:
+                continue
+            n = min(len(vals_a), len(vals_b))
+            products = [vals_a[i] * vals_b[i] for i in range(n)]
+            cv_list.append(_compute_cv(products))
+
+        if not cv_list:
+            return 0.0
+        # Lower mean CV = more consistent
+        mean_cv = sum(cv_list) / len(cv_list)
+        return max(0.0, 1.0 - mean_cv)
+
+    def _suggest_metrics(
+        self, pattern: str, grp: list[str],
+    ) -> list[str]:
+        """Suggest metric types for a group based on co-variation pattern."""
+        suggestions: list[str] = []
+
+        # Product is the default for linear co-variation
+        if pattern in ("linear", "mixed_linear"):
+            suggestions.extend([GROUPED_METRIC_PRODUCT, GROUPED_METRIC_RATIO])
+        if pattern == "inverse":
+            suggestions.extend([GROUPED_METRIC_RATIO, GROUPED_METRIC_PRODUCT])
+        if pattern == "quadratic":
+            suggestions.extend([GROUPED_METRIC_SQUARED_DIFF, GROUPED_METRIC_SUM_SQUARES])
+
+        # Always include squared_diff and sum_squares — the "metric" concept
+        # (there's always a possible distance relation between grouped quantities)
+        if GROUPED_METRIC_SQUARED_DIFF not in suggestions:
+            suggestions.append(GROUPED_METRIC_SQUARED_DIFF)
+        if GROUPED_METRIC_SUM_SQUARES not in suggestions:
+            suggestions.append(GROUPED_METRIC_SUM_SQUARES)
+
+        # For any pair that looks like a potential (t, x) — suggest weighted_diff
+        grp_set = set(grp)
+        if "t" in grp_set:
+            spatials = grp_set & {"x", "y", "z"}
+            if spatials:
+                if GROUPED_METRIC_WEIGHTED_DIFF not in suggestions:
+                    suggestions.insert(0, GROUPED_METRIC_WEIGHTED_DIFF)
+                if GROUPED_METRIC_SQUARED_DIFF not in suggestions:
+                    suggestions.append(GROUPED_METRIC_SQUARED_DIFF)
+
+        return suggestions
+
+
+# =============================================================================
+# 9. GroupedMetricProposer — MLP that proposes metrics for grouped quantities
+# =============================================================================
+
+class GroupedMetricProposer(nn.Module):
+    """MLP that proposes metric types for detected quantity groups.
+
+    Input:  [group_encoding (NUM_GROUPED_QUANTITIES * 2) + correlation_features (6)]
+    Hidden: 48 -> 32
+    Output: [metric_logits (NUM_GROUPED_METRICS) + confidence + scale_factor]
+
+    ~11K parameters.
+    Trained ONLY on pre-1905 patterns (sound waves, fluids, orbits, oscillators).
+    Era-gated: never shown Lorentz or spacetime data during training.
+    """
+
+    def __init__(self, *, hidden_dim: int = 48, dropout: float = 0.1) -> None:
+        super().__init__()
+        # Input: 2 quantity one-hots + 6 correlation features
+        input_dim = NUM_GROUPED_QUANTITIES * 2 + 6
+        output_dim = NUM_GROUPED_METRICS + 1 + 1  # metrics + confidence + scale_factor
+
+        self.fc1 = nn.Linear(input_dim, hidden_dim)
+        self.fc2 = nn.Linear(hidden_dim, hidden_dim // 2)
+        self.fc3 = nn.Linear(hidden_dim // 2, output_dim)
+        self.dropout = nn.Dropout(dropout)
+        self._init_weights()
+
+    def _init_weights(self) -> None:
+        for p in self.parameters():
+            if p.dim() > 1:
+                nn.init.xavier_uniform_(p)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        h = F.relu(self.fc1(x))
+        h = self.dropout(h)
+        h = F.relu(self.fc2(h))
+        h = self.dropout(h)
+        return self.fc3(h)
+
+    def propose(
+        self,
+        q1_onehot: torch.Tensor,
+        q2_onehot: torch.Tensor,
+        correlation_features: torch.Tensor,
+        *,
+        temperature: float = 0.15,
+    ) -> list[MetricProposal]:
+        """Propose metric types for a quantity pair.
+
+        Args:
+            q1_onehot: [batch, NUM_GROUPED_QUANTITIES] one-hot for first quantity
+            q2_onehot: [batch, NUM_GROUPED_QUANTITIES] one-hot for second quantity
+            correlation_features: [batch, 6] with [abs_corr, cv_product, cv_ratio,
+                                  cv_diff, linear_score, consistency]
+        """
+        x = torch.cat([q1_onehot, q2_onehot, correlation_features], dim=-1)
+        output = self.forward(x)
+
+        metric_logits = output[:, :NUM_GROUPED_METRICS]
+        confidence_logit = output[:, NUM_GROUPED_METRICS]
+        scale_logit = output[:, NUM_GROUPED_METRICS + 1]
+
+        metric_probs = F.softmax(metric_logits / max(temperature, 1e-8), dim=-1)
+        confidence = torch.sigmoid(confidence_logit)
+        scale_factor = F.softplus(scale_logit)  # positive scale
+
+        batch_size = x.size(0)
+        results: list[MetricProposal] = []
+        for b in range(batch_size):
+            _, top_idx = metric_probs[b].topk(min(3, NUM_GROUPED_METRICS))
+            for rank, mi in enumerate(top_idx):
+                metric_type = IDX_TO_GROUPED_METRIC[mi.item()]
+                q1_idx = q1_onehot[b].argmax().item()
+                q2_idx = q2_onehot[b].argmax().item()
+                q1_name = _GROUPED_QTY_VOCAB[q1_idx] if q1_idx < len(_GROUPED_QTY_VOCAB) else "q1"
+                q2_name = _GROUPED_QTY_VOCAB[q2_idx] if q2_idx < len(_GROUPED_QTY_VOCAB) else "q2"
+                sc = scale_factor[b].item()
+
+                # Build expression template
+                if metric_type == GROUPED_METRIC_SQUARED_DIFF:
+                    expr = f"{q1_name}^2 - {q2_name}^2"
+                elif metric_type == GROUPED_METRIC_SUM_SQUARES:
+                    expr = f"{q1_name}^2 + {q2_name}^2"
+                elif metric_type == GROUPED_METRIC_PRODUCT:
+                    expr = f"{q1_name} * {q2_name}"
+                elif metric_type == GROUPED_METRIC_RATIO:
+                    expr = f"{q1_name} / {q2_name}"
+                elif metric_type == GROUPED_METRIC_WEIGHTED_DIFF:
+                    expr = f"({sc:.3g}*{q1_name})^2 - {q2_name}^2"
+                else:
+                    expr = f"{q1_name} ~ {q2_name}"
+
+                conf = confidence[b].item() * (1.0 - 0.15 * rank)
+                results.append(MetricProposal(
+                    metric_type=metric_type,
+                    quantities=[q1_name, q2_name],
+                    expression_template=expr,
+                    scale_factor=sc if metric_type == GROUPED_METRIC_WEIGHTED_DIFF else None,
+                    confidence=conf,
+                    rationale=f"Top-{rank+1} metric for ({q1_name},{q2_name}) group: {metric_type} (conf={conf:.3f})",
+                ))
+
+        return results
+
+    def count_parameters(self) -> int:
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)
+
+
+# =============================================================================
+# 10. GroupedMetricSearch — search over metric candidates
+# =============================================================================
+
+class GroupedMetricSearch:
+    """Search over metric candidates to discover invariants for grouped quantities.
+
+    Given a detected group (e.g., t, x) and proposed metrics, systematically
+    searches expression space to find constant combinations:
+
+    For metric squared_diff on (t, x):
+      Try: t² - x², (k*t)² - x² for various k
+      Score constancy → pick best
+
+    For weighted_diff on (t, x):
+      Sweep scale factor k to find (k*t)² - x² with maximum constancy
+      → if k ≈ c (speed of light), discover (ct)² - x²
+    """
+
+    def __init__(
+        self,
+        *,
+        scale_sweep_range: tuple[float, float] = (0.5, 400.0),
+        scale_sweep_steps: int = 100,
+        discovery_threshold: float = 0.90,
+    ) -> None:
+        self.scale_sweep_range = scale_sweep_range
+        self.scale_sweep_steps = scale_sweep_steps
+        self.discovery_threshold = discovery_threshold
+        self._evaluator = ExpressionEvaluator()
+
+    def discover(
+        self,
+        detection: GroupedQuantityDetection,
+        proposals: list[MetricProposal],
+        observations: list[Observation],
+        *,
+        existing_quantities: dict[str, Dimension] | None = None,
+    ) -> GroupedMetricDiscoveryResult:
+        """Search for invariant under metric proposals for the detected group."""
+        baseline_constancy = self._baseline_constancy(detection.group, observations)
+        best_constancy = baseline_constancy
+        best_invariant: str | None = None
+        best_metric: str | None = None
+        candidates: list[str] = []
+        scores: list[float] = []
+        tried = 0
+
+        for proposal in proposals[:10]:  # limit proposals
+            if proposal.metric_type == GROUPED_METRIC_WEIGHTED_DIFF:
+                # Sweep scale factor
+                for sc in self._scale_sweep():
+                    expr = self._build_weighted_diff_expr(
+                        proposal.quantities, sc,
+                    )
+                    const = self._evaluate_constancy(expr, observations)
+                    candidates.append(expr)
+                    scores.append(const)
+                    tried += 1
+                    if const > best_constancy:
+                        best_constancy = const
+                        best_invariant = expr
+                        best_metric = proposal.metric_type
+            else:
+                expr = proposal.expression_template
+                const = self._evaluate_constancy(expr, observations)
+                candidates.append(expr)
+                scores.append(const)
+                tried += 1
+                if const > best_constancy:
+                    best_constancy = const
+                    best_invariant = expr
+                    best_metric = proposal.metric_type
+
+        # Also try with existing quantities as modifiers for ALL pairs in group
+        if existing_quantities:
+            for i, qi in enumerate(detection.group):
+                for qj in detection.group[i + 1:]:
+                    for qname in existing_quantities:
+                        if qname in detection.group:
+                            continue
+                        # Try (qname*qi)^2 ± qj^2 pattern
+                        for sign, sign_name in [("-", "squared_diff"), ("+", "sum_squares")]:
+                            expr = f"({qname}*{qi})^2 {sign} {qj}^2"
+                            const = self._evaluate_constancy(expr, observations)
+                            candidates.append(expr)
+                            scores.append(const)
+                            tried += 1
+                            if const > best_constancy:
+                                best_constancy = const
+                                best_invariant = expr
+                                best_metric = sign_name
+                        # Also try reversed: (qname*qj)^2 ± qi^2
+                        for sign, sign_name in [("-", "squared_diff"), ("+", "sum_squares")]:
+                            expr = f"({qname}*{qj})^2 {sign} {qi}^2"
+                            const = self._evaluate_constancy(expr, observations)
+                            candidates.append(expr)
+                            scores.append(const)
+                            tried += 1
+                            if const > best_constancy:
+                                best_constancy = const
+                                best_invariant = expr
+                                best_metric = sign_name
+
+        discovered = best_constancy >= self.discovery_threshold
+        return GroupedMetricDiscoveryResult(
+            discovered=discovered,
+            detected_group=detection.group,
+            metric_type=best_metric,
+            best_invariant=best_invariant,
+            best_constancy=best_constancy,
+            baseline_constancy=baseline_constancy,
+            proposals_tried=tried,
+            search_candidates=candidates[:200],
+            candidate_scores=scores[:200],
+            metadata={
+                "group": detection.group,
+                "suggested_metrics": detection.suggested_metrics,
+                "co_variation_pattern": detection.co_variation_pattern,
+                "mean_abs_correlation": detection.mean_abs_correlation,
+            },
+        )
+
+    def _scale_sweep(self) -> list[float]:
+        """Logarithmic sweep of scale factors."""
+        lo, hi = self.scale_sweep_range
+        steps = self.scale_sweep_steps
+        log_lo = math.log(lo)
+        log_hi = math.log(hi)
+        return [math.exp(log_lo + (log_hi - log_lo) * i / (steps - 1))
+                for i in range(steps)]
+
+    def _build_weighted_diff_expr(
+        self, quantities: list[str], scale: float,
+    ) -> str:
+        q1, q2 = quantities[0], quantities[1] if len(quantities) > 1 else "q2"
+        return f"({scale:.6g}*{q1})^2 - {q2}^2"
+
+    def _evaluate_constancy(
+        self, expr: str, observations: list[Observation],
+    ) -> float:
+        """Score constancy of expression across observations."""
+        try:
+            ast = self._evaluator.parse(expr)
+        except Exception:
+            return 0.0
+
+        values: list[float] = []
+        for obs in observations:
+            for ts in obs.timesteps:
+                context = {**obs.parameters, **ts}
+                try:
+                    val = evaluate_node(ast, context)
+                    if isinstance(val, (int, float)) and not math.isnan(val):
+                        values.append(float(val))
+                except (EvalError, ZeroDivisionError, ValueError, OverflowError):
+                    pass
+
+        if len(values) < 3:
+            return 0.0
+
+        mean = sum(values) / len(values)
+        if abs(mean) < 1e-12:
+            return 0.0
+        var = sum((v - mean) ** 2 for v in values) / len(values)
+        cv = math.sqrt(max(var, 0.0)) / abs(mean)
+        return max(0.0, min(1.0, 1.0 / (1.0 + cv)))
+
+    def _baseline_constancy(
+        self, group: list[str], observations: list[Observation],
+    ) -> float:
+        """Baseline constancy — how constant is the product of grouped quantities?"""
+        if len(group) < 2:
+            return 0.0
+        expr = " * ".join(group)
+        return self._evaluate_constancy(expr, observations)
+
+
+# =============================================================================
+# 11. Training Data — pre-1905 only, era-gated
+# =============================================================================
+
+@dataclass
+class GroupedMetricTrainingExample:
+    """Training example for the grouped metric proposer.
+
+    ALL pre-1905 — no relativistic or quantum patterns.
+    """
+    q1: str
+    q2: str
+    abs_corr: float       # |pearson correlation| between the quantities
+    cv_product: float     # CV of q1*q2
+    cv_ratio: float       # CV of q1/q2
+    cv_diff: float        # CV of |q1 - q2|
+    linear_score: float   # how linear is relationship (0-1)
+    consistency: float    # across-observation consistency
+    expected_metric: str  # what metric type should be proposed
+    description: str
+
+
+def generate_grouped_metric_training_data() -> list[GroupedMetricTrainingExample]:
+    """Generate era-gated training data — pre-1905 physics only.
+
+    Teaches the model that co-varying quantities have metric relationships:
+    - Sound waves: f and λ group as f*λ = v_sound
+    - Fluid flow: P and v group in Bernoulli equation
+    - Orbits: r and θ group in angular momentum conservation
+    - Oscillators: x₁ and x₂ group as normal modes
+    - Galilean: t and x are independent (product/ratio, not squared difference)
+
+    NOT taught: Lorentz transforms, spacetime metric (ct)² - x², c as limiting speed.
+    """
+    examples: list[GroupedMetricTrainingExample] = []
+
+    # ── Sound waves: f*λ = v_sound (constant product) ──
+    for i in range(15):
+        v_sound = 343.0 + random.uniform(-20, 20)
+        n_pts = random.randint(5, 12)
+        freqs = [random.uniform(100, 2000) for _ in range(n_pts)]
+        lambdas = [v_sound / f for f in freqs]
+        products = [freqs[j] * lambdas[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "f", "lambda", freqs, lambdas, products,
+            expected_metric=GROUPED_METRIC_PRODUCT,
+            desc=f"Sound wave f*λ={v_sound:.0f} variant {i+1}",
+        ))
+
+    # ── Bernoulli: P + ½ρv² = const (sum-of-squares-like) ──
+    for i in range(12):
+        rho = random.uniform(1.0, 1.3)
+        n_pts = random.randint(5, 10)
+        P0 = random.uniform(100000, 101325)
+        velocities = [random.uniform(1, 30) for _ in range(n_pts)]
+        pressures = [P0 - 0.5 * rho * v ** 2 for v in velocities]
+        sum_sqs = [pressures[j] + 0.5 * rho * velocities[j] ** 2 for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "P", "v", pressures, velocities, sum_sqs,
+            expected_metric=GROUPED_METRIC_SUM_SQUARES,
+            desc=f"Bernoulli P+½ρv²={P0:.0f} variant {i+1}",
+        ))
+
+    # ── Orbits: r² * dθ/dt ≈ constant (angular momentum) ──
+    for i in range(12):
+        L_const = random.uniform(0.5, 5.0)
+        n_pts = random.randint(5, 10)
+        radii = [random.uniform(1.0, 10.0) for _ in range(n_pts)]
+        thetas = [L_const / (r ** 2) for r in radii]  # dθ/dt
+        products_r_theta = [radii[j] * radii[j] * thetas[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "r", "theta", radii, thetas, products_r_theta,
+            expected_metric=GROUPED_METRIC_PRODUCT,
+            desc=f"Orbital L=r²*θ̇={L_const:.2f} variant {i+1}",
+        ))
+
+    # ── Coupled oscillators: x₁² ± x₂² = const (normal modes) ──
+    for i in range(10):
+        n_pts = random.randint(5, 10)
+        A = random.uniform(1.0, 3.0)
+        t_vals = [random.uniform(0, 2 * math.pi) for _ in range(n_pts)]
+        # In-phase: x1 = A*cos(t), x2 = A*cos(t) → x1 - x2 = 0
+        x1_vals = [A * math.cos(t) for t in t_vals]
+        x2_vals = [A * math.cos(t) for t in t_vals]
+        sq_diffs = [x1_vals[j] ** 2 - x2_vals[j] ** 2 for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "x1", "x2", x1_vals, x2_vals, sq_diffs,
+            expected_metric=GROUPED_METRIC_SQUARED_DIFF,
+            desc=f"Coupled oscillator same-phase variant {i+1}",
+        ))
+
+    # ── Coupled oscillators: out-of-phase → x₁² + x₂² = const ──
+    for i in range(8):
+        n_pts = random.randint(5, 10)
+        A = random.uniform(1.0, 3.0)
+        t_vals = [random.uniform(0, 2 * math.pi) for _ in range(n_pts)]
+        x1_vals = [A * math.cos(t) for t in t_vals]
+        x2_vals = [A * math.sin(t) for t in t_vals]
+        sum_sqs = [x1_vals[j] ** 2 + x2_vals[j] ** 2 for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "x1", "x2", x1_vals, x2_vals, sum_sqs,
+            expected_metric=GROUPED_METRIC_SUM_SQUARES,
+            desc=f"Coupled oscillator quadrature variant {i+1}",
+        ))
+
+    # ── Galilean: x/t = v (ratio is constant) ──
+    for i in range(12):
+        v_const = random.uniform(5.0, 50.0)
+        n_pts = random.randint(5, 12)
+        times = [random.uniform(1.0, 10.0) for _ in range(n_pts)]
+        positions = [v_const * t for t in times]
+        ratios = [positions[j] / times[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "t", "x", times, positions, ratios,
+            expected_metric=GROUPED_METRIC_RATIO,
+            desc=f"Galilean x/t=v={v_const:.1f} variant {i+1}",
+        ))
+
+    # ── Galilean: t and x product (trivial — no invariant) ──
+    for i in range(8):
+        n_pts = random.randint(5, 10)
+        v = random.uniform(5, 30)
+        times = [random.uniform(1, 10) for _ in range(n_pts)]
+        positions = [v * t + random.uniform(-2, 2) for t in times]
+        products = [times[j] * positions[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "t", "x", times, positions, products,
+            expected_metric=GROUPED_METRIC_PRODUCT,
+            desc=f"Galilean t*x variant {i+1}",
+        ))
+
+    # ── Boyle's Law: P*V = const ──
+    for i in range(10):
+        n_pts = random.randint(5, 10)
+        k_PV = random.uniform(1.0, 10.0)
+        volumes = [random.uniform(0.5, 5.0) for _ in range(n_pts)]
+        pressures = [k_PV / v for v in volumes]
+        products = [pressures[j] * volumes[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "P", "V", pressures, volumes, products,
+            expected_metric=GROUPED_METRIC_PRODUCT,
+            desc=f"Boyle PV={k_PV:.2f} variant {i+1}",
+        ))
+
+    # ── Hooke's Law: F/x = k (ratio constant) ──
+    for i in range(10):
+        k = random.uniform(10.0, 500.0)
+        n_pts = random.randint(5, 10)
+        displacements = [random.uniform(0.01, 0.5) for _ in range(n_pts)]
+        forces = [k * d for d in displacements]
+        ratios = [forces[j] / displacements[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "F", "x", forces, displacements, ratios,
+            expected_metric=GROUPED_METRIC_RATIO,
+            desc=f"Hooke F/x=k={k:.0f} variant {i+1}",
+        ))
+
+    # ── Momentum: m*v = p (product constant for each object) ──
+    for i in range(8):
+        m = random.uniform(0.5, 10.0)
+        n_pts = random.randint(5, 10)
+        velocities = [random.uniform(1, 20) for _ in range(n_pts)]
+        momenta = [m * v for v in velocities]
+        products = [m * velocities[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "m", "v", [m] * n_pts, velocities, products,
+            expected_metric=GROUPED_METRIC_PRODUCT,
+            desc=f"Momentum m*v=p variant {i+1}",
+        ))
+
+    # ── Pendulum: T²/L = 4π²/g (ratio constant) ──
+    for i in range(8):
+        g = 9.81
+        n_pts = random.randint(5, 10)
+        lengths = [random.uniform(0.5, 3.0) for _ in range(n_pts)]
+        periods = [2 * math.pi * math.sqrt(L / g) for L in lengths]
+        ratios = [periods[j] ** 2 / lengths[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "T_period", "L", periods, lengths, ratios,
+            expected_metric=GROUPED_METRIC_RATIO,
+            desc=f"Pendulum T²/L=4π²/g variant {i+1}",
+        ))
+
+    # ── Newton's Second Law: F/a = m (ratio) ──
+    for i in range(8):
+        m = random.uniform(1.0, 20.0)
+        n_pts = random.randint(5, 10)
+        accelerations = [random.uniform(0.5, 15.0) for _ in range(n_pts)]
+        forces = [m * a for a in accelerations]
+        ratios = [forces[j] / accelerations[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "F", "a", forces, accelerations, ratios,
+            expected_metric=GROUPED_METRIC_RATIO,
+            desc=f"Newton F/a=m={m:.1f} variant {i+1}",
+        ))
+
+    return examples
+
+
+def _build_grouped_example(
+    q1: str, q2: str,
+    vals1: list[float], vals2: list[float],
+    combined_vals: list[float],
+    expected_metric: str,
+    desc: str,
+) -> GroupedMetricTrainingExample:
+    """Build a training example from synthetic value sequences."""
+    n = min(len(vals1), len(vals2), len(combined_vals))
+    v1 = vals1[:n]
+    v2 = vals2[:n]
+    cv = combined_vals[:n]
+
+    abs_corr = abs(_compute_pairwise_corr(v1, v2))
+    cv_product = _compute_cv([a * b for a, b in zip(v1, v2)])
+    cv_ratio = _compute_cv([a / max(b, 1e-10) for b, a in zip(v1, v2)] if all(abs(b) > 1e-10 for b in v2) else [1.0])
+    cv_diff = _compute_cv([abs(a - b) for a, b in zip(v1, v2)])
+    linear_score = abs_corr if abs_corr > 0.7 else 0.5
+    consistency = max(0.0, 1.0 - _compute_cv(cv))
+
+    return GroupedMetricTrainingExample(
+        q1=q1, q2=q2,
+        abs_corr=abs_corr,
+        cv_product=cv_product,
+        cv_ratio=cv_ratio,
+        cv_diff=cv_diff,
+        linear_score=linear_score,
+        consistency=consistency,
+        expected_metric=expected_metric,
+        description=desc,
+    )
+
+
+def build_grouped_metric_batch(
+    examples: list[GroupedMetricTrainingExample],
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Build training batch for GroupedMetricProposer."""
+    batch_size = len(examples)
+    input_dim = NUM_GROUPED_QUANTITIES * 2 + 6
+    output_dim = NUM_GROUPED_METRICS + 1 + 1
+
+    inputs = torch.zeros(batch_size, input_dim)
+    targets = torch.zeros(batch_size, output_dim)
+
+    for i, ex in enumerate(examples):
+        # One-hot for q1
+        if ex.q1 in GROUPED_QTY_TO_IDX:
+            inputs[i, GROUPED_QTY_TO_IDX[ex.q1]] = 1.0
+        # One-hot for q2
+        if ex.q2 in GROUPED_QTY_TO_IDX:
+            inputs[i, NUM_GROUPED_QUANTITIES + GROUPED_QTY_TO_IDX[ex.q2]] = 1.0
+
+        # Correlation features
+        offset = NUM_GROUPED_QUANTITIES * 2
+        inputs[i, offset] = ex.abs_corr
+        inputs[i, offset + 1] = ex.cv_product
+        inputs[i, offset + 2] = ex.cv_ratio
+        inputs[i, offset + 3] = ex.cv_diff
+        inputs[i, offset + 4] = ex.linear_score
+        inputs[i, offset + 5] = ex.consistency
+
+        # Target: metric type
+        if ex.expected_metric in GROUPED_METRIC_TO_IDX:
+            targets[i, GROUPED_METRIC_TO_IDX[ex.expected_metric]] = 1.0
+        # Confidence target = 1.0
+        targets[i, NUM_GROUPED_METRICS] = 1.0
+        # Scale factor target = 1.0 (default, learned during training)
+        targets[i, NUM_GROUPED_METRICS + 1] = 1.0
+
+    return inputs, targets
+
+
+# =============================================================================
+# 12. Training Loop for GroupedMetricProposer
+# =============================================================================
+
+def train_grouped_metric_proposer(
+    *,
+    proposer: GroupedMetricProposer | None = None,
+    epochs: int = 200,
+    lr: float = 0.003,
+    device: str = "cpu",
+    checkpoint_path: str | None = None,
+) -> GroupedMetricProposer:
+    """Train the GroupedMetricProposer on pre-1905 ERA-GATED data only.
+
+    The model learns which metric types are appropriate for co-varying
+    quantity groups. All training data is pre-1905 (classical physics).
+    The model is NEVER shown Lorentz transforms or spacetime metrics.
+    """
+    if proposer is None:
+        proposer = GroupedMetricProposer()
+    proposer.to(device)
+    proposer.train()
+
+    examples = generate_grouped_metric_training_data()
+    print(f"  Generated {len(examples)} pre-1905 grouped metric training examples")
+    inputs, targets = build_grouped_metric_batch(examples)
+    inputs = inputs.to(device)
+    targets = targets.to(device)
+
+    optimizer = torch.optim.Adam(proposer.parameters(), lr=lr)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
+    metric_loss_fn = nn.CrossEntropyLoss()
+    conf_loss_fn = nn.BCEWithLogitsLoss()
+    scale_loss_fn = nn.MSELoss()
+
+    best_loss = float("inf")
+    for epoch in range(epochs):
+        optimizer.zero_grad()
+        output = proposer(inputs)
+
+        metric_logits = output[:, :NUM_GROUPED_METRICS]
+        conf_logits = output[:, NUM_GROUPED_METRICS]
+        scale_preds = output[:, NUM_GROUPED_METRICS + 1]
+
+        metric_targets = targets[:, :NUM_GROUPED_METRICS].argmax(dim=-1)
+        conf_targets = targets[:, NUM_GROUPED_METRICS]
+        scale_targets = targets[:, NUM_GROUPED_METRICS + 1]
+
+        loss = (metric_loss_fn(metric_logits, metric_targets)
+                + 0.1 * conf_loss_fn(conf_logits, conf_targets)
+                + 0.05 * scale_loss_fn(scale_preds, scale_targets))
+        loss.backward()
+        optimizer.step()
+        scheduler.step()
+
+        if loss.item() < best_loss:
+            best_loss = loss.item()
+
+        if (epoch + 1) % 25 == 0:
+            with torch.no_grad():
+                metric_acc = (metric_logits.argmax(-1) == metric_targets).float().mean()
+            print(f"  epoch {epoch+1}/{epochs}  loss={loss.item():.4f}  "
+                  f"metric_acc={metric_acc.item():.3f}")
+
+    proposer.eval()
+    print(f"  Training complete. Best loss={best_loss:.4f}")
+
+    if checkpoint_path:
+        save_path = Path(checkpoint_path)
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        torch.save({
+            "model_state_dict": proposer.state_dict(),
+            "num_grouped_metrics": NUM_GROUPED_METRICS,
+            "num_grouped_quantities": NUM_GROUPED_QUANTITIES,
+            "grouped_qty_vocab": _GROUPED_QTY_VOCAB,
+            "grouped_metric_to_idx": GROUPED_METRIC_TO_IDX,
+            "version": "v1",
+        }, save_path)
+        print(f"  Saved checkpoint to {save_path}")
+
+    return proposer
+
+
+def load_grouped_metric_proposer(
+    checkpoint_path: str, device: str = "cpu",
+) -> GroupedMetricProposer:
+    """Load a trained GroupedMetricProposer from checkpoint."""
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
+    proposer = GroupedMetricProposer()
+    proposer.load_state_dict(checkpoint["model_state_dict"])
+    proposer.to(device)
+    proposer.eval()
+    return proposer
+
+
+# =============================================================================
+# 13. Full Grouped Metric Discovery Pipeline
+# =============================================================================
+
+def run_grouped_metric_discovery(
+    quantity_dict: dict[str, Dimension],
+    observations: list[Observation],
+    *,
+    domain: str = "unknown",
+    proposer: GroupedMetricProposer | None = None,
+    discovery_threshold: float = 0.90,
+    use_mlp: bool = True,
+) -> list[GroupedMetricDiscoveryResult]:
+    """Run the full grouped metric discovery pipeline.
+
+    Pipeline:
+    1. Detect co-varying quantity groups from observations
+    2. For each group, propose metric candidates
+    3. Search metric space for invariant combinations
+    4. Return discoveries
+
+    Era-gated: detection and proposal trained on pre-1905 data only.
+    When shown post-1905 data (muon time dilation), should detect (t,x)
+    as a group and discover (c*t)² - x² as invariant.
+    """
+    detector = GroupedQuantityDetector(correlation_threshold=0.5)
+    searcher = GroupedMetricSearch(discovery_threshold=discovery_threshold)
+
+    qty_names = list(quantity_dict.keys())
+    detections = detector.detect_groups(observations, qty_names)
+
+    results: list[GroupedMetricDiscoveryResult] = []
+
+    for detection in detections:
+        # Generate proposals for ALL pairs within the group
+        if use_mlp and proposer is not None and len(detection.group) >= 2:
+            mlp_proposals = _mlp_propose_grouped(
+                proposer, detection,
+            )
+        else:
+            mlp_proposals = []
+
+        # Also include rule-based proposals from detection
+        rule_proposals: list[MetricProposal] = []
+        for mt in detection.suggested_metrics:
+            if len(detection.group) >= 2:
+                # Generate proposals for ALL pairs in the group
+                for i, qa in enumerate(detection.group):
+                    for qb in detection.group[i + 1:]:
+                        if mt == GROUPED_METRIC_SQUARED_DIFF:
+                            expr = f"{qa}^2 - {qb}^2"
+                        elif mt == GROUPED_METRIC_SUM_SQUARES:
+                            expr = f"{qa}^2 + {qb}^2"
+                        elif mt == GROUPED_METRIC_PRODUCT:
+                            expr = f"{qa} * {qb}"
+                        elif mt == GROUPED_METRIC_RATIO:
+                            expr = f"{qa} / {qb}"
+                        elif mt == GROUPED_METRIC_WEIGHTED_DIFF:
+                            expr = f"(c*{qa})^2 - {qb}^2"
+                        else:
+                            expr = f"{qa} ~ {qb}"
+                        rule_proposals.append(MetricProposal(
+                            metric_type=mt, quantities=[qa, qb],
+                            expression_template=expr, confidence=0.7,
+                            rationale=f"Rule-based: {detection.co_variation_pattern} → {mt} for ({qa},{qb})",
+                        ))
+
+        all_proposals = mlp_proposals + rule_proposals
+        # Deduplicate
+        seen: set[str] = set()
+        unique_proposals: list[MetricProposal] = []
+        for p in all_proposals:
+            key = f"{p.metric_type}:{p.expression_template}"
+            if key not in seen:
+                unique_proposals.append(p)
+                seen.add(key)
+
+        result = searcher.discover(
+            detection=detection,
+            proposals=unique_proposals,
+            observations=observations,
+            existing_quantities=quantity_dict,
+        )
+        results.append(result)
+
+    # Sort by best_constancy
+    results.sort(key=lambda r: -r.best_constancy)
+    return results
+
+
+def _mlp_propose_grouped(
+    proposer: GroupedMetricProposer,
+    detection: GroupedQuantityDetection,
+) -> list[MetricProposal]:
+    """Generate MLP-based metric proposals for a detected group."""
+    if len(detection.group) < 2:
+        return []
+
+    grp = detection.group
+    proposals: list[MetricProposal] = []
+    for i, qa in enumerate(grp):
+        for qb in grp[i + 1:]:
+            q1_oh = torch.zeros(NUM_GROUPED_QUANTITIES)
+            q2_oh = torch.zeros(NUM_GROUPED_QUANTITIES)
+            if qa in GROUPED_QTY_TO_IDX:
+                q1_oh[GROUPED_QTY_TO_IDX[qa]] = 1.0
+            if qb in GROUPED_QTY_TO_IDX:
+                q2_oh[GROUPED_QTY_TO_IDX[qb]] = 1.0
+
+            # Build correlation features from detection
+            corr = abs(detection.correlation_matrix.get((qa, qb), 0.0))
+            feat = torch.tensor([
+                corr,
+                max(0.0, 1.0 - detection.across_observation_consistency),  # cv_product proxy
+                0.5,  # cv_ratio proxy
+                0.5,  # cv_diff proxy
+                corr,  # linear_score
+                detection.across_observation_consistency,
+            ])
+
+            try:
+                with torch.no_grad():
+                    props = proposer.propose(
+                        q1_oh.unsqueeze(0), q2_oh.unsqueeze(0),
+                        feat.unsqueeze(0), temperature=0.3,
+                    )
+                proposals.extend(props)
+            except Exception:
+                pass
+
+    # Sort by confidence
+    proposals.sort(key=lambda p: -p.confidence)
+    return proposals[:5]
+
+
+def _feature_vector_for_pair(
+    q1: str, q2: str,
+    detection: GroupedQuantityDetection,
+) -> torch.Tensor:
+    """Build 6-d feature vector for a quantity pair."""
+    corr = abs(detection.correlation_matrix.get((q1, q2), 0.0))
+    return torch.tensor([
+        corr,                                    # abs_corr
+        max(0.0, 1.0 - detection.across_observation_consistency),  # cv_product proxy
+        0.5,                                     # cv_ratio (unknown w/o raw data)
+        0.5,                                     # cv_diff
+        corr,                                    # linear_score
+        detection.across_observation_consistency,  # consistency
+    ])

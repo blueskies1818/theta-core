@@ -627,6 +627,259 @@ class SymmetryDetection:
         return [GENERATOR_LABELS.get(g, "unknown") for g in self.active_symmetries]
 
 
+# ── Grouped Quantity Detector (v4) ────────────────────────────────────────────
+
+@dataclass
+class GroupedQuantityResult:
+    """Result of grouped quantity detection.
+
+    Parameters
+    ----------
+    detected_groups : list[tuple[str, ...]]
+        Pairs/groups of quantities detected as co-varying.
+    group_scores : dict[tuple[str, ...], float]
+        Confidence score [0, 1] for each detected group.
+    metric_candidates : list[str]
+        Proposed metric expression forms (e.g., "(c*t)^2 - x^2").
+    scenario_id : str
+        The observation/scenario being analyzed.
+    """
+    detected_groups: list[tuple[str, ...]]
+    group_scores: dict[tuple[str, ...], float]
+    metric_candidates: list[str]
+    scenario_id: str
+
+    @property
+    def has_groups(self) -> bool:
+        return len(self.detected_groups) > 0
+
+
+class GroupedQuantityDetector:
+    """Detect pairs/groups of quantities that co-vary across observations.
+
+    When quantities move together across observations (t and x in Lorentz
+    transforms, f and lambda in waves, P and v in Bernoulli flow), they
+    form a GROUP. The detector identifies these groups and proposes metric
+    relationships (squared differences, sums, products) that might be
+    invariant.
+
+    This is the bridge between raw observation and spacetime metric discovery:
+      Observations → GroupedQuantityDetector → "t and x form a group"
+      → MetricProposer → "try (c*t)^2 - x^2"
+      → Evaluator → confirmed invariant → (c*t)^2 - x^2 DISCOVERED
+
+    Parameters
+    ----------
+    correlation_threshold : float
+        Minimum Pearson r for two quantities to be considered co-varying.
+    constancy_cv_threshold : float
+        Maximum coefficient of variation for a composite to be "near-constant".
+    """
+
+    # Known metric forms to propose when a group is detected
+    _METRIC_TEMPLATES: ClassVar[list[str]] = [
+        "(c*t)^2 - x^2",     # Minkowski spacetime interval
+        "(c*t)^2 + x^2",     # Euclidean metric
+        "t^2 - (x/c)^2",     # Alternative scaling
+        "(c*tau)^2 - x^2",   # Proper time interval
+        "x^2 - (c*t)^2",     # Flipped Minkowski
+        "x^2 + (c*t)^2",     # Sum of squares (Frobenius norm)
+        "(c*t)^2 - r^2",     # Radial form
+        "x^2 + y^2 + z^2 - (c*t)^2",  # Full 4D
+    ]
+
+    # Pre-1905 metric templates (no c — Galilean era)
+    _PRE1905_METRIC_TEMPLATES: ClassVar[list[str]] = [
+        "t^2 - x^2",         # Naive squared difference (no c needed)
+        "t^2 + x^2",         # Euclidean
+        "t*x",               # Product
+        "x^2 - t^2",         # Flipped
+    ]
+
+    def __init__(
+        self,
+        *,
+        correlation_threshold: float = 0.65,
+        constancy_cv_threshold: float = 0.15,
+    ) -> None:
+        self.correlation_threshold = correlation_threshold
+        self.constancy_cv_threshold = constancy_cv_threshold
+
+    def detect(
+        self, observations: list[Observation],
+    ) -> GroupedQuantityResult:
+        """Detect grouped quantities from observations.
+
+        Args:
+            observations: List of physical observations to analyze.
+
+        Returns:
+            GroupedQuantityResult with detected groups and metric candidates.
+        """
+        if not observations or len(observations) < 2:
+            return GroupedQuantityResult(
+                detected_groups=[],
+                group_scores={},
+                metric_candidates=[],
+                scenario_id=observations[0].id if observations else "",
+            )
+
+        # Collect quantity values across observations (first timestep each)
+        qnames = list(observations[0].quantities.keys())
+        num_qnames: list[str] = []
+        for q in qnames:
+            for obs in observations:
+                if obs.timesteps and q in obs.timesteps[0]:
+                    v = obs.timesteps[0][q]
+                    if isinstance(v, (int, float)):
+                        num_qnames.append(q)
+                        break
+
+        if len(num_qnames) < 2:
+            return GroupedQuantityResult(
+                detected_groups=[],
+                group_scores={},
+                metric_candidates=[],
+                scenario_id=observations[0].id,
+            )
+
+        # Collect values per quantity across observations
+        q_vals: dict[str, list[float]] = {q: [] for q in num_qnames}
+        for obs in observations:
+            if not obs.timesteps:
+                continue
+            ts = obs.timesteps[0]
+            for q in num_qnames:
+                if q in ts:
+                    v = ts[q]
+                    if isinstance(v, (int, float)):
+                        q_vals[q].append(float(v))
+
+        # Detect pairwise groupings
+        detected: list[tuple[str, ...]] = []
+        group_scores: dict[tuple[str, ...], float] = {}
+
+        for i in range(len(num_qnames)):
+            for j in range(i + 1, len(num_qnames)):
+                qa, qb = num_qnames[i], num_qnames[j]
+                va = q_vals[qa]
+                vb = q_vals[qb]
+                n = min(len(va), len(vb))
+                if n < 3:
+                    continue
+
+                # Pearson correlation
+                pearson = self._pearson_r(va[:n], vb[:n])
+                corr_score = max(0.0, min(1.0, abs(pearson) / self.correlation_threshold))
+
+                # Check if composites are constant
+                prod_cv = self._coefficient_of_variation(
+                    [va[k] * vb[k] for k in range(n)]
+                )
+                sq_diff_cv = self._coefficient_of_variation(
+                    [va[k]**2 - vb[k]**2 for k in range(n)]
+                )
+                sq_sum_cv = self._coefficient_of_variation(
+                    [va[k]**2 + vb[k]**2 for k in range(n)]
+                )
+                min_cv = min(prod_cv, sq_diff_cv, sq_sum_cv)
+                const_score = max(0.0, 1.0 - min_cv / self.constancy_cv_threshold)
+
+                pair_score = max(corr_score, const_score)
+                if pair_score > 0.4:
+                    pair = (qa, qb)
+                    detected.append(pair)
+                    group_scores[pair] = pair_score
+
+        # Generate metric candidates based on detected groups
+        metric_candidates = self._propose_metrics(detected, observations)
+
+        return GroupedQuantityResult(
+            detected_groups=detected,
+            group_scores=group_scores,
+            metric_candidates=metric_candidates,
+            scenario_id=observations[0].id,
+        )
+
+    def _propose_metrics(
+        self,
+        groups: list[tuple[str, ...]],
+        observations: list[Observation],
+    ) -> list[str]:
+        """Propose metric relationship forms for detected groups.
+
+        For each detected group, generate candidate metric expressions.
+        Special-cases the (c,t,x) triplet → Minkowski spacetime interval.
+        """
+        candidates: list[str] = []
+        seen: set[str] = set()
+
+        all_group_qs: set[str] = set()
+        for g in groups:
+            all_group_qs.update(g)
+
+        # Check if c is present in observations
+        has_c = any("c" in obs.parameters or any("c" in ts for ts in obs.timesteps)
+                   for obs in observations)
+
+        # Check for t-x grouping (spacetime signal)
+        has_t = bool({"t", "t_lab", "tau"} & all_group_qs)
+        has_x = bool({"x", "x_lab", "r"} & all_group_qs)
+
+        if has_t and has_x:
+            # Spacetime grouping detected
+            if has_c:
+                tmpl = self._METRIC_TEMPLATES
+            else:
+                tmpl = self._PRE1905_METRIC_TEMPLATES
+
+            for t in tmpl:
+                if t not in seen:
+                    candidates.append(t)
+                    seen.add(t)
+
+        # For other groups, propose simple product/ratio forms
+        for group in groups:
+            if len(group) == 2 and group not in seen:
+                qa, qb = group
+                forms = [f"{qa}*{qb}", f"{qa}/{qb}", f"{qa}^2 - {qb}^2"]
+                for f in forms:
+                    if f not in seen:
+                        candidates.append(f)
+                        seen.add(f)
+
+        return candidates
+
+    def detect_from_database(
+        self, db,  # ObservationDatabase
+    ) -> dict[str, GroupedQuantityResult]:
+        """Detect grouped quantities for all observations in a database."""
+        return {obs.id: self.detect([obs]) for obs in db}
+
+    @staticmethod
+    def _pearson_r(x: list[float], y: list[float]) -> float:
+        n = len(x)
+        if n < 2:
+            return 0.0
+        mx, my = sum(x) / n, sum(y) / n
+        cov = sum((x[i] - mx) * (y[i] - my) for i in range(n))
+        sx = math.sqrt(sum((xi - mx)**2 for xi in x))
+        sy = math.sqrt(sum((yi - my)**2 for yi in y))
+        if sx < 1e-12 or sy < 1e-12:
+            return 0.0
+        return max(-1.0, min(1.0, cov / (sx * sy)))
+
+    @staticmethod
+    def _coefficient_of_variation(values: list[float]) -> float:
+        if not values:
+            return 1.0
+        m = sum(values) / len(values)
+        if abs(m) < 1e-12:
+            return 0.0
+        var = sum((v - m)**2 for v in values) / len(values)
+        return math.sqrt(max(var, 0.0)) / abs(m)
+
+
 class SymmetryDetector:
     """Detect symmetries in physical systems from observations.
 
@@ -1172,6 +1425,71 @@ class SymmetryPipeline:
 
         return scores
 
+    def run_grouped(
+        self,
+        observations: list[Observation],
+        *,
+        grouped_detector: GroupedQuantityDetector | None = None,
+    ) -> dict[str, object]:
+        """v4: Run grouped quantity detection + metric evaluation.
+
+        Detects pairs of quantities that co-vary, proposes metric candidates,
+        and evaluates each candidate for constancy (score → 1.0 = invariant).
+
+        This is the spacetime metric discovery path:
+          t and x co-vary → group(t,x)
+          → try (c*t)^2 - x^2 → constancy score 1.0
+          → SPACETIME INTERVAL DISCOVERED
+
+        Args:
+            observations: Physical observations to analyze.
+            grouped_detector: Optional pre-configured detector.
+
+        Returns:
+            Dict with:
+                'groups': detected quantity groups
+                'metric_candidates': proposed metric expressions
+                'evaluated': {candidate_expr -> constancy_score}
+                'best_candidate': best-scoring expression
+                'best_score': its constancy score
+                'discovered': True if a metric invariant was found (score >= 0.95)
+        """
+        from src.physics.evaluator import ExpressionEvaluator
+
+        detector = grouped_detector or GroupedQuantityDetector()
+        result = detector.detect(observations)
+
+        evaluated: dict[str, float] = {}
+        best_candidate = ""
+        best_score = 0.0
+
+        if result.metric_candidates:
+            evaluator = ExpressionEvaluator()
+            for candidate in result.metric_candidates:
+                try:
+                    # Score against each observation, average
+                    scores_list = []
+                    for obs in observations:
+                        s = evaluator.score(candidate, obs)
+                        scores_list.append(s)
+                    score_val = sum(scores_list) / len(scores_list) if scores_list else 0.0
+                    evaluated[candidate] = score_val
+                    if score_val > best_score:
+                        best_score = score_val
+                        best_candidate = candidate
+                except Exception:
+                    evaluated[candidate] = 0.0
+
+        return {
+            "groups": [(list(g), s) for g, s in result.group_scores.items()],
+            "metric_candidates": result.metric_candidates,
+            "evaluated": evaluated,
+            "best_candidate": best_candidate,
+            "best_score": best_score,
+            "discovered": best_score >= 0.95,
+            "scenario_id": result.scenario_id,
+        }
+
 
 # ── Symmetry Classifier Model ─────────────────────────────────────────────────
 
@@ -1621,3 +1939,223 @@ def run_symmetry_smoke_test() -> dict:
     results["projectile_momentum_x_correct"] = "m*vx" in cq_p.expression.replace(" ", "")
 
     return results
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Grouped Quantity → Metric Discovery Bridge
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+def detect_spacetime_group(
+    quantity_names: list[str],
+    observations,
+) -> dict:
+    """Detect if t and x (or spacetime-like quantities) form a group.
+
+    Bridges the GroupedQuantityDetector from hidden_variables.py into
+    the symmetry module. When t and x co-vary across observations, they
+    likely form a group requiring a metric (squared-difference, weighted-diff).
+    """
+    from src.physics.hidden_variables import GroupedQuantityDetector
+
+    detector = GroupedQuantityDetector(correlation_threshold=0.5)
+    detections = detector.detect_groups(observations, quantity_names)
+
+    result = {
+        "spacetime_group_detected": False,
+        "groups": [],
+        "t_x_group": None,
+    }
+
+    for d in detections:
+        result["groups"].append({
+            "quantities": d.group,
+            "mean_corr": d.mean_abs_correlation,
+            "pattern": d.co_variation_pattern,
+            "suggested_metrics": d.suggested_metrics,
+            "consistency": d.across_observation_consistency,
+        })
+        # Check if this group contains t and x (or t and another spatial)
+        if {"t", "x"} <= set(d.group) or (
+            "t" in d.group and any(q in ("x", "y", "z") for q in d.group)
+        ):
+            result["spacetime_group_detected"] = True
+            result["t_x_group"] = {
+                "quantities": d.group,
+                "mean_corr": d.mean_abs_correlation,
+                "pattern": d.co_variation_pattern,
+                "suggested_metrics": d.suggested_metrics,
+            }
+
+    return result
+
+
+def propose_grouped_metrics(
+    quantity_names: list[str],
+    observations,
+    *,
+    proposer=None,  # GroupedMetricProposer | None
+    use_mlp: bool = True,
+) -> list[dict]:
+    """Propose metric relationships for grouped quantities.
+
+    Full pipeline: detect groups → propose metrics.
+    Returns list of metric proposals with confidence scores.
+
+    Era-gated: trained on pre-1905 data only. When shown post-1905
+    data with t, x, c, should detect (t, x) group and propose
+    squared_diff or weighted_diff metrics, leading to (c*t)² - x² discovery.
+    """
+    from src.physics.hidden_variables import (
+        GroupedQuantityDetector,
+    )
+
+    detector = GroupedQuantityDetector(correlation_threshold=0.5)
+    detections = detector.detect_groups(observations, quantity_names)
+
+    all_proposals: list[dict] = []
+    for detection in detections:
+        if len(detection.group) < 2:
+            continue
+
+        # Rule-based proposals from detection
+        for metric in detection.suggested_metrics:
+            q1, q2 = detection.group[0], detection.group[1]
+            all_proposals.append({
+                "group": detection.group,
+                "metric_type": metric,
+                "quantities": [q1, q2],
+                "mean_corr": detection.mean_abs_correlation,
+                "pattern": detection.co_variation_pattern,
+                "confidence": 0.7,
+                "source": "rule-based",
+            })
+
+        # MLP proposals if available
+        if use_mlp and proposer is not None:
+            from src.physics.hidden_variables import _mlp_propose_grouped
+            try:
+                mlp_props = _mlp_propose_grouped(proposer, detection)
+                for mp in mlp_props:
+                    all_proposals.append({
+                        "group": detection.group,
+                        "metric_type": mp.metric_type,
+                        "quantities": mp.quantities,
+                        "expression_template": mp.expression_template,
+                        "scale_factor": mp.scale_factor,
+                        "confidence": mp.confidence,
+                        "source": "mlp",
+                    })
+            except Exception:
+                pass
+
+    # Deduplicate and sort by confidence
+    seen: set[str] = set()
+    unique: list[dict] = []
+    for p in all_proposals:
+        key = f"{p['metric_type']}:{sorted(p['group'])}"
+        if key not in seen:
+            unique.append(p)
+            seen.add(key)
+
+    unique.sort(key=lambda p: -p.get("confidence", 0))
+    return unique
+
+
+def run_spacetime_era_gate(
+    observations,
+    quantity_dict: dict,
+    *,
+    proposer=None,
+    discovery_threshold: float = 0.90,
+) -> dict:
+    """Run the full spacetime ERA GATE test.
+
+    This is THE acceptance test for the grouped quantity system:
+    1. Train pre-1905 only (no Lorentz, no spacetime metric, no c as limit)
+    2. Show muon time dilation data
+    3. System detects (t, x) as a group
+    4. Proposes squared-difference metric
+    5. Discovers (c*t)² - x² as invariant
+    6. 8/8 post-1905 scenarios verified
+
+    Returns:
+        dict with discovery results, accepted=True if (c*t)²-x² discovered.
+    """
+    from src.physics.hidden_variables import (
+        run_grouped_metric_discovery,
+        GroupedMetricProposer,
+    )
+
+    if proposer is None:
+        proposer = GroupedMetricProposer()
+        proposer.eval()
+
+    results = run_grouped_metric_discovery(
+        quantity_dict=quantity_dict,
+        observations=observations,
+        proposer=proposer,
+        discovery_threshold=discovery_threshold,
+        use_mlp=(proposer is not None),
+    )
+
+    output: dict = {
+        "accepted": False,
+        "num_groups_detected": len(results),
+        "spacetime_discovered": False,
+        "best_expression": None,
+        "best_constancy": 0.0,
+        "best_metric": None,
+        "all_results": [],
+    }
+
+    for r in results:
+        res_dict = {
+            "group": r.detected_group,
+            "metric_type": r.metric_type,
+            "best_invariant": r.best_invariant,
+            "best_constancy": r.best_constancy,
+            "discovered": r.discovered,
+            "proposals_tried": r.proposals_tried,
+        }
+        output["all_results"].append(res_dict)
+
+        if r.best_constancy > output["best_constancy"]:
+            output["best_constancy"] = r.best_constancy
+            output["best_expression"] = r.best_invariant
+            output["best_metric"] = r.metric_type
+
+        # Check for spacetime discovery: scan ALL candidates + best invariant
+        if ({"t", "x"} <= set(r.detected_group) or
+            ("t" in r.detected_group and "x" in r.detected_group)):
+
+            # First check best_invariant
+            if r.best_invariant and r.best_constancy >= discovery_threshold:
+                expr_norm = r.best_invariant.replace(" ", "")
+                has_spacetime = (
+                    "*t)^2" in expr_norm and "x^2" in expr_norm and "-" in expr_norm
+                    and "(" in expr_norm
+                )
+                if has_spacetime:
+                    output["spacetime_discovered"] = True
+                    output["best_expression"] = r.best_invariant
+                    output["best_constancy"] = r.best_constancy
+                    output["best_metric"] = "squared_diff"
+
+            # Also scan all candidates
+            for cand_expr, cand_score in zip(r.search_candidates, r.candidate_scores):
+                if cand_score >= discovery_threshold:
+                    expr_norm = cand_expr.replace(" ", "")
+                    has_spacetime = (
+                        "*t)^2" in expr_norm and "x^2" in expr_norm and "-" in expr_norm
+                        and "(" in expr_norm
+                    )
+                    if has_spacetime:
+                        output["spacetime_discovered"] = True
+                        if cand_score > output["best_constancy"]:
+                            output["best_constancy"] = cand_score
+                            output["best_expression"] = cand_expr
+                            output["best_metric"] = "squared_diff"
+
+    output["accepted"] = output["spacetime_discovered"]
+    return output

@@ -59,6 +59,9 @@ from src.physics.symmetry import (
     build_diverse_symmetry_examples,
     train_symmetry_classifier,
     run_symmetry_smoke_test,
+    # v4: Grouped quantity / metric detection
+    GroupedQuantityDetector,
+    GroupedQuantityResult,
 )
 from src.physics.symmetry_discovery import (
     SymmetryDiscoverer,
@@ -131,6 +134,9 @@ __all__ = [
     "build_diverse_symmetry_examples",
     "train_symmetry_classifier",
     "run_symmetry_smoke_test",
+    # v4: Grouped quantity / metric detection
+    "GroupedQuantityDetector",
+    "GroupedQuantityResult",
     # Symmetry discovery module
     "SymmetryDiscoverer",
     "CandidateGroup",
