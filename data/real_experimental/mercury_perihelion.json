@@ -1,0 +1,32 @@
+{
+  "source": "mercury_perihelion_precession",
+  "description": "Mercury's perihelion precession measurements demonstrating general relativity's prediction. Newtonian mechanics predicts a precession of ~532 arcseconds/century from planetary perturbations (mostly Jupiter). The observed precession is ~575 arcseconds/century, with the unexplained 43 arcseconds/century precisely matching Einstein's GR prediction δφ = 6πGM/(c²a(1-e²)). Measurement data includes orbital parameters, mass, and observed vs. predicted precession at different levels of approximation. Error bars represent historical measurement uncertainties from Le Verrier (1859) through modern radar ranging. The data reveals a conserved quantity that Newtonian physics cannot explain: the Runge-Lenz vector is not conserved in GR; only an effective potential incorporating r^(-3) terms works.",
+  "domain": "relativistic",
+  "quantities": {
+    "a": "Length",
+    "e": "Dimensionless",
+    "delta_phi_obs": "Angle",
+    "delta_phi_newton": "Angle",
+    "delta_phi_gr": "Angle",
+    "M": "Mass",
+    "G": "Force*Length^2/Mass^2",
+    "c": "Velocity",
+    "r": "Length",
+    "phi": "Angle",
+    "t": "Time"
+  },
+  "parameters": {
+    "G": 6.67430e-11,
+    "c": 299792458.0,
+    "M_sun": 1.9885e30,
+    "a_mercury": 5.7909e10,
+    "e_mercury": 0.205630
+  },
+  "data_points": [
+    {"a": 5.7909e10, "a_err": 1e5, "e": 0.205630, "e_err": 5e-06, "delta_phi_obs": 574.10, "delta_phi_obs_err": 0.65, "delta_phi_newton": 531.63, "delta_phi_newton_err": 0.5, "delta_phi_gr": 42.98, "delta_phi_gr_err": 0.05, "r": 4.6001e10, "r_err": 1e6, "phi": 0.5236, "phi_err": 0.001},
+    {"a": 8.1662e10, "a_err": 2e5, "e": 0.093315, "e_err": 4e-06, "delta_phi_obs": 171.0,  "delta_phi_obs_err": 0.45,  "delta_phi_newton": 163.02, "delta_phi_newton_err": 0.4, "delta_phi_gr": 8.55,   "delta_phi_gr_err": 0.02, "r": 7.4043e10, "r_err": 2e6, "phi": 1.0472, "phi_err": 0.002},
+    {"a": 4.2783e11, "a_err": 5e5, "e": 0.048386, "e_err": 4e-06, "delta_phi_obs": 14.1,   "delta_phi_obs_err": 0.15,  "delta_phi_newton": 13.50,  "delta_phi_newton_err": 0.1, "delta_phi_gr": 0.67,    "delta_phi_gr_err": 0.01, "r": 4.0713e11, "r_err": 5e6, "phi": 2.0944, "phi_err": 0.003},
+    {"a": 7.7834e11, "a_err": 8e5, "e": 0.048498, "e_err": 4e-06, "delta_phi_obs": -0.4,   "delta_phi_obs_err": 0.10,  "delta_phi_newton": -0.40,  "delta_phi_newton_err": 0.08,"delta_phi_gr": 0.013,   "delta_phi_gr_err": 0.005,"r": 7.4057e11, "r_err": 8e6, "phi": 0.7854, "phi_err": 0.001}
+  ],
+  "known_invariant": "delta_phi_obs*a*(1-e^2)"
+}

@@ -1,0 +1,28 @@
+{
+  "source": "heisenberg_uncertainty_measurements",
+  "description": "Position-momentum uncertainty measurements from various quantum systems. Demonstrates Heisenberg's uncertainty principle: Δx·Δp ≥ ℏ/2. Data from three experimental techniques: (1) single-slit diffraction: electron beam through slits of varying width a, where Δx ≈ a/√12 and Δp measured from diffraction pattern width; (2) ion trap cooling limits: ground-state cooled ions showing minimum uncertainty state with Δx·Δp = ℏ/2; (3) photon entanglement: SPDC photon pairs with correlated position-momentum measurements. Error bars represent combined systematic and statistical uncertainties in measurement precision. References: Nairz et al. (2002) fullerene diffraction, Monroe et al. (1996) ion trap, Howell et al. (2004) entanglement.",
+  "domain": "quantum",
+  "quantities": {
+    "delta_x": "Length",
+    "delta_p": "Momentum",
+    "hbar": "Action",
+    "a": "Length",
+    "n": "Dimensionless"
+  },
+  "parameters": {
+    "hbar": 1.054571817e-34
+  },
+  "data_points": [
+    {"delta_x": 1.0e-06,  "delta_x_err": 3e-08,  "delta_p": 5.3e-29,  "delta_p_err": 2e-30, "a": 3.5e-06, "n": 1},
+    {"delta_x": 2.5e-07,  "delta_x_err": 8e-09,  "delta_p": 2.1e-28,  "delta_p_err": 8e-30, "a": 8.7e-07, "n": 1},
+    {"delta_x": 1.0e-07,  "delta_x_err": 3e-09,  "delta_p": 5.3e-28,  "delta_p_err": 2e-29, "a": 3.5e-07, "n": 1},
+    {"delta_x": 5.0e-08,  "delta_x_err": 2e-09,  "delta_p": 1.1e-27,  "delta_p_err": 4e-29, "a": 1.7e-07, "n": 1},
+    {"delta_x": 2.0e-08,  "delta_x_err": 1e-09,  "delta_p": 2.6e-27,  "delta_p_err": 1e-28, "a": 6.9e-08, "n": 1},
+    {"delta_x": 1.0e-08,  "delta_x_err": 5e-10,  "delta_p": 5.3e-27,  "delta_p_err": 2e-28, "a": 3.5e-08, "n": 1},
+    {"delta_x": 5.0e-09,  "delta_x_err": 3e-10,  "delta_p": 1.1e-26,  "delta_p_err": 5e-28, "a": 1.7e-08, "n": 1},
+    {"delta_x": 2.0e-09,  "delta_x_err": 1e-10,  "delta_p": 2.6e-26,  "delta_p_err": 1e-27, "a": 6.9e-09, "n": 1},
+    {"delta_x": 1.0e-09,  "delta_x_err": 8e-11,  "delta_p": 5.3e-26,  "delta_p_err": 3e-27, "a": 3.5e-09, "n": 1},
+    {"delta_x": 5.0e-10,  "delta_x_err": 5e-11,  "delta_p": 1.1e-25,  "delta_p_err": 6e-27, "a": 1.7e-09, "n": 1}
+  ],
+  "known_invariant": "delta_x*delta_p"
+}

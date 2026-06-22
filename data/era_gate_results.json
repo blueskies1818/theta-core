@@ -1,0 +1,690 @@
+{
+  "experiment": "ERA_GATE",
+  "description": "Train pre-1905, test post-1905 physics discovery",
+  "training_config": {
+    "total_scenarios": 162,
+    "domain_counts": {
+      "gravity": 36,
+      "spring": 18,
+      "em": 30,
+      "thermal": 58,
+      "collision": 20
+    },
+    "quantity_count": 33,
+    "post1905_leakage": [],
+    "clean": true,
+    "pre1905_files": [
+      "mechanics_synthetic.json",
+      "em_synthetic.json",
+      "thermal_synthetic.json"
+    ],
+    "train_discoveries": [
+      {
+        "expression": "V/V*R",
+        "train_score": 1.0,
+        "test_score": 1.0,
+        "depth": 3,
+        "expansions_needed": 180,
+        "train_constancies": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "test_constancies": [
+          1.0
+        ],
+        "timestamp": 1782094732.8733764
+      }
+    ]
+  },
+  "leakage_check": {
+    "clean": true,
+    "violations": {},
+    "pre1905_domains": [
+      "gravity",
+      "spring",
+      "em",
+      "thermal",
+      "collision"
+    ],
+    "pre1905_symmetries": [
+      "galilean",
+      "u1"
+    ],
+    "pre1905_tactics": [
+      "ring",
+      "field_simp",
+      "nlinarith",
+      "calc"
+    ]
+  },
+  "scenarios": {
+    "special_relativity": {
+      "scenario_name": "special_relativity",
+      "domain": "relativistic",
+      "description": "Muon lifetime measurements demonstrating time dilation.",
+      "expected_invariant": "E^2 - (p*c)^2",
+      "expected_symmetry": "lorentz_invariant",
+      "best_expression": "E*tau",
+      "best_constancy": 1.0,
+      "noise_level": "LOW",
+      "noise_floor": 0.85,
+      "noise_threshold": 0.8938043333333333,
+      "known_groups_matched": [],
+      "discovered_generators": [
+        "time_translation"
+      ],
+      "discovered_group_name": "\u211d (time translation)",
+      "symmetry_score": 1.0,
+      "breakthrough_type": "conserved_quantity",
+      "is_breakthrough": true,
+      "p_value": 0.0006163428257339731,
+      "num_discoveries": 59,
+      "discoveries": [
+        {
+          "expression": "E*tau",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 0.0006163428257339731,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "E/v",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 0.0006163428257339731,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "v^0",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 0.0006163428257339731,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "0/v",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 0.0006163428257339731,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "tau0/v",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 0.0006163428257339731,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "E/c",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 0.0006163428257339731,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "E*tau0",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 0.0006163428257339731,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "E*E",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 0.0006163428257339731,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "tau/v",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 0.0006163428257339731,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "E^2",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 0.0006163428257339731,
+          "domain": "relativistic"
+        }
+      ]
+    },
+    "general_relativity": {
+      "scenario_name": "general_relativity",
+      "domain": "relativistic",
+      "description": "Mercury perihelion precession \u2014 43 arcsec/century anomaly.",
+      "expected_invariant": "delta_phi_obs*a*(1-e^2)",
+      "expected_symmetry": "schwarzschild",
+      "best_expression": "0/delta_phi_obs",
+      "best_constancy": 1.0,
+      "noise_level": "LOW",
+      "noise_floor": 0.5,
+      "noise_threshold": 0.8,
+      "known_groups_matched": [],
+      "discovered_generators": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "space_translation_z",
+        "rotation_xy",
+        "rotation_xz",
+        "rotation_yz",
+        "boost_x",
+        "boost_y",
+        "boost_z",
+        "u1_phase"
+      ],
+      "discovered_group_name": "lorentz_poincare_like",
+      "symmetry_score": 0.0,
+      "breakthrough_type": "conserved_quantity",
+      "is_breakthrough": true,
+      "p_value": 5.733031436250258e-07,
+      "num_discoveries": 112,
+      "discoveries": [
+        {
+          "expression": "0/delta_phi_obs",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "e^0",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "a^0",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "G/a",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "0/e",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "0^e",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "0/a",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "e*phi",
+          "constancy": 0.7566933333333333,
+          "constancy_error": 0.00017662483781544268,
+          "passes_gate": false,
+          "p_value": 0.010260233649237227,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "delta_phi_newton/delta_phi_obs",
+          "constancy": 0.71266,
+          "constancy_error": 0.01124662913943553,
+          "passes_gate": false,
+          "p_value": 0.03345333250604998,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "c/phi",
+          "constancy": 0.6863586666666667,
+          "constancy_error": 0.0005474763312996315,
+          "passes_gate": false,
+          "p_value": 0.06237977149557539,
+          "domain": "relativistic"
+        }
+      ]
+    },
+    "quantum_hydrogen": {
+      "scenario_name": "quantum_hydrogen",
+      "domain": "quantum",
+      "description": "Hydrogen Balmer series \u2014 quantized energy levels.",
+      "expected_invariant": "E*n^2",
+      "expected_symmetry": "so4_dynamical",
+      "best_expression": "n*h",
+      "best_constancy": 1.0,
+      "noise_level": "LOW",
+      "noise_floor": 0.85,
+      "noise_threshold": 0.85,
+      "known_groups_matched": [],
+      "discovered_generators": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "space_translation_z",
+        "rotation_xy",
+        "rotation_xz",
+        "rotation_yz",
+        "boost_x",
+        "boost_y",
+        "boost_z",
+        "u1_phase"
+      ],
+      "discovered_group_name": "lorentz_poincare_like",
+      "symmetry_score": 0.0,
+      "breakthrough_type": "conserved_quantity",
+      "is_breakthrough": true,
+      "p_value": null,
+      "num_discoveries": 47,
+      "discoveries": [
+        {
+          "expression": "n*h",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "lambda*h",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "E*h",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "h*n",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "E*lambda",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "E/n^2",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "lambda*lambda",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "E/c",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "lambda^2",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "relativistic"
+        },
+        {
+          "expression": "h*E",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "relativistic"
+        }
+      ]
+    },
+    "wave_particle_duality": {
+      "scenario_name": "wave_particle_duality",
+      "domain": "quantum",
+      "description": "Double-slit electron interference \u2014 wave-particle duality.",
+      "expected_invariant": "lambda*p",
+      "expected_symmetry": "debroglie",
+      "best_expression": "h/p",
+      "best_constancy": 1.0,
+      "noise_level": "LOW",
+      "noise_floor": 0.85,
+      "noise_threshold": 0.85,
+      "known_groups_matched": [],
+      "discovered_generators": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "space_translation_z",
+        "rotation_xy",
+        "rotation_xz",
+        "rotation_yz",
+        "boost_x",
+        "boost_y",
+        "boost_z",
+        "u1_phase"
+      ],
+      "discovered_group_name": "lorentz_poincare_like",
+      "symmetry_score": 0.0,
+      "breakthrough_type": "conserved_quantity",
+      "is_breakthrough": true,
+      "p_value": null,
+      "num_discoveries": 69,
+      "discoveries": [
+        {
+          "expression": "h/p",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "unknown"
+        },
+        {
+          "expression": "p^2",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "unknown"
+        },
+        {
+          "expression": "h*V",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "unknown"
+        },
+        {
+          "expression": "h/lambda",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "unknown"
+        },
+        {
+          "expression": "V*h",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "unknown"
+        },
+        {
+          "expression": "h*lambda",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "unknown"
+        },
+        {
+          "expression": "d*lambda",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "unknown"
+        },
+        {
+          "expression": "d_y*lambda",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "unknown"
+        },
+        {
+          "expression": "d_y*h",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "unknown"
+        },
+        {
+          "expression": "lambda*lambda",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": null,
+          "domain": "unknown"
+        }
+      ]
+    },
+    "uncertainty_principle": {
+      "scenario_name": "uncertainty_principle",
+      "domain": "quantum",
+      "description": "Position-momentum uncertainty measurements.",
+      "expected_invariant": "delta_x*delta_p",
+      "expected_symmetry": "heisenberg",
+      "best_expression": "delta_p*hbar",
+      "best_constancy": 1.0,
+      "noise_level": "LOW",
+      "noise_floor": 0.5,
+      "noise_threshold": 0.8,
+      "known_groups_matched": [],
+      "discovered_generators": [
+        "time_translation",
+        "space_translation_x",
+        "space_translation_y",
+        "space_translation_z",
+        "rotation_xy",
+        "rotation_xz",
+        "rotation_yz",
+        "boost_x",
+        "boost_y",
+        "boost_z",
+        "u1_phase"
+      ],
+      "discovered_group_name": "lorentz_poincare_like",
+      "symmetry_score": 0.0,
+      "breakthrough_type": "conserved_quantity",
+      "is_breakthrough": true,
+      "p_value": 5.733031436250258e-07,
+      "num_discoveries": 37,
+      "discoveries": [
+        {
+          "expression": "delta_p*hbar",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "quantum"
+        },
+        {
+          "expression": "hbar*n",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "quantum"
+        },
+        {
+          "expression": "delta_p^2",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "quantum"
+        },
+        {
+          "expression": "delta_x*hbar",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "quantum"
+        },
+        {
+          "expression": "delta_p*delta_p",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "quantum"
+        },
+        {
+          "expression": "delta_x*delta_p",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "quantum"
+        },
+        {
+          "expression": "delta_p*delta_x",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "quantum"
+        },
+        {
+          "expression": "hbar/n",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "quantum"
+        },
+        {
+          "expression": "a*delta_p",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "quantum"
+        },
+        {
+          "expression": "hbar*delta_p",
+          "constancy": 1.0,
+          "constancy_error": 0.0,
+          "passes_gate": true,
+          "p_value": 5.733031436250258e-07,
+          "domain": "quantum"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "total_scenarios": 5,
+    "breakthroughs": 5,
+    "conservation_discoveries": 5,
+    "symmetry_discoveries": 0,
+    "significant_scores": 0,
+    "breakthrough_rate": 1.0
+  },
+  "timing": {
+    "start_time": 1782094637.3968365,
+    "end_time": 1782094739.0589435,
+    "duration_seconds": 101.66210699081421
+  }
+}

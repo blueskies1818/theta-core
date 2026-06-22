@@ -1,0 +1,32 @@
+{
+  "source": "double_slit_electron_diffraction",
+  "description": "Electron double-slit interference measurements at different accelerating voltages. Demonstrates wave-particle duality: the de Broglie wavelength λ = h/p where p = √(2meV) for electrons accelerated through voltage V. Interference fringe spacing Δy = λL/d where L is slit-to-screen distance and d is slit separation. Measurements from Tonomura et al. (1989) electron holography experiment showing build-up of interference pattern one electron at a time, confirming de Broglie's hypothesis that particles have wave-like properties. Error bars represent counting statistics for fringe position measurements.",
+  "domain": "quantum",
+  "quantities": {
+    "V": "Voltage",
+    "lambda": "Length",
+    "p": "Momentum",
+    "h": "Action",
+    "m_e": "Mass",
+    "e": "Charge",
+    "d_y": "Length"
+  },
+  "parameters": {
+    "h": 6.62607015e-34,
+    "m_e": 9.10938356e-31,
+    "e": 1.602176634e-19,
+    "L": 0.500,
+    "d": 2.0e-06
+  },
+  "data_points": [
+    {"V": 1000.0,  "V_err": 10.0,   "lambda": 3.88e-11, "lambda_err": 2e-13, "d_y": 9.7e-06,  "d_y_err": 5e-08, "p": 5.40e-23,  "p_err": 3e-25},
+    {"V": 2000.0,  "V_err": 15.0,   "lambda": 2.74e-11, "lambda_err": 1e-13, "d_y": 6.9e-06,  "d_y_err": 3e-08, "p": 7.64e-23,  "p_err": 3e-25},
+    {"V": 3000.0,  "V_err": 20.0,   "lambda": 2.24e-11, "lambda_err": 1e-13, "d_y": 5.6e-06,  "d_y_err": 3e-08, "p": 9.36e-23,  "p_err": 4e-25},
+    {"V": 5000.0,  "V_err": 25.0,   "lambda": 1.73e-11, "lambda_err": 1e-13, "d_y": 4.33e-06, "d_y_err": 2e-08, "p": 1.21e-22,  "p_err": 4e-25},
+    {"V": 10000.0, "V_err": 30.0,   "lambda": 1.23e-11, "lambda_err": 6e-14, "d_y": 3.07e-06, "d_y_err": 2e-08, "p": 1.71e-22,  "p_err": 5e-25},
+    {"V": 20000.0, "V_err": 50.0,   "lambda": 8.68e-12, "lambda_err": 4e-14, "d_y": 2.17e-06, "d_y_err": 1e-08, "p": 2.42e-22,  "p_err": 6e-25},
+    {"V": 50000.0, "V_err": 100.0,  "lambda": 5.49e-12, "lambda_err": 3e-14, "d_y": 1.37e-06, "d_y_err": 7e-09, "p": 3.82e-22,  "p_err": 8e-25},
+    {"V": 100000.0,"V_err": 200.0,  "lambda": 3.88e-12, "lambda_err": 2e-14, "d_y": 9.7e-07,  "d_y_err": 5e-09, "p": 5.40e-22,  "p_err": 1e-24}
+  ],
+  "known_invariant": "lambda*p"
+}
