@@ -38,3 +38,10 @@ checkpoints/
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
+*.safetensors
+archive/old_checkpoints/h1_50M/gnn_final.pt
+*.safetensors
+archive/old_checkpoints/h1_50M/gnn_final.pt
+archive/attempts_1-12/path1_cooccur/gnn_best.pt
+archive/attempts_1-12/10m_hybrid.pt
+archive/attempts_1-12/lemma_embeddings.pt

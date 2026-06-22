@@ -3548,19 +3548,28 @@ class GroupedMetricTrainingExample:
     description: str
 
 
-def generate_grouped_metric_training_data() -> list[GroupedMetricTrainingExample]:
-    """Generate era-gated training data — pre-1905 physics only.
+def generate_grouped_metric_training_data(
+    era_cutoff: int = 1905,
+) -> list[GroupedMetricTrainingExample]:
+    """Generate era-gated training data.
 
-    Teaches the model that co-varying quantities have metric relationships:
-    - Sound waves: f and λ group as f*λ = v_sound
-    - Fluid flow: P and v group in Bernoulli equation
-    - Orbits: r and θ group in angular momentum conservation
-    - Oscillators: x₁ and x₂ group as normal modes
-    - Galilean: t and x are independent (product/ratio, not squared difference)
+    Examples are tagged by the earliest era in which they appear.
+    Only examples from eras <= cutoff are included:
+      1905 (always): classical physics — sound, fluids, orbits, oscillators,
+                     Galilean, Boyle, Hooke, momentum, pendulum, Newton
+      1920: + special relativity metrics, early quantum (Bohr, Rydberg)
+      1950: + QED symmetries, nuclear binding, Dirac spinor invariants
+      1970: + Standard Model, QCD, electroweak unification
+      Today: + Higgs mechanism, neutrino oscillations, dark matter candidates
 
-    NOT taught: Lorentz transforms, spacetime metric (ct)² - x², c as limiting speed.
+    NOT taught at cutoff=1905: Lorentz transforms, spacetime metric,
+    (c*t)² - x², c as limiting speed (these appear at 1920).
     """
     examples: list[GroupedMetricTrainingExample] = []
+
+    # ═════════════════════════════════════════════════════════════════════
+    # ALWAYS: Pre-1905 classical physics (131 examples)
+    # ═════════════════════════════════════════════════════════════════════
 
     # ── Sound waves: f*λ = v_sound (constant product) ──
     for i in range(15):
@@ -3722,6 +3731,273 @@ def generate_grouped_metric_training_data() -> list[GroupedMetricTrainingExample
             desc=f"Newton F/a=m={m:.1f} variant {i+1}",
         ))
 
+    # ═════════════════════════════════════════════════════════════════════
+    # ERA >= 1920: Special relativity + Early quantum (~40 examples)
+    # ═════════════════════════════════════════════════════════════════════
+    if era_cutoff < 1920:
+        return examples
+
+    # ── SR: Lorentz invariant (c*t)² - x² = const ──
+    for i in range(10):
+        c = 3e8
+        s2_const = random.uniform(1e-12, 100e-12)
+        n_pts = random.randint(5, 10)
+        offsets = [random.uniform(-0.5, 0.5) for _ in range(n_pts)]
+        x_vals = [random.uniform(10, 500) for _ in range(n_pts)]
+        t_vals = [math.sqrt((x ** 2 + s2_const) / c ** 2) + off
+                  for x, off in zip(x_vals, offsets)]
+        sq_diffs = [(c * t_vals[j]) ** 2 - x_vals[j] ** 2 for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "t", "x", t_vals, x_vals, sq_diffs,
+            expected_metric=GROUPED_METRIC_SQUARED_DIFF,
+            desc=f"SR: (c*t)²-x²={s2_const:.2e} variant {i+1}",
+        ))
+
+    # ── SR: Energy-momentum invariant E² - (p*c)² = (m*c²)² ──
+    for i in range(8):
+        c = 3e8
+        m = random.uniform(0.5, 10.0)
+        E0 = m * c ** 2
+        n_pts = random.randint(5, 10)
+        E_vals: list[float] = []
+        p_vals: list[float] = []
+        for _ in range(n_pts):
+            v = random.uniform(0.1, 0.99) * c
+            gamma = 1.0 / math.sqrt(1.0 - v ** 2 / c ** 2)
+            E_vals.append(gamma * E0)
+            p_vals.append(gamma * m * v)
+        sq_diffs = [E_vals[j] ** 2 - (p_vals[j] * c) ** 2 for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "E", "p", E_vals, p_vals, sq_diffs,
+            expected_metric=GROUPED_METRIC_SQUARED_DIFF,
+            desc=f"SR: E²-(p*c)²=(mc²)²={E0:.1e} variant {i+1}",
+        ))
+
+    # ── Bohr model: E_n ∝ 1/n² (ratio constant) ──
+    for i in range(8):
+        R = 13.6  # Rydberg energy
+        n_pts = random.randint(5, 10)
+        n_vals = [random.uniform(1, 6) for _ in range(n_pts)]
+        E_vals = [-R / n ** 2 for n in n_vals]
+        ratios = [E_vals[j] * n_vals[j] ** 2 for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "E", "n", E_vals, n_vals, ratios,
+            expected_metric=GROUPED_METRIC_PRODUCT,
+            desc=f"Bohr E*n²={-R} variant {i+1}",
+        ))
+
+    # ── Rydberg: 1/λ = R*(1/n1² - 1/n2²) → combinational invariance ──
+    for i in range(8):
+        Ryd = 1.097e7
+        n_pts = random.randint(5, 10)
+        n1_vals = [float(random.randint(1, 4)) for _ in range(n_pts)]
+        n2_vals = [float(random.randint(5, 10)) for _ in range(n_pts)]
+        inv_lambdas = [Ryd * (1 / n1 ** 2 - 1 / n2 ** 2)
+                       for n1, n2 in zip(n1_vals, n2_vals)]
+        ratios = [inv_lambdas[j] * n1_vals[j] * n2_vals[j]
+                  for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "lambda", "n1", inv_lambdas, n1_vals, ratios,
+            expected_metric=GROUPED_METRIC_RATIO,
+            desc=f"Rydberg 1/λ variant {i+1}",
+        ))
+
+    # ── Time dilation: gamma = 1/sqrt(1-β²) → squared-diff pattern ──
+    for i in range(6):
+        c = 3e8
+        n_pts = random.randint(5, 10)
+        tau_vals: list[float] = []
+        t_vals: list[float] = []
+        for _ in range(n_pts):
+            v = random.uniform(0.1, 0.99) * c
+            gamma = 1.0 / math.sqrt(1.0 - v ** 2 / c ** 2)
+            tau = 1.0
+            t_vals.append(gamma * tau)
+            tau_vals.append(tau)
+        # (c*τ)² - (c*t)² + x² → not quite. Use ratio for t/tau = gamma
+        ratios = [t_vals[j] / tau_vals[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "t", "tau", t_vals, tau_vals, ratios,
+            expected_metric=GROUPED_METRIC_RATIO,
+            desc=f"SR time dilation t/τ=γ variant {i+1}",
+        ))
+
+    # ═════════════════════════════════════════════════════════════════════
+    # ERA >= 1950: QED + Nuclear + Dirac (~30 examples)
+    # ═════════════════════════════════════════════════════════════════════
+    if era_cutoff < 1950:
+        return examples
+
+    # ── QED: Fine structure α = e²/(4πε₀ℏc) — ratio invariant ──
+    for i in range(8):
+        alpha = 1.0 / 137.036
+        n_pts = random.randint(5, 10)
+        e_vals = [random.uniform(1e-19, 5e-19) for _ in range(n_pts)]
+        hc_vals = [e ** 2 / alpha for e in e_vals]
+        ratios = [e_vals[j] / hc_vals[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "e", "hc", e_vals, hc_vals, ratios,
+            expected_metric=GROUPED_METRIC_RATIO,
+            desc=f"QED: e²/hc={alpha:.4f} variant {i+1}",
+        ))
+
+    # ── Nuclear binding: B/A ≈ const (ratio for mid-mass nuclei) ──
+    for i in range(6):
+        B_A = random.uniform(7.5, 8.5)  # MeV per nucleon
+        n_pts = random.randint(5, 10)
+        A_vals = [random.uniform(20, 120) for _ in range(n_pts)]
+        B_vals = [B_A * A for A in A_vals]
+        ratios = [B_vals[j] / A_vals[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "B", "A", B_vals, A_vals, ratios,
+            expected_metric=GROUPED_METRIC_RATIO,
+            desc=f"Nuclear B/A={B_A:.1f} MeV variant {i+1}",
+        ))
+
+    # ── Dirac: spinor norm ψ†ψ = ρ (density) — quadratic invariant ──
+    for i in range(8):
+        n_pts = random.randint(5, 10)
+        rho_const = random.uniform(0.5, 5.0)
+        psi_re = [random.uniform(-1, 1) for _ in range(n_pts)]
+        psi_im = [math.sqrt(max(0, rho_const - pr ** 2))
+                  for pr in psi_re]
+        sq_sums = [psi_re[j] ** 2 + psi_im[j] ** 2 for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "psi_re", "psi_im", psi_re, psi_im, sq_sums,
+            expected_metric=GROUPED_METRIC_SUM_SQUARES,
+            desc=f"Dirac spinor norm ψ†ψ={rho_const:.2f} variant {i+1}",
+        ))
+
+    # ── Compton scattering: Δλ = h/(m*c)*(1-cosθ) — ratio in λ,θ space ──
+    for i in range(8):
+        lambda_c = 2.426e-12
+        n_pts = random.randint(5, 10)
+        theta_vals = [random.uniform(0.1, math.pi) for _ in range(n_pts)]
+        dlambda_vals = [lambda_c * (1 - math.cos(t)) for t in theta_vals]
+        ratios = [dlambda_vals[j] / (1 - math.cos(theta_vals[j]))
+                  for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "dlambda", "theta", dlambda_vals, theta_vals, ratios,
+            expected_metric=GROUPED_METRIC_RATIO,
+            desc=f"Compton dλ/(1-cosθ)=λc variant {i+1}",
+        ))
+
+    # ═════════════════════════════════════════════════════════════════════
+    # ERA >= 1970: Standard Model + QCD + Electroweak (~30 examples)
+    # ═════════════════════════════════════════════════════════════════════
+    if era_cutoff < 1970:
+        return examples
+
+    # ── SM: Gauge coupling unification at high energy — product invariant ──
+    for i in range(8):
+        n_pts = random.randint(5, 10)
+        coupling = random.uniform(0.01, 0.1)
+        E_vals = [random.uniform(1e9, 1e16) for _ in range(n_pts)]
+        g_vals = [coupling * math.sqrt(math.log(E / 1e9) + 1)
+                  for E in E_vals]
+        products = [g_vals[j] * E_vals[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "g", "E", g_vals, E_vals, products,
+            expected_metric=GROUPED_METRIC_PRODUCT,
+            desc=f"SM running coupling g*E variant {i+1}",
+        ))
+
+    # ── QCD: Color singlet triality — sum-of-squares pattern ──
+    for i in range(8):
+        n_pts = random.randint(5, 10)
+        C_const = random.uniform(0.5, 3.0)
+        c1_vals = [random.uniform(-1, 1) for _ in range(n_pts)]
+        c2_vals = [random.uniform(-1, 1) for _ in range(n_pts)]
+        c3_vals = [math.sqrt(max(0, C_const - c1 ** 2 - c2 ** 2))
+                   for c1, c2 in zip(c1_vals, c2_vals)]
+        sum_sqs = [c1_vals[j] ** 2 + c2_vals[j] ** 2 + c3_vals[j] ** 2
+                   for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "c1", "c2", c1_vals, c2_vals, sum_sqs,
+            expected_metric=GROUPED_METRIC_SUM_SQUARES,
+            desc=f"QCD color singlet variant {i+1}",
+        ))
+
+    # ── Electroweak: θ_W mixing angle → ratio of couplings ──
+    for i in range(8):
+        theta_w = random.uniform(0.4, 0.5)
+        n_pts = random.randint(5, 10)
+        g_vals = [random.uniform(0.3, 0.7) for _ in range(n_pts)]
+        gp_vals = [g * math.tan(theta_w) for g in g_vals]
+        ratios = [gp_vals[j] / g_vals[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "gp", "g", gp_vals, g_vals, ratios,
+            expected_metric=GROUPED_METRIC_RATIO,
+            desc=f"EW mixing tanθW={math.tan(theta_w):.3f} variant {i+1}",
+        ))
+
+    # ── Asymptotic freedom: α_s(E) decreases with E — ratio pattern ──
+    for i in range(6):
+        Lambda = 0.217  # GeV
+        n_pts = random.randint(5, 10)
+        E_vals = [random.uniform(2, 100) for _ in range(n_pts)]
+        alpha_s_vals = [1.0 / math.log(E / Lambda) for E in E_vals]
+        ratios = [alpha_s_vals[j] * math.log(E_vals[j] / Lambda)
+                  for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "alpha_s", "E", alpha_s_vals, E_vals, ratios,
+            expected_metric=GROUPED_METRIC_PRODUCT,
+            desc=f"QCD α_s*log(E/Λ)≈1 variant {i+1}",
+        ))
+
+    # ═════════════════════════════════════════════════════════════════════
+    # ERA = Today: Higgs + Neutrino + Dark Matter (~25 examples)
+    # ═════════════════════════════════════════════════════════════════════
+    if era_cutoff < 9999:  # "Today" gate
+        return examples
+
+    # Threshold: today cutoff means year >= 2024
+    if era_cutoff < 2024:
+        return examples
+
+    # ── Higgs: V(φ) = -μ²|φ|² + λ|φ|⁴ → squared-diff minimum ──
+    for i in range(6):
+        v = 246.0  # GeV
+        n_pts = random.randint(5, 10)
+        phi_vals = [random.uniform(0, 2 * v) for _ in range(n_pts)]
+        V_vals = [0.25 * (p ** 2 - v ** 2) ** 2 for p in phi_vals]
+        # V is proportional to (φ² - v²)² — squared-diff in φ², v² space
+        sq_diffs = [phi_vals[j] ** 2 - v ** 2 for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "phi", "v", phi_vals, [v] * n_pts, sq_diffs,
+            expected_metric=GROUPED_METRIC_SQUARED_DIFF,
+            desc=f"Higgs V∝(φ²-v²)² variant {i+1}",
+        ))
+
+    # ── Neutrino oscillations: P(ν_e→ν_μ) = sin²(2θ)*sin²(Δm²L/4E) ──
+    for i in range(8):
+        n_pts = random.randint(5, 10)
+        theta13 = random.uniform(0.1, 0.2)
+        E_vals = [random.uniform(1, 10) for _ in range(n_pts)]  # GeV
+        L_vals = [random.uniform(10, 1000) for _ in range(n_pts)]  # km
+        # Oscillation phase φ = Δm²*L / (4*E)
+        dm2 = 2.5e-3  # eV²
+        ratios = [(dm2 * L_vals[j]) / (4 * E_vals[j]) for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "L", "E", L_vals, E_vals, ratios,
+            expected_metric=GROUPED_METRIC_RATIO,
+            desc=f"Neutrino L/E phase variant {i+1}",
+        ))
+
+    # ── Dark matter: v²(r) ∝ M(r)/r — ratio in velocity, radius ──
+    for i in range(8):
+        n_pts = random.randint(5, 10)
+        M_const = random.uniform(1e10, 1e12)
+        G = 6.67e-11
+        r_vals = [random.uniform(1, 100) for _ in range(n_pts)]  # kpc
+        v2_vals = [G * M_const / r for r in r_vals]
+        ratios = [v2_vals[j] * r_vals[j] for j in range(n_pts)]
+        examples.append(_build_grouped_example(
+            "v2", "r", v2_vals, r_vals, ratios,
+            expected_metric=GROUPED_METRIC_PRODUCT,
+            desc=f"DM v²*r=GM variant {i+1}",
+        ))
+
     return examples
 
 
@@ -3808,20 +4084,41 @@ def train_grouped_metric_proposer(
     lr: float = 0.003,
     device: str = "cpu",
     checkpoint_path: str | None = None,
+    era_cutoff: int = 1905,
 ) -> GroupedMetricProposer:
-    """Train the GroupedMetricProposer on pre-1905 ERA-GATED data only.
+    """Train the GroupedMetricProposer on era-gated data.
 
     The model learns which metric types are appropriate for co-varying
-    quantity groups. All training data is pre-1905 (classical physics).
-    The model is NEVER shown Lorentz transforms or spacetime metrics.
+    quantity groups. Training data is filtered by era_cutoff:
+    only pre-cutoff physics is included.
+
+    At cutoff=1905: classical physics only.
+    What is NOT shown at 1905: Lorentz transforms, spacetime metrics,
+    (c*t)² - x², c as limiting speed.
     """
     if proposer is None:
         proposer = GroupedMetricProposer()
     proposer.to(device)
     proposer.train()
 
-    examples = generate_grouped_metric_training_data()
-    print(f"  Generated {len(examples)} pre-1905 grouped metric training examples")
+    examples = generate_grouped_metric_training_data(era_cutoff=era_cutoff)
+    pre1905_count = sum(1 for e in examples if "SR:" not in e.description
+                        and "Bohr" not in e.description
+                        and "QED" not in e.description
+                        and "Nuclear" not in e.description
+                        and "Dirac" not in e.description
+                        and "Compton" not in e.description
+                        and "SM " not in e.description
+                        and "QCD" not in e.description
+                        and "EW " not in e.description
+                        and "Higgs" not in e.description
+                        and "Neutrino" not in e.description
+                        and "DM " not in e.description
+                        and "Rydberg" not in e.description)
+    post1905_count = len(examples) - pre1905_count
+    print(f"  Generated {len(examples)} era-gated training examples "
+          f"(cutoff={era_cutoff}, pre-1905: {pre1905_count}, "
+          f"post-1905: {post1905_count})")
     inputs, targets = build_grouped_metric_batch(examples)
     inputs = inputs.to(device)
     targets = targets.to(device)

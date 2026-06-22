@@ -1,0 +1,312 @@
+{
+  "experiment": "SPACETIME_ERA_GATE_CONFIGURABLE",
+  "description": "Pre-1905 training -> post-1905 metric discovery",
+  "era_cutoff": 1905,
+  "cutoff_label": "Classical (pre-1905)",
+  "training_domains": [
+    "classical_em",
+    "collision",
+    "gravity",
+    "spring",
+    "thermodynamics"
+  ],
+  "test_scenarios_count": 15,
+  "excluded_scenarios": [],
+  "not_taught": "Domain physics from eras after the cutoff",
+  "proposer_params": 5623,
+  "discovery_threshold": 0.9,
+  "total_scenarios": 15,
+  "spacetime_verified": 2,
+  "scenarios": [
+    {
+      "scenario_id": "muon_time_dilation",
+      "scenario_name": "Muon time dilation",
+      "description": "Time dilation: (c*t)^2-x^2",
+      "group_detected": true,
+      "detected_groups": [
+        [
+          "gamma",
+          "t",
+          "v",
+          "x"
+        ]
+      ],
+      "best_metric": "squared_diff",
+      "best_expression": "(c*t)^2 - x^2",
+      "best_constancy": 1.0,
+      "discovered": true,
+      "spacetime_verified": true,
+      "errors": [],
+      "timing_seconds": 0.02359294891357422
+    },
+    {
+      "scenario_id": "velocity_addition",
+      "scenario_name": "Velocity addition",
+      "description": "v_rel formula -> (c*t)^2-x^2",
+      "group_detected": true,
+      "detected_groups": [
+        [
+          "t",
+          "v1",
+          "v2",
+          "x"
+        ]
+      ],
+      "best_metric": "squared_diff",
+      "best_expression": "(c*t)^2 - x^2",
+      "best_constancy": 0.9999999999999998,
+      "discovered": true,
+      "spacetime_verified": true,
+      "errors": [],
+      "timing_seconds": 0.019065380096435547
+    },
+    {
+      "scenario_id": "relativistic_momentum",
+      "scenario_name": "Relativistic momentum",
+      "description": "E^2-(p*c)^2 invariant",
+      "group_detected": false,
+      "detected_groups": [],
+      "best_metric": null,
+      "best_expression": null,
+      "best_constancy": 0.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [
+        "Unknown dimension name 'Momentum'. Available: ['Scalar', 'Mass', 'Length', 'Time', 'Velocity', 'Accel', 'Force', 'Energy']"
+      ],
+      "timing_seconds": 0.00016379356384277344
+    },
+    {
+      "scenario_id": "length_contraction",
+      "scenario_name": "Length contraction",
+      "description": "L=L0/gamma -> (c*t)^2-x^2",
+      "group_detected": true,
+      "detected_groups": [
+        [
+          "gamma",
+          "t",
+          "v",
+          "x"
+        ]
+      ],
+      "best_metric": "squared_diff",
+      "best_expression": "(c*gamma)^2 - v^2",
+      "best_constancy": 0.9946846374704483,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.017522811889648438
+    },
+    {
+      "scenario_id": "doppler_shift",
+      "scenario_name": "Doppler shift",
+      "description": "Relativistic Doppler -> (c*t)^2-x^2",
+      "group_detected": true,
+      "detected_groups": [
+        [
+          "gamma",
+          "t",
+          "v",
+          "x"
+        ]
+      ],
+      "best_metric": "squared_diff",
+      "best_expression": "(c*gamma)^2 - x^2",
+      "best_constancy": 0.9999999999999998,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.016515254974365234
+    },
+    {
+      "scenario_id": "twin_paradox",
+      "scenario_name": "Twin paradox",
+      "description": "Twin aging -> (c*t)^2-x^2",
+      "group_detected": true,
+      "detected_groups": [
+        [
+          "gamma",
+          "t",
+          "v",
+          "x"
+        ]
+      ],
+      "best_metric": "sum_squares",
+      "best_expression": "(c*t)^2 + x^2",
+      "best_constancy": 0.9999999999999998,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.01507425308227539
+    },
+    {
+      "scenario_id": "mass_energy",
+      "scenario_name": "E=mc^2",
+      "description": "Mass-energy -> (c*t)^2-x^2",
+      "group_detected": false,
+      "detected_groups": [],
+      "best_metric": null,
+      "best_expression": null,
+      "best_constancy": 0.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [
+        "Unknown dimension name 'Momentum'. Available: ['Scalar', 'Mass', 'Length', 'Time', 'Velocity', 'Accel', 'Force', 'Energy']"
+      ],
+      "timing_seconds": 4.9114227294921875e-05
+    },
+    {
+      "scenario_id": "spacetime_interval",
+      "scenario_name": "Spacetime interval",
+      "description": "ds^2 invariance",
+      "group_detected": true,
+      "detected_groups": [
+        [
+          "gamma",
+          "t",
+          "v",
+          "x"
+        ]
+      ],
+      "best_metric": "squared_diff",
+      "best_expression": "(c*gamma)^2 - v^2",
+      "best_constancy": 0.9950575372366111,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.016265869140625
+    },
+    {
+      "scenario_id": "qed_fine_structure",
+      "scenario_name": "QED Fine Structure",
+      "description": "alpha=e^2/(hbar*c) invariant",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "coupling",
+          "e"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "t / t",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.0005567073822021484
+    },
+    {
+      "scenario_id": "compton_scattering",
+      "scenario_name": "Compton Scattering",
+      "description": "dlambda/(1-cos(theta))=lambda_c",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "dlambda",
+          "one_minus_cos",
+          "theta"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "dlambda / one_minus_cos",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.0005826950073242188
+    },
+    {
+      "scenario_id": "dirac_spinor_norm",
+      "scenario_name": "Dirac Spinor Norm",
+      "description": "psi_dagger*psi=rho invariant",
+      "group_detected": false,
+      "detected_groups": [],
+      "best_metric": null,
+      "best_expression": null,
+      "best_constancy": 0.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 4.291534423828125e-05
+    },
+    {
+      "scenario_id": "qcd_asymptotic_freedom",
+      "scenario_name": "QCD Asymptotic Freedom",
+      "description": "alpha_s*log(Q/Lambda)~1",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "Q",
+          "alpha_s",
+          "log_Q"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "t / t",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.0004870891571044922
+    },
+    {
+      "scenario_id": "electroweak_mixing",
+      "scenario_name": "Electroweak Mixing",
+      "description": "gp/g=tan(theta_W) invariant",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "g",
+          "gp"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "g / gp",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.00042819976806640625
+    },
+    {
+      "scenario_id": "higgs_mechanism",
+      "scenario_name": "Higgs Mechanism",
+      "description": "phi^2-v^2/2 invariant",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "V",
+          "phi",
+          "phi_sq"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "t / t",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.0009119510650634766
+    },
+    {
+      "scenario_id": "neutrino_oscillation",
+      "scenario_name": "Neutrino Oscillation",
+      "description": "phase*E/L=const invariant",
+      "group_detected": false,
+      "detected_groups": [
+        [
+          "L",
+          "phase",
+          "prob"
+        ]
+      ],
+      "best_metric": "ratio",
+      "best_expression": "t / t",
+      "best_constancy": 1.0,
+      "discovered": false,
+      "spacetime_verified": false,
+      "errors": [],
+      "timing_seconds": 0.0012564659118652344
+    }
+  ]
+}
