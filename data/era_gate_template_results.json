@@ -1,0 +1,557 @@
+{
+  "experiment": "extended_era_gate_v3_template",
+  "timestamp": 1782152540.050667,
+  "config": {
+    "discovery_threshold": 0.9,
+    "seed": 42,
+    "n_sigma": 3.0
+  },
+  "results": [
+    {
+      "scenario_id": "angular_momentum",
+      "scenario_name": "Angular momentum E = E0*n^2",
+      "domain": "quantum",
+      "category": "quantum",
+      "known_invariant": "E / n^2",
+      "hidden_variable_hidden": "n",
+      "baseline": {
+        "discovered": false,
+        "expression": "0.5*E",
+        "score": 0.5598334942438425
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "half_integer",
+        "transform": "identity",
+        "expression": "j = (E/(hbar*omega)) - 0.5",
+        "confidence": 0.9999314546585083,
+        "num_tried": 3,
+        "all": [
+          {
+            "type": "half_integer",
+            "name": "j",
+            "transform": "identity",
+            "confidence": 0.9999314546585083,
+            "rationale": "Error shape suggests half_integer with identity in quantum domain (quantities: E)",
+            "expression_fragment": "j = (E/(hbar*omega)) - 0.5"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.65,
+            "rationale": "Linear residuals suggest counting/index pattern",
+            "expression_fragment": ""
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.4,
+            "rationale": "Generic hidden integer variable (fallback)",
+            "expression_fragment": "n_scale = E/hbar"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "E/n/n",
+        "score": 1.0
+      },
+      "noise_gate": {
+        "floor": 0.6810569226599988,
+        "threshold": 0.6810569226599988,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 7.585928916931152
+    },
+    {
+      "scenario_id": "spin_measurement",
+      "scenario_name": "Spin measurement E = E0*n",
+      "domain": "quantum",
+      "category": "quantum",
+      "known_invariant": "E / n",
+      "hidden_variable_hidden": "n",
+      "baseline": {
+        "discovered": false,
+        "expression": "0.5*E+E-E",
+        "score": 0.6782438971547536
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "half_integer",
+        "transform": "identity",
+        "expression": "j = (E/(hbar*omega)) - 0.5",
+        "confidence": 0.9999314546585083,
+        "num_tried": 3,
+        "all": [
+          {
+            "type": "half_integer",
+            "name": "j",
+            "transform": "identity",
+            "confidence": 0.9999314546585083,
+            "rationale": "Error shape suggests half_integer with identity in quantum domain (quantities: E)",
+            "expression_fragment": "j = (E/(hbar*omega)) - 0.5"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.65,
+            "rationale": "Linear residuals suggest counting/index pattern",
+            "expression_fragment": ""
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.4,
+            "rationale": "Generic hidden integer variable (fallback)",
+            "expression_fragment": "n_scale = E/hbar"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "E/n",
+        "score": 0.9732516623044656
+      },
+      "noise_gate": {
+        "floor": 0.6733100952264208,
+        "threshold": 0.6733100952264208,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 4.968228578567505
+    },
+    {
+      "scenario_id": "blackbody_peak",
+      "scenario_name": "Blackbody E_photon/T = const",
+      "domain": "quantum",
+      "category": "quantum",
+      "known_invariant": "E_photon / T",
+      "hidden_variable_hidden": "none",
+      "baseline": {
+        "discovered": true,
+        "expression": "E_photon/T",
+        "score": 1.0
+      },
+      "error_analysis": {
+        "shape": "",
+        "confidence": 0.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "",
+        "transform": "",
+        "expression": "",
+        "confidence": 0.0,
+        "num_tried": 0,
+        "all": []
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "E_photon/T",
+        "score": 1.0
+      },
+      "noise_gate": {
+        "floor": 0.60435607626104,
+        "threshold": 0.60435607626104,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 0.8283424377441406
+    },
+    {
+      "scenario_id": "photoelectric",
+      "scenario_name": "Photoelectric K_max = h*f - \u03c6",
+      "domain": "quantum",
+      "category": "quantum",
+      "known_invariant": "h*f - K_max",
+      "hidden_variable_hidden": "phi",
+      "baseline": {
+        "discovered": true,
+        "expression": "f/f",
+        "score": 1.0
+      },
+      "error_analysis": {
+        "shape": "",
+        "confidence": 0.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "",
+        "transform": "",
+        "expression": "",
+        "confidence": 0.0,
+        "num_tried": 0,
+        "all": []
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "f/f",
+        "score": 1.0
+      },
+      "noise_gate": {
+        "floor": 0.5941311542550501,
+        "threshold": 0.809813561523971,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 4.129143238067627
+    },
+    {
+      "scenario_id": "simple_relativistic",
+      "scenario_name": "Relativistic energy E = gamma*E0",
+      "domain": "relativistic",
+      "category": "relativistic",
+      "known_invariant": "E / gamma",
+      "hidden_variable_hidden": "gamma",
+      "baseline": {
+        "discovered": false,
+        "expression": "0.5*E",
+        "score": 0.5491427451939319
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "continuous_ratio",
+        "transform": "identity",
+        "expression": "gamma = 1/sqrt(1 - beta^2)",
+        "confidence": 0.9998573064804077,
+        "num_tried": 4,
+        "all": [
+          {
+            "type": "continuous_ratio",
+            "name": "gamma",
+            "transform": "identity",
+            "confidence": 0.9998573064804077,
+            "rationale": "Error shape suggests continuous_ratio with identity in relativistic domain (quantities: E)",
+            "expression_fragment": "gamma = 1/sqrt(1 - beta^2)"
+          },
+          {
+            "type": "continuous_ratio",
+            "name": "gamma",
+            "transform": "ratio",
+            "confidence": 0.8,
+            "rationale": "Linear residuals in relativistic domain \u2014 propose continuous ratio gamma (\u03b3-like factor)",
+            "expression_fragment": "gamma = 1/sqrt(1 - beta^2)"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.65,
+            "rationale": "Linear residuals suggest counting/index pattern",
+            "expression_fragment": ""
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.4,
+            "rationale": "Generic hidden integer variable (fallback)",
+            "expression_fragment": "n_scale = E/hbar"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "E/gamma",
+        "score": 1.0
+      },
+      "noise_gate": {
+        "floor": 0.5941311542550501,
+        "threshold": 0.5941311542550501,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 5.874861717224121
+    },
+    {
+      "scenario_id": "velocity_addition",
+      "scenario_name": "Velocity addition (u'+v)/(1+u'v/c\u00b2)",
+      "domain": "relativistic",
+      "category": "relativistic",
+      "known_invariant": "(u+v) / (1+u*v/c^2)",
+      "hidden_variable_hidden": "c",
+      "baseline": {
+        "discovered": true,
+        "expression": "0.5*u",
+        "score": 1.0
+      },
+      "error_analysis": {
+        "shape": "",
+        "confidence": 0.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "",
+        "transform": "",
+        "expression": "",
+        "confidence": 0.0,
+        "num_tried": 0,
+        "all": []
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "0.5*u",
+        "score": 1.0
+      },
+      "noise_gate": {
+        "floor": 0.85,
+        "threshold": 0.95,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 1.7581901550292969
+    },
+    {
+      "scenario_id": "relativistic_momentum",
+      "scenario_name": "Relativistic momentum p = gamma*m*v",
+      "domain": "relativistic",
+      "category": "relativistic",
+      "known_invariant": "E^2 - (p*c)^2",
+      "hidden_variable_hidden": "gamma",
+      "baseline": {
+        "discovered": false,
+        "expression": "0.5*E/p*p",
+        "score": 0.5762210129051274
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "continuous_ratio",
+        "transform": "ratio",
+        "expression": "gamma = 1/sqrt(1 - beta^2)",
+        "confidence": 1.0,
+        "num_tried": 4,
+        "all": [
+          {
+            "type": "continuous_ratio",
+            "name": "gamma",
+            "transform": "ratio",
+            "confidence": 1.0,
+            "rationale": "Error shape suggests continuous_ratio with ratio in relativistic domain (quantities: m, v, E, c, p)",
+            "expression_fragment": "gamma = 1/sqrt(1 - beta^2)"
+          },
+          {
+            "type": "continuous_ratio",
+            "name": "gamma",
+            "transform": "identity",
+            "confidence": 0.65,
+            "rationale": "Relativistic linear residuals \u2014 propose continuous multiplier gamma",
+            "expression_fragment": "gamma = 1/sqrt(1 - beta^2)"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.65,
+            "rationale": "Linear residuals suggest counting/index pattern",
+            "expression_fragment": ""
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.4,
+            "rationale": "Generic hidden integer variable (fallback)",
+            "expression_fragment": "n_scale = E/hbar"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "E/gamma",
+        "score": 0.9999994817029794
+      },
+      "noise_gate": {
+        "floor": 0.6495478780573545,
+        "threshold": 0.6495478780573545,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 10.493746757507324
+    },
+    {
+      "scenario_id": "time_dilation",
+      "scenario_name": "Time dilation delta_t = gamma*delta_tau",
+      "domain": "relativistic",
+      "category": "relativistic",
+      "known_invariant": "(c*t)^2 - x^2",
+      "hidden_variable_hidden": "gamma",
+      "baseline": {
+        "discovered": false,
+        "expression": "t*v+0.5*t*0.5*v",
+        "score": 0.6416773642247909
+      },
+      "error_analysis": {
+        "shape": "linear",
+        "confidence": 1.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "continuous_ratio",
+        "transform": "ratio",
+        "expression": "gamma = 1/sqrt(1 - beta^2)",
+        "confidence": 1.0,
+        "num_tried": 4,
+        "all": [
+          {
+            "type": "continuous_ratio",
+            "name": "gamma",
+            "transform": "ratio",
+            "confidence": 1.0,
+            "rationale": "Error shape suggests continuous_ratio with ratio in relativistic domain (quantities: v, t, x, c, tau)",
+            "expression_fragment": "gamma = 1/sqrt(1 - beta^2)"
+          },
+          {
+            "type": "continuous_ratio",
+            "name": "gamma",
+            "transform": "identity",
+            "confidence": 0.65,
+            "rationale": "Relativistic linear residuals \u2014 propose continuous multiplier gamma",
+            "expression_fragment": "gamma = 1/sqrt(1 - beta^2)"
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "identity",
+            "confidence": 0.65,
+            "rationale": "Linear residuals suggest counting/index pattern",
+            "expression_fragment": ""
+          },
+          {
+            "type": "integer_n",
+            "name": "n",
+            "transform": "squared",
+            "confidence": 0.4,
+            "rationale": "Generic hidden integer variable (fallback)",
+            "expression_fragment": "n_scale = E/hbar"
+          }
+        ]
+      },
+      "augmented": {
+        "discovered": false,
+        "expression": "t*v+0.5*t*0.5*v",
+        "score": 0.641677364224792
+      },
+      "noise_gate": {
+        "floor": 0.0,
+        "threshold": 0.0,
+        "passes": false
+      },
+      "closed_loop_success": false,
+      "errors": [],
+      "timing_seconds": 8.723345279693604
+    },
+    {
+      "scenario_id": "simple_pendulum",
+      "scenario_name": "Simple pendulum",
+      "domain": "gravity",
+      "category": "classical",
+      "known_invariant": "m*g*h + 0.5*m*v^2",
+      "hidden_variable_hidden": "none",
+      "baseline": {
+        "discovered": true,
+        "expression": "0.5*h/h*m*g*L",
+        "score": 1.0
+      },
+      "error_analysis": {
+        "shape": "",
+        "confidence": 0.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "",
+        "transform": "",
+        "expression": "",
+        "confidence": 0.0,
+        "num_tried": 0,
+        "all": []
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "0.5*h/h*m*g*L",
+        "score": 1.0
+      },
+      "noise_gate": {
+        "floor": 0.6702912629468385,
+        "threshold": 0.8160939113655559,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 0.9609613418579102
+    },
+    {
+      "scenario_id": "mass_spring",
+      "scenario_name": "Mass-spring",
+      "domain": "spring",
+      "category": "classical",
+      "known_invariant": "0.5*k*x^2 + 0.5*m*v^2",
+      "hidden_variable_hidden": "none",
+      "baseline": {
+        "discovered": true,
+        "expression": "-1*k*x*x+-1*m*v*v",
+        "score": 0.9999992749336054
+      },
+      "error_analysis": {
+        "shape": "",
+        "confidence": 0.0,
+        "mean_cv": 0.0
+      },
+      "proposal": {
+        "type": "",
+        "transform": "",
+        "expression": "",
+        "confidence": 0.0,
+        "num_tried": 0,
+        "all": []
+      },
+      "augmented": {
+        "discovered": true,
+        "expression": "-1*k*x*x+-1*m*v*v",
+        "score": 0.9999992749336054
+      },
+      "noise_gate": {
+        "floor": 0.6591826218324598,
+        "threshold": 0.95,
+        "passes": true
+      },
+      "closed_loop_success": true,
+      "errors": [],
+      "timing_seconds": 1.0365939140319824
+    }
+  ],
+  "summary": {
+    "total_scenarios": 10,
+    "verified_discoveries": 9,
+    "quantum_verified": 4,
+    "relativistic_verified": 3,
+    "classical_pass": 2
+  }
+}

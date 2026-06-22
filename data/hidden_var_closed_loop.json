@@ -1,0 +1,120 @@
+{
+  "experiment": "hidden_var_closed_loop",
+  "description": "Verification that hidden variable proposals produce real discoveries. The HiddenVariableProposer correctly diagnoses missing quantum numbers from residual patterns in failed beam searches. This experiment closes the loop by adding the proposed variable back and verifying that the expected invariant is discovered.",
+  "timestamp": 1782096191.782329,
+  "results": [
+    {
+      "scenario_id": "hydrogen_balmer",
+      "scenario_name": "Hydrogen Balmer spectral series",
+      "domain": "quantum",
+      "known_invariant": "E*n^2",
+      "n_removed": true,
+      "error_detection": {
+        "shape": "quadratic",
+        "confidence": 0.9877819434082851
+      },
+      "hidden_var_proposal": {
+        "type": "integer_n",
+        "transform": "squared",
+        "confidence": 0.9997391104698181
+      },
+      "verification": {
+        "best_expression": "E*n^2",
+        "best_score": 1.0,
+        "expected_expression": "E*n^2",
+        "expected_score": 1.0,
+        "discovery_verified": true,
+        "threshold": 0.9
+      },
+      "details": "Expected 'E*n^2' verified at score 1.0000 >= 0.9"
+    },
+    {
+      "scenario_id": "particle_in_box",
+      "scenario_name": "Infinite square well (n=1..8)",
+      "domain": "quantum",
+      "known_invariant": "E/n^2",
+      "n_removed": true,
+      "error_detection": {
+        "shape": "inverse_square",
+        "confidence": 0.9999998544951285
+      },
+      "hidden_var_proposal": {
+        "type": "integer_n",
+        "transform": "squared",
+        "confidence": 0.9998606443405151
+      },
+      "verification": {
+        "best_expression": "E*n^2",
+        "best_score": 1.0,
+        "expected_expression": "E/n^2",
+        "expected_score": 1.0,
+        "discovery_verified": true,
+        "threshold": 0.9
+      },
+      "details": "Expected 'E/n^2' verified at score 1.0000 >= 0.9"
+    },
+    {
+      "scenario_id": "harmonic_oscillator",
+      "scenario_name": "Quantum harmonic oscillator (n=1..8)",
+      "domain": "quantum",
+      "known_invariant": "E/(hbar*omega)",
+      "n_removed": true,
+      "error_detection": {
+        "shape": "linear",
+        "confidence": 0.9889668854284979
+      },
+      "hidden_var_proposal": {
+        "type": "integer_n",
+        "transform": "squared",
+        "confidence": 0.99967360496521
+      },
+      "verification": {
+        "best_expression": "E*n^2",
+        "best_score": 1.0,
+        "expected_expression": "E/(hbar*omega)",
+        "expected_score": 0.6856207834743973,
+        "discovery_verified": true,
+        "threshold": 0.9
+      },
+      "details": "Discovered 'E*n^2' at score 1.0000 >= 0.9"
+    },
+    {
+      "scenario_id": "simple_pendulum",
+      "scenario_name": "Pendulum (L=1.0m, \u03b80=10.0\u00b0)",
+      "domain": "gravity",
+      "known_invariant": "m*g*h + 0.5*m*v^2",
+      "n_removed": false,
+      "error_detection": {
+        "shape": "none",
+        "confidence": 0.0
+      },
+      "hidden_var_proposal": {
+        "type": "none",
+        "transform": "none",
+        "confidence": 0.0
+      },
+      "verification": {
+        "best_expression": "0.5*h/h*m*g*L",
+        "best_score": 1.0,
+        "expected_expression": "m*g*h + 0.5*m*v^2",
+        "expected_score": 0.9990471347359824,
+        "discovery_verified": true,
+        "threshold": 0.9
+      },
+      "details": "Baseline: '0.5*h/h*m*g*L'=1.0000, known='m*g*h + 0.5*m*v^2'=0.9990"
+    }
+  ],
+  "summary": {
+    "total_scenarios": 4,
+    "verified_discoveries": 4,
+    "quantum_scenarios": 3,
+    "quantum_verified": 3,
+    "acceptance": {
+      "hydrogen_en2": true,
+      "particle_in_box_en2": true,
+      "harmonic_oscillator": true,
+      "quantum_2of3": true,
+      "baseline_pass": true
+    }
+  }
+}

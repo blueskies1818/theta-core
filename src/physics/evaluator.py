@@ -378,7 +378,7 @@ class ExpressionEvaluator:
                 pw = self.score_piecewise(expr_str, obs)
                 scores.append(pw.get("piecewise_mean", 0.0))
             else:
-                scores.append(self._score_observation(ast, obs))
+                scores.append(self._score_observation(ast, obs, epsilon))
         return sum(scores) / len(scores)
 
     def score_all(
@@ -614,12 +614,12 @@ class ExpressionEvaluator:
                 pw = self.score_piecewise(expr_str, obs)
                 scores.append(pw.get("piecewise_mean", 0.0))
             else:
-                scores.append(self._score_observation(ast, obs))
+                scores.append(self._score_observation(ast, obs, epsilon))
 
         return sum(scores) / len(scores)
 
     def _score_observation(
-        self, ast: ExprNode, obs: Observation
+        self, ast: ExprNode, obs: Observation, epsilon: float = 1e-12
     ) -> float:
         """Score a parsed expression against a single observation."""
         if len(obs.timesteps) < 2:
@@ -644,9 +644,12 @@ class ExpressionEvaluator:
         if any(abs(v) > 1e150 for v in values):
             return 0.0
 
-        if abs(mean_val) < 1e-12:
+        # Use 1e-30 for zero-mean detection — lets quantum-scale
+        # values through (atomic energies ~1e-19 J, Planck-scale ~1e-34)
+        _eps = 1e-30
+        if abs(mean_val) < _eps:
             scale = max(abs(v) for v in values)
-            if scale < 1e-12:
+            if scale < _eps:
                 return 1.0
             variance = sum((v - mean_val) ** 2 for v in values) / n
             variance = _safe_real(variance)

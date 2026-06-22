@@ -1,0 +1,219 @@
+{
+  "unsupervised_detector": {
+    "checkpoint_path": "/home/blueman1818/Projects/theta-core/checkpoints/unsupervised_detector.pt",
+    "model_params": 8936,
+    "input_dim": 32,
+    "threshold": -0.3733875034376979
+  },
+  "era_gate": {
+    "post1905_scenarios": [
+      {
+        "scenario_id": "am",
+        "scenario_name": "Angular Momentum (E \u221d n\u00b2)",
+        "domain": "quantum",
+        "structuredness_score": -0.0012895141262561083,
+        "has_structure": true,
+        "threshold": -0.3733875034376979
+      },
+      {
+        "scenario_id": "spin",
+        "scenario_name": "Spin Measurement (half-integer)",
+        "domain": "quantum",
+        "structuredness_score": -0.0038472816813737154,
+        "has_structure": true,
+        "threshold": -0.3733875034376979
+      },
+      {
+        "scenario_id": "bb",
+        "scenario_name": "Blackbody (E_photon \u221d T)",
+        "domain": "thermal",
+        "structuredness_score": -0.014980733394622803,
+        "has_structure": true,
+        "threshold": -0.3733875034376979
+      },
+      {
+        "scenario_id": "pe",
+        "scenario_name": "Photoelectric (K_max = h*f - \u03c6)",
+        "domain": "quantum",
+        "structuredness_score": -0.008633071556687355,
+        "has_structure": true,
+        "threshold": -0.3733875034376979
+      },
+      {
+        "scenario_id": "va",
+        "scenario_name": "Relativistic Velocity Addition",
+        "domain": "relativistic",
+        "structuredness_score": -0.0196282546967268,
+        "has_structure": true,
+        "threshold": -0.3733875034376979
+      },
+      {
+        "scenario_id": "rm",
+        "scenario_name": "Relativistic Momentum (p = \u03b3mv)",
+        "domain": "relativistic",
+        "structuredness_score": -0.02506209723651409,
+        "has_structure": true,
+        "threshold": -0.3733875034376979
+      },
+      {
+        "scenario_id": "td",
+        "scenario_name": "Time Dilation (t' = \u03b3t)",
+        "domain": "relativistic",
+        "structuredness_score": -0.02372279018163681,
+        "has_structure": true,
+        "threshold": -0.3733875034376979
+      },
+      {
+        "scenario_id": "dopp",
+        "scenario_name": "Relativistic Doppler Shift",
+        "domain": "relativistic",
+        "structuredness_score": -0.027553055435419083,
+        "has_structure": true,
+        "threshold": -0.3733875034376979
+      },
+      {
+        "scenario_id": "compt",
+        "scenario_name": "Compton Scattering (\u0394\u03bb \u221d 1-cos \u03b8)",
+        "domain": "quantum",
+        "structuredness_score": -0.06926773488521576,
+        "has_structure": true,
+        "threshold": -0.3733875034376979
+      },
+      {
+        "scenario_id": "db",
+        "scenario_name": "De Broglie Wavelength (\u03bb = h/p)",
+        "domain": "quantum",
+        "structuredness_score": -0.01822994463145733,
+        "has_structure": true,
+        "threshold": -0.3733875034376979
+      }
+    ],
+    "classical_controls": [
+      {
+        "scenario_id": "falling",
+        "scenario_name": "Falling Mass (energy conserved)",
+        "domain": "mechanics",
+        "structuredness_score": -0.9264653921127319,
+        "has_structure": false,
+        "threshold": -0.3733875034376979
+      },
+      {
+        "scenario_id": "pendulum",
+        "scenario_name": "Pendulum (energy conserved)",
+        "domain": "gravity",
+        "structuredness_score": -0.7131649851799011,
+        "has_structure": false,
+        "threshold": -0.3733875034376979
+      }
+    ],
+    "summary": {
+      "post1905_total": 10,
+      "post1905_detected": 10,
+      "post1905_detection_rate": 1.0,
+      "classical_total": 2,
+      "classical_false_positives": 0,
+      "classical_fp_rate": 0.0
+    }
+  },
+  "closed_loop": [
+    {
+      "scenario_id": "photoelectric",
+      "scenario_name": "Photoelectric (\u03c6 hidden)",
+      "structuredness_score": -0.1553758978843689,
+      "structure_detected": true,
+      "discovered": false,
+      "best_expression": "0.5*K_max+K_max/f+0.5*(K_max*0.5-K_max)",
+      "best_score": 0.6142371595635171,
+      "baseline_score": 0.6142371595635171,
+      "num_proposals_tried": 4
+    },
+    {
+      "scenario_id": "hydrogen",
+      "scenario_name": "Hydrogen (n hidden, E \u221d 1/n\u00b2)",
+      "structuredness_score": -0.10185828804969788,
+      "structure_detected": true,
+      "discovered": false,
+      "best_expression": "lambda*E",
+      "best_score": 0.5528390825227837,
+      "baseline_score": 0.5528390825227837,
+      "num_proposals_tried": 3
+    },
+    {
+      "scenario_id": "angular_momentum",
+      "scenario_name": "Angular Momentum (n hidden, E \u221d n\u00b2)",
+      "structuredness_score": -0.10185828804969788,
+      "structure_detected": true,
+      "discovered": true,
+      "best_expression": "E/r/r",
+      "best_score": 1.0,
+      "baseline_score": 1.0,
+      "num_proposals_tried": 0
+    },
+    {
+      "scenario_id": "photoelectric",
+      "scenario_name": "Photoelectric (\u03c6 hidden)",
+      "structuredness_score": -0.1553758978843689,
+      "structure_detected": true,
+      "discovered": false,
+      "best_expression": "0.5*E+E/f+0.5*(-1*E*0.5)",
+      "best_score": 0.6142371595635171,
+      "baseline_score": 0.6142371595635171,
+      "num_proposals_tried": 4
+    },
+    {
+      "scenario_id": "friction",
+      "scenario_name": "Friction (\u03bc hidden, F=\u03bcN)",
+      "structuredness_score": -0.1553758978843689,
+      "structure_detected": true,
+      "discovered": false,
+      "best_expression": "",
+      "best_score": 0.0,
+      "baseline_score": 0.0,
+      "num_proposals_tried": 4
+    },
+    {
+      "scenario_id": "drag",
+      "scenario_name": "Drag (C_d hidden, F=\u00bd\u03c1v\u00b2C_dA)",
+      "structuredness_score": -0.1553758978843689,
+      "structure_detected": true,
+      "discovered": false,
+      "best_expression": "",
+      "best_score": 0.0,
+      "baseline_score": 0.0,
+      "num_proposals_tried": 4
+    },
+    {
+      "scenario_id": "ideal_gas",
+      "scenario_name": "Ideal Gas (nR hidden, PV=nRT)",
+      "structuredness_score": -0.1553758978843689,
+      "structure_detected": true,
+      "discovered": false,
+      "best_expression": "",
+      "best_score": 0.0,
+      "baseline_score": 0.0,
+      "num_proposals_tried": 4
+    },
+    {
+      "scenario_id": "spring",
+      "scenario_name": "Spring Energy (k hidden, E=\u00bdkx\u00b2)",
+      "structuredness_score": -0.1553758978843689,
+      "structure_detected": true,
+      "discovered": true,
+      "best_expression": "E/x/x",
+      "best_score": 1.0,
+      "baseline_score": 1.0,
+      "num_proposals_tried": 0
+    },
+    {
+      "scenario_id": "relativistic_momentum",
+      "scenario_name": "Relativistic Momentum (\u03b3 hidden)",
+      "structuredness_score": -0.1553758978843689,
+      "structure_detected": true,
+      "discovered": false,
+      "best_expression": "",
+      "best_score": 0.0,
+      "baseline_score": 0.0,
+      "num_proposals_tried": 4
+    }
+  ]
+}
