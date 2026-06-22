@@ -29,6 +29,17 @@ from src.physics.lean_prover import (
     save_verified_theorem,
     verified_theorems_dir,
 )
+from src.physics.auto_lean import (
+    AutoLeanScenario,
+    AutoLeanProver,
+    ProofAttempt,
+    TacticLibrary,
+    build_mechanics_scenarios,
+    build_em_scenarios,
+    build_relativistic_scenarios,
+    build_all_auto_scenarios,
+    run_auto_proof_benchmark,
+)
 from src.physics.symmetry import (
     SymmetryGroup,
     SymmetryDetection,
@@ -47,6 +58,27 @@ from src.physics.symmetry import (
     build_symmetry_training_data,
     train_symmetry_classifier,
     run_symmetry_smoke_test,
+)
+from src.physics.symmetry_discovery import (
+    SymmetryDiscoverer,
+    CandidateGroup,
+    GroupCandidate,
+    DISCOVERY_GENERATORS,
+    DISCOVERY_GENERATOR_POOL,
+    generate_candidate_groups,
+    candidate_to_symmetry_group,
+    generate_discovery_training_data,
+    build_discovery_training_scenarios,
+    train_symmetry_discoverer,
+    evaluate_discovery,
+    run_symmetry_discovery_pipeline,
+    run_discovery_smoke_test,
+    run_discovery_on_database,
+    save_discovery_results,
+    KNOWN_GROUP_NAMES,
+    KNOWN_GENERATOR_SETS,
+    SymmetryScorer,
+    DiscoveryResult,
 )
 
 __all__ = [
@@ -69,6 +101,16 @@ __all__ = [
     "verify_all",
     "save_verified_theorem",
     "verified_theorems_dir",
+    # auto_lean module
+    "AutoLeanScenario",
+    "AutoLeanProver",
+    "ProofAttempt",
+    "TacticLibrary",
+    "build_mechanics_scenarios",
+    "build_em_scenarios",
+    "build_relativistic_scenarios",
+    "build_all_auto_scenarios",
+    "run_auto_proof_benchmark",
     # Symmetry module
     "SymmetryGroup",
     "SymmetryDetection",
@@ -87,4 +129,24 @@ __all__ = [
     "build_symmetry_training_data",
     "train_symmetry_classifier",
     "run_symmetry_smoke_test",
+    # Symmetry discovery module
+    "SymmetryDiscoverer",
+    "CandidateGroup",
+    "GroupCandidate",
+    "DISCOVERY_GENERATORS",
+    "DISCOVERY_GENERATOR_POOL",
+    "generate_candidate_groups",
+    "candidate_to_symmetry_group",
+    "generate_discovery_training_data",
+    "build_discovery_training_scenarios",
+    "train_symmetry_discoverer",
+    "evaluate_discovery",
+    "run_symmetry_discovery_pipeline",
+    "run_discovery_on_database",
+    "run_discovery_smoke_test",
+    "save_discovery_results",
+    "KNOWN_GROUP_NAMES",
+    "KNOWN_GENERATOR_SETS",
+    "SymmetryScorer",
+    "DiscoveryResult",
 ]
