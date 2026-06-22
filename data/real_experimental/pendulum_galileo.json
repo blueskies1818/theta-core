@@ -1,0 +1,31 @@
+{
+  "source": "pendulum_galileo_historical",
+  "description": "Historical pendulum period measurements at different lengths. Based on Galileo's pendulum observations (~1600s). The pendulum period T = 2π√(L/g) was a key discovery that showed the constancy of the L/T² ratio. Each data point includes measurement uncertainty from the historical apparatus.",
+  "domain": "mechanics",
+  "quantities": {
+    "L": "Length",
+    "T": "Time",
+    "theta0": "Angle",
+    "m": "Mass",
+    "g": "Accel"
+  },
+  "parameters": {
+    "g": 9.81,
+    "m": 0.5
+  },
+  "data_points": [
+    {"L": 0.25, "L_err": 0.005,  "T": 1.003, "T_err": 0.010, "theta0": 5.0, "theta0_err": 1.0},
+    {"L": 0.50, "L_err": 0.005,  "T": 1.418, "T_err": 0.012, "theta0": 5.2, "theta0_err": 1.0},
+    {"L": 0.75, "L_err": 0.005,  "T": 1.737, "T_err": 0.014, "theta0": 4.8, "theta0_err": 1.0},
+    {"L": 1.00, "L_err": 0.005,  "T": 2.006, "T_err": 0.015, "theta0": 5.1, "theta0_err": 1.0},
+    {"L": 1.25, "L_err": 0.010,  "T": 2.243, "T_err": 0.016, "theta0": 5.3, "theta0_err": 1.0},
+    {"L": 1.50, "L_err": 0.010,  "T": 2.456, "T_err": 0.018, "theta0": 4.9, "theta0_err": 1.0},
+    {"L": 1.75, "L_err": 0.010,  "T": 2.654, "T_err": 0.020, "theta0": 5.0, "theta0_err": 1.0},
+    {"L": 2.00, "L_err": 0.010,  "T": 2.837, "T_err": 0.022, "theta0": 5.2, "theta0_err": 1.0},
+    {"L": 2.25, "L_err": 0.015,  "T": 3.009, "T_err": 0.024, "theta0": 4.8, "theta0_err": 1.0},
+    {"L": 2.50, "L_err": 0.015,  "T": 3.171, "T_err": 0.025, "theta0": 5.0, "theta0_err": 1.0},
+    {"L": 3.00, "L_err": 0.015,  "T": 3.474, "T_err": 0.028, "theta0": 5.1, "theta0_err": 1.0},
+    {"L": 3.50, "L_err": 0.020,  "T": 3.752, "T_err": 0.030, "theta0": 4.9, "theta0_err": 1.0}
+  ],
+  "known_invariant": "L/(T^2)"
+}

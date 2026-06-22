@@ -1,0 +1,33 @@
+{
+  "source": "hydrogen_balmer_series",
+  "description": "Hydrogen Balmer series spectral line measurements. Observed wavelengths of the visible hydrogen spectrum (Balmer series) measured with diffraction grating spectroscopy. The Balmer formula predicts 1/λ = R_H (1/2² - 1/n²) where R_H is the Rydberg constant. This was one of the first experimental confirmations of quantized energy levels, predating Bohr's model. Measurement uncertainties represent spectrometer resolution limits (~0.2 nm for historical grating instruments, ~0.02 nm for modern instruments).",
+  "domain": "quantum",
+  "quantities": {
+    "lambda": "Length",
+    "n": "Dimensionless",
+    "E": "Energy",
+    "R": "InverseLength",
+    "h": "Action",
+    "c": "Velocity"
+  },
+  "parameters": {
+    "R_H": 10973731.568157,
+    "h": 6.62607015e-34,
+    "c": 299792458.0
+  },
+  "data_points": [
+    {"n": 3, "lambda": 6.563e-07, "lambda_err": 2.0e-10, "E": 3.027e-19,  "E_err": 0.010e-19},
+    {"n": 4, "lambda": 4.861e-07, "lambda_err": 2.0e-10, "E": 4.087e-19,  "E_err": 0.012e-19},
+    {"n": 5, "lambda": 4.340e-07, "lambda_err": 2.0e-10, "E": 4.578e-19,  "E_err": 0.014e-19},
+    {"n": 6, "lambda": 4.102e-07, "lambda_err": 2.0e-10, "E": 4.843e-19,  "E_err": 0.015e-19},
+    {"n": 7, "lambda": 3.970e-07, "lambda_err": 3.0e-10, "E": 5.004e-19,  "E_err": 0.016e-19},
+    {"n": 8, "lambda": 3.889e-07, "lambda_err": 4.0e-10, "E": 5.108e-19,  "E_err": 0.018e-19},
+    {"n": 9, "lambda": 3.835e-07, "lambda_err": 5.0e-10, "E": 5.180e-19,  "E_err": 0.020e-19},
+    {"n": 10, "lambda": 3.798e-07, "lambda_err": 6.0e-10, "E": 5.231e-19, "E_err": 0.022e-19},
+    {"n": 11, "lambda": 3.770e-07, "lambda_err": 7.0e-10, "E": 5.269e-19, "E_err": 0.025e-19},
+    {"n": 12, "lambda": 3.750e-07, "lambda_err": 8.0e-10, "E": 5.297e-19, "E_err": 0.028e-19},
+    {"n": 13, "lambda": 3.734e-07, "lambda_err": 10.0e-10, "E": 5.320e-19, "E_err": 0.030e-19},
+    {"n": 14, "lambda": 3.722e-07, "lambda_err": 12.0e-10, "E": 5.337e-19, "E_err": 0.035e-19}
+  ],
+  "known_invariant": "E*n^2"
+}

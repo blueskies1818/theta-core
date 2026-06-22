@@ -1,0 +1,361 @@
+{
+  "dataset": "quantum_hydrogen_spectra",
+  "description": "Hydrogen spectral line measurements (Balmer series) with experimental uncertainties from various spectroscopic studies. Demonstrates quantized energy levels: E_n = -13.6 eV / n\u00b2.",
+  "source": "Compiled from NIST Atomic Spectra Database, Rydberg (1890), and modern laser spectroscopy (H\u00e4nsch et al. 1997)",
+  "references": [
+    "Rydberg, J.R. (1890). On the structure of the line-spectra of the chemical elements.",
+    "NIST Atomic Spectra Database (ver. 5.11).",
+    "Udem, Th. et al. (1997). Phase-Coherent Measurement of the Hydrogen 1S-2S Transition Frequency. Phys. Rev. Lett. 79, 2646."
+  ],
+  "observations": [
+    {
+      "id": "hydrogen_balmer_lines",
+      "name": "Hydrogen Balmer series (visible spectrum)",
+      "description": "Balmer series transitions from n\u22653 to n=2. Wavelengths measured spectroscopically with uncertainties. The Rydberg formula 1/\u03bb = R_H * (1/2\u00b2 - 1/n\u00b2) describes the series with R_H = 10973731.568 \u00b1 0.001 m\u207b\u00b9.",
+      "domain": "quantum",
+      "quantities": {
+        "n_i": "Number",
+        "n_f": "Number",
+        "lambda": "Length",
+        "E": "Energy",
+        "hbar": "Action",
+        "omega": "Frequency"
+      },
+      "parameters": {
+        "n_f": {
+          "value": 2.0,
+          "sigma": 0.0
+        },
+        "hbar": {
+          "value": 1.054571817e-34,
+          "sigma": 1e-42
+        },
+        "R_H": {
+          "value": 10973731.568,
+          "sigma": 0.001
+        }
+      },
+      "timesteps": [
+        {
+          "n_i": {
+            "value": 3.0,
+            "sigma": 0.0
+          },
+          "lambda": {
+            "value": 6.5628e-07,
+            "sigma": 1e-11
+          },
+          "E": {
+            "value": 3.026e-19,
+            "sigma": 2e-22
+          },
+          "omega": {
+            "value": 2870000000000000.0,
+            "sigma": 1000000000000.0
+          }
+        },
+        {
+          "n_i": {
+            "value": 4.0,
+            "sigma": 0.0
+          },
+          "lambda": {
+            "value": 4.8613e-07,
+            "sigma": 8e-12
+          },
+          "E": {
+            "value": 4.087e-19,
+            "sigma": 3e-22
+          },
+          "omega": {
+            "value": 3878000000000000.0,
+            "sigma": 1000000000000.0
+          }
+        },
+        {
+          "n_i": {
+            "value": 5.0,
+            "sigma": 0.0
+          },
+          "lambda": {
+            "value": 4.3405e-07,
+            "sigma": 7e-12
+          },
+          "E": {
+            "value": 4.577e-19,
+            "sigma": 3e-22
+          },
+          "omega": {
+            "value": 4343000000000000.0,
+            "sigma": 1000000000000.0
+          }
+        },
+        {
+          "n_i": {
+            "value": 6.0,
+            "sigma": 0.0
+          },
+          "lambda": {
+            "value": 4.1017e-07,
+            "sigma": 7e-12
+          },
+          "E": {
+            "value": 4.842e-19,
+            "sigma": 3e-22
+          },
+          "omega": {
+            "value": 4595000000000000.0,
+            "sigma": 1000000000000.0
+          }
+        },
+        {
+          "n_i": {
+            "value": 7.0,
+            "sigma": 0.0
+          },
+          "lambda": {
+            "value": 3.9701e-07,
+            "sigma": 6e-12
+          },
+          "E": {
+            "value": 5.002e-19,
+            "sigma": 3e-22
+          },
+          "omega": {
+            "value": 4748000000000000.0,
+            "sigma": 1000000000000.0
+          }
+        },
+        {
+          "n_i": {
+            "value": 8.0,
+            "sigma": 0.0
+          },
+          "lambda": {
+            "value": 3.889e-07,
+            "sigma": 6e-12
+          },
+          "E": {
+            "value": 5.106e-19,
+            "sigma": 3e-22
+          },
+          "omega": {
+            "value": 4847000000000000.0,
+            "sigma": 1000000000000.0
+          }
+        }
+      ],
+      "known_invariant": "E * n_i^2",
+      "lean_theorem": "",
+      "source": "NIST Atomic Spectra Database, Rydberg (1890)",
+      "references": [
+        "NIST ASD",
+        "Rydberg 1890"
+      ]
+    },
+    {
+      "id": "hydrogen_1s_2s_transition",
+      "name": "Hydrogen 1S-2S two-photon transition",
+      "description": "Precision measurement of the hydrogen 1S-2S transition frequency using Doppler-free two-photon spectroscopy. Frequency = 2,466,061,413,187,035 \u00b1 10 Hz. The most precisely measured transition in neutral hydrogen.",
+      "domain": "quantum",
+      "quantities": {
+        "n_i": "Number",
+        "n_f": "Number",
+        "E": "Energy",
+        "hbar": "Action",
+        "omega": "Frequency",
+        "f": "Frequency"
+      },
+      "parameters": {
+        "n_i": {
+          "value": 1.0,
+          "sigma": 0.0
+        },
+        "n_f": {
+          "value": 2.0,
+          "sigma": 0.0
+        },
+        "hbar": {
+          "value": 1.054571817e-34,
+          "sigma": 1e-42
+        }
+      },
+      "timesteps": [
+        {
+          "E": {
+            "value": 1.634e-18,
+            "sigma": 1e-22
+          },
+          "omega": {
+            "value": 1.55e+16,
+            "sigma": 200000000000.0
+          },
+          "f": {
+            "value": 2466061413187035.0,
+            "sigma": 10.0
+          }
+        },
+        {
+          "E": {
+            "value": 1.634e-18,
+            "sigma": 1e-22
+          },
+          "omega": {
+            "value": 1.55e+16,
+            "sigma": 200000000000.0
+          },
+          "f": {
+            "value": 2466061413187035.0,
+            "sigma": 10.0
+          }
+        },
+        {
+          "E": {
+            "value": 1.634e-18,
+            "sigma": 1e-22
+          },
+          "omega": {
+            "value": 1.55e+16,
+            "sigma": 200000000000.0
+          },
+          "f": {
+            "value": 2466061413187035.0,
+            "sigma": 10.0
+          }
+        }
+      ],
+      "known_invariant": "E / (1/n_f^2 - 1/n_i^2)",
+      "lean_theorem": "",
+      "source": "Udem et al. (1997), H\u00e4nsch group, MPQ Garching",
+      "references": [
+        "Udem et al. 1997"
+      ]
+    },
+    {
+      "id": "hydrogen_lyman_series",
+      "name": "Hydrogen Lyman series (UV spectrum)",
+      "description": "Lyman series transitions from n\u22652 to n=1. UV wavelengths measured with spectroscopic precision. Short wavelengths mean larger relative uncertainties.",
+      "domain": "quantum",
+      "quantities": {
+        "n_i": "Number",
+        "n_f": "Number",
+        "lambda": "Length",
+        "E": "Energy",
+        "hbar": "Action",
+        "omega": "Frequency"
+      },
+      "parameters": {
+        "n_f": {
+          "value": 1.0,
+          "sigma": 0.0
+        },
+        "hbar": {
+          "value": 1.054571817e-34,
+          "sigma": 1e-42
+        },
+        "R_H": {
+          "value": 10973731.568,
+          "sigma": 0.001
+        }
+      },
+      "timesteps": [
+        {
+          "n_i": {
+            "value": 2.0,
+            "sigma": 0.0
+          },
+          "lambda": {
+            "value": 1.2157e-07,
+            "sigma": 3e-11
+          },
+          "E": {
+            "value": 1.634e-18,
+            "sigma": 5e-22
+          },
+          "omega": {
+            "value": 1.55e+16,
+            "sigma": 2000000000000.0
+          }
+        },
+        {
+          "n_i": {
+            "value": 3.0,
+            "sigma": 0.0
+          },
+          "lambda": {
+            "value": 1.0257e-07,
+            "sigma": 2e-11
+          },
+          "E": {
+            "value": 1.938e-18,
+            "sigma": 5e-22
+          },
+          "omega": {
+            "value": 1.838e+16,
+            "sigma": 2000000000000.0
+          }
+        },
+        {
+          "n_i": {
+            "value": 4.0,
+            "sigma": 0.0
+          },
+          "lambda": {
+            "value": 9.7254e-08,
+            "sigma": 2e-11
+          },
+          "E": {
+            "value": 2.043e-18,
+            "sigma": 5e-22
+          },
+          "omega": {
+            "value": 1.939e+16,
+            "sigma": 2000000000000.0
+          }
+        },
+        {
+          "n_i": {
+            "value": 5.0,
+            "sigma": 0.0
+          },
+          "lambda": {
+            "value": 9.4974e-08,
+            "sigma": 2e-11
+          },
+          "E": {
+            "value": 2.092e-18,
+            "sigma": 5e-22
+          },
+          "omega": {
+            "value": 1.985e+16,
+            "sigma": 2000000000000.0
+          }
+        },
+        {
+          "n_i": {
+            "value": 6.0,
+            "sigma": 0.0
+          },
+          "lambda": {
+            "value": 9.3758e-08,
+            "sigma": 2e-11
+          },
+          "E": {
+            "value": 2.119e-18,
+            "sigma": 5e-22
+          },
+          "omega": {
+            "value": 2.011e+16,
+            "sigma": 2000000000000.0
+          }
+        }
+      ],
+      "known_invariant": "E * n_i^2",
+      "lean_theorem": "",
+      "source": "NIST Atomic Spectra Database",
+      "references": [
+        "NIST ASD"
+      ]
+    }
+  ]
+}

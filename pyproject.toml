@@ -17,3 +17,8 @@ evaluate = "scripts.eval.evaluate:main"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["src*", "scripts*"]
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests as slow (deselect with '-k \"not slow\"')",
+]

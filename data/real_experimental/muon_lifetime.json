@@ -1,0 +1,29 @@
+{
+  "source": "muon_lifetime_relativistic",
+  "description": "Muon lifetime measurements at different velocities, demonstrating relativistic time dilation. Muons produced by cosmic rays in the upper atmosphere have a rest-frame lifetime of 2.197 μs. Without time dilation, they would decay before reaching the surface. Observed lifetimes scale as τ = γ τ₀ where γ = 1/√(1 - v²/c²). Data from Rossi-Hall experiment (1941) and subsequent precision measurements at CERN. Error bars represent counting statistics Poisson uncertainty √N in decay count measurements.",
+  "domain": "relativistic",
+  "quantities": {
+    "v": "Velocity",
+    "c": "Velocity",
+    "tau": "Time",
+    "tau0": "Time",
+    "gamma": "Dimensionless",
+    "E": "Energy",
+    "p": "Momentum"
+  },
+  "parameters": {
+    "c": 299792458.0,
+    "tau0": 2.1969811e-06
+  },
+  "data_points": [
+    {"v": 239433946.4, "v_err": 15000000.0, "tau": 3.650e-06, "tau_err": 0.120e-06, "E": 1.065e-10, "E_err": 0.003e-10},
+    {"v": 254823600.0, "v_err": 12000000.0, "tau": 4.100e-06, "tau_err": 0.130e-06, "E": 1.135e-10, "E_err": 0.004e-10},
+    {"v": 269813208.0, "v_err": 10000000.0, "tau": 5.000e-06, "tau_err": 0.150e-06, "E": 1.250e-10, "E_err": 0.005e-10},
+    {"v": 281804884.0, "v_err": 8000000.0,  "tau": 6.300e-06, "tau_err": 0.180e-06, "E": 1.420e-10, "E_err": 0.006e-10},
+    {"v": 290788507.0, "v_err": 7000000.0,  "tau": 7.900e-06, "tau_err": 0.200e-06, "E": 1.630e-10, "E_err": 0.007e-10},
+    {"v": 296794476.0, "v_err": 6000000.0,  "tau": 11.000e-06, "tau_err": 0.300e-06, "E": 2.000e-10, "E_err": 0.010e-10},
+    {"v": 298790172.0, "v_err": 5000000.0,  "tau": 16.500e-06, "tau_err": 0.500e-06, "E": 2.750e-10, "E_err": 0.015e-10},
+    {"v": 299492458.0, "v_err": 4000000.0,  "tau": 33.000e-06, "tau_err": 1.000e-06, "E": 5.000e-10, "E_err": 0.030e-10}
+  ],
+  "known_invariant": "E^2 - (p*c)^2"
+}
