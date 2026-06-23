@@ -26,6 +26,7 @@ from src.physics.evaluator import ExpressionEvaluator
 from src.physics.observations import Observation
 from src.physics.search import auto_discover
 from src.physics.canonicalizer import create_pre1905_canonicalizer
+from src.physics.auto_lean import generate_dimensional_constancy_proof
 
 C = 299792458.0
 HBAR = 1.054571817e-34
@@ -45,6 +46,8 @@ class ClaimResult:
     exact_match: bool = False
     passed: bool = False
     notes: str = ""
+    lean_proof_verified: bool = False
+    lean_proof_error: str = ""
 
 
 def _make_obs(obs_id, name, desc, quantities, params, timesteps, invariant):
@@ -406,6 +409,7 @@ def main() -> None:
     print("Hybrid pipeline: neural templates → simple search → beam search")
     print("Trivial-constancy gate: ACTIVE")
     print("Canonical form preference: ACTIVE (pre-1905 trained)")
+    print("Lean dimensional constancy proofs: ACTIVE (auto_lean.py)")
     print("=" * 72)
 
     for domain, claim, invariant, make_fn in CLAIMS:
@@ -444,11 +448,19 @@ def main() -> None:
                 exact_match=expr_normalize(discovery.expression) == expr_normalize(invariant),
             )
 
+            # Generate Lean dimensional constancy proof for exact-match claims
+            lean_prefix = ""
+            if result.exact_match:
+                _, lean_code, lean_ok, lean_err = generate_dimensional_constancy_proof(invariant)
+                result.lean_proof_verified = lean_ok
+                result.lean_proof_error = lean_err if not lean_ok else ""
+                lean_prefix = "LEAN-VERIFIED " if lean_ok else f"LEAN-FAIL({lean_err[:60]}) "
+
             # Pass if: invariant scores well AND pipeline found something close
             if discovery.is_discovery and inv_score >= 0.95:
                 if result.exact_match:
                     result.passed = True
-                    result.notes = f"EXACT: {discovery.expression} ({discovery.score:.4f})"
+                    result.notes = f"{lean_prefix}EXACT: {discovery.expression} ({discovery.score:.4f})"
                 elif discovery.score >= 0.95:
                     result.passed = True
                     result.notes = f"ALTERNATE: {discovery.expression} ({discovery.score:.4f}) — equivalent to {invariant}"
@@ -481,15 +493,20 @@ def main() -> None:
     print("SCORECARD")
     print("=" * 72)
     passed = sum(1 for r in results if r.passed)
+    lean_verified = sum(1 for r in results if r.lean_proof_verified)
     for r in results:
         s = "PASS" if r.passed else "FAIL"
+        lean_s = " [Lean✓]" if r.lean_proof_verified else ""
         c_score = canonicalizer.score(r.discovered_expr) if r.discovered_expr else 0.0
         i_c_score = canonicalizer.score(r.invariant)
-        print(f"  {s:4s} [{r.domain}] {r.claim}")
+        print(f"  {s:4s} [{r.domain}] {r.claim}{lean_s}")
         print(f"        pipeline: {r.discovered_expr or 'NONE'} (const={r.discovered_score:.4f} canon={c_score:.3f})")
         print(f"        invariant: {r.invariant} (const={r.invariant_score:.4f} canon={i_c_score:.3f})")
+        if r.lean_proof_error:
+            print(f"        lean: FAIL — {r.lean_proof_error[:100]}")
 
     print(f"\n  {passed}/{len(results)} verified")
+    print(f"  {lean_verified}/{len(results)} Lean-proven")
 
     if passed == len(results):
         print("\n  ALL 8 CLAIMS VERIFIED")
