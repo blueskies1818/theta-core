@@ -843,16 +843,32 @@ def _neural_template_search(
         if not candidates:
             return None
 
-        # Score all candidates against observations
+        # Score all candidates, preferring canonical forms when constancy is close
+        candidate_scores: list[tuple[str, float, float]] = []
         for expr in candidates:
             scores = [evaluator.score(expr, obs) for obs in observations]
             avg = sum(scores) / len(scores) if scores else 0.0
-            if avg > best_score:
-                best_score = avg
-                best_expr = expr
+            candidate_scores.append((expr, avg, 0.0))
 
-        if not best_expr:
+        if not candidate_scores:
             return None
+
+        # If multiple candidates score similarly, prefer the most canonical form
+        try:
+            from src.physics.canonicalizer import create_pre1905_canonicalizer
+            canonicalizer = create_pre1905_canonicalizer()
+            for i, (expr, const, _) in enumerate(candidate_scores):
+                c_score = canonicalizer.score(expr)
+                candidate_scores[i] = (expr, const, c_score)
+            # Combined score: 0.7 constancy + 0.3 canonical form
+            candidate_scores.sort(
+                key=lambda x: 0.7 * x[1] + 0.3 * x[2],
+                reverse=True,
+            )
+        except Exception:
+            pass  # canonicalizer unavailable, use constancy only
+
+        best_expr, best_score, _ = candidate_scores[0]
 
         return SearchResult(
             expression=best_expr,
@@ -952,10 +968,12 @@ def auto_discover(
         discovery_threshold=discovery_threshold,
     )
     if neural_result is not None:
-        if neural_result.is_discovery:
-            return neural_result
         if neural_result.score > best_result.score:
             best_result = neural_result
+        # Apply canonical refinement to neural results
+        refined = _refine_canonical(neural_result, evaluator, observations)
+        if refined.score >= discovery_threshold:
+            return refined
 
     # Pipeline 1: Simple search for simple ratios/products
     use_simple = target_dim in ("compound", "Scalar")
@@ -968,8 +986,9 @@ def auto_discover(
             quantities, observations,
             discovery_threshold=discovery_threshold,
         )
-        if result.is_discovery:
-            return result
+        refined = _refine_canonical(result, evaluator, observations)
+        if refined.score >= discovery_threshold:
+            return refined
         if result.score > best_result.score:
             best_result = result
 
@@ -987,8 +1006,9 @@ def auto_discover(
         target_dim=search_target,
     )
     result = search.run()
-    if result.is_discovery:
-        return result
+    refined = _refine_canonical(result, evaluator, observations)
+    if refined.score >= discovery_threshold:
+        return refined
     if result.score > best_result.score:
         best_result = result
 
@@ -1020,4 +1040,81 @@ def auto_discover(
         except Exception:
             pass  # grouped detection may fail gracefully
 
+    # Final fallback: refine whatever we found
+    best_result = _refine_canonical(best_result, evaluator, observations)
+
     return best_result
+
+
+def _refine_canonical(
+    result: SearchResult,
+    evaluator: ExpressionEvaluator,
+    observations: list[Observation],
+) -> SearchResult:
+    """Try dimensionally-canonical alternate forms of the discovered expression.
+
+    If the pipeline found n/E at constancy 1.0, the canonicalizer knows
+    E/n is the preferred form.  Try it — if it also scores well, use it.
+    """
+    if not result.expression or result.score < 0.90:
+        return result
+
+    try:
+        from src.physics.canonicalizer import (
+            create_pre1905_canonicalizer, _tokenize, _ALL_QTY_DIMS, _dim_weight,
+            _split_terms,
+        )
+        canonicalizer = create_pre1905_canonicalizer()
+        current_canon = canonicalizer.score(result.expression)
+
+        # If already canonical, don't change
+        if current_canon >= 0.95:
+            return result
+
+        # Generate alternates by trying dimension-ordered variants
+        alternates: list[str] = []
+        terms = _split_terms(result.expression)
+        for term in terms:
+            tokens = _tokenize(term)
+            qty_symbols = [t for t in tokens if t in _ALL_QTY_DIMS]
+            if len(qty_symbols) >= 2:
+                weights = [(_dim_weight(q), q) for q in qty_symbols]
+                # Check if weights are in descending order
+                if any(weights[i][0] < weights[i+1][0] for i in range(len(weights)-1)):
+                    # Propose the dimension-ordered version
+                    ordered = sorted(weights, key=lambda x: -x[0])
+                    ordered_str = term
+                    for i in range(len(qty_symbols)):
+                        ordered_str = ordered_str.replace(
+                            qty_symbols[i], f"__TMP{i}__"
+                        )
+                    for i, (_, q_orig) in enumerate(weights):
+                        ordered_str = ordered_str.replace(
+                            f"__TMP{i}__", ordered[i][1]
+                        )
+                    alternates.append(
+                        result.expression.replace(term, ordered_str)
+                    )
+
+        if not alternates:
+            return result
+
+        # Score alternates
+        for alt in alternates:
+            scores = [evaluator.score(alt, obs) for obs in observations]
+            avg = sum(scores) / len(scores) if scores else 0.0
+            alt_canon = canonicalizer.score(alt)
+            # Accept if similar constancy but better canonical form
+            if avg >= result.score - 0.01 and alt_canon > current_canon + 0.05:
+                return SearchResult(
+                    expression=alt,
+                    score=avg,
+                    depth=result.depth,
+                    expansions=result.expansions,
+                    train_constancies=scores,
+                )
+
+    except Exception:
+        pass
+
+    return result
