@@ -693,9 +693,11 @@ class ExpressionEvaluator:
         if any(abs(v) > 1e150 for v in values):
             return 0.0
 
-        # Use 1e-30 for zero-mean detection — lets quantum-scale
-        # values through (atomic energies ~1e-19 J, Planck-scale ~1e-34)
-        _eps = 1e-30
+        # Use 1e-300 for zero-mean detection — only truly-zero values
+        # (within float64 precision) should trigger the scale-based path.
+        # Previously 1e-30 was high enough to catch quantum-scale values
+        # (E^2 ~ 1e-37) and return false 1.0 scores for varying expressions.
+        _eps = 1e-300
         if abs(mean_val) < _eps:
             scale = max(abs(v) for v in values)
             if scale < _eps:
