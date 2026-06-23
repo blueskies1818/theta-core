@@ -188,7 +188,7 @@ class TestDimensionNamed:
 
     def test_named_unknown_raises(self):
         with pytest.raises(ValueError, match="Unknown dimension"):
-            Dimension.named("Momentum")
+            Dimension.named("FooBar")
 
 
 class TestDimensionHelpers:
