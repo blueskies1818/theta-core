@@ -1,0 +1,566 @@
+{
+  "experiment": "SPACETIME_ERA_GATE_MULTI_CUTOFF",
+  "description": "Era gate run at 4 knowledge cutoffs: 1905, 1920, 1950, 1970",
+  "cutoffs": [
+    {
+      "cutoff": 1905,
+      "cutoff_label": "Classical (pre-1905)",
+      "training_domains": [
+        "classical_em",
+        "collision",
+        "gravity",
+        "spring",
+        "thermodynamics"
+      ],
+      "training_domains_count": 5,
+      "test_scenarios_count": 15,
+      "spacetime_verified": 2,
+      "total_scenarios": 15,
+      "any_discovery": 2,
+      "verified_scenarios": [
+        {
+          "id": "muon_time_dilation",
+          "name": "Muon time dilation",
+          "expression": "(c*t)^2 - x^2",
+          "constancy": 1.0
+        },
+        {
+          "id": "velocity_addition",
+          "name": "Velocity addition",
+          "expression": "(c*t)^2 - x^2",
+          "constancy": 0.9999999999999998
+        }
+      ],
+      "unverified_scenarios": [
+        {
+          "id": "relativistic_momentum",
+          "name": "Relativistic momentum",
+          "expression": null,
+          "constancy": 0.0
+        },
+        {
+          "id": "length_contraction",
+          "name": "Length contraction",
+          "expression": "(c*gamma)^2 - v^2",
+          "constancy": 0.9946846374704483
+        },
+        {
+          "id": "doppler_shift",
+          "name": "Doppler shift",
+          "expression": "(c*gamma)^2 - x^2",
+          "constancy": 0.9999999999999998
+        },
+        {
+          "id": "twin_paradox",
+          "name": "Twin paradox",
+          "expression": "(c*t)^2 + x^2",
+          "constancy": 0.9999999999999998
+        },
+        {
+          "id": "mass_energy",
+          "name": "E=mc^2",
+          "expression": null,
+          "constancy": 0.0
+        },
+        {
+          "id": "spacetime_interval",
+          "name": "Spacetime interval",
+          "expression": "(c*gamma)^2 - v^2",
+          "constancy": 0.9950575372366111
+        },
+        {
+          "id": "qed_fine_structure",
+          "name": "QED Fine Structure",
+          "expression": "t / t",
+          "constancy": 1.0
+        },
+        {
+          "id": "compton_scattering",
+          "name": "Compton Scattering",
+          "expression": "dlambda / one_minus_cos",
+          "constancy": 1.0
+        },
+        {
+          "id": "dirac_spinor_norm",
+          "name": "Dirac Spinor Norm",
+          "expression": null,
+          "constancy": 0.0
+        },
+        {
+          "id": "qcd_asymptotic_freedom",
+          "name": "QCD Asymptotic Freedom",
+          "expression": "t / t",
+          "constancy": 1.0
+        },
+        {
+          "id": "electroweak_mixing",
+          "name": "Electroweak Mixing",
+          "expression": "g / gp",
+          "constancy": 1.0
+        },
+        {
+          "id": "higgs_mechanism",
+          "name": "Higgs Mechanism",
+          "expression": "t / t",
+          "constancy": 1.0
+        },
+        {
+          "id": "neutrino_oscillation",
+          "name": "Neutrino Oscillation",
+          "expression": "t / t",
+          "constancy": 1.0
+        }
+      ],
+      "discovered_expressions": [
+        {
+          "scenario": "muon_time_dilation",
+          "expression": "(c*t)^2 - x^2"
+        },
+        {
+          "scenario": "velocity_addition",
+          "expression": "(c*t)^2 - x^2"
+        }
+      ]
+    },
+    {
+      "cutoff": 1920,
+      "cutoff_label": "Classical + SR + Early Quantum (pre-1920)",
+      "training_domains": [
+        "classical_em",
+        "collision",
+        "early_quantum_bohr",
+        "gravity",
+        "special_relativity",
+        "spring",
+        "thermodynamics"
+      ],
+      "training_domains_count": 7,
+      "test_scenarios_count": 7,
+      "spacetime_verified": 0,
+      "total_scenarios": 7,
+      "any_discovery": 0,
+      "verified_scenarios": [],
+      "unverified_scenarios": [
+        {
+          "id": "qed_fine_structure",
+          "name": "QED Fine Structure",
+          "expression": "t / t",
+          "constancy": 1.0
+        },
+        {
+          "id": "compton_scattering",
+          "name": "Compton Scattering",
+          "expression": "t / t",
+          "constancy": 1.0
+        },
+        {
+          "id": "dirac_spinor_norm",
+          "name": "Dirac Spinor Norm",
+          "expression": null,
+          "constancy": 0.0
+        },
+        {
+          "id": "qcd_asymptotic_freedom",
+          "name": "QCD Asymptotic Freedom",
+          "expression": "t / t",
+          "constancy": 1.0
+        },
+        {
+          "id": "electroweak_mixing",
+          "name": "Electroweak Mixing",
+          "expression": "g / gp",
+          "constancy": 1.0
+        },
+        {
+          "id": "higgs_mechanism",
+          "name": "Higgs Mechanism",
+          "expression": "t / t",
+          "constancy": 1.0
+        },
+        {
+          "id": "neutrino_oscillation",
+          "name": "Neutrino Oscillation",
+          "expression": "t / t",
+          "constancy": 1.0
+        }
+      ],
+      "discovered_expressions": []
+    },
+    {
+      "cutoff": 1950,
+      "cutoff_label": "+ QED + Nuclear + Dirac (pre-1950)",
+      "training_domains": [
+        "classical_em",
+        "collision",
+        "dirac_equation",
+        "early_quantum_bohr",
+        "gravity",
+        "nuclear_physics",
+        "qed",
+        "special_relativity",
+        "spring",
+        "thermodynamics"
+      ],
+      "training_domains_count": 10,
+      "test_scenarios_count": 7,
+      "spacetime_verified": 4,
+      "total_scenarios": 7,
+      "any_discovery": 7,
+      "verified_scenarios": [
+        {
+          "id": "compton_scattering",
+          "name": "Compton Scattering",
+          "expression": "dlambda/one_minus_cos",
+          "constancy": 1.0
+        },
+        {
+          "id": "qcd_asymptotic_freedom",
+          "name": "QCD Asymptotic Freedom",
+          "expression": "0/alpha_s+2",
+          "constancy": 1.0
+        },
+        {
+          "id": "electroweak_mixing",
+          "name": "Electroweak Mixing",
+          "expression": "g/gp",
+          "constancy": 1.0
+        },
+        {
+          "id": "neutrino_oscillation",
+          "name": "Neutrino Oscillation",
+          "expression": "E*phase/L",
+          "constancy": 1.0
+        }
+      ],
+      "unverified_scenarios": [
+        {
+          "id": "qed_fine_structure",
+          "name": "QED Fine Structure",
+          "expression": "coupling/e",
+          "constancy": 1.0
+        },
+        {
+          "id": "dirac_spinor_norm",
+          "name": "Dirac Spinor Norm",
+          "expression": "0/psi_im+2",
+          "constancy": 1.0
+        },
+        {
+          "id": "higgs_mechanism",
+          "name": "Higgs Mechanism",
+          "expression": "1-phi+phi",
+          "constancy": 1.0
+        }
+      ],
+      "discovered_expressions": [
+        {
+          "scenario": "qed_fine_structure",
+          "expression": "coupling/e"
+        },
+        {
+          "scenario": "compton_scattering",
+          "expression": "dlambda/one_minus_cos"
+        },
+        {
+          "scenario": "dirac_spinor_norm",
+          "expression": "0/psi_im+2"
+        },
+        {
+          "scenario": "qcd_asymptotic_freedom",
+          "expression": "0/alpha_s+2"
+        },
+        {
+          "scenario": "electroweak_mixing",
+          "expression": "g/gp"
+        },
+        {
+          "scenario": "higgs_mechanism",
+          "expression": "1-phi+phi"
+        },
+        {
+          "scenario": "neutrino_oscillation",
+          "expression": "E*phase/L"
+        }
+      ]
+    },
+    {
+      "cutoff": 1970,
+      "cutoff_label": "+ Standard Model + QCD + Electroweak (pre-1970)",
+      "training_domains": [
+        "classical_em",
+        "collision",
+        "dirac_equation",
+        "early_quantum_bohr",
+        "electroweak",
+        "gravity",
+        "nuclear_physics",
+        "qcd",
+        "qed",
+        "special_relativity",
+        "spring",
+        "standard_model",
+        "thermodynamics"
+      ],
+      "training_domains_count": 13,
+      "test_scenarios_count": 4,
+      "spacetime_verified": 3,
+      "total_scenarios": 4,
+      "any_discovery": 4,
+      "verified_scenarios": [
+        {
+          "id": "qcd_asymptotic_freedom",
+          "name": "QCD Asymptotic Freedom",
+          "expression": "0/alpha_s+2",
+          "constancy": 1.0
+        },
+        {
+          "id": "electroweak_mixing",
+          "name": "Electroweak Mixing",
+          "expression": "g/gp",
+          "constancy": 1.0
+        },
+        {
+          "id": "neutrino_oscillation",
+          "name": "Neutrino Oscillation",
+          "expression": "E*phase/L",
+          "constancy": 1.0
+        }
+      ],
+      "unverified_scenarios": [
+        {
+          "id": "higgs_mechanism",
+          "name": "Higgs Mechanism",
+          "expression": "-1-phi+phi",
+          "constancy": 1.0
+        }
+      ],
+      "discovered_expressions": [
+        {
+          "scenario": "qcd_asymptotic_freedom",
+          "expression": "0/alpha_s+2"
+        },
+        {
+          "scenario": "electroweak_mixing",
+          "expression": "g/gp"
+        },
+        {
+          "scenario": "higgs_mechanism",
+          "expression": "-1-phi+phi"
+        },
+        {
+          "scenario": "neutrino_oscillation",
+          "expression": "E*phase/L"
+        }
+      ]
+    }
+  ],
+  "invariant_tracking": {
+    "muon_time_dilation": {
+      "name": "Muon time dilation",
+      "cutoffs": {
+        "1905": {
+          "verified": true,
+          "expression": "(c*t)^2 - x^2"
+        }
+      }
+    },
+    "velocity_addition": {
+      "name": "Velocity addition",
+      "cutoffs": {
+        "1905": {
+          "verified": true,
+          "expression": "(c*t)^2 - x^2"
+        }
+      }
+    },
+    "relativistic_momentum": {
+      "name": "Relativistic momentum",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": null
+        }
+      }
+    },
+    "length_contraction": {
+      "name": "Length contraction",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": "(c*gamma)^2 - v^2"
+        }
+      }
+    },
+    "doppler_shift": {
+      "name": "Doppler shift",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": "(c*gamma)^2 - x^2"
+        }
+      }
+    },
+    "twin_paradox": {
+      "name": "Twin paradox",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": "(c*t)^2 + x^2"
+        }
+      }
+    },
+    "mass_energy": {
+      "name": "E=mc^2",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": null
+        }
+      }
+    },
+    "spacetime_interval": {
+      "name": "Spacetime interval",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": "(c*gamma)^2 - v^2"
+        }
+      }
+    },
+    "qed_fine_structure": {
+      "name": "QED Fine Structure",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": "t / t"
+        },
+        "1920": {
+          "verified": false,
+          "expression": "t / t"
+        },
+        "1950": {
+          "verified": false,
+          "expression": "coupling/e"
+        }
+      }
+    },
+    "compton_scattering": {
+      "name": "Compton Scattering",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": "dlambda / one_minus_cos"
+        },
+        "1920": {
+          "verified": false,
+          "expression": "t / t"
+        },
+        "1950": {
+          "verified": true,
+          "expression": "dlambda/one_minus_cos"
+        }
+      }
+    },
+    "dirac_spinor_norm": {
+      "name": "Dirac Spinor Norm",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": null
+        },
+        "1920": {
+          "verified": false,
+          "expression": null
+        },
+        "1950": {
+          "verified": false,
+          "expression": "0/psi_im+2"
+        }
+      }
+    },
+    "qcd_asymptotic_freedom": {
+      "name": "QCD Asymptotic Freedom",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": "t / t"
+        },
+        "1920": {
+          "verified": false,
+          "expression": "t / t"
+        },
+        "1950": {
+          "verified": true,
+          "expression": "0/alpha_s+2"
+        },
+        "1970": {
+          "verified": true,
+          "expression": "0/alpha_s+2"
+        }
+      }
+    },
+    "electroweak_mixing": {
+      "name": "Electroweak Mixing",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": "g / gp"
+        },
+        "1920": {
+          "verified": false,
+          "expression": "g / gp"
+        },
+        "1950": {
+          "verified": true,
+          "expression": "g/gp"
+        },
+        "1970": {
+          "verified": true,
+          "expression": "g/gp"
+        }
+      }
+    },
+    "higgs_mechanism": {
+      "name": "Higgs Mechanism",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": "t / t"
+        },
+        "1920": {
+          "verified": false,
+          "expression": "t / t"
+        },
+        "1950": {
+          "verified": false,
+          "expression": "1-phi+phi"
+        },
+        "1970": {
+          "verified": false,
+          "expression": "-1-phi+phi"
+        }
+      }
+    },
+    "neutrino_oscillation": {
+      "name": "Neutrino Oscillation",
+      "cutoffs": {
+        "1905": {
+          "verified": false,
+          "expression": "t / t"
+        },
+        "1920": {
+          "verified": false,
+          "expression": "t / t"
+        },
+        "1950": {
+          "verified": true,
+          "expression": "E*phase/L"
+        },
+        "1970": {
+          "verified": true,
+          "expression": "E*phase/L"
+        }
+      }
+    }
+  }
+}

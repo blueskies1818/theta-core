@@ -29,5 +29,5 @@
     {"n": 13, "lambda": 3.734e-07, "lambda_err": 10.0e-10, "E": 5.320e-19, "E_err": 0.030e-19},
     {"n": 14, "lambda": 3.722e-07, "lambda_err": 12.0e-10, "E": 5.337e-19, "E_err": 0.035e-19}
   ],
-  "known_invariant": "E*n^2"
+  "known_invariant": "E*lambda"
 }

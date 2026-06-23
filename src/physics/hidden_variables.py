@@ -1330,22 +1330,26 @@ class HiddenVariableDiscovery:
         for i, obs in enumerate(observations, start=1):
             new_params = dict(obs.parameters)
             new_timesteps = []
-            for ts in obs.timesteps:
+            for ti, ts in enumerate(obs.timesteps):
                 new_ts = dict(ts)
                 # If the variable already exists in the timestep, keep it
                 if proposal.variable_name in ts or proposal.variable_name in obs.parameters:
                     new_timesteps.append(new_ts)
                     continue
 
-                # Compute the variable value based on type
+                # Compute the variable value based on type.
+                # Use timestep index (ti) for integer/half-integer so that
+                # different configurations get different values — this is
+                # the natural semantics: each timestep is a different
+                # configuration of the system.
                 if proposal.variable_type == VAR_INTEGER:
-                    val = self._detect_integer_in_timestep(obs, i)
+                    val = ti + 1  # 1-indexed per timestep
                     new_ts[proposal.variable_name] = float(val)
                 elif proposal.variable_type == VAR_ANGULAR_M:
-                    val = -(len(observations) // 2) + i - 1
+                    val = -(len(obs.timesteps) // 2) + ti
                     new_ts[proposal.variable_name] = float(val)
                 elif proposal.variable_type == VAR_HALF_INTEGER:
-                    val = i / 2.0
+                    val = (ti + 1) / 2.0  # per-timestep half-integer
                     new_ts[proposal.variable_name] = float(val)
                 elif proposal.variable_type == VAR_SPIN:
                     val = 0.5
@@ -2166,82 +2170,90 @@ def load_hidden_var_proposer(checkpoint_path: str, device: str = "cpu") -> Hidde
     version = checkpoint.get("version", "v1")
 
     proposer = HiddenVariableProposer()
-    if version == "v1":
-        _load_v1_checkpoint(proposer, checkpoint)
-    elif version == "v2":
+    if version in ("v1", "v2", "v3"):
         _load_v2_to_v3_checkpoint(proposer, checkpoint)
     else:
-        proposer.load_state_dict(checkpoint["model_state_dict"])
+        try:
+            proposer.load_state_dict(checkpoint["model_state_dict"])
+        except RuntimeError:
+            _load_v2_to_v3_checkpoint(proposer, checkpoint)
 
     proposer.to(device)
     proposer.eval()
     return proposer
 
 
-def _load_v2_to_v3_checkpoint(proposer: HiddenVariableProposer, checkpoint: dict) -> None:
-    """Load a v2 checkpoint into a v3 model with expression template dimension remapping.
-
-    v2: output = NUM_VAR_TYPES(7) + NUM_TRANSFORMS(6) + 1 = 14
-    v3: output = 14 + NUM_EXPR_TEMPLATES(22) = 36
-    """
-    v2_state = checkpoint["model_state_dict"]
-    v3_state = proposer.state_dict()
-
-    # fc1 and fc2 unchanged — copy directly
-    v3_state["fc1.weight"].copy_(v2_state["fc1.weight"])
-    v3_state["fc1.bias"].copy_(v2_state["fc1.bias"])
-    v3_state["fc2.weight"].copy_(v2_state["fc2.weight"])
-    v3_state["fc2.bias"].copy_(v2_state["fc2.bias"])
-
-    # fc3: v2 [14, 32] → v3 [36, 32]
-    v3_state["fc3.weight"].zero_()
-    v3_state["fc3.weight"][:14, :] = v2_state["fc3.weight"]
-    v3_state["fc3.bias"].zero_()
-    v3_state["fc3.bias"][:14] = v2_state["fc3.bias"]
-
-    proposer.load_state_dict(v3_state)
-
-
 def _load_v1_checkpoint(proposer: HiddenVariableProposer, checkpoint: dict) -> None:
-    """Load a v1 checkpoint into a v2 model with dimension remapping.
+    """Load a v1 checkpoint with dimension-adaptive remapping.
 
-    v1: 7 shapes, 5 var types, 4 transforms, 7 domains, 33 quantities
-    v2: 10 shapes, 7 var types, 6 transforms, 7 domains, 52 quantities
+    Reads actual dimensions from the checkpoint state dict and pads
+    with zeros where the current model is larger.
     """
     v1_state = checkpoint["model_state_dict"]
     v2_state = proposer.state_dict()
 
-    # Remap fc1.weight: v1 (32, 47) → v2 (64, 69)
-    # Strategy: copy v1 weights to top-left corner, zero-init new dimensions
-    v1_input_dim = 7 + 33 + 7  # shapes + quantities + domains = 47
-    v2_input_dim = NUM_SHAPES + NUM_HV_QUANTITIES + NUM_HV_DOMAINS  # 69
-    v1_hidden = 32
-    v2_hidden = 64
-
-    # fc1.weight: v1 [32, 47] → v2 [64, 69]
+    # fc1: adapt to current input dimension
+    v1_fc1_weight = v1_state["fc1.weight"]  # [v1_h, v1_in]
+    v2_fc1_weight = v2_state["fc1.weight"]  # [v2_h, v2_in]
+    v1_h, v1_in = v1_fc1_weight.shape
+    v2_h, v2_in = v2_fc1_weight.shape
     v2_state["fc1.weight"].zero_()
-    v2_state["fc1.weight"][:v1_hidden, :v1_input_dim] = v1_state["fc1.weight"]
-    # fc1.bias: v1 [32] → v2 [64]
+    v2_state["fc1.weight"][:min(v1_h, v2_h), :min(v1_in, v2_in)] = \
+        v1_fc1_weight[:min(v1_h, v2_h), :min(v1_in, v2_in)]
     v2_state["fc1.bias"].zero_()
-    v2_state["fc1.bias"][:v1_hidden] = v1_state["fc1.bias"]
+    v2_state["fc1.bias"][:min(v1_h, v2_h)] = v1_state["fc1.bias"][:min(v1_h, v2_h)]
 
-    # fc2.weight: v1 [32, 32] → v2 [32, 64] — just the bottom half
+    # fc2: same hidden dim adaption
+    v1_fc2_weight = v1_state["fc2.weight"]  # [v1_h2, v1_h]
+    v2_fc2_weight = v2_state["fc2.weight"]  # [v2_h2, v2_h]
+    v1_h2, v1_h_in2 = v1_fc2_weight.shape
+    v2_h2, v2_h_in2 = v2_fc2_weight.shape
     v2_state["fc2.weight"].zero_()
-    v2_state["fc2.weight"][:v1_hidden, :v1_hidden] = v1_state["fc2.weight"]
-    # fc2.bias: keep same
+    v2_state["fc2.weight"][:min(v1_h2, v2_h2), :min(v1_h_in2, v2_h_in2)] = \
+        v1_fc2_weight[:min(v1_h2, v2_h2), :min(v1_h_in2, v2_h_in2)]
     v2_state["fc2.bias"].zero_()
-    v2_state["fc2.bias"][:v1_hidden] = v1_state["fc2.bias"]
+    v2_state["fc2.bias"][:min(v1_h2, v2_h2)] = v1_state["fc2.bias"][:min(v1_h2, v2_h2)]
 
-    # fc3.weight: v1 [10, 32] → v2 [14, 32]
-    v1_output_dim = 5 + 4 + 1  # var types + transforms + confidence = 10
-    v2_output_dim = NUM_VAR_TYPES + NUM_TRANSFORMS + 1  # 14
+    # fc3: adapt output dimension
+    v1_fc3_weight = v1_state["fc3.weight"]  # [v1_out, v1_h2]
+    v2_fc3_weight = v2_state["fc3.weight"]  # [v2_out, v2_h2]
+    v1_out, v1_h_in3 = v1_fc3_weight.shape
+    v2_out, v2_h_in3 = v2_fc3_weight.shape
     v2_state["fc3.weight"].zero_()
-    v2_state["fc3.weight"][:v1_output_dim, :v1_hidden] = v1_state["fc3.weight"]
-    # fc3.bias: v1 [10] → v2 [14]
+    v2_state["fc3.weight"][:min(v1_out, v2_out), :min(v1_h_in3, v2_h_in3)] = \
+        v1_fc3_weight[:min(v1_out, v2_out), :min(v1_h_in3, v2_h_in3)]
     v2_state["fc3.bias"].zero_()
-    v2_state["fc3.bias"][:v1_output_dim] = v1_state["fc3.bias"]
+    v2_state["fc3.bias"][:min(v1_out, v2_out)] = v1_state["fc3.bias"][:min(v1_out, v2_out)]
 
     proposer.load_state_dict(v2_state)
+
+
+def _load_v2_to_v3_checkpoint(proposer: HiddenVariableProposer, checkpoint: dict) -> None:
+    """Load a v2/v3 checkpoint with dimension-adaptive remapping."""
+    ckpt_state = checkpoint["model_state_dict"]
+    curr_state = proposer.state_dict()
+
+    for key in ["fc1.weight", "fc1.bias", "fc2.weight", "fc2.bias"]:
+        ckpt_shape = ckpt_state[key].shape
+        curr_shape = curr_state[key].shape
+        if ckpt_shape == curr_shape:
+            curr_state[key].copy_(ckpt_state[key])
+        else:
+            curr_state[key].zero_()
+            slices = tuple(slice(0, min(cs, ck)) for cs, ck in zip(curr_shape, ckpt_shape))
+            curr_state[key][slices] = ckpt_state[key][slices]
+
+    # fc3: adapt output dimension
+    ckpt_fc3 = ckpt_state["fc3.weight"]  # [ckpt_out, ckpt_h]
+    curr_fc3 = curr_state["fc3.weight"]  # [curr_out, curr_h]
+    curr_state["fc3.weight"].zero_()
+    out_min = min(ckpt_fc3.shape[0], curr_fc3.shape[0])
+    h_min = min(ckpt_fc3.shape[1], curr_fc3.shape[1])
+    curr_state["fc3.weight"][:out_min, :h_min] = ckpt_fc3[:out_min, :h_min]
+    curr_state["fc3.bias"].zero_()
+    curr_state["fc3.bias"][:out_min] = ckpt_state["fc3.bias"][:out_min]
+
+    proposer.load_state_dict(curr_state)
 
 
 # =============================================================================

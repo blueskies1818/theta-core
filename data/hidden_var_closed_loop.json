@@ -1,120 +1,196 @@
-{
-  "experiment": "hidden_var_closed_loop",
-  "description": "Verification that hidden variable proposals produce real discoveries. The HiddenVariableProposer correctly diagnoses missing quantum numbers from residual patterns in failed beam searches. This experiment closes the loop by adding the proposed variable back and verifying that the expected invariant is discovered.",
-  "timestamp": 1782096191.782329,
-  "results": [
-    {
-      "scenario_id": "hydrogen_balmer",
-      "scenario_name": "Hydrogen Balmer spectral series",
-      "domain": "quantum",
-      "known_invariant": "E*n^2",
-      "n_removed": true,
-      "error_detection": {
-        "shape": "quadratic",
-        "confidence": 0.9877819434082851
-      },
-      "hidden_var_proposal": {
-        "type": "integer_n",
-        "transform": "squared",
-        "confidence": 0.9997391104698181
-      },
-      "verification": {
-        "best_expression": "E*n^2",
-        "best_score": 1.0,
-        "expected_expression": "E*n^2",
-        "expected_score": 1.0,
-        "discovery_verified": true,
-        "threshold": 0.9
-      },
-      "details": "Expected 'E*n^2' verified at score 1.0000 >= 0.9"
+[
+  {
+    "scenario_id": "hydrogen_balmer",
+    "domain": "quantum",
+    "known_invariant": "E*n^2",
+    "hidden_var_proposed": null,
+    "hidden_var_proposed_type": null,
+    "transform_proposed": null,
+    "proposal_confidence": 0.0,
+    "error_shape": "exponential",
+    "shape_confidence": 1.0,
+    "mean_cv": 0.0,
+    "baseline": {
+      "discovered": true,
+      "expression": "E*E/h/c*lambda+2",
+      "score": 1.0
     },
-    {
-      "scenario_id": "particle_in_box",
-      "scenario_name": "Infinite square well (n=1..8)",
-      "domain": "quantum",
-      "known_invariant": "E/n^2",
-      "n_removed": true,
-      "error_detection": {
-        "shape": "inverse_square",
-        "confidence": 0.9999998544951285
-      },
-      "hidden_var_proposal": {
-        "type": "integer_n",
-        "transform": "squared",
-        "confidence": 0.9998606443405151
-      },
-      "verification": {
-        "best_expression": "E*n^2",
-        "best_score": 1.0,
-        "expected_expression": "E/n^2",
-        "expected_score": 1.0,
-        "discovery_verified": true,
-        "threshold": 0.9
-      },
-      "details": "Expected 'E/n^2' verified at score 1.0000 >= 0.9"
+    "augmented": {
+      "discovered": true,
+      "expression": "E*E/h/c*lambda+2",
+      "score": 1.0
     },
-    {
-      "scenario_id": "harmonic_oscillator",
-      "scenario_name": "Quantum harmonic oscillator (n=1..8)",
-      "domain": "quantum",
-      "known_invariant": "E/(hbar*omega)",
-      "n_removed": true,
-      "error_detection": {
-        "shape": "linear",
-        "confidence": 0.9889668854284979
-      },
-      "hidden_var_proposal": {
-        "type": "integer_n",
-        "transform": "squared",
-        "confidence": 0.99967360496521
-      },
-      "verification": {
-        "best_expression": "E*n^2",
-        "best_score": 1.0,
-        "expected_expression": "E/(hbar*omega)",
-        "expected_score": 0.6856207834743973,
-        "discovery_verified": true,
-        "threshold": 0.9
-      },
-      "details": "Discovered 'E*n^2' at score 1.0000 >= 0.9"
+    "noise_gate": {
+      "floor": 0.85,
+      "threshold": 0.85,
+      "passes": true
     },
-    {
-      "scenario_id": "simple_pendulum",
-      "scenario_name": "Pendulum (L=1.0m, \u03b80=10.0\u00b0)",
-      "domain": "gravity",
-      "known_invariant": "m*g*h + 0.5*m*v^2",
-      "n_removed": false,
-      "error_detection": {
-        "shape": "none",
-        "confidence": 0.0
+    "closed_loop_success": true,
+    "num_proposals_tried": 0,
+    "proposals": [],
+    "errors": [],
+    "timing_seconds": 31.144630908966064
+  },
+  {
+    "scenario_id": "particle_in_box",
+    "domain": "quantum",
+    "known_invariant": "E / n^2",
+    "hidden_var_proposed": "n",
+    "hidden_var_proposed_type": "integer_n",
+    "transform_proposed": "squared",
+    "proposal_confidence": 0.5,
+    "error_shape": "linear",
+    "shape_confidence": 1.0,
+    "mean_cv": 0.0,
+    "baseline": {
+      "discovered": false,
+      "expression": "-1*E",
+      "score": 0.5598335082613739
+    },
+    "augmented": {
+      "discovered": true,
+      "expression": "0.5*E/n^2",
+      "score": 0.9999997674007645
+    },
+    "noise_gate": {
+      "floor": 0.85,
+      "threshold": 0.85,
+      "passes": true
+    },
+    "closed_loop_success": true,
+    "num_proposals_tried": 3,
+    "proposals": [
+      {
+        "type": "integer_n",
+        "name": "n",
+        "transform": "squared",
+        "confidence": 0.5,
+        "rationale": "Error shape suggests integer_n with squared in quantum domain (quantities: m, L, E, x, hbar)"
       },
-      "hidden_var_proposal": {
-        "type": "none",
-        "transform": "none",
-        "confidence": 0.0
+      {
+        "type": "integer_n",
+        "name": "n",
+        "transform": "identity",
+        "confidence": 0.65,
+        "rationale": "Linear residuals suggest counting/index pattern"
       },
-      "verification": {
-        "best_expression": "0.5*h/h*m*g*L",
-        "best_score": 1.0,
-        "expected_expression": "m*g*h + 0.5*m*v^2",
-        "expected_score": 0.9990471347359824,
-        "discovery_verified": true,
-        "threshold": 0.9
+      {
+        "type": "half_integer",
+        "name": "j",
+        "transform": "identity",
+        "confidence": 0.55,
+        "rationale": "Linear residuals in quantum system \u2014 could be (n+1/2) harmonic oscillator pattern"
+      }
+    ],
+    "errors": [],
+    "timing_seconds": 46.528881549835205
+  },
+  {
+    "scenario_id": "harmonic_oscillator",
+    "domain": "quantum",
+    "known_invariant": "E / (hbar*omega)",
+    "hidden_var_proposed": "n",
+    "hidden_var_proposed_type": "integer_n",
+    "transform_proposed": "squared",
+    "proposal_confidence": 0.5,
+    "error_shape": "exponential",
+    "shape_confidence": 1.0,
+    "mean_cv": 0.0,
+    "baseline": {
+      "discovered": false,
+      "expression": "-1*E",
+      "score": 0.6386979044864147
+    },
+    "augmented": {
+      "discovered": true,
+      "expression": "0.5*E/n+2",
+      "score": 0.9792577754417711
+    },
+    "noise_gate": {
+      "floor": 0.85,
+      "threshold": 0.85,
+      "passes": true
+    },
+    "closed_loop_success": true,
+    "num_proposals_tried": 1,
+    "proposals": [
+      {
+        "type": "integer_n",
+        "name": "n",
+        "transform": "squared",
+        "confidence": 0.5,
+        "rationale": "Error shape suggests integer_n with squared in quantum domain (quantities: m, E, x, hbar, omega)"
+      }
+    ],
+    "errors": [],
+    "timing_seconds": 49.44979166984558
+  },
+  {
+    "scenario_id": "simple_pendulum",
+    "domain": "gravity",
+    "known_invariant": "m*g*h + 0.5*m*v*v",
+    "hidden_var_proposed": "gamma",
+    "hidden_var_proposed_type": "continuous_ratio",
+    "transform_proposed": "squared",
+    "proposal_confidence": 0.5,
+    "error_shape": "linear",
+    "shape_confidence": 1.0,
+    "mean_cv": 0.0,
+    "baseline": {
+      "discovered": false,
+      "expression": "0.5*v*m*v*0.5",
+      "score": 0.576767925806136
+    },
+    "augmented": {
+      "discovered": true,
+      "expression": "h/gamma*m*g",
+      "score": 1.0
+    },
+    "noise_gate": {
+      "floor": 0.6713571870915944,
+      "threshold": 0.8311424347854115,
+      "passes": false
+    },
+    "closed_loop_success": false,
+    "num_proposals_tried": 5,
+    "proposals": [
+      {
+        "type": "continuous_ratio",
+        "name": "gamma",
+        "transform": "squared",
+        "confidence": 0.5,
+        "rationale": "Error shape suggests continuous_ratio with squared in gravity domain (quantities: m, g, h, v, t, L)"
       },
-      "details": "Baseline: '0.5*h/h*m*g*L'=1.0000, known='m*g*h + 0.5*m*v^2'=0.9990"
-    }
-  ],
-  "summary": {
-    "total_scenarios": 4,
-    "verified_discoveries": 4,
-    "quantum_scenarios": 3,
-    "quantum_verified": 3,
-    "acceptance": {
-      "hydrogen_en2": true,
-      "particle_in_box_en2": true,
-      "harmonic_oscillator": true,
-      "quantum_2of3": true,
-      "baseline_pass": true
-    }
+      {
+        "type": "continuous_ratio",
+        "name": "gamma",
+        "transform": "ratio",
+        "confidence": 0.8,
+        "rationale": "Linear residuals in relativistic domain \u2014 propose continuous ratio gamma (\u03b3-like factor)"
+      },
+      {
+        "type": "continuous_ratio",
+        "name": "gamma",
+        "transform": "identity",
+        "confidence": 0.65,
+        "rationale": "Relativistic linear residuals \u2014 propose continuous multiplier gamma"
+      },
+      {
+        "type": "integer_n",
+        "name": "n",
+        "transform": "identity",
+        "confidence": 0.65,
+        "rationale": "Linear residuals suggest counting/index pattern"
+      },
+      {
+        "type": "integer_n",
+        "name": "n",
+        "transform": "squared",
+        "confidence": 0.4,
+        "rationale": "Generic hidden integer variable (fallback)"
+      }
+    ],
+    "errors": [],
+    "timing_seconds": 186.71657967567444
   }
-}
+]
