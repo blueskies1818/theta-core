@@ -184,18 +184,35 @@ def make_blackbody_obs() -> list[Observation]:
 
 
 def make_photoelectric_obs() -> list[Observation]:
-    """v3: h is a quantity, phi is hidden. Tests expression fragment discovery."""
+    """Honest photoelectric data: below-threshold K_max=0, above-threshold K_max=h*f-phi.
+
+    Regime 1 (below threshold): f < phi/h → K_max = 0 (no emission).
+    Regime 2 (above threshold): f >= phi/h → K_max = h*f - phi.
+    The known invariant h*f - K_max = phi holds only in regime 2.
+    This forces the regime-discovery loop to split and find both laws.
+    """
     h_val = 4.135667662e-15
     phi_val = 2.3
+    threshold_freq = phi_val / h_val  # ~5.56e14 Hz
+
+    # Below-threshold: K_max = 0 (no electron emission)
+    freq_below = [2e14, 3e14, 4e14, 5e14]
+    # Above-threshold: K_max = h*f - phi
+    freq_above = [6e14, 8e14, 1e15, 1.2e15, 1.4e15, 1.6e15]
+
     timesteps = []
-    frequencies = [6e14, 8e14, 1e15, 1.2e15, 1.4e15, 1.6e15]
-    for i, f in enumerate(frequencies):
-        K_max = max(0.01, h_val * f - phi_val)
+    for i, f in enumerate(freq_below):
         for rep in range(3):
-            timesteps.append({"t": float(i), "K_max": K_max, "f": f, "h": h_val, "phi": phi_val})
+            timesteps.append({"t": float(i), "K_max": 0.0, "f": f, "h": h_val, "phi": phi_val})
+    offset = len(freq_below)
+    for i, f in enumerate(freq_above):
+        K_max = h_val * f - phi_val
+        for rep in range(3):
+            timesteps.append({"t": float(offset + i), "K_max": K_max, "f": f, "h": h_val, "phi": phi_val})
+
     return [Observation(id="photoelectric_all",
         name="Photoelectric K_max = h*f - φ (h known, φ hidden)",
-        description=f"K_max = {h_val}*f - {phi_val}. Invariant: h*f - K_max = φ",
+        description=f"K_max = {h_val}*f - {phi_val} (above threshold). Invariant: h*f - K_max = φ",
         quantities={"K_max": "Scalar", "f": "Scalar", "h": "Scalar"},
         parameters={"phi": phi_val}, timesteps=timesteps,
         known_invariant="h*f - K_max", lean_theorem="")]
