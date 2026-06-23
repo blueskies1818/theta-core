@@ -422,6 +422,24 @@ class ExpressionEvaluator:
             for obs in db
         ]
 
+    def score_per_observation(
+        self,
+        expr_str: str,
+        observations: list[Observation],
+        epsilon: float = 1e-12,
+    ) -> list[float]:
+        """Score an expression against each observation individually.
+
+        Returns a list of constancy scores, one per observation, in the
+        same order as the input list.  Unlike score_all (which works on
+        a database), this accepts a plain list of observations — useful
+        for splitting observations into regimes and measuring per-regime
+        constancy.
+        """
+        if not observations:
+            return []
+        return [self.score(expr_str, obs, epsilon) for obs in observations]
+
     # ── Phase E: Piecewise and conditional evaluation ───────────────────
 
     def score_piecewise(
@@ -743,6 +761,126 @@ def _safe_real(x: float | complex) -> float:
 # ── Alias for backward compatibility ──────────────────────────────────────────
 
 Evaluator = ExpressionEvaluator
+
+
+# ── Regime discovery helpers ─────────────────────────────────────────────
+
+def find_regime_threshold(
+    expr_str: str,
+    observations: list[Observation],
+    evaluator: ExpressionEvaluator | None = None,
+    *,
+    min_regime_size: int = 3,
+) -> dict | None:
+    """Detect the best regime split for a candidate expression.
+
+    When an invariant holds in some regimes but not others, the
+    per-observation constancy scores will be bimodal — high in one
+    cluster, low in another.  This function finds the quantity that
+    best separates the observations into two regimes where the
+    expression's constancy differs most.
+
+    Algorithm:
+        1. Score the expression per-observation.
+        2. For each candidate key quantity, sort observations by that
+           quantity's value and find the largest adjacent score gap.
+        3. Return the split with the largest gap, provided each regime
+           has at least *min_regime_size* observations.
+
+    Parameters
+    ----------
+    expr_str : str
+        The candidate expression to evaluate.
+    observations : list[Observation]
+        Observations to split into regimes.
+    evaluator : ExpressionEvaluator | None
+        Reusable evaluator; created if omitted.
+    min_regime_size : int
+        Minimum observations per regime (anti-hacking guard).
+
+    Returns
+    -------
+    dict or None
+        If a viable split is found:
+            key_quantity : str
+            split_index : int (into the sorted list)
+            gap : float (score difference at the split)
+            regime_a_obs : list[Observation]
+            regime_b_obs : list[Observation]
+            regime_a_scores : list[float]
+            regime_b_scores : list[float]
+            sorted_per_obs_scores : list[float]
+        Returns None if no split meets the minimum-size constraint.
+    """
+    if evaluator is None:
+        evaluator = ExpressionEvaluator()
+
+    if len(observations) < 2 * min_regime_size:
+        return None
+
+    # Collect all quantity names that appear across observations.
+    candidate_keys: set[str] = set()
+    for obs in observations:
+        for ts in obs.timesteps:
+            candidate_keys.update(ts.keys())
+        candidate_keys.update(obs.parameters.keys())
+
+    if not candidate_keys:
+        return None
+
+    best_split: dict | None = None
+    best_gap = -1.0
+
+    for key_qty in candidate_keys:
+        # Get a representative value for each observation under this key.
+        pairs: list[tuple[float, Observation]] = []
+        for obs in observations:
+            vals: list[float] = []
+            for ts in obs.timesteps:
+                if key_qty in ts:
+                    vals.append(ts[key_qty])
+            if key_qty in obs.parameters:
+                vals.append(obs.parameters[key_qty])
+            if not vals:
+                continue
+            pairs.append((sum(vals) / len(vals), obs))
+
+        if len(pairs) < 2 * min_regime_size:
+            continue
+
+        # Sort by the key quantity value.
+        pairs.sort(key=lambda x: x[0])
+        sorted_obs = [p[1] for p in pairs]
+
+        # Score per-observation in sorted order.
+        per_obs_scores = evaluator.score_per_observation(
+            expr_str, sorted_obs,
+        )
+
+        if len(per_obs_scores) < 2 * min_regime_size:
+            continue
+
+        # Find largest adjacent score gap.
+        for i in range(min_regime_size, len(per_obs_scores) - min_regime_size):
+            left_mean = sum(per_obs_scores[:i]) / i
+            right_mean = (
+                sum(per_obs_scores[i:]) / (len(per_obs_scores) - i)
+            )
+            gap = abs(left_mean - right_mean)
+            if gap > best_gap:
+                best_gap = gap
+                best_split = {
+                    "key_quantity": key_qty,
+                    "split_index": i,
+                    "gap": gap,
+                    "regime_a_obs": sorted_obs[:i],
+                    "regime_b_obs": sorted_obs[i:],
+                    "regime_a_scores": per_obs_scores[:i],
+                    "regime_b_scores": per_obs_scores[i:],
+                    "sorted_per_obs_scores": per_obs_scores,
+                }
+
+    return best_split
 
 
 # ── Convenience ──────────────────────────────────────────────────────────────

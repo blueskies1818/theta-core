@@ -258,7 +258,7 @@ class ExpressionSearch:
                     and d >= self.min_discovery_depth
                     and self._is_nontrivial(expr_str, d)
                 ):
-                    if score > self._best_score or len(expr_str) < len(self._best_expr):
+                    if self._better_than_best(expr_str, score):
                         self._best_score = score
                         self._best_expr = expr_str
                         self._best_depth = d
@@ -295,10 +295,7 @@ class ExpressionSearch:
                 target_terms.append((expr_str, score, 3))
                 # Check original term as a candidate for best expression
                 # (terms may have been scored but not in beam during search)
-                if score >= self._best_score and (
-                    score > self._best_score
-                    or len(expr_str) < len(self._best_expr)
-                ):
+                if self._better_than_best(expr_str, score):
                     self._best_score = score
                     self._best_expr = expr_str
                     self._best_depth = 3
@@ -325,8 +322,7 @@ class ExpressionSearch:
                         and s >= self._best_score
                         and self._is_nontrivial(child, d + 1)
                     ):
-                        # Prefer simpler expressions when scores are tied
-                        if s > self._best_score or len(child) < len(self._best_expr):
+                        if self._better_than_best(child, s):
                             self._best_score = s
                             self._best_expr = child
                             self._best_depth = d + 1
@@ -361,7 +357,7 @@ class ExpressionSearch:
                         and depth >= self.min_discovery_depth
                         and self._is_nontrivial(sum_str, depth)
                     ):
-                        if score > self._best_score or len(sum_str) < len(self._best_expr):
+                        if self._better_than_best(sum_str, score):
                             self._best_score = score
                             self._best_expr = sum_str
                             self._best_depth = depth
@@ -382,7 +378,7 @@ class ExpressionSearch:
                         and depth >= self.min_discovery_depth
                         and self._is_nontrivial(sum_str, depth)
                     ):
-                        if score > self._best_score or len(sum_str) < len(self._best_expr):
+                        if self._better_than_best(sum_str, score):
                             self._best_score = score
                             self._best_expr = sum_str
                             self._best_depth = depth
@@ -403,7 +399,7 @@ class ExpressionSearch:
                         and depth >= self.min_discovery_depth
                         and self._is_nontrivial(sum_str, depth)
                     ):
-                        if score > self._best_score or len(sum_str) < len(self._best_expr):
+                        if self._better_than_best(sum_str, score):
                             self._best_score = score
                             self._best_expr = sum_str
                             self._best_depth = depth
@@ -537,6 +533,43 @@ class ExpressionSearch:
             return None
         return child
 
+    def _count_terms(self, expr_str: str) -> int:
+        """Count independent additive terms at top level.
+
+        E^2-p^2 → 2,  E/gamma → 1,  E → 1.
+        Multi-term invariants (sums of distinct sub-expressions) are
+        structurally more interesting than single-term ratios/products.
+        """
+        depth = 0
+        count = 1
+        for c in expr_str:
+            if c == '(':
+                depth += 1
+            elif c == ')':
+                depth -= 1
+            elif c in ('+', '-') and depth == 0:
+                count += 1
+        return count
+
+    def _better_than_best(self, expr_str: str, score: float) -> bool:
+        """Compare expression against current best with multi-term tiebreaker.
+
+        Heuristic: a multi-term invariant (E^2-p^2) is more fundamental
+        than a single-term consequence (E/gamma), even when both are
+        perfectly constant.  When scores are tied, prefer more terms.
+        If terms also tie, prefer shorter.
+        """
+        if score > self._best_score:
+            return True
+        if score == self._best_score:
+            new_terms = self._count_terms(expr_str)
+            old_terms = self._count_terms(self._best_expr)
+            if new_terms > old_terms:
+                return True
+            if new_terms == old_terms and len(expr_str) < len(self._best_expr):
+                return True
+        return False
+
     def _expr_depth(self, expr_str: str) -> int:
         return 1 + sum(1 for c in expr_str if c in "+-*/^")
 
@@ -602,6 +635,32 @@ def simple_invariant_search(
             return True
         return False
 
+    def _count_terms(expr_str: str) -> int:
+        depth = 0
+        count = 1
+        for c in expr_str:
+            if c == '(':
+                depth += 1
+            elif c == ')':
+                depth -= 1
+            elif c in ('+', '-') and depth == 0:
+                count += 1
+        return count
+
+    def _better_than(expr: str, raw: float, d: int) -> bool:
+        new_adj = _adj_score(raw, d)
+        old_adj = _adj_score(best_score, best_depth)
+        if new_adj > old_adj:
+            return True
+        if new_adj == old_adj:
+            new_terms = _count_terms(expr)
+            old_terms = _count_terms(best_expr) if best_expr else 0
+            if new_terms > old_terms:
+                return True
+            if new_terms == old_terms and len(expr) < len(best_expr):
+                return True
+        return False
+
     # Single quantities
     for name in qnames:
         if _is_trivial(name):
@@ -613,8 +672,7 @@ def simple_invariant_search(
             avg = sum(scores) / len(scores) if scores else 0.0
         except Exception:
             avg = 0.0
-        adj = _adj_score(avg, d)
-        if adj > _adj_score(best_score, best_depth):
+        if _better_than(name, avg, d):
             best_score, best_expr, best_depth = avg, name, d
             train_constancies = scores
 
@@ -638,8 +696,7 @@ def simple_invariant_search(
                     avg = sum(scores) / len(scores) if scores else 0.0
                 except Exception:
                     avg = 0.0
-                adj = _adj_score(avg, d)
-                if adj > _adj_score(best_score, best_depth):
+                if _better_than(expr, avg, d):
                     best_score, best_expr, best_depth = avg, expr, d
                     train_constancies = scores
             if expansions > max_pairs:
@@ -667,8 +724,7 @@ def simple_invariant_search(
                 avg = sum(scores) / len(scores) if scores else 0.0
             except Exception:
                 avg = 0.0
-            adj = _adj_score(avg, d)
-            if adj > _adj_score(best_score, best_depth):
+            if _better_than(expr, avg, d):
                 best_score, best_expr, best_depth = avg, expr, d
                 train_constancies = scores
         if expansions > max_pairs:
@@ -692,8 +748,7 @@ def simple_invariant_search(
                     avg = sum(scores) / len(scores) if scores else 0.0
                 except Exception:
                     avg = 0.0
-                adj = _adj_score(avg, d)
-                if adj > _adj_score(best_score, best_depth):
+                if _better_than(expr, avg, d):
                     best_score, best_expr, best_depth = avg, expr, d
                     train_constancies = scores
             if expansions > max_pairs:
@@ -890,6 +945,7 @@ def auto_discover(
     *,
     discovery_threshold: float = 0.90,
     beam_expansions: int = 2000,
+    _no_regime_split: bool = False,
 ) -> SearchResult:
     """Automatically select and run the best discovery pipeline.
 
@@ -897,6 +953,8 @@ def auto_discover(
     2. Simple ratios/products → simple_invariant_search
     3. Energy multi-term → ExpressionSearch
     4. Compound/dimension-agnostic → ExpressionSearch (target_dim=None)
+    5. (New) Regime discovery: if best global expression scores < 0.90,
+       split observations into regimes and re-discover per regime.
     """
     evaluator = ExpressionEvaluator()
     best_result = SearchResult(
@@ -988,6 +1046,26 @@ def auto_discover(
         )
         refined = _refine_canonical(result, evaluator, observations)
         if refined.score >= discovery_threshold:
+            # Single-term invariants (E/gamma) can hide more fundamental
+            # multi-term invariants (E^2-p^2).  When the simple search
+            # returns a single-term discovery, also try beam search.
+            if (_count_terms_module(refined.expression) <= 1
+                    and len(quantities) >= 3):
+                search2 = ExpressionSearch(
+                    quantities=quantities,
+                    train_observations=observations,
+                    max_depth=8,
+                    max_expansions=beam_expansions,
+                    discovery_threshold=discovery_threshold,
+                    top_k=20,
+                    target_dim=None,
+                )
+                result2 = search2.run()
+                refined2 = _refine_canonical(result2, evaluator, observations)
+                if (refined2.score >= discovery_threshold
+                        and _count_terms_module(refined2.expression)
+                        > _count_terms_module(refined.expression)):
+                    return refined2
             return refined
         if result.score > best_result.score:
             best_result = result
@@ -1040,10 +1118,188 @@ def auto_discover(
         except Exception:
             pass  # grouped detection may fail gracefully
 
+    # Pipeline 3.5: Regime-discovery fallback.
+    # If no global invariant found and regime splitting is not suppressed,
+    # attempt to split observations into regimes where different invariants
+    # may hold (e.g., classical vs relativistic velocity regimes).
+    if (
+        not _no_regime_split
+        and best_result.score < discovery_threshold
+        and best_result.expression
+    ):
+        regime_result = _attempt_regime_discovery(
+            quantities, observations,
+            best_expr=best_result.expression,
+            best_score=best_result.score,
+            evaluator=evaluator,
+            discovery_threshold=discovery_threshold,
+            beam_expansions=beam_expansions,
+        )
+        if regime_result is not None and regime_result.score > best_result.score:
+            best_result = regime_result
+
     # Final fallback: refine whatever we found
     best_result = _refine_canonical(best_result, evaluator, observations)
 
     return best_result
+
+
+# ════════════════════════════════════════════════════════════
+# Regime-discovery loop
+# ════════════════════════════════════════════════════════════
+
+
+def _attempt_regime_discovery(
+    quantities: dict[str, Dimension],
+    observations: list[Observation],
+    best_expr: str,
+    best_score: float,
+    *,
+    evaluator: ExpressionEvaluator | None = None,
+    discovery_threshold: float = 0.90,
+    beam_expansions: int = 2000,
+    min_regime_size: int = 3,
+    test_split_ratio: float = 0.3,
+) -> SearchResult | None:
+    """Attempt to split observations into regimes and re-discover per regime.
+
+    When the best global expression scores below the discovery threshold,
+    the invariant may only hold in a subset of observations — for example,
+    classical mechanics holds at low velocities while relativistic
+    corrections are needed at high velocities.  This function:
+
+    1. Scores the best expression per-observation to find WHERE it breaks.
+    2. Detects a threshold in per-observation residuals by trying each
+       quantity as a sort key and finding the largest score gap.
+    3. Splits observations into two regimes at the threshold.
+    4. Re-runs the discovery pipeline on each regime independently.
+    5. Verifies each discovered invariant on a held-out test split.
+    6. Enforces anti-hacking: minimum 3 data points per regime,
+       train/test generalization required.
+
+    Parameters
+    ----------
+    quantities : dict[str, Dimension]
+        Quantity dimension lookup.
+    observations : list[Observation]
+        All available observations.
+    best_expr : str
+        The best expression found by the global pipeline.
+    best_score : float
+        The global score of *best_expr*.
+    evaluator : ExpressionEvaluator | None
+        Reusable evaluator instance.
+    discovery_threshold : float
+        Minimum score for a discovery.
+    beam_expansions : int
+        Max expansions for sub-regime searches.
+    min_regime_size : int
+        Minimum observations per regime (anti-hacking).
+    test_split_ratio : float
+        Fraction of each regime's observations held out for verification.
+
+    Returns
+    -------
+    SearchResult or None
+        The best discovery across regimes, or None if regime splitting
+        does not produce a verified invariant.
+    """
+    if evaluator is None:
+        evaluator = ExpressionEvaluator()
+
+    if not best_expr or best_score >= discovery_threshold:
+        return None
+
+    if len(observations) < 2 * (min_regime_size + 1):
+        # Need enough data for train+test in each regime.
+        return None
+
+    # Step 1-2: Score per-observation and detect threshold.
+    from src.physics.evaluator import find_regime_threshold
+
+    split = find_regime_threshold(
+        best_expr, observations, evaluator,
+        min_regime_size=min_regime_size + 1,  # leave room for test split
+    )
+    if split is None:
+        return None
+
+    # Require a meaningful gap — at least 0.15 score difference.
+    if split["gap"] < 0.15:
+        return None
+
+    regime_a = split["regime_a_obs"]
+    regime_b = split["regime_b_obs"]
+
+    # Step 3-4: Split each regime into train/test, re-run discovery on train.
+    import random as _random
+    _rng = _random.Random(42)  # deterministic split
+
+    best_regime_result: SearchResult | None = None
+
+    for regime_label, regime_obs in [("A", regime_a), ("B", regime_b)]:
+        if len(regime_obs) < min_regime_size + 1:
+            continue
+
+        # Shuffle and split: train / test.
+        shuffled = list(regime_obs)
+        _rng.shuffle(shuffled)
+        test_count = max(1, int(len(shuffled) * test_split_ratio))
+        train_obs = shuffled[test_count:]
+        test_obs = shuffled[:test_count]
+
+        if len(train_obs) < min_regime_size or len(test_obs) < 1:
+            continue
+
+        # Run discovery on the regime's training split without further
+        # regime recursion (avoid infinite loop).
+        regime_result = auto_discover(
+            quantities, train_obs,
+            known_invariant=None,
+            discovery_threshold=discovery_threshold,
+            beam_expansions=beam_expansions,
+            _no_regime_split=True,
+        )
+
+        if not regime_result.expression:
+            continue
+
+        # Step 5: Verify on the held-out test split.
+        test_scores = evaluator.score_per_observation(
+            regime_result.expression, test_obs,
+        )
+        test_mean = sum(test_scores) / len(test_scores) if test_scores else 0.0
+
+        # Require the test score to also meet the discovery threshold.
+        if test_mean < discovery_threshold:
+            continue
+
+        # Step 6: Anti-hacking — the train and test scores must be
+        # consistent (no overfitting to the specific split).
+        train_mean = sum(regime_result.train_constancies) / len(
+            regime_result.train_constancies
+        ) if regime_result.train_constancies else 0.0
+
+        if abs(train_mean - test_mean) > 0.20:
+            # Suspiciously large generalization gap — overfit artifact.
+            continue
+
+        # This regime produced a verified invariant.
+        regime_result = SearchResult(
+            expression=regime_result.expression,
+            score=test_mean,  # use test score as the honest metric
+            depth=regime_result.depth,
+            expansions=regime_result.expansions,
+            train_constancies=regime_result.train_constancies,
+            test_constancies=test_scores,
+        )
+
+        if best_regime_result is None or (
+            regime_result.score > best_regime_result.score
+        ):
+            best_regime_result = regime_result
+
+    return best_regime_result
 
 
 def _refine_canonical(
@@ -1104,7 +1360,18 @@ def _refine_canonical(
             scores = [evaluator.score(alt, obs) for obs in observations]
             avg = sum(scores) / len(scores) if scores else 0.0
             alt_canon = canonicalizer.score(alt)
-            # Accept if similar constancy but better canonical form
+            # Accept if similar constancy but better canonical form.
+            # Two tiers:
+            # (1) identical-or-better constancy → any canonical improvement wins
+            # (2) slightly worse constancy (within 0.01) → need stronger improvement
+            if avg >= result.score and alt_canon > current_canon:
+                return SearchResult(
+                    expression=alt,
+                    score=avg,
+                    depth=result.depth,
+                    expansions=result.expansions,
+                    train_constancies=scores,
+                )
             if avg >= result.score - 0.01 and alt_canon > current_canon + 0.05:
                 return SearchResult(
                     expression=alt,
