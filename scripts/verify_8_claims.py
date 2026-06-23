@@ -25,6 +25,7 @@ from src.physics.dimensions import Dimension
 from src.physics.evaluator import ExpressionEvaluator
 from src.physics.observations import Observation
 from src.physics.search import auto_discover
+from src.physics.canonicalizer import create_pre1905_canonicalizer
 
 C = 299792458.0
 HBAR = 1.054571817e-34
@@ -305,12 +306,14 @@ def expr_normalize(s: str) -> str:
 
 def main() -> None:
     evaluator = ExpressionEvaluator()
+    canonicalizer = create_pre1905_canonicalizer()
     results: list[ClaimResult] = []
 
     print("=" * 72)
     print("VERIFICATION OF 8 README CLAIMS")
     print("Hybrid pipeline: neural templates → simple search → beam search")
     print("Trivial-constancy gate: ACTIVE")
+    print("Canonical form preference: ACTIVE (pre-1905 trained)")
     print("=" * 72)
 
     for domain, claim, invariant, make_fn in CLAIMS:
@@ -379,9 +382,11 @@ def main() -> None:
     passed = sum(1 for r in results if r.passed)
     for r in results:
         s = "PASS" if r.passed else "FAIL"
+        c_score = canonicalizer.score(r.discovered_expr) if r.discovered_expr else 0.0
+        i_c_score = canonicalizer.score(r.invariant)
         print(f"  {s:4s} [{r.domain}] {r.claim}")
-        print(f"        pipeline: {r.discovered_expr or 'NONE'} ({r.discovered_score:.4f})")
-        print(f"        invariant: {r.invariant} ({r.invariant_score:.4f})")
+        print(f"        pipeline: {r.discovered_expr or 'NONE'} (const={r.discovered_score:.4f} canon={c_score:.3f})")
+        print(f"        invariant: {r.invariant} (const={r.invariant_score:.4f} canon={i_c_score:.3f})")
 
     print(f"\n  {passed}/{len(results)} verified")
 
