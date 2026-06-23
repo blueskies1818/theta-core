@@ -21,6 +21,7 @@ _NAMED_DIMENSIONS: dict[str, dict[str, float]] = {
     "Velocity": {"Length": 1.0, "Time": -1.0},
     "Accel":    {"Length": 1.0, "Time": -2.0},
     "Force":    {"Mass": 1.0, "Length": 1.0, "Time": -2.0},
+    "Momentum": {"Mass": 1.0, "Length": 1.0, "Time": -1.0},
     "Energy":   {"Mass": 1.0, "Length": 2.0, "Time": -2.0},
 }
 

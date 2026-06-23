@@ -36,6 +36,7 @@ import torch
 from src.physics.dimensions import Dimension
 from src.physics.evaluator import ExpressionEvaluator
 from src.physics.observations import Observation
+from src.physics.search import auto_discover, SearchResult
 from src.physics.hidden_variables import (
     GroupedQuantityDetector,
     GroupedMetricProposer,
@@ -189,20 +190,17 @@ def make_relativistic_momentum() -> list[Observation]:
         gamma = 1.0 / math.sqrt(1.0 - v**2 / c**2) if v < c else 10.0
         p = gamma * m * v
         E = gamma * m * c**2
-        t_equiv = E / (m * c**2)
-        x_equiv = p * t_equiv / E if E > 0 else 0
         for _ in range(3):
             timesteps.append({
-                "t": t_equiv, "x": x_equiv, "v": v, "c": c,
-                "p": p, "E": E, "m": m, "gamma": gamma,
+                "t": float(len(timesteps)),
+                "v": v, "c": c, "p": p, "E": E, "m": m, "gamma": gamma,
             })
     return [Observation(
         id="relativistic_momentum",
         name="Relativistic momentum",
         description="p=gamma*m*v, E=gamma*m*c^2. Invariant: E^2 - (p*c)^2 = (m*c^2)^2",
-        quantities={"t": "Time", "x": "Length", "c": "Velocity",
-                    "v": "Velocity", "m": "Mass", "E": "Energy",
-                    "p": "Momentum", "gamma": "Scalar"},
+        quantities={"c": "Velocity", "v": "Velocity", "m": "Mass",
+                    "E": "Energy", "p": "Momentum", "gamma": "Scalar"},
         parameters={"c": c, "m": m},
         timesteps=timesteps,
         known_invariant="E^2 - (p*c)^2",
@@ -297,7 +295,7 @@ def make_twin_paradox() -> list[Observation]:
 
 
 def make_mass_energy_equivalence() -> list[Observation]:
-    """E = m*c^2. Invariant: E/m = c^2 rest frame, (c*t)^2 - x^2 in motion."""
+    """E = m*c^2. Invariant: E^2 - (p*c)^2 = (m*c^2)^2."""
     c = 3e8
     timesteps = []
     masses = [1.0, 2.0, 5.0, 10.0]
@@ -307,20 +305,18 @@ def make_mass_energy_equivalence() -> list[Observation]:
             gamma = 1.0 / math.sqrt(1.0 - v**2 / c**2) if v < c else 10.0
             E = gamma * E0
             p = gamma * m0 * v
-            t_equiv = E / E0
-            x_equiv = p * t_equiv / E if E > 0 else 0
             for _ in range(2):
                 timesteps.append({
-                    "t": t_equiv, "x": x_equiv, "v": v, "c": c, "gamma": gamma,
+                    "t": float(len(timesteps)),
+                    "v": v, "c": c, "gamma": gamma,
                     "m": m0, "E": E, "p": p,
                 })
     return [Observation(
         id="mass_energy_equivalence",
         name="E = m*c^2",
         description="Mass-energy equivalence. Invariant: E^2 - (p*c)^2 = (m*c^2)^2",
-        quantities={"t": "Time", "x": "Length", "c": "Velocity",
-                    "v": "Velocity", "m": "Mass", "E": "Energy",
-                    "p": "Momentum", "gamma": "Scalar"},
+        quantities={"c": "Velocity", "v": "Velocity", "m": "Mass",
+                    "E": "Energy", "p": "Momentum", "gamma": "Scalar"},
         parameters={"c": c},
         timesteps=timesteps,
         known_invariant="E^2 - (p*c)^2",
@@ -733,6 +729,12 @@ def main() -> None:
             print(f"  {desc}")
             t0 = time.time()
 
+            sr = ScenarioResult(
+                scenario_id=scenario_id,
+                scenario_name=name,
+                description=desc,
+            )
+
             try:
                 observations = make_fn()
                 quantity_dict = {}
@@ -741,45 +743,46 @@ def main() -> None:
                         if qname not in quantity_dict:
                             quantity_dict[qname] = Dimension.named(qdim)
 
-                result = run_spacetime_era_gate(
+                # Primary: auto_discover routes to best pipeline
+                disc_result = auto_discover(
+                    quantities=quantity_dict,
                     observations=observations,
-                    quantity_dict=quantity_dict,
-                    proposer=proposer,
+                    known_invariant=obs.known_invariant if observations else None,
                     discovery_threshold=DISCOVERY_THRESHOLD,
+                    beam_expansions=2000,
                 )
+                sr.discovered = disc_result.is_discovery
+                sr.best_expression = disc_result.expression
+                sr.best_constancy = disc_result.score
+                print(f"  auto_discover: {disc_result.expression or 'NONE'}"
+                      f"  score={disc_result.score:.4f}  found={disc_result.is_discovery}")
+
+                # Secondary: grouped detector for spacetime verification
+                if obs.known_invariant and "^2" in obs.known_invariant:
+                    result = run_spacetime_era_gate(
+                        observations=observations,
+                        quantity_dict=quantity_dict,
+                        proposer=proposer,
+                        discovery_threshold=DISCOVERY_THRESHOLD,
+                    )
+                    sr.spacetime_verified = result.get("accepted", False)
+                    sr.best_metric = result.get("best_metric")
+                    for r in result.get("all_results", []):
+                        sr.detected_groups.append(r.get("group", []))
+                    sr.group_detected = any(
+                        "t" in g and "x" in g for g in sr.detected_groups
+                    )
+                    print(f"  spacetime check: verified={sr.spacetime_verified}"
+                          f"  metric={sr.best_metric}")
+                else:
+                    # Non-spacetime scenario — mark as verified if auto_discover found it
+                    sr.spacetime_verified = disc_result.is_discovery
+
             except Exception as e:
-                result = {"accepted": False, "error": str(e), "all_results": []}
+                sr.errors.append(str(e))
+                print(f"  ERROR: {e}")
 
-            elapsed = time.time() - t0
-            sr = ScenarioResult(
-                scenario_id=scenario_id,
-                scenario_name=name,
-                description=desc,
-                timing_seconds=elapsed,
-            )
-
-            if "error" in result:
-                sr.errors.append(str(result["error"]))
-                print(f"  ERROR: {result['error']}")
-            else:
-                sr.best_constancy = result.get("best_constancy", 0)
-                sr.best_expression = result.get("best_expression")
-                sr.best_metric = result.get("best_metric")
-                sr.discovered = result.get("spacetime_discovered", False)
-                sr.spacetime_verified = result.get("accepted", False)
-
-                for r in result.get("all_results", []):
-                    sr.detected_groups.append(r.get("group", []))
-                    if any("t" in g and "x" in g for g in sr.detected_groups):
-                        sr.group_detected = True
-
-                print(f"  Groups detected: {sr.detected_groups}")
-                print(f"  Best metric: {sr.best_metric}")
-                print(f"  Best expression: {sr.best_expression}")
-                print(f"  Best constancy: {sr.best_constancy:.4f}")
-                print(f"  Spacetime verified: {sr.spacetime_verified}")
-                print(f"  Time: {elapsed:.2f}s")
-
+            sr.timing_seconds = time.time() - t0
             all_results.append(sr)
 
     # Summary

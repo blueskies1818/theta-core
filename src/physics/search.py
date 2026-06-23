@@ -816,11 +816,14 @@ def _neural_template_search(
             except Exception:
                 continue
 
-            # Build source: domain-specific quantity symbols
-            domain_qty_names = [
+            # Build source: domain-specific quantities present in the observation.
+            # Filtering to domain-relevant quantities lets the generator
+            # distinguish different invariant types — e.g.,
+            # {c,t,x} → (c*t)^2-x^2  vs  {E,p,c,m} → E^2-(p*c)^2.
+            domain_qty_names = sorted(
                 q for q in DOMAIN_QUANTITIES.get(domain, [])
                 if q in quantities
-            ]
+            )
             if not domain_qty_names:
                 continue
 
