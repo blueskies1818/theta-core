@@ -561,7 +561,7 @@ class ExpressionSearch:
         """
         if score > self._best_score:
             return True
-        if score == self._best_score:
+        if abs(score - self._best_score) < 1e-9:
             new_terms = self._count_terms(expr_str)
             old_terms = self._count_terms(self._best_expr)
             if new_terms > old_terms:
@@ -596,6 +596,22 @@ class ExpressionSearch:
 # ════════════════════════════════════════════════════════════
 # Simple invariant search — for compound-dimension invariants
 # ════════════════════════════════════════════════════════════
+
+
+def _count_terms_module(expr_str: str) -> int:
+    """Count independent additive terms at top level (module-level helper)."""
+    if not expr_str:
+        return 0
+    depth = 0
+    count = 1
+    for c in expr_str:
+        if c == '(':
+            depth += 1
+        elif c == ')':
+            depth -= 1
+        elif c in ('+', '-') and depth == 0:
+            count += 1
+    return count
 
 
 def simple_invariant_search(
@@ -648,17 +664,21 @@ def simple_invariant_search(
         return count
 
     def _better_than(expr: str, raw: float, d: int) -> bool:
-        new_adj = _adj_score(raw, d)
-        old_adj = _adj_score(best_score, best_depth)
-        if new_adj > old_adj:
+        # Compare raw constancy first (not adjusted — avoids amplifying
+        # floating-point noise through the depth multiplier).
+        if raw > best_score + 1e-9:
             return True
-        if new_adj == old_adj:
+        if abs(raw - best_score) < 1e-6:
+            # Raw scores tied.  Multi-term invariants are more fundamental.
             new_terms = _count_terms(expr)
             old_terms = _count_terms(best_expr) if best_expr else 0
             if new_terms > old_terms:
                 return True
-            if new_terms == old_terms and len(expr) < len(best_expr):
-                return True
+            if new_terms == old_terms:
+                if d > best_depth:
+                    return True
+                if d == best_depth and len(expr) < len(best_expr):
+                    return True
         return False
 
     # Single quantities
@@ -711,6 +731,39 @@ def simple_invariant_search(
             continue
         for p in _SIMPLE_POWERS:
             expr = f"{name}^{p}" if p > 0 else f"{name}^{p}"
+            if _is_trivial(expr):
+                continue
+            expansions += 1
+            if expansions > max_pairs:
+                break
+            d = _ed(expr)
+            try:
+                scores = [
+                    evaluator.score(expr, obs) for obs in observations
+                ]
+                avg = sum(scores) / len(scores) if scores else 0.0
+            except Exception:
+                avg = 0.0
+            if _better_than(expr, avg, d):
+                best_score, best_expr, best_depth = avg, expr, d
+                train_constancies = scores
+        if expansions > max_pairs:
+            break
+
+    # Squared differences: q1^2-q2^2 for same-dimension quantities.
+    # Catches multi-term invariants like E^2-p^2 (Lorentz scalar)
+    # that simple ratios/products miss.
+    for i, a in enumerate(qnames):
+        dim_a = quantities.get(a)
+        if dim_a is None or dim_a.is_scalar():
+            continue
+        for j, b in enumerate(qnames):
+            if i >= j:
+                continue
+            dim_b = quantities.get(b)
+            if dim_b is None or dim_a != dim_b:
+                continue
+            expr = f"{a}^2-{b}^2"
             if _is_trivial(expr):
                 continue
             expansions += 1
@@ -1046,26 +1099,6 @@ def auto_discover(
         )
         refined = _refine_canonical(result, evaluator, observations)
         if refined.score >= discovery_threshold:
-            # Single-term invariants (E/gamma) can hide more fundamental
-            # multi-term invariants (E^2-p^2).  When the simple search
-            # returns a single-term discovery, also try beam search.
-            if (_count_terms_module(refined.expression) <= 1
-                    and len(quantities) >= 3):
-                search2 = ExpressionSearch(
-                    quantities=quantities,
-                    train_observations=observations,
-                    max_depth=8,
-                    max_expansions=beam_expansions,
-                    discovery_threshold=discovery_threshold,
-                    top_k=20,
-                    target_dim=None,
-                )
-                result2 = search2.run()
-                refined2 = _refine_canonical(result2, evaluator, observations)
-                if (refined2.score >= discovery_threshold
-                        and _count_terms_module(refined2.expression)
-                        > _count_terms_module(refined.expression)):
-                    return refined2
             return refined
         if result.score > best_result.score:
             best_result = result
@@ -1362,9 +1395,9 @@ def _refine_canonical(
             alt_canon = canonicalizer.score(alt)
             # Accept if similar constancy but better canonical form.
             # Two tiers:
-            # (1) identical-or-better constancy → any canonical improvement wins
+            # (1) near-identical constancy → any canonical improvement wins
             # (2) slightly worse constancy (within 0.01) → need stronger improvement
-            if avg >= result.score and alt_canon > current_canon:
+            if avg >= result.score - 1e-9 and alt_canon > current_canon:
                 return SearchResult(
                     expression=alt,
                     score=avg,
