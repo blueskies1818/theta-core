@@ -313,6 +313,38 @@ class ExpressionEvaluator:
 
     def __init__(self) -> None:
         self._ast_cache: dict[str, ExprNode] = {}
+        # Cache: observation id -> set of quantity names that vary across timesteps
+        self._varying_cache: dict[str, set[str]] = {}
+
+    def _get_varying_quantities(self, obs: Observation) -> set[str]:
+        """Return the set of quantity names that change across *obs* timesteps.
+
+        Cached per observation id.  Used by the trivial-constancy gate:
+        if an expression uses only quantities that never vary, its constancy
+        is meaningless.
+        """
+        if obs.id in self._varying_cache:
+            return self._varying_cache[obs.id]
+
+        varying: set[str] = set()
+        if len(obs.timesteps) < 2:
+            self._varying_cache[obs.id] = varying
+            return varying
+
+        # Collect all quantity names that appear in any timestep
+        all_keys = set()
+        for ts in obs.timesteps:
+            all_keys.update(ts.keys())
+
+        for key in all_keys:
+            first_val = obs.timesteps[0].get(key)
+            for ts in obs.timesteps[1:]:
+                if ts.get(key) != first_val:
+                    varying.add(key)
+                    break
+
+        self._varying_cache[obs.id] = varying
+        return varying
 
     def parse(self, expr_str: str) -> ExprNode:
         """Parse an expression string into an AST.  Results are cached."""
@@ -621,9 +653,26 @@ class ExpressionEvaluator:
     def _score_observation(
         self, ast: ExprNode, obs: Observation, epsilon: float = 1e-12
     ) -> float:
-        """Score a parsed expression against a single observation."""
+        """Score a parsed expression against a single observation.
+
+        Includes the "it must dance" gate: if every variable in the expression
+        has the same value across all timesteps, the expression isn't revealing
+        a conserved quantity — it's just reflecting that its inputs don't change.
+        A quantity must vary before its constancy is meaningful.
+        """
         if len(obs.timesteps) < 2:
             return 0.0
+
+        # Gate: at least one variable must actually change across timesteps.
+        # Uses precomputed varying-quantities cache — O(1) per expression.
+        var_names = _collect_var_names(ast)
+        if var_names:
+            varying = self._get_varying_quantities(obs)
+            if not (var_names & varying):
+                # Every variable in the expression is fixed within this
+                # observation.  The expression cannot prove anything —
+                # it's trivially constant because its inputs never change.
+                return 0.0
 
         values: list[float] = []
         for ts in obs.timesteps:
@@ -665,6 +714,20 @@ class ExpressionEvaluator:
 
 
 # ── Helper ───────────────────────────────────────────────────────────────
+
+def _collect_var_names(node: "ExprNode") -> set[str]:
+    """Return the set of all variable names in an AST."""
+    names: set[str] = set()
+    def walk(n):
+        if isinstance(n, VarNode):
+            names.add(n.name)
+        elif isinstance(n, FuncNode):
+            walk(n.arg)
+        elif isinstance(n, BinOpNode):
+            walk(n.left)
+            walk(n.right)
+    walk(node)
+    return names
 
 def _safe_real(x: float | complex) -> float:
     """Return the real part of x, or 0.0 if complex or NaN."""
