@@ -687,10 +687,13 @@ class ExpressionEvaluator:
         if var_names:
             varying = self._get_varying_quantities(obs)
             if not (var_names & varying):
-                # Every variable in the expression is fixed within this
-                # observation.  The expression cannot prove anything —
-                # it's trivially constant because its inputs never change.
                 return 0.0
+
+        # Gate: expressions that algebraically cancel their own variables
+        # (e.g. 1/v*1*v → always 2) are trivially constant — the variable
+        # appears in both numerator and denominator with net exponent 0.
+        if _has_self_cancellation(ast):
+            return 0.0
 
         values: list[float] = []
         for ts in obs.timesteps:
@@ -748,6 +751,69 @@ def _collect_var_names(node: "ExprNode") -> set[str]:
             walk(n.right)
     walk(node)
     return names
+
+
+def _has_self_cancellation(node: "ExprNode") -> bool:
+    """Check if any additive term contains a variable that cancels itself.
+
+    A variable "cancels itself" when it appears in both numerator and
+    denominator within the same multiplicative group, giving net exponent 0.
+    Example: 1/v*1*v — v has exponent +1 (from *v) and -1 (from 1/v),
+    net 0. The expression simplifies to a constant regardless of v's
+    value — its constancy is algebraic, not physical.
+
+    This is checked per additive term (split by top-level +/-)
+    because x + 1/x is NOT self-canceling — x varies across terms.
+    """
+    if isinstance(node, (NumberNode, VarNode, FuncNode)):
+        return False
+
+    if isinstance(node, BinOpNode):
+        if node.op in ("+", "-"):
+            return (_has_self_cancellation(node.left)
+                    or _has_self_cancellation(node.right))
+
+        # Multiplicative group (*, /, ^): collect variable exponents.
+        exponents: dict[str, float] = {}
+        _collect_multiplicative_exponents(node, exponents, sign=1.0)
+
+        for exp in exponents.values():
+            if abs(exp) < 1e-9:
+                return True
+
+    return False
+
+
+def _collect_multiplicative_exponents(
+    node: "ExprNode", out: dict[str, float], sign: float,
+) -> None:
+    """Walk a multiplicative sub-tree, accumulating variable exponents.
+
+    sign is +1 for multiplication, -1 for division, and multiplies
+    the power for exponentiation.
+    """
+    if isinstance(node, NumberNode):
+        return
+    if isinstance(node, VarNode):
+        out[node.name] = out.get(node.name, 0.0) + sign
+        return
+    if isinstance(node, FuncNode):
+        _collect_multiplicative_exponents(node.arg, out, sign)
+        return
+
+    if isinstance(node, BinOpNode):
+        if node.op == "*":
+            _collect_multiplicative_exponents(node.left, out, sign)
+            _collect_multiplicative_exponents(node.right, out, sign)
+        elif node.op == "/":
+            _collect_multiplicative_exponents(node.left, out, sign)
+            _collect_multiplicative_exponents(node.right, out, -sign)
+        elif node.op == "^":
+            if isinstance(node.right, NumberNode):
+                _collect_multiplicative_exponents(
+                    node.left, out, sign * node.right.value,
+                )
+
 
 def _safe_real(x: float | complex) -> float:
     """Return the real part of x, or 0.0 if complex or NaN."""

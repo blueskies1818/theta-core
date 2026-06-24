@@ -473,9 +473,13 @@ class ExpressionSearch:
                 tokens = re.findall(r"\b[a-zA-Z_]\w*\b", section)
                 if tokens:
                     divisor = tokens[0]
-                    # Build a regex to find the divisor in OTHER sections
+                    # Check OTHER sections
                     other = "/".join(sections[:si] + sections[si+1:])
                     if re.search(r"\b" + re.escape(divisor) + r"\b", other):
+                        return False
+                    # Also check if divisor reappears later in SAME section
+                    # (catches 1/v*1*v where v*1*v has v after the divisor)
+                    if len(tokens) > 1 and divisor in tokens[1:]:
                         return False
         # Parameter-only expression (no dynamic quantities used)
         # e.g., c^2, h*h, R*2 — trivially constant
@@ -999,6 +1003,7 @@ def auto_discover(
     discovery_threshold: float = 0.90,
     beam_expansions: int = 2000,
     _no_regime_split: bool = False,
+    _no_neural_templates: bool = False,
 ) -> SearchResult:
     """Automatically select and run the best discovery pipeline.
 
@@ -1069,15 +1074,22 @@ def auto_discover(
         except Exception:
             target_dim = None
 
-# Pipeline 0: Neural template generators (for complex invariants).
+    # Pipeline 0: Neural template generators (for complex invariants).
     # Domain-specific transformer decoders that learned to map quantity
     # sets to expression templates.  They handle the complex nested
     # formulas (parentheses, powers of groups, nested fractions) that
     # deterministic search cannot express.
-    neural_result = _neural_template_search(
-        quantities, observations,
-        discovery_threshold=discovery_threshold,
-    )
+    #
+    # NOTE: When _no_neural_templates=True, this pipeline is skipped.
+    # The system must rely on beam search + simple search alone.
+    # This is the honest mode — templates may encode domain knowledge
+    # from the developer that the system hasn't genuinely discovered.
+    neural_result = None
+    if not _no_neural_templates:
+        neural_result = _neural_template_search(
+            quantities, observations,
+            discovery_threshold=discovery_threshold,
+        )
     if neural_result is not None:
         if neural_result.score > best_result.score:
             best_result = neural_result

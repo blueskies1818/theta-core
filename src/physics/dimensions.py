@@ -23,6 +23,8 @@ _NAMED_DIMENSIONS: dict[str, dict[str, float]] = {
     "Force":    {"Mass": 1.0, "Length": 1.0, "Time": -2.0},
     "Momentum": {"Mass": 1.0, "Length": 1.0, "Time": -1.0},
     "Energy":   {"Mass": 1.0, "Length": 2.0, "Time": -2.0},
+    "Pressure": {"Mass": 1.0, "Length": -1.0, "Time": -2.0},
+    "Volume":   {"Length": 3.0},
 }
 
 # Map each base dimension to its exponents across named types (for display)

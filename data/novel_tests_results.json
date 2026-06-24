@@ -1,0 +1,82 @@
+[
+  {
+    "domain": "CLASSICAL",
+    "name": "Kepler T^2/a^3",
+    "invariant": "a/T",
+    "discovered": "T/a",
+    "score": 0.8060256758273557,
+    "invariant_score": 0.795526377892446,
+    "exact": false,
+    "notes": "ALTERNATE"
+  },
+  {
+    "domain": "CLASSICAL",
+    "name": "Pendulum T^2/L",
+    "invariant": "T^2/L",
+    "discovered": "T^2/L",
+    "score": 0.9999999999999998,
+    "invariant_score": 0.9999999999999998,
+    "exact": true,
+    "notes": "EXACT"
+  },
+  {
+    "domain": "CLASSICAL",
+    "name": "Angular momentum m*v*r",
+    "invariant": "v*r",
+    "discovered": "1*v*v*r+0.5*v*v*r+v*0.5*v*r+v*1*v*r*1+v*0.5*v*r+v*1*v*r+v*0.5*v*r+v*1*v*r",
+    "score": 0.9999999999999998,
+    "invariant_score": 0.852599125754303,
+    "exact": false,
+    "notes": "ALTERNATE"
+  },
+  {
+    "domain": "QUANTUM",
+    "name": "Photon E/nu = h",
+    "invariant": "E/nu",
+    "discovered": "E/nu",
+    "score": 0.9999999999999998,
+    "invariant_score": 0.9999999999999998,
+    "exact": true,
+    "notes": "EXACT"
+  },
+  {
+    "domain": "QUANTUM",
+    "name": "de Broglie lambda*p = h",
+    "invariant": "lambda*p",
+    "discovered": "p*lambda",
+    "score": 1.0,
+    "invariant_score": 1.0,
+    "exact": false,
+    "notes": "ALTERNATE"
+  },
+  {
+    "domain": "THERMAL",
+    "name": "Boyle P*V = constant",
+    "invariant": "P*V",
+    "discovered": "P*V",
+    "score": 1.0,
+    "invariant_score": 1.0,
+    "exact": true,
+    "notes": "EXACT"
+  },
+  {
+    "domain": "CLASSICAL",
+    "name": "Spring energy 0.5*k*x^2+0.5*m*v^2",
+    "invariant": "0.5*k*x^2 + 0.5*m*v^2",
+    "discovered": "v*-1*v*m+v*-1*v*m",
+    "score": 0.45564621293608687,
+    "invariant_score": 0.5598334942438425,
+    "exact": false,
+    "notes": "ALTERNATE"
+  },
+  {
+    "domain": "CLASSICAL",
+    "name": "Orbital v^2*r = constant",
+    "invariant": "v^2*r",
+    "discovered": "-1*v*0.5*v*r+v*0.5*v*r*-1",
+    "score": 0.9999999999999998,
+    "invariant_score": 0.9999999999999998,
+    "exact": false,
+    "notes": "ALTERNATE"
+  }
+]

@@ -13,6 +13,3 @@
 ## → Frontier
 
 - Feed observations with NO known theory
-- System must discover new physics, not recapitulate textbook
-- Dark matter rotation curves, muon g-2, Hubble tension
-- First novel prediction = milestone for human experimental verification
