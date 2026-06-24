@@ -460,24 +460,25 @@ def build_training_tensors(
         for j in range(min(len(shape_probs), NUM_SHAPES)):
             inputs[i, j] = shape_probs[j]
 
+        # Scalar features (must be BEFORE quantity and domain vectors)
+        # Matches SelfPlayProposer input order: [SHAPE|4_SCALARS|QUANTITIES|DOMAIN]
+        feat_offset = NUM_SHAPES
+        inputs[i, feat_offset + 0] = ex.get("mean_constancy", 0.0)
+        inputs[i, feat_offset + 1] = ex.get("var_constancy", 0.0)
+        inputs[i, feat_offset + 2] = ex.get("cv_constancy", 0.0)
+        inputs[i, feat_offset + 3] = ex.get("shape_confidence", 0.0)
+
         # Quantity vector
-        qty_offset = NUM_SHAPES
+        qty_offset = NUM_SHAPES + 4
         for qname in ex.get("quantity_names", []):
             if qname in HV_QTY_TO_IDX:
                 inputs[i, qty_offset + HV_QTY_TO_IDX[qname]] = 1.0
 
         # Domain
-        dom_offset = NUM_SHAPES + NUM_HV_QUANTITIES
+        dom_offset = NUM_SHAPES + 4 + NUM_HV_QUANTITIES
         domain = ex.get("domain", "unknown")
         if domain in HV_DOMAIN_TO_IDX:
             inputs[i, dom_offset + HV_DOMAIN_TO_IDX[domain]] = 1.0
-
-        # Scalar features
-        feat_offset = NUM_SHAPES + NUM_HV_QUANTITIES + NUM_HV_DOMAINS
-        inputs[i, feat_offset + 0] = ex.get("mean_constancy", 0.0)
-        inputs[i, feat_offset + 1] = ex.get("var_constancy", 0.0)
-        inputs[i, feat_offset + 2] = ex.get("cv_constancy", 0.0)
-        inputs[i, feat_offset + 3] = ex.get("shape_confidence", 0.0)
 
         # Target: var_type one-hot
         target_var = ex.get("target_var_type", VAR_CONTINUOUS)
