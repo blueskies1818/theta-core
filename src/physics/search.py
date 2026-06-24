@@ -918,9 +918,14 @@ def _neural_template_search(
         best_score = 0.0
         candidates: list[str] = []
 
-        # For each active domain, try the neural template generator
+        # For each active domain, try the neural template generator.
+        # Prefer self-play trained generators; fall back to hand-trained.
         for domain in active_domains:
-            gen_path = checkpoint_dir / f"{domain}_template.pt"
+            # Try self-play checkpoint first
+            gen_path = checkpoint_dir / f"self_play_{domain}_template.pt"
+            if not gen_path.exists():
+                # Fall back to hand-trained template model
+                gen_path = checkpoint_dir / f"{domain}_template.pt"
             if not gen_path.exists():
                 continue
             try:

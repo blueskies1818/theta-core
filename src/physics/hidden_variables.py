@@ -894,7 +894,10 @@ class HiddenVariableDiscovery:
         score_improvement_threshold: float = 0.15,
         discovery_threshold: float = 0.95,
     ) -> None:
-        self.proposer = proposer or HiddenVariableProposer()
+        if proposer is None:
+            self.proposer = load_default_hidden_var_proposer()
+        else:
+            self.proposer = proposer
         self.detector = detector or ErrorShapeDetector()
         self.max_proposals = max_proposals
         self.score_improvement_threshold = score_improvement_threshold
@@ -2178,6 +2181,56 @@ def load_hidden_var_proposer(checkpoint_path: str, device: str = "cpu") -> Hidde
         except RuntimeError:
             _load_v2_to_v3_checkpoint(proposer, checkpoint)
 
+    proposer.to(device)
+    proposer.eval()
+    return proposer
+
+
+def load_default_hidden_var_proposer(
+    checkpoint_dir: str | Path | None = None,
+    device: str = "cpu",
+) -> HiddenVariableProposer:
+    """Load the best available hidden variable proposer.
+
+    Priority order:
+    1. self_play_hidden_var.pt (self-play trained, primary)
+    2. hidden_var_proposer_v3.pt (hand-trained v3, fallback)
+    3. hidden_var_proposer.pt (hand-trained v1/v2, fallback)
+    4. Fresh HiddenVariableProposer() with random weights
+
+    Args:
+        checkpoint_dir: Directory containing checkpoint files.
+                        Defaults to project checkpoints/ directory.
+        device: Device to load the model onto.
+    """
+    from pathlib import Path
+
+    if checkpoint_dir is None:
+        checkpoint_dir = Path(__file__).parent.parent.parent / "checkpoints"
+    else:
+        checkpoint_dir = Path(checkpoint_dir)
+
+    # Priority-ordered checkpoint name keys
+    priority = [
+        "self_play_hidden_var",       # Self-play trained (primary)
+        "hidden_var_proposer_v3",     # Hand-trained v3 (fallback)
+        "hidden_var_proposer",        # Hand-trained v1/v2 (last fallback)
+    ]
+
+    for key in priority:
+        ckpt_path = checkpoint_dir / f"{key}.pt"
+        if ckpt_path.exists():
+            try:
+                proposer = load_hidden_var_proposer(str(ckpt_path), device=device)
+                print(f"  Loaded hidden var proposer from {ckpt_path.name}")
+                return proposer
+            except Exception as e:
+                print(f"  Failed to load {ckpt_path.name}: {e}")
+                continue
+
+    # No checkpoint found — return fresh model
+    print("  No hidden var checkpoint found — using fresh weights")
+    proposer = HiddenVariableProposer()
     proposer.to(device)
     proposer.eval()
     return proposer

@@ -37,7 +37,7 @@
       "discovered": true,
       "spacetime_verified": true,
       "errors": [],
-      "timing_seconds": 0.030593156814575195
+      "timing_seconds": 0.055547475814819336
     },
     {
       "scenario_id": "velocity_addition",
@@ -58,7 +58,7 @@
       "discovered": true,
       "spacetime_verified": true,
       "errors": [],
-      "timing_seconds": 0.025012969970703125
+      "timing_seconds": 0.03727388381958008
     },
     {
       "scenario_id": "relativistic_momentum",
@@ -79,7 +79,7 @@
       "discovered": true,
       "spacetime_verified": false,
       "errors": [],
-      "timing_seconds": 0.009017467498779297
+      "timing_seconds": 0.021925687789916992
     },
     {
       "scenario_id": "length_contraction",
@@ -95,12 +95,12 @@
         ]
       ],
       "best_metric": "squared_diff",
-      "best_expression": "x*gamma",
+      "best_expression": "x*c*gamma",
       "best_constancy": 1.0,
       "discovered": true,
       "spacetime_verified": false,
       "errors": [],
-      "timing_seconds": 0.0265347957611084
+      "timing_seconds": 0.03888440132141113
     },
     {
       "scenario_id": "doppler_shift",
@@ -121,7 +121,7 @@
       "discovered": true,
       "spacetime_verified": false,
       "errors": [],
-      "timing_seconds": 0.022509098052978516
+      "timing_seconds": 0.035196781158447266
     },
     {
       "scenario_id": "twin_paradox",
@@ -137,12 +137,12 @@
         ]
       ],
       "best_metric": "product",
-      "best_expression": "t*gamma",
-      "best_constancy": 1.0,
-      "discovered": true,
+      "best_expression": "(c*t)^2-x^2",
+      "best_constancy": 0.9176631145047863,
+      "discovered": false,
       "spacetime_verified": false,
       "errors": [],
-      "timing_seconds": 0.025476455688476562
+      "timing_seconds": 0.03385758399963379
     },
     {
       "scenario_id": "mass_energy",
@@ -159,12 +159,12 @@
         ]
       ],
       "best_metric": "squared_diff",
-      "best_expression": "E^-2",
-      "best_constancy": 1.0,
+      "best_expression": "c*m/E",
+      "best_constancy": 0.9914114459532812,
       "discovered": true,
       "spacetime_verified": false,
       "errors": [],
-      "timing_seconds": 0.013711690902709961
+      "timing_seconds": 0.026595592498779297
     },
     {
       "scenario_id": "spacetime_interval",
@@ -180,12 +180,12 @@
         ]
       ],
       "best_metric": "squared_diff",
-      "best_expression": "t^2/c^3",
-      "best_constancy": 1.0,
+      "best_expression": "c*gamma",
+      "best_constancy": 0.9792722245339545,
       "discovered": true,
       "spacetime_verified": false,
       "errors": [],
-      "timing_seconds": 0.026465415954589844
+      "timing_seconds": 0.038442373275756836
     },
     {
       "scenario_id": "qed_fine_structure",
@@ -199,12 +199,12 @@
         ]
       ],
       "best_metric": "ratio",
-      "best_expression": "coupling/e",
-      "best_constancy": 1.0,
+      "best_expression": "e^2/coupling^2",
+      "best_constancy": 0.9999999999999998,
       "discovered": true,
       "spacetime_verified": false,
       "errors": [],
-      "timing_seconds": 0.00199127197265625
+      "timing_seconds": 0.00780797004699707
     },
     {
       "scenario_id": "compton_scattering",
@@ -213,12 +213,12 @@
       "group_detected": false,
       "detected_groups": [],
       "best_metric": null,
-      "best_expression": "dlambda/one_minus_cos",
-      "best_constancy": 1.0,
+      "best_expression": "dlambda^2/one_minus_cos^2",
+      "best_constancy": 0.9999999999999998,
       "discovered": true,
       "spacetime_verified": true,
       "errors": [],
-      "timing_seconds": 0.0014584064483642578
+      "timing_seconds": 0.007334470748901367
     },
     {
       "scenario_id": "dirac_spinor_norm",
@@ -227,12 +227,12 @@
       "group_detected": false,
       "detected_groups": [],
       "best_metric": null,
-      "best_expression": "0/psi_im+2",
+      "best_expression": "-1-psi_im+psi_im+2+-1-psi_im+psi_im+2",
       "best_constancy": 1.0,
       "discovered": true,
       "spacetime_verified": false,
       "errors": [],
-      "timing_seconds": 6.073105096817017
+      "timing_seconds": 5.810238599777222
     },
     {
       "scenario_id": "qcd_asymptotic_freedom",
@@ -241,12 +241,12 @@
       "group_detected": false,
       "detected_groups": [],
       "best_metric": null,
-      "best_expression": "0/alpha_s+2",
+      "best_expression": "2-alpha_s+2+alpha_s+-1+2-alpha_s+2+alpha_s+-1",
       "best_constancy": 1.0,
       "discovered": true,
       "spacetime_verified": true,
       "errors": [],
-      "timing_seconds": 6.521523714065552
+      "timing_seconds": 9.983156681060791
     },
     {
       "scenario_id": "electroweak_mixing",
@@ -255,12 +255,12 @@
       "group_detected": false,
       "detected_groups": [],
       "best_metric": null,
-      "best_expression": "g/gp",
+      "best_expression": "g^2/gp^2",
       "best_constancy": 1.0,
       "discovered": true,
       "spacetime_verified": true,
       "errors": [],
-      "timing_seconds": 0.010709524154663086
+      "timing_seconds": 0.021489858627319336
     },
     {
       "scenario_id": "higgs_mechanism",
@@ -275,12 +275,12 @@
         ]
       ],
       "best_metric": "ratio",
-      "best_expression": "1-phi+phi",
+      "best_expression": "phi--1-phi+v_sq_half+phi+v_sq_half-phi+phi--1-phi+v_sq_half+phi+v_sq_half-phi",
       "best_constancy": 1.0,
       "discovered": true,
       "spacetime_verified": false,
       "errors": [],
-      "timing_seconds": 9.97473955154419
+      "timing_seconds": 9.92902135848999
     },
     {
       "scenario_id": "neutrino_oscillation",
@@ -294,7 +294,7 @@
       "discovered": true,
       "spacetime_verified": true,
       "errors": [],
-      "timing_seconds": 0.005452394485473633
+      "timing_seconds": 0.011868476867675781
     }
   ]
 }

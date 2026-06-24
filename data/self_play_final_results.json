@@ -1,0 +1,49 @@
+{
+  "experiment": "PHASE_F_SELF_PLAY_INTEGRATION",
+  "timestamp": "2026-06-24T15:23:35.637252",
+  "description": "Full integration of self-play trained models into discovery pipeline",
+  "verify_8_claims": {
+    "legacy_mode": {
+      "claims_verified": "8/8",
+      "exact_matches": "6/8",
+      "notes": "Baseline hand-written template path"
+    },
+    "honest_neural": {
+      "claims_verified": "7/8",
+      "exact_matches": "5/8",
+      "noise": 0.01,
+      "notes": "Independent measurements + self-play generators"
+    },
+    "honest_beam_only": {
+      "claims_verified": "7/8",
+      "exact_matches": "4/8",
+      "noise": 0.01,
+      "notes": "No neural templates, beam search only. Spacetime interval fails without neural templates."
+    }
+  },
+  "era_gate_1905": {
+    "spacetime_verified": "6/15",
+    "any_discovery": "14/15",
+    "group_detected": "6/15",
+    "checkpoint": "self_play_hidden_var.pt"
+  },
+  "tests": {
+    "total": 767,
+    "passed": 766,
+    "skipped": 1,
+    "failed": 0
+  },
+  "integration_changes": {
+    "template_generator_paths": "self_play_{domain}_template.pt preferred, {domain}_template.pt fallback",
+    "hidden_var_proposer": "self_play_hidden_var.pt primary, hidden_var_proposer_v3.pt fallback",
+    "post_1905_domain_templates": "None hardcoded \u2014 quantum/relativistic use trained generators only",
+    "disabled_checkpoints": "Only classical domains in DOMAIN_TEMPLATES (gravity, spring, em, thermal, collision)"
+  },
+  "checkpoints_used": [
+    "self_play_gravity_template.pt",
+    "self_play_spring_template.pt",
+    "self_play_em_template.pt",
+    "self_play_thermal_template.pt",
+    "self_play_hidden_var.pt"
+  ]
+}

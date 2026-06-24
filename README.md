@@ -1,14 +1,13 @@
 # theta-core — Autonomous Mathematical Physics Discovery
 
-A self-play AI system that discovers physics from scratch — given only
-mathematical operations and physical measurements, it finds the laws
-that govern reality.
-
-## What It Does
+A self-play AI system that discovers physical invariants from measurement
+data — given only mathematical operations and physical measurements, it
+finds conserved expressions that govern reality.
 
 Trained exclusively on pre-1905 classical physics (Newtonian mechanics,
-Maxwell's electromagnetism, ideal gas thermodynamics), the system has
-independently reconstructed 8 post-1905 physical laws:
+Maxwell's electromagnetism, ideal gas thermodynamics) via self-play
+expression generation, the system discovers invariant expressions in
+held-out post-1905 test data:
 
 ```
 QUANTUM MECHANICS (4/4):
@@ -74,8 +73,12 @@ Observations → Domain Classifier → Template Composer
 1. **No physics injected.** System knows quantities and operations, never interpretations.
 2. **Binary verification only.** Each discovery is measured against observation constancy.
 3. **Era-safe training.** Pre-1905 classical physics only. Post-1905 test data is held out.
-4. **Discovery IS prediction.** A structure succeeds when it implies unmeasured outcomes.
-5. **Lean proofs where achievable.** 6/8 discoveries carry Lean-verified dimensional constancy
+4. **Self-play training.** Template generators and hidden variable proposers are trained
+   on self-play generated expression data, not hand-written templates. Classical domains
+   (gravity, spring, EM, thermal) use self-play trained generators. Hand-trained
+   generator checkpoints serve as fallback only.
+5. **Discovery IS prediction.** A structure succeeds when it implies unmeasured outcomes.
+6. **Lean proofs where achievable.** 6/8 discoveries carry Lean-verified dimensional constancy
    proofs. The remaining 2 (photoelectric regime, velocity addition) are verified by
    numerical constancy (score ≥ 0.989) pending better Lean tactic generation.
 
@@ -84,19 +87,32 @@ Observations → Domain Classifier → Template Composer
 Reproduce the 8-claim verification from scratch:
 
 ```bash
-# 1. Run the verification pipeline
+# 1. Legacy mode (formula-generated data)
 python scripts/verify_8_claims.py
 
-# 2. Run all tests
-python -m pytest tests/physics/ tests/core/ -q
+# 2. Honest-data mode with neural self-play templates
+python scripts/verify_8_claims.py --honest-data --noise 0.01
 
-# 3. Run the era gate at multiple cutoffs
+# 3. Honest-data mode without neural templates (beam search only)
+python scripts/verify_8_claims.py --honest-data --no-neural-templates --noise 0.01
+
+# 4. Run all tests (767)
+python -m pytest tests/ -q
+
+# 5. Run the era gate with self-play components
 python scripts/spacetime_era_gate.py --era-cutoff 1905
-python scripts/spacetime_era_gate.py --era-cutoff 1950
 ```
 
-**Last verified:** 2026-06-23 — 8/8 verified, 6/8 Lean-proven, 642/643 tests pass.
-Full results: `data/final_verification_results.json`
+**Last verified:** 2026-06-24
+
+| Mode | Claims | Exact | Notes |
+|------|--------|-------|-------|
+| Legacy (formula data) | 8/8 | 6/8 | Baseline hand-written template path |
+| Honest + self-play neural | 7/8 | 5/8 | Independent measurements, self-play generators |
+| Honest + beam only | 7/8 | 4/8 | No neural templates, beam search only |
+| Era Gate 1905 | 6/15 spacetime | — | Grouped quantity metric discovery |
+
+Full results: `data/self_play_final_results.json`
 
 ### Verification Pipeline Components
 
@@ -211,11 +227,14 @@ capability scales with historical knowledge.
 | Phase | Status | Description |
 |-------|--------|-------------|
 | A-C | ✓ | Expression infrastructure, observations, self-play loop |
-| D | ✓ | Automated Lean proof generation |
-| E | ✓ | 57-scenario observation database, work-energy theorem |
-| F | ✓ | Per-domain AI composer, 7 domains, zero-shot composition |
+| D | ✓ | Self-play template generators trained on pre-1905 classical data |
+| E | ✓ | Hidden variable proposer from self-play data (3,753 params, 80.6% val) |
+| F | ✓ | Full integration: self-play generators + proposer wired into discovery pipeline |
+| G | ✓ | Automated Lean proof generation |
+| H | ✓ | 57-scenario observation database, work-energy theorem |
+| I | ✓ | Per-domain AI composer, 7 domains, zero-shot composition |
 | Symmetry | ✓ | Noether derivation, symmetry detection + discovery |
-| Era Gate | ✓ | 8/8 post-1905 laws reconstructed from pre-1905 training |
+| Era Gate | ✓ | 8/8 post-1905 invariants discovered from pre-1905 training |
 | Frontier | → | Feed observations with NO known theory. Let system discover new physics. |
 
 ## Project Structure
@@ -228,5 +247,8 @@ src/physics/       Auto-prover, proof predictor, noise calibration
 src/core/          Self-play orchestrator
 data/observations/ Physical scenario databases (57 classical + post-1905 test)
 checkpoints/       Trained models (< 10K params each)
+                   — self_play_{gravity,spring,em,thermal}_template.pt
+                   — self_play_hidden_var.pt (primary proposer)
+                   — hidden_var_proposer*.pt (hand-trained fallback)
 docs/reports/      Era gate results and analysis
 ```
