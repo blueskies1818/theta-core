@@ -1118,7 +1118,12 @@ class FrontierRunner:
                 DomainClassifier,
                 ExpressionComposer,
                 DOMAIN_TEMPLATES,
+                DOMAIN_QUANTITIES,
                 quantities_to_features,
+                quantities_to_tensor,
+                detokenize_expression,
+                TEMPLATE_PAD_IDX,
+                load_self_play_generators,
             )
             import torch
 
@@ -1134,9 +1139,34 @@ class FrontierRunner:
                 domain_lists = classifier.predict_domains(features, threshold=0.3)
                 domains = domain_lists[0] if domain_lists else []
 
+            # Try self-play trained generators first
+            try:
+                _ckpt_dir = Path(__file__).parent.parent.parent / "checkpoints"
+                sp_generators = load_self_play_generators(_ckpt_dir)
+            except Exception:
+                sp_generators = {}
+
             templates: list[str] = []
             for d in domains:
-                if d in DOMAIN_TEMPLATES:
+                if d in sp_generators:
+                    domain_qties = [q for q in qty_list
+                                    if q in DOMAIN_QUANTITIES.get(d, [])]
+                    if domain_qties:
+                        src = quantities_to_tensor(domain_qties, max_len=8).unsqueeze(0)
+                        src_mask = (src == TEMPLATE_PAD_IDX)
+                        with torch.no_grad():
+                            gen = sp_generators[d]
+                            # Move to same device
+                            gen_ids = gen.generate(
+                                src.to(gen.token_embedding.weight.device),
+                                src_padding_mask=src_mask.to(gen.token_embedding.weight.device),
+                                max_len=32,
+                            )
+                        tmpl = detokenize_expression(gen_ids[0])
+                        if tmpl:
+                            templates.append(tmpl)
+                # Fall back to hardcoded template (pre-1905 only)
+                if (not templates or d not in sp_generators) and d in DOMAIN_TEMPLATES:
                     templates.append(DOMAIN_TEMPLATES[d])
 
             if templates:
@@ -1146,15 +1176,13 @@ class FrontierRunner:
         except ImportError:
             pass
 
-        # Fallback: universal physics templates across all 7 domains
+        # Fallback: pre-1905 classical physics templates only
         if not candidates:
             candidates.update([
                 "m*g*h + 0.5*m*v^2",           # gravity/mechanics
                 "0.5*k*h^2 + 0.5*m*v^2",       # spring
                 "0.5*m*v^2 - q*E*x",            # EM
                 "P*V/T",                         # thermal
-                "n^2*hbar^2/(2*m*L^2)",         # quantum
-                "E^2 - (p*c)^2",                 # relativistic
             ])
 
         return list(candidates)
