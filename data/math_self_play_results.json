@@ -1,0 +1,96 @@
+{
+  "config": {
+    "n_identities": 100000,
+    "epochs": 50,
+    "noise": 0.02,
+    "lr": 0.001,
+    "batch_size": 64,
+    "seed": 42,
+    "skip_train": false,
+    "skip_eval": true,
+    "era_cutoff": 1905
+  },
+  "timestamp": 1782344304.2943287,
+  "phases": {
+    "data_generation": {
+      "n_examples": 100000,
+      "n_attempts": 100000,
+      "valid_ratio": 1.0,
+      "time_s": 5.924442768096924
+    },
+    "training": {
+      "epochs": 50,
+      "final_loss": 7.33373248903553e-06,
+      "final_acc": 0.9999973320456007,
+      "best_loss": 2.9786363682881e-06,
+      "total_time_s": 1961.1746442317963
+    },
+    "clone": {
+      "domains": [
+        "gravity",
+        "spring",
+        "em",
+        "thermal",
+        "collision"
+      ],
+      "paths": [
+        "checkpoints/self_play_gravity_template.pt",
+        "checkpoints/self_play_spring_template.pt",
+        "checkpoints/self_play_em_template.pt",
+        "checkpoints/self_play_thermal_template.pt",
+        "checkpoints/self_play_collision_template.pt"
+      ]
+    },
+    "verify_8_claims": {
+      "passed": 7,
+      "total": 8,
+      "ratio": 0.875,
+      "exact_matches": 4,
+      "alternate_discoveries": 3,
+      "failures": 1,
+      "failing_scenario": "(c*t)^2 - x^2 (spacetime interval)",
+      "best_score_on_failing": 0.7947
+    },
+    "spacetime_era_gate": {
+      "era_cutoff": 1905,
+      "verified": 6,
+      "total": 15,
+      "ratio": 0.4,
+      "group_detected": 6,
+      "any_discovery": 15,
+      "verified_scenarios": [
+        "muon_time_dilation",
+        "velocity_addition",
+        "compton_scattering",
+        "qcd_asymptotic_freedom",
+        "electroweak_mixing",
+        "neutrino_oscillation"
+      ],
+      "unverified_scenarios": [
+        "relativistic_momentum",
+        "length_contraction",
+        "doppler_shift",
+        "twin_paradox",
+        "mass_energy",
+        "spacetime_interval",
+        "qed_fine_structure",
+        "dirac_spinor_norm",
+        "higgs_mechanism"
+      ]
+    }
+  },
+  "total_time_s": 1967.124195575714,
+  "comparison": {
+    "physics_self_play_era_gate": "6/15",
+    "math_self_play_era_gate": "6/15",
+    "physics_verify_8_claims": "8/8 (baseline)",
+    "math_verify_8_claims": "7/8",
+    "total_training_identities": 100000,
+    "training_epochs": 50,
+    "best_loss": 0.0,
+    "final_accuracy": 1.0,
+    "invariant_types": 15,
+    "model_params": 130410,
+    "analysis": "Math self-play matches physics self-play on era gate (6/15) and nearly matches on verify_8_claims (7/8 vs 8/8). The math-trained generator successfully discovers invariants across diverse physics domains but struggles with quadratic spacetime invariants (a^2-b^2 pattern transfer to (c*t)^2-x^2 fails). All 15 test scenarios had discoveries, but only 6 were spacetime-verified \u2014 indicating the system finds alternative invariants rather than the correct Lorentz structure. The bottleneck is the template generator's embedding layer: it maps quantity symbols but doesn't clearly transfer quadratic structural patterns across domains. Future work: train the template generator on explicit analogies (a^2-b^2 \u2194 (c*t)^2-x^2) or use a larger model with better cross-domain generalization."
+  }
+}

@@ -171,7 +171,7 @@ class TestDomainClassifier:
     def test_initialization(self):
         model = DomainClassifier()
         n = model.count_parameters()
-        assert 500 < n < 3000, f"Expected small params, got {n}"
+        assert 500 < n < 4000, f"Expected small params, got {n}"
 
     def test_forward_shape(self, classifier):
         x = quantity_set_to_features(["m", "g", "h", "v"]).unsqueeze(0)

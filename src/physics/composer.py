@@ -73,6 +73,11 @@ QUANTITY_VOCAB = [
     "m1", "v1", "m2", "v2", "x1", "x2", "epsilon",
     "hbar", "omega", "c", "p", "gamma",
     "lambda", "vx", "vy", "theta", "delta_x", "delta_p", "tau",
+    # Math self-play variables (single letters)
+    "a", "b", "d", "e", "f", "i", "j", "l", "o", "s", "u", "w", "z",
+    # Math self-play multi-letter variables
+    "a0", "a1", "b0", "b1", "c0", "c1", "d0", "d1",
+    "e0", "e1", "f0", "f1", "g0", "g1", "h0", "h1",
 ]
 
 QTY_TO_IDX = {q: i for i, q in enumerate(QUANTITY_VOCAB)}
@@ -87,9 +92,10 @@ TEMPLATE_EOS_IDX = 2
 TEMPLATE_UNK_IDX = 3
 
 TEMPLATE_OPERATORS = ["+", "-", "*", "/", "^"]
-TEMPLATE_CONSTANTS = ["0", "0.5", "1", "2", "1/2", "1.4", "1.67", "8.314"]
+TEMPLATE_CONSTANTS = ["0", "0.5", "1", "2", "3", "4", "5", "1/2", "1.4", "1.67", "8.314", "pi"]
 # Symbols needed for complex expressions: parentheses and function names
-TEMPLATE_SYMBOLS = ["(", ")", "abs", "log", "delta_S", "q1", "q2", "Phi", "I"]
+TEMPLATE_SYMBOLS = ["(", ")", "abs", "log", "sin", "cos", "tan", "exp", "sqrt",
+                    "delta_S", "q1", "q2", "Phi", "I", "gcd_val", "lcm_val"]
 
 TEMPLATE_TOKENS = list(dict.fromkeys(
     TEMPLATE_SPECIAL_TOKENS
