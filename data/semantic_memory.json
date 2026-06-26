@@ -1,28 +1,28 @@
 {
   "variables": {
     "lambda": {
-      "appearances": 4,
+      "appearances": 16,
       "operations": {
-        "multiplicative": 4
+        "multiplicative": 16
       },
       "positions": {
-        "factor": 4
+        "factor": 16
       },
       "co_occurs_with": {
-        "E": 4
+        "E": 16
       }
     },
     "E": {
-      "appearances": 40,
+      "appearances": 52,
       "operations": {
-        "additive": 40,
-        "multiplicative": 40
+        "additive": 52,
+        "multiplicative": 52
       },
       "positions": {
-        "term": 40
+        "term": 52
       },
       "co_occurs_with": {
-        "lambda": 4
+        "lambda": 16
       }
     },
     "E_peak": {
@@ -333,8 +333,8 @@
   },
   "co_occurrence": {
     "E*lambda": {
-      "count": 4,
-      "confidence": 0.8
+      "count": 16,
+      "confidence": 1.0
     },
     "E_peak*R": {
       "count": 14,
@@ -398,7 +398,7 @@
     }
   },
   "templates": {
-    "product": 6,
+    "product": 18,
     "nested_fraction": 28,
     "sum": 54,
     "atomic": 43,
@@ -455,5 +455,5 @@
       ]
     }
   },
-  "discovery_count": 173
+  "discovery_count": 185
 }

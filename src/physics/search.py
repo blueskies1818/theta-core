@@ -1123,16 +1123,44 @@ def auto_discover(
     _no_neural_templates: bool = False,
     _enable_beam_search: bool = False,
 ) -> SearchResult:
-    """Automatically select and run the best discovery pipeline.
+    """Automatically select and run the best discovery pipeline."""
+    result = _auto_discover_impl(
+        quantities, observations, known_invariant,
+        discovery_threshold=discovery_threshold,
+        beam_expansions=beam_expansions,
+        _no_regime_split=_no_regime_split,
+        _no_neural_templates=_no_neural_templates,
+        _enable_beam_search=_enable_beam_search,
+    )
 
-    1. Derive target dimension from quantity types (no answer hint).
-    2. Neural template generators (cross-symbol + domain models).
-    3. Simple invariant search (always runs — O(n^2), cheap).
-    4. Beam search (disabled at top level, used for regime sub-discovery).
-    5. Grouped-quantity metric discovery (fallback).
-    6. Regime-discovery fallback (split observations into regimes).
-    7. Squared-difference structural fallback (post-processing).
-    """
+    # ── Plastic update: learn from discovery outcome ──────────────
+    if result.expression and result.score >= 0.5:
+        try:
+            from src.math.plastic_seed_scorer import update_plastic as plastic_update
+            outcome = 1.0 if result.score >= discovery_threshold else -0.1
+            import re
+            expr_vars = set(re.findall(r'\b[a-zA-Z_]\w*\b', result.expression))
+            expr_vars -= {"sin", "cos", "sqrt", "exp", "log", "abs", "tan"}
+            used_symbols = [q for q in quantities if q in expr_vars]
+            if used_symbols:
+                plastic_update(outcome, used_symbols, result.expression)
+        except Exception:
+            pass
+
+    return result
+
+
+def _auto_discover_impl(
+    quantities: dict[str, Dimension],
+    observations: list[Observation],
+    known_invariant: str | None = None,
+    *,
+    discovery_threshold: float = 0.90,
+    beam_expansions: int = 2000,
+    _no_regime_split: bool = False,
+    _no_neural_templates: bool = False,
+    _enable_beam_search: bool = False,
+) -> SearchResult:
     evaluator = ExpressionEvaluator()
     best_result = SearchResult(
         expression="", score=0.0, depth=0, expansions=0, train_constancies=[]

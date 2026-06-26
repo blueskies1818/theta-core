@@ -224,6 +224,8 @@ def score_seed(symbols: list[str], expression: str) -> float:
 def update_plastic(outcome: float, symbols: list[str] | None = None,
                    expression: str | None = None):
     """Update plastic memory with explicit (symbols, expression, outcome)."""
+    if _plastic_model is None:
+        _load_plastic()
     if _plastic_model is not None:
         _plastic_model.update(outcome, symbols, expression)
 
