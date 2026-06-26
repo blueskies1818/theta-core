@@ -831,6 +831,83 @@ def simple_invariant_search(
             if expansions > max_pairs:
                 break
 
+    # ── Mutation-based search (post-template exploration) ──
+    # If no discovery above threshold, try mutating top candidates.
+    # This replaces reliance on human-predefined templates with
+    # open-ended structural exploration.
+    if best_score < discovery_threshold:
+        try:
+            from src.math.mutate import mutation_search
+
+            seed_pool: list[tuple[float, str]] = []
+            scanned: set[str] = set()
+
+            for name in qnames:
+                if name not in scanned and not _is_trivial(name):
+                    scanned.add(name)
+                    try:
+                        scores = [evaluator.score(name, obs) for obs in observations]
+                        seed_pool.append((sum(scores)/len(scores), name))
+                    except Exception:
+                        pass
+
+            for i, a in enumerate(qnames):
+                for j, b in enumerate(qnames):
+                    if i == j: continue
+                    for op in _SIMPLE_OPS:
+                        e = f"{a}{op}{b}"
+                        if e in scanned or _is_trivial(e): continue
+                        scanned.add(e)
+                        try:
+                            scores = [evaluator.score(e, obs) for obs in observations]
+                            seed_pool.append((sum(scores)/len(scores), e))
+                        except Exception:
+                            pass
+
+            for name in qnames:
+                dim = quantities.get(name)
+                if dim is None or dim.is_scalar(): continue
+                for p in _SIMPLE_POWERS:
+                    e = f"{name}^{p}"
+                    if e in scanned or _is_trivial(e): continue
+                    scanned.add(e)
+                    try:
+                        scores = [evaluator.score(e, obs) for obs in observations]
+                        seed_pool.append((sum(scores)/len(scores), e))
+                    except Exception:
+                        pass
+
+            seed_pool.sort(key=lambda x: -x[0])
+            top_seeds = seed_pool[:15]
+
+            def _eval_fn(e: str) -> float:
+                try:
+                    scores = [evaluator.score(e, obs) for obs in observations]
+                    return sum(scores)/len(scores)
+                except Exception:
+                    return 0.0
+
+            mut_expr, mut_score = mutation_search(
+                top_seeds, qnames, _eval_fn,
+                max_mutations=300, depth=3,
+            )
+            # Mutation search can find degenerate single-var forms.
+            # Require at least 2 variables used.
+            mut_vars = set(re.findall(r'\b[a-zA-Z_]\w*\b', mut_expr)) if mut_expr else set()
+            mut_vars -= {"sin", "cos", "sqrt", "exp", "log", "abs", "tan"}
+            mut_used = mut_vars & set(qnames)
+            if mut_score > best_score and mut_expr and len(mut_used) >= 2:
+                best_score = mut_score
+                best_expr = mut_expr
+                best_depth = _ed(mut_expr)
+                expansions += 300
+                try:
+                    train_constancies = [evaluator.score(mut_expr, obs) for obs in observations]
+                except Exception:
+                    pass
+        except ImportError:
+            pass
+
     return SearchResult(
         expression=best_expr,
         score=best_score,
@@ -841,7 +918,7 @@ def simple_invariant_search(
 
 
 # ════════════════════════════════════════════════════════════
-# Auto-routing discovery
+# Pipeline Router
 # ════════════════════════════════════════════════════════════
 
 
