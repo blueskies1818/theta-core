@@ -19,8 +19,13 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 CHECKPOINT_PATH = PROJECT_ROOT / "checkpoints" / "math_self_play" / "cross_symbol_template.pt"
 NEW_CHECKPOINT_PATH = PROJECT_ROOT / "checkpoints" / "math_self_play" / "sub_expr_proposer.pt"
+GRAMMAR_CKPT_PATH = PROJECT_ROOT / "checkpoints" / "math_self_play" / "grammar_decoder.pt"
+TREE_DECODER_PATH = PROJECT_ROOT / "checkpoints" / "math_self_play" / "tree_decoder.pt"
 
 _model = None
+_grammar_model = None
+_tree_decoder: object | None = None
+_tree_symbol_map: dict[str, int] = {}
 _token_map: dict[str, int] = {}
 _inv_map: dict[int, str] = {}
 _device = "cpu"
@@ -90,7 +95,7 @@ def _try_parse(expr: str) -> bool:
 
 
 def _load_new_model():
-    """Load the sub-expression proposer checkpoint."""
+    """Load the sub-expression proposer checkpoint (fallback model)."""
     global _model, _token_map, _inv_map
     if _model is not None:
         return True
@@ -106,6 +111,52 @@ def _load_new_model():
         _model._token_map = _token_map
         _model.load_state_dict(ckpt["model_state_dict"])
         _model.eval()
+        return True
+    except Exception:
+        return False
+
+
+def _load_grammar_model():
+    """Load the grammar-constrained decoder (primary model)."""
+    global _grammar_model, _token_map, _inv_map
+    if _grammar_model is not None:
+        return True
+    if not GRAMMAR_CKPT_PATH.exists():
+        return False
+    try:
+        ckpt = torch.load(GRAMMAR_CKPT_PATH, map_location="cpu", weights_only=False)
+        from scripts.training.train_grammar_decoder import (
+            GrammarMaskedDecoder, build_grammar_mask, tokenize_symbols as g_tokenize,
+        )
+        _token_map = ckpt["token_map"]
+        _inv_map = ckpt["inv_map"]
+        config = ckpt.get("config", {"d_model": 128, "nhead": 4, "num_layers": 4})
+        _grammar_model = GrammarMaskedDecoder(vocab_size=ckpt["vocab_size"], **config)
+        _grammar_model.load_state_dict(ckpt["model_state_dict"])
+        _grammar_model.eval()
+        return True
+    except Exception:
+        return False
+
+
+def _load_tree_decoder() -> bool:
+    """Load the tree-based AST decoder (Phase C proper)."""
+    global _tree_decoder, _tree_symbol_map, _device
+    if _tree_decoder is not None:
+        return True
+    if not TREE_DECODER_PATH.exists():
+        return False
+    try:
+        ckpt = torch.load(TREE_DECODER_PATH, map_location=_device, weights_only=False)
+        from src.math.tree_decoder import TreeDecoder
+        _tree_symbol_map = ckpt["symbol_map"]
+        config = ckpt.get("config", {"d_model": 128, "nhead": 4,
+                         "num_encoder_layers": 3, "num_decoder_layers": 3,
+                         "max_seq_len": 20})
+        _tree_decoder = TreeDecoder(**config)
+        _tree_decoder.load_state_dict(ckpt["model_state_dict"])
+        _tree_decoder.to(_device)
+        _tree_decoder.eval()
         return True
     except Exception:
         return False
@@ -193,8 +244,68 @@ def propose_sub_expressions(
                     pass
             if valid_count >= len(proposals) * 0.5:
                 return [p for p in proposals if _try_parse(p)]
-            # Otherwise fall through to deterministic
-    
+            # Otherwise fall through to tree decoder
+
+    # Try tree-based AST decoder (Phase C — primary generator)
+    if _load_tree_decoder() and _tree_decoder is not None:
+        from src.math.tree_decoder import MAX_VARS
+        proposals = []
+        seen = set()
+        sym_ids = [_tree_symbol_map.get(s, 0) for s in symbols]
+        while len(sym_ids) < MAX_VARS:
+            sym_ids.append(0)
+        src = torch.tensor([sym_ids[:MAX_VARS]], device=_device)
+
+        for i in range(8):
+            torch.manual_seed(hash(f"tree_{i}_{hash(tuple(symbols))}") % (2**31))
+            results = _tree_decoder.generate(
+                src, len(symbols), var_names=symbols,
+                temperature=0.8 + i * 0.15, num_samples=5)
+            for r in results:
+                if r and r not in seen:
+                    # Clean up extra parens and test parseability
+                    clean = r.strip()
+                    if clean.startswith("(") and clean.endswith(")") and clean.count("(") == 1:
+                        clean = clean[1:-1]  # strip outer single parens
+                    if clean and clean not in seen:
+                        try:
+                            from src.physics.evaluator import ExpressionEvaluator
+                            ExpressionEvaluator().parse(clean)
+                            seen.add(clean)
+                            proposals.append(clean)
+                        except Exception:
+                            # Still include if it looks valid
+                            if any(op in clean for op in "+-*/^"):
+                                seen.add(clean)
+                                proposals.append(clean)
+
+        if proposals:
+            return proposals
+
+    # Try grammar-constrained decoder (fallback — kept for backward compat)
+    if _load_grammar_model() and _grammar_model is not None:
+        from scripts.training.train_grammar_decoder import build_grammar_mask, tokenize_symbols as g_tokenize
+        aliased = _alias_symbols(symbols)
+        src = torch.tensor([g_tokenize(aliased, _token_map)], device=_device)
+        masks = build_grammar_mask(_token_map, aliased)
+        try:
+            proposals = []
+            seen = set()
+            for i in range(8):
+                torch.manual_seed(hash(f"{i}_{hash(tuple(symbols))}") % (2**31))
+                raw = _grammar_model.generate(src, masks, temperature=1.5 + i * 0.2,
+                                              token_map=_token_map, vocab=_inv_map)
+                for r in raw:
+                    if r:
+                        unaliased = _unalias_expression(r)
+                        if unaliased and unaliased not in seen:
+                            seen.add(unaliased)
+                            proposals.append(unaliased)
+            if proposals:
+                return proposals
+        except Exception:
+            pass
+
     # Fallback: deterministic enumeration
     exprs: list[str] = []
     seen: set[str] = set()
@@ -462,6 +573,21 @@ def cross_symbol_template_search(
         ]
 
     scored_proposals.sort(key=lambda x: -x[0])
+
+    # ── Apply neural seed scorer ──
+    # Boost proposals that the model recognizes as structurally valid
+    # sub-expressions.  Penalize those that look like random noise.
+    try:
+        from src.math.seed_scorer import score_seeds as model_score_seeds
+        all_exprs = [p for _, p in scored_proposals]
+        model_scored = dict(model_score_seeds(symbols, all_exprs))
+        scored_proposals = [
+            (s + 0.3 * model_scored.get(p, 0.5), p)  # blend: 70% constancy, 30% model
+            for s, p in scored_proposals
+        ]
+        scored_proposals.sort(key=lambda x: -x[0])
+    except Exception:
+        pass  # model not available, use constancy-only scoring
 
     # Take top proposals as seeds for composition, filtered by memory.
     # Seeds that score well OR match known product pairs are kept.

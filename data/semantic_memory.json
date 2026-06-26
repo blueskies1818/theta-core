@@ -1,72 +1,195 @@
 {
   "variables": {
-    "T": {
-      "appearances": 1,
-      "operations": {
-        "additive": 1,
-        "multiplicative": 1
-      },
-      "positions": {
-        "term": 1
-      },
-      "co_occurs_with": {
-        "P": 1,
-        "V": 1
-      }
-    },
-    "P": {
-      "appearances": 1,
-      "operations": {
-        "additive": 1,
-        "multiplicative": 1
-      },
-      "positions": {
-        "term": 1
-      },
-      "co_occurs_with": {
-        "T": 1,
-        "V": 1
-      }
-    },
-    "V": {
+    "lambda": {
       "appearances": 1,
       "operations": {
         "multiplicative": 1
       },
       "positions": {
-        "denominator": 1,
         "factor": 1
       },
       "co_occurs_with": {
-        "P": 1,
-        "T": 1
+        "E": 1
+      }
+    },
+    "E": {
+      "appearances": 7,
+      "operations": {
+        "additive": 7,
+        "multiplicative": 7
+      },
+      "positions": {
+        "term": 7
+      },
+      "co_occurs_with": {
+        "lambda": 1
+      }
+    },
+    "E_peak": {
+      "appearances": 4,
+      "operations": {
+        "multiplicative": 4
+      },
+      "positions": {
+        "denominator": 4
+      },
+      "co_occurs_with": {
+        "R": 4,
+        "T": 4
+      }
+    },
+    "R": {
+      "appearances": 4,
+      "operations": {
+        "multiplicative": 4
+      },
+      "positions": {
+        "unknown": 4
+      },
+      "co_occurs_with": {
+        "E_peak": 4,
+        "T": 4
+      }
+    },
+    "T": {
+      "appearances": 4,
+      "operations": {
+        "multiplicative": 4
+      },
+      "positions": {
+        "unknown": 4
+      },
+      "co_occurs_with": {
+        "E_peak": 4,
+        "R": 4
+      }
+    },
+    "nu": {
+      "appearances": 1,
+      "operations": {
+        "multiplicative": 1
+      },
+      "positions": {
+        "denominator": 1
+      },
+      "co_occurs_with": {
+        "I": 1,
+        "d": 1
+      }
+    },
+    "d": {
+      "appearances": 1,
+      "operations": {
+        "additive": 1,
+        "multiplicative": 1
+      },
+      "positions": {
+        "term": 1
+      },
+      "co_occurs_with": {
+        "I": 1,
+        "nu": 1
+      }
+    },
+    "I": {
+      "appearances": 1,
+      "operations": {
+        "multiplicative": 1
+      },
+      "positions": {
+        "denominator": 1
+      },
+      "co_occurs_with": {
+        "d": 1,
+        "nu": 1
+      }
+    },
+    "c": {
+      "appearances": 1,
+      "operations": {
+        "additive": 1,
+        "multiplicative": 1
+      },
+      "positions": {
+        "term": 1
+      },
+      "co_occurs_with": {
+        "u": 1
+      }
+    },
+    "u": {
+      "appearances": 1,
+      "operations": {
+        "additive": 1,
+        "multiplicative": 1
+      },
+      "positions": {
+        "term": 1
+      },
+      "co_occurs_with": {
+        "c": 1
       }
     }
   },
   "co_occurrence": {
-    "P*T": {
+    "E*lambda": {
       "count": 1,
       "confidence": 0.2
     },
-    "P*V": {
+    "E_peak*R": {
+      "count": 4,
+      "confidence": 0.8
+    },
+    "E_peak*T": {
+      "count": 4,
+      "confidence": 0.8
+    },
+    "R*T": {
+      "count": 4,
+      "confidence": 0.8
+    },
+    "I*d": {
       "count": 1,
       "confidence": 0.2
     },
-    "T*V": {
+    "I*nu": {
+      "count": 1,
+      "confidence": 0.2
+    },
+    "d*nu": {
+      "count": 1,
+      "confidence": 0.2
+    },
+    "c*u": {
       "count": 1,
       "confidence": 0.2
     }
   },
   "templates": {
-    "sum": 1
+    "product": 1,
+    "nested_fraction": 5,
+    "sum": 1,
+    "atomic": 6
   },
   "constants": {
-    "P": {
+    "c": {
       "confidence": 0.2,
+      "sources": [
+        "auto"
+      ]
+    },
+    "u": {
+      "confidence": 0.2,
+      "sources": [
+        "auto"
+      ]
+    },
+    "E": {
+      "confidence": 1.0,
       "sources": [
         "auto"
       ]
     }
   },
-  "discovery_count": 1
+  "discovery_count": 13
 }

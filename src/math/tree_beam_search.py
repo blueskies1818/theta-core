@@ -238,6 +238,14 @@ def tree_beam_search(
                             continue
                         seen.add(child)
 
+                        # ── Beam guider: skip if model predicts low value ──
+                        try:
+                            from src.math.beam_guider import should_explore
+                            if not should_explore(left, right, op, threshold=0.2):
+                                continue
+                        except Exception:
+                            pass  # guider not available, explore all
+
                         dim_child = _dim(child)
                         if dim_child is None:
                             continue
