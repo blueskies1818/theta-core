@@ -17,71 +17,14 @@ import random
 import torch
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-CHECKPOINT_PATH = PROJECT_ROOT / "checkpoints" / "math_self_play" / "cross_symbol_template.pt"
-NEW_CHECKPOINT_PATH = PROJECT_ROOT / "checkpoints" / "math_self_play" / "sub_expr_proposer.pt"
-GRAMMAR_CKPT_PATH = PROJECT_ROOT / "checkpoints" / "math_self_play" / "grammar_decoder.pt"
 TREE_DECODER_PATH = PROJECT_ROOT / "checkpoints" / "math_self_play" / "tree_decoder.pt"
 
-_model = None
-_grammar_model = None
 _tree_decoder: object | None = None
 _tree_symbol_map: dict[str, int] = {}
-_token_map: dict[str, int] = {}
-_inv_map: dict[int, str] = {}
-_device = "cpu"
-
-_OP_TOKENS = {'+', '-', '*', '/', '^', '(', ')', '0', '1', '2', '-1', '0.5'}
-
-_SYMBOL_ALIAS: dict[str, str] = {
-    "K_max": "k", "nu": "n", "lambda": "l", "gamma": "g",
-    "E_peak": "e", "hbar": "q", "omega": "w",
-}
-_ALIAS_REVERSE: dict[str, str] = {v: k for k, v in _SYMBOL_ALIAS.items()}
+_device = "xpu" if torch.xpu.is_available() else "cuda" if torch.cuda.is_available() else "cpu"
 
 _BINARY_OPS = ["+", "-", "*", "/", "^"]
 _SCALAR_CONSTANTS = ["0", "0.5", "1", "2", "-1"]
-
-
-def _alias_symbols(symbols: list[str]) -> list[str]:
-    return [_SYMBOL_ALIAS.get(s, s) for s in symbols]
-
-
-def _unalias_expression(expr: str) -> str:
-    result = expr
-    for alias, original in sorted(_ALIAS_REVERSE.items(), key=lambda x: -len(x[0])):
-        result = result.replace(alias, original)
-    return result
-
-
-def _load_model():
-    global _model, _token_map, _inv_map
-    if _model is not None:
-        return
-    ckpt = torch.load(CHECKPOINT_PATH, map_location="cpu", weights_only=False)
-    from scripts.training.cross_symbol_train import CrossSymbolTemplateGenerator
-    _token_map = ckpt["token_map"]
-    _inv_map = ckpt["inv_map"]
-    config = ckpt.get("config", {"d_model": 64, "nhead": 4, "num_layers": 3, "max_seq_len": 64})
-    _model = CrossSymbolTemplateGenerator(
-        vocab_size=ckpt["vocab_size"], **config,
-    )
-    _model.load_state_dict(ckpt["model_state_dict"])
-    _model.eval()
-
-
-def _decode_tokens(seq: list[int]) -> str | None:
-    tokens = []
-    for tid in seq:
-        if tid in (_token_map.get("<pad>", 0), _token_map.get("<sos>", 1)):
-            continue
-        if tid == _token_map.get("<eos>", 2):
-            break
-        token_str = _inv_map.get(tid, "")
-        if not token_str:
-            continue
-        tokens.append(token_str)
-    expr = "".join(tokens)
-    return expr if expr else None
 
 
 def _try_parse(expr: str) -> bool:
@@ -93,50 +36,6 @@ def _try_parse(expr: str) -> bool:
     except Exception:
         return False
 
-
-def _load_new_model():
-    """Load the sub-expression proposer checkpoint (fallback model)."""
-    global _model, _token_map, _inv_map
-    if _model is not None:
-        return True
-    if not NEW_CHECKPOINT_PATH.exists():
-        return False
-    try:
-        ckpt = torch.load(NEW_CHECKPOINT_PATH, map_location="cpu", weights_only=False)
-        from scripts.training.train_sub_expr_proposer import SubExpressionProposer
-        _token_map = ckpt["token_map"]
-        _inv_map = ckpt["inv_map"]
-        config = ckpt.get("config", {"d_model": 64, "nhead": 4, "num_layers": 3, "max_seq_len": 64})
-        _model = SubExpressionProposer(vocab_size=ckpt["vocab_size"], **config)
-        _model._token_map = _token_map
-        _model.load_state_dict(ckpt["model_state_dict"])
-        _model.eval()
-        return True
-    except Exception:
-        return False
-
-
-def _load_grammar_model():
-    """Load the grammar-constrained decoder (primary model)."""
-    global _grammar_model, _token_map, _inv_map
-    if _grammar_model is not None:
-        return True
-    if not GRAMMAR_CKPT_PATH.exists():
-        return False
-    try:
-        ckpt = torch.load(GRAMMAR_CKPT_PATH, map_location="cpu", weights_only=False)
-        from scripts.training.train_grammar_decoder import (
-            GrammarMaskedDecoder, build_grammar_mask, tokenize_symbols as g_tokenize,
-        )
-        _token_map = ckpt["token_map"]
-        _inv_map = ckpt["inv_map"]
-        config = ckpt.get("config", {"d_model": 128, "nhead": 4, "num_layers": 4})
-        _grammar_model = GrammarMaskedDecoder(vocab_size=ckpt["vocab_size"], **config)
-        _grammar_model.load_state_dict(ckpt["model_state_dict"])
-        _grammar_model.eval()
-        return True
-    except Exception:
-        return False
 
 
 def _load_tree_decoder() -> bool:
@@ -169,83 +68,9 @@ def propose_sub_expressions(
 ) -> list[str]:
     """Generate sub-expression candidates.
 
-    Tries the learned neural proposer first (constrained to input symbols
-    + operators).  Falls back to deterministic enumeration if the model
-    is not available.
+    Uses tree-based AST decoder merged with deterministic enumeration.
+    Tree decoder proposes novel forms; deterministic fills in basics.
     """
-    # Try learned model
-    if _load_new_model() and _model is not None:
-        vocab_size = len(_token_map)
-        
-        # Build allowed token mask: input symbols + operators
-        allowed_ids: set[int] = set()
-        for s in symbols:
-            if s in _token_map:
-                allowed_ids.add(_token_map[s])
-            # Also try aliased versions
-            aliased = _SYMBOL_ALIAS.get(s, s)
-            if aliased != s and aliased in _token_map:
-                allowed_ids.add(_token_map[aliased])
-        for op in _OP_TOKENS:
-            if op in _token_map:
-                allowed_ids.add(_token_map[op])
-        allowed_ids.add(_token_map.get("<eos>", 2))
-        allowed_ids.add(_token_map.get("<sos>", 1))
-        
-        mask = torch.full((vocab_size,), float("-inf"))
-        for aid in allowed_ids:
-            mask[aid] = 0.0
-        
-        proposals: list[str] = []
-        seen: set[str] = set()
-        
-        for _ in range(num_samples):
-            tokens = _token_map.get("<sos>", 1)
-            src_list = [tokens] + [_token_map.get(s, 0) for s in symbols] + [tokens]
-            while len(src_list) < 16:
-                src_list.append(_token_map.get("<pad>", 0))
-            src_tensor = torch.tensor([src_list[:16]], dtype=torch.long, device=_device)
-            
-            _model.eval()
-            with torch.no_grad():
-                src_emb = _model.embedding(src_tensor) + _model.pos_encoding[:, :src_tensor.size(1), :]
-                memory = _model.encoder(src_emb)
-                
-                generated = [tokens]
-                for _ in range(24):
-                    tgt = torch.tensor([[generated[-1]]], dtype=torch.long, device=_device)
-                    tgt_emb = _model.embedding(tgt) + _model.pos_encoding[:, :tgt.size(1), :]
-                    tgt_mask_sq = torch.nn.Transformer.generate_square_subsequent_mask(1)
-                    output = _model.decoder(tgt_emb, memory, tgt_mask=tgt_mask_sq)
-                    logits = _model.output_proj(output[:, -1, :]) / max(temperature, 0.1)
-                    logits = logits + mask.unsqueeze(0)
-                    
-                    probs = torch.softmax(logits, dim=-1)
-                    next_token = torch.multinomial(probs, 1).item()
-                    generated.append(next_token)
-                    if next_token == _token_map.get("<eos>", 2):
-                        break
-                
-                expr = _decode_tokens(generated)
-                if expr and expr not in seen:
-                    seen.add(expr)
-                    proposals.append(_unalias_expression(expr))
-        
-        if proposals:
-            # Validate: at least 50% of proposals must be parseable expressions
-            from src.physics.evaluator import ExpressionEvaluator
-            ev = ExpressionEvaluator()
-            valid_count = 0
-            for p in proposals:
-                try:
-                    ev.parse(p)  # raises if malformed
-                    valid_count += 1
-                except Exception:
-                    pass
-            if valid_count >= len(proposals) * 0.5:
-                return [p for p in proposals if _try_parse(p)]
-            # Otherwise fall through to tree decoder
-
     # Try tree-based AST decoder (Phase C — primary generator)
     tree_proposals: list[str] = []
     if _load_tree_decoder() and _tree_decoder is not None:
@@ -282,30 +107,6 @@ def propose_sub_expressions(
 
         # Store tree proposals — merge with deterministic, don't return early
         tree_proposals = proposals
-
-    # Try grammar-constrained decoder (fallback — kept for backward compat)
-    if _load_grammar_model() and _grammar_model is not None:
-        from scripts.training.train_grammar_decoder import build_grammar_mask, tokenize_symbols as g_tokenize
-        aliased = _alias_symbols(symbols)
-        src = torch.tensor([g_tokenize(aliased, _token_map)], device=_device)
-        masks = build_grammar_mask(_token_map, aliased)
-        try:
-            proposals = []
-            seen = set()
-            for i in range(8):
-                torch.manual_seed(hash(f"{i}_{hash(tuple(symbols))}") % (2**31))
-                raw = _grammar_model.generate(src, masks, temperature=1.5 + i * 0.2,
-                                              token_map=_token_map, vocab=_inv_map)
-                for r in raw:
-                    if r:
-                        unaliased = _unalias_expression(r)
-                        if unaliased and unaliased not in seen:
-                            seen.add(unaliased)
-                            proposals.append(unaliased)
-            if proposals:
-                return proposals
-        except Exception:
-            pass
 
     # Fallback: deterministic enumeration
     exprs: list[str] = list(tree_proposals) if tree_proposals else []
