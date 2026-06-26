@@ -257,3 +257,143 @@ decoder) addresses #1 and #2 by enabling genuinely novel structure proposal.
 | B: Beam Guider | 🟢 Complete | 2026-06-25 |
 | C: Tree Decoder | 🟢 Complete | 2026-06-26 |
 | D: Pattern Classifier | 🔴 Not started |
+| E: Differentiable Plasticity | 🟡 Planned | 2026-06-26 |
+
+
+---
+
+## Phase E: Differentiable Plasticity
+
+### What
+Replace frozen neural models with plastic ones that reshape themselves
+during inference. A plastic weight matrix updates via Hebbian-style
+co-activation each time the system processes an experiment and evaluates
+a candidate invariant.
+
+### Why
+Current models (seed scorer, beam guider, tree decoder) are trained once
+on synthetic patterns and frozen. They cannot improve from experience.
+This is the single biggest gap between "pattern matcher" and "learner."
+
+Plasticity means: process 20 experiments across 7 domains, and the model
+arrives at correct priors (E*lambda useful, B*T not) entirely from data —
+zero synthetic training, zero label leakage from developer.
+
+### Architecture
+```
+PlasticSeedScorer:
+  frozen_branch:  Transformer encoder (pre-trained, frozen)
+  plastic_branch: Plastic weight matrix W_p (initialized to zero)
+  
+  Forward:
+    frozen_score = frozen_branch.encode(symbols, expr)
+    plastic_score = (W_p * context).sum()  
+    output = frozen_score + plastic_score
+  
+  Update (Hebbian, no backprop):
+    ΔW_p = η * outer(symbol_embedding, expr_embedding) * outcome
+    where outcome = +1 for discovery, -0.1 for rejection
+    η is a learned plasticity rate (single scalar parameter)
+
+At t=0: W_p = 0.  Model has NO prior about which sub-expressions matter.
+After processing quantum claims: W_p[E,lambda,*] increases.
+After processing thermo claims: W_p[P,V,*] increases.
+```
+
+### Training
+- Phase 1 (offline): Pre-train frozen branches on synthetic structural data
+  (same as current Phase A/B/C). This gives the model basic grammar.
+- Phase 2 (online): Process the 8 clean + 8 nuisance + 12 generalized claims
+  sequentially. W_p starts at zero. After each discovery, update W_p via
+  Hebbian rule. Track whether model predictions improve over the sequence.
+- Success metric: Model with W_p (trained only via plasticity on real data)
+  outperforms frozen model on held-out experiments.
+
+### Integration
+- Seed scorer: Plastic weights track which symbol pairs co-occur in discoveries
+- Beam guider: Plastic weights track which operator compositions produce
+  high-constancy expressions
+- Tree decoder: Plastic adaptation of generation probabilities based on
+  which structural forms succeeded in prior experiments
+
+### Success Criteria
+- Plastic model, starting from zero (W_p=0), achieves same or better
+  discovery rate as frozen model after processing 20+ experiments
+- Plastic weights converge to interpretable structure: E↔lambda↔* shows
+  high weight, B↔T↔* shows low weight
+- Model does NOT require the 50K synthetic training examples for Phase 2
+  — plasticity replaces synthetic data with genuine discovery outcomes
+- Honest: W_p encodes what the system actually discovered, not what a
+  developer told it
+
+### Honesty Check
+The plasticity rule is purely mathematical — Hebbian update, no physics
+constants, no domain hints. If the system consistently discovers "products
+are useful for quantum claims," that's extracted from data, not injected.
+The frozen branch provides grammar; the plastic branch provides experience.
+
+
+---
+
+## Bias Audit (June 2026)
+
+Every system has assumptions. These are the ones an independent reviewer
+would flag. Listed by severity, not by fix difficulty.
+
+### 1. Structural Form Templates (HIGH)
+
+`_THREE_QTY_TEMPLATES` enumerates the searchable expression forms:
+`a*b`, `a/b`, `a^2/b`, `a^2*b`, `a*b*c`, `a^2*b*c`, etc. Every form
+was hand-chosen. The system cannot discover `a*b/c^2`, `a/(b+c)`,
+`(a+b)/c`, or any form not in the list. This is the single largest
+bias — we define what the system CAN find.
+
+Mitigation path: Replace templates with a grammar-constrained symbolic
+regression that mutates successful forms (swap operators, add powers,
+nest deeper). The system explores beyond human-predefined forms.
+
+### 2. Dimension System (MEDIUM)
+
+Named dimensions (Scalar, Mass, Length, Time, Velocity, Accel, Force,
+Energy, Pressure, Volume) encode a human physics taxonomy. `auto_discover`
+infers target dimension from quantity types — if any quantity is Scalar,
+the target is Scalar. This embeds the assumption that invariants should
+be dimensionless. Many real invariants (escape velocity: v^2*r has
+dimension L^3/T^2) are not dimensionless. The dimension system also
+lacks Current, Temperature, LuminousIntensity, AmountOfSubstance — so
+electromagnetic, thermodynamic, and chemical invariants are approximated.
+
+Mitigation path: Auto-discover target dimension from clustering the
+dimensions of quantities that co-vary in data, rather than inferring
+from a fixed taxonomy.
+
+### 3. Operator Set (MEDIUM) — TACKLED 2026-06-26
+
+Parser/evaluator already supported `sin`, `cos`, `sqrt`, `exp`, `log`,
+`abs`. The gap was that the simple search templates never tried these
+forms. Added 25 transcendental templates covering:
+- Trig ratios: sin(a)/sin(b) (Snell's law)
+- Exponential decay: a*exp(b/c), exp(-a/b) (RC circuits, radioactivity)
+- Square root forms: a/sqrt(b), sqrt(a/b) (pendulum period)
+- Log relationships: log(a)/b
+
+Verified: Snell's law (sin ratio, score 1.0), RC decay (exponential,
+score 1.0), sqrt forms evaluated correctly. Universal identities
+(sin²+cos²=1) excluded — they score 1.0 on any data.
+
+### 4. All-Symbols Filter (LOW) — TACKLED 2026-06-26
+
+Relaxed from `min 2 vars + min 1 non-Scalar` to `min 1 var`. Removed
+non-Scalar dimension requirement. Constancy evaluation and cross-
+validation now handle degenerate single-var matches naturally.
+
+### 5. Training Data Distribution (LOW)
+
+The 50K synthetic examples for the tree decoder use a hand-designed
+distribution: 31% single, 17% power, 15% product, 15% ratio, 8% sum,
+11% squared-product, 3% difference. The model learns this prior. A
+natural distribution over real physics invariants might differ.
+
+Mitigation path: Phase E plasticity addresses this partially — the
+model adapts from data. Or generate training data by sampling from
+actual discovered invariants rather than a uniform prior.

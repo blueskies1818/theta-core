@@ -13,121 +13,121 @@
       }
     },
     "E": {
-      "appearances": 12,
+      "appearances": 22,
       "operations": {
-        "additive": 12,
-        "multiplicative": 12
+        "additive": 22,
+        "multiplicative": 22
       },
       "positions": {
-        "term": 12
+        "term": 22
       },
       "co_occurs_with": {
         "lambda": 1
       }
     },
     "E_peak": {
-      "appearances": 6,
+      "appearances": 10,
       "operations": {
-        "multiplicative": 6
+        "multiplicative": 10
       },
       "positions": {
-        "denominator": 6
+        "denominator": 10
       },
       "co_occurs_with": {
-        "R": 6,
-        "T": 6
+        "R": 10,
+        "T": 10
       }
     },
     "R": {
-      "appearances": 6,
+      "appearances": 10,
       "operations": {
-        "multiplicative": 6
+        "multiplicative": 10
       },
       "positions": {
-        "unknown": 6
+        "unknown": 10
       },
       "co_occurs_with": {
-        "E_peak": 6,
-        "T": 6
+        "E_peak": 10,
+        "T": 10
       }
     },
     "T": {
-      "appearances": 6,
+      "appearances": 10,
       "operations": {
-        "multiplicative": 6
+        "multiplicative": 10
       },
       "positions": {
-        "unknown": 6
+        "unknown": 10
       },
       "co_occurs_with": {
-        "E_peak": 6,
-        "R": 6
+        "E_peak": 10,
+        "R": 10
       }
     },
     "nu": {
-      "appearances": 3,
+      "appearances": 7,
       "operations": {
-        "multiplicative": 3
+        "multiplicative": 7
       },
       "positions": {
-        "denominator": 3
+        "denominator": 7
       },
       "co_occurs_with": {
-        "I": 3,
-        "d": 3
+        "I": 7,
+        "d": 7
       }
     },
     "d": {
-      "appearances": 3,
+      "appearances": 7,
       "operations": {
-        "additive": 3,
-        "multiplicative": 3
+        "additive": 7,
+        "multiplicative": 7
       },
       "positions": {
-        "term": 3
+        "term": 7
       },
       "co_occurs_with": {
-        "I": 3,
-        "nu": 3
+        "I": 7,
+        "nu": 7
       }
     },
     "I": {
-      "appearances": 3,
+      "appearances": 7,
       "operations": {
-        "multiplicative": 3
+        "multiplicative": 7
       },
       "positions": {
-        "denominator": 3
+        "denominator": 7
       },
       "co_occurs_with": {
-        "d": 3,
-        "nu": 3
+        "d": 7,
+        "nu": 7
       }
     },
     "c": {
-      "appearances": 9,
+      "appearances": 25,
       "operations": {
-        "additive": 9,
-        "multiplicative": 9
+        "additive": 25,
+        "multiplicative": 25
       },
       "positions": {
-        "term": 9
+        "term": 25
       },
       "co_occurs_with": {
-        "u": 9
+        "u": 25
       }
     },
     "u": {
-      "appearances": 9,
+      "appearances": 25,
       "operations": {
-        "additive": 9,
-        "multiplicative": 9
+        "additive": 25,
+        "multiplicative": 25
       },
       "positions": {
-        "term": 9
+        "term": 25
       },
       "co_occurs_with": {
-        "c": 9
+        "c": 25
       }
     },
     "m": {
@@ -202,14 +202,14 @@
       "co_occurs_with": {}
     },
     "t": {
-      "appearances": 10,
+      "appearances": 16,
       "operations": {
-        "additive": 10,
-        "multiplicative": 10,
-        "power_base": 9
+        "additive": 16,
+        "multiplicative": 16,
+        "power_base": 15
       },
       "positions": {
-        "term": 10
+        "term": 16
       },
       "co_occurs_with": {}
     },
@@ -266,29 +266,68 @@
       }
     },
     "v": {
-      "appearances": 4,
+      "appearances": 10,
       "operations": {
-        "multiplicative": 4,
-        "power_base": 4
+        "multiplicative": 10,
+        "power_base": 10
       },
       "positions": {
-        "denominator": 4
+        "denominator": 10
       },
       "co_occurs_with": {
-        "K": 4
+        "K": 10
       }
     },
     "K": {
-      "appearances": 4,
+      "appearances": 10,
       "operations": {
-        "additive": 4,
-        "multiplicative": 4
+        "additive": 10,
+        "multiplicative": 10
       },
       "positions": {
-        "term": 4
+        "term": 10
       },
       "co_occurs_with": {
-        "v": 4
+        "v": 10
+      }
+    },
+    "n2": {
+      "appearances": 1,
+      "operations": {
+        "power_base": 1
+      },
+      "positions": {
+        "unknown": 1
+      },
+      "co_occurs_with": {
+        "theta1": 1,
+        "theta2": 1
+      }
+    },
+    "theta2": {
+      "appearances": 1,
+      "operations": {
+        "multiplicative": 1
+      },
+      "positions": {
+        "unknown": 1
+      },
+      "co_occurs_with": {
+        "n2": 1,
+        "theta1": 1
+      }
+    },
+    "theta1": {
+      "appearances": 1,
+      "operations": {
+        "multiplicative": 1
+      },
+      "positions": {
+        "denominator": 1
+      },
+      "co_occurs_with": {
+        "n2": 1,
+        "theta2": 1
       }
     }
   },
@@ -298,31 +337,31 @@
       "confidence": 0.2
     },
     "E_peak*R": {
-      "count": 6,
+      "count": 10,
       "confidence": 1.0
     },
     "E_peak*T": {
-      "count": 6,
+      "count": 10,
       "confidence": 1.0
     },
     "R*T": {
-      "count": 6,
+      "count": 10,
       "confidence": 1.0
     },
     "I*d": {
-      "count": 3,
-      "confidence": 0.6000000000000001
+      "count": 7,
+      "confidence": 1.0
     },
     "I*nu": {
-      "count": 3,
-      "confidence": 0.6000000000000001
+      "count": 7,
+      "confidence": 1.0
     },
     "d*nu": {
-      "count": 3,
-      "confidence": 0.6000000000000001
+      "count": 7,
+      "confidence": 1.0
     },
     "c*u": {
-      "count": 9,
+      "count": 25,
       "confidence": 1.0
     },
     "q1*q2": {
@@ -342,17 +381,29 @@
       "confidence": 0.2
     },
     "K*v": {
-      "count": 4,
-      "confidence": 0.8
+      "count": 10,
+      "confidence": 1.0
+    },
+    "n2*theta1": {
+      "count": 1,
+      "confidence": 0.2
+    },
+    "n2*theta2": {
+      "count": 1,
+      "confidence": 0.2
+    },
+    "theta1*theta2": {
+      "count": 1,
+      "confidence": 0.2
     }
   },
   "templates": {
     "product": 2,
-    "nested_fraction": 9,
-    "sum": 14,
-    "atomic": 18,
-    "power": 12,
-    "ratio": 4
+    "nested_fraction": 18,
+    "sum": 30,
+    "atomic": 28,
+    "power": 18,
+    "ratio": 10
   },
   "constants": {
     "c": {
@@ -404,5 +455,5 @@
       ]
     }
   },
-  "discovery_count": 59
+  "discovery_count": 106
 }

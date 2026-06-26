@@ -32,6 +32,23 @@ _THREE_QTY_TEMPLATES = [
     # Powers combined with other variables (structural tier 2)
     "{a}^2*{b}", "{a}*{b}^2",
     "{a}^2*{b}*{c}", "{a}*{b}^2*{c}", "{a}*{b}*{c}^2",
+    # Transcendental functions — pure math, zero physics
+    # NOTE: universal identities (sin²+cos²=1) are excluded — they score 1.0
+    # on any data and drown out genuine discoveries.
+    "sin({a})", "cos({a})", "sqrt({a})", "exp({a})", "log({a})", "abs({a})",
+    "sin({a})/sin({b})", "sin({a})/cos({a})",
+    "{a}*sin({b})", "{a}*exp({b})", "{a}*exp(-{b})",
+    "exp(-{a}*{b})", "sqrt({a}/{b})", "{a}*exp(-{b}*{c})",
+    # Exponential relationships
+    "{a}*exp({b}*{c})", "exp({a}*{b})/{c}",
+    "{a}/exp({b})", "log({a})/{b}",
+    "{a}*exp({b}/{c})", "exp({a}/{b})", "exp(-{a}/{b})",
+    # Trig combinations
+    "sin({a})*cos({b})", "{a}*cos({b})",
+    "sin({a})^2", "cos({a})^2",
+    # sqrt combinations
+    "sqrt({a}*{b})", "{a}/sqrt({b})", "sqrt({a})/{b}",
+    "{a}*sqrt({b})",
 ]
 _SIMPLE_OPS = ["*", "/"]
 _SIMPLE_POWERS = [2, -1, -2]
@@ -1233,23 +1250,12 @@ def _all_symbols_present(expr: str, quantities: dict) -> bool:
     result_vars = set(_re.findall(r'\b[a-zA-Z_]\w*\b', expr))
     result_vars -= {"sin", "cos", "sqrt", "exp", "log", "abs", "tan"}
     qty_vars = set(quantities.keys())
-    # 2 quantities: require both (prevents "E" for E²-p²)
-    # 3+ quantities: require at least 2 variables total, AND at least
-    #   1 non-Scalar variable (prevents degenerate expressions that use
-    #   only nuisance scalars like d/I+I/nu)
-    required = 2 if len(qty_vars) >= 2 else len(qty_vars)
+    # Require at least 1 used variable — constancy evaluation and
+    # cross-validation handle single-variable degenerates naturally.
+    required = 1 if len(qty_vars) >= 1 else 0
     used = result_vars & qty_vars
     if len(used) < required:
         return False
-    # For 4+ quantities, ensure at least 1 used var has non-Scalar dimension
-    if len(qty_vars) >= 4:
-        non_scalar_used = any(
-            v in used and quantities.get(v) is not None
-            and str(quantities[v]) not in ("Scalar", "Scalar/time", "Scalar*length")
-            for v in used
-        )
-        if not non_scalar_used:
-            return False
     return True
 
 
