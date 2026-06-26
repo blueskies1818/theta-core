@@ -64,10 +64,10 @@ Instrument Data → Neural Template Generators
                  ←── feeds back into Seed Scorer ──┐
                       │                            │
                       ▼                            │
-                 DISCOVERY REPORT                   │
+                 DISCOVERY REPORT                  │
                       │                            │
                       ▼                            │
-                 Relationship Extraction ◄──────────┘
+                 Relationship Extraction ◄─────────┘
                  (read learned structural preferences)
 ```
 
