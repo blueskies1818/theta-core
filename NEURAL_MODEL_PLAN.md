@@ -352,20 +352,19 @@ Mitigation path: Replace templates with a grammar-constrained symbolic
 regression that mutates successful forms (swap operators, add powers,
 nest deeper). The system explores beyond human-predefined forms.
 
-### 2. Dimension System (MEDIUM)
+### 2. Dimension System (MEDIUM) — TACKLED 2026-06-26
 
-Named dimensions (Scalar, Mass, Length, Time, Velocity, Accel, Force,
-Energy, Pressure, Volume) encode a human physics taxonomy. `auto_discover`
-infers target dimension from quantity types — if any quantity is Scalar,
-the target is Scalar. This embeds the assumption that invariants should
-be dimensionless. Many real invariants (escape velocity: v^2*r has
-dimension L^3/T^2) are not dimensionless. The dimension system also
-lacks Current, Temperature, LuminousIntensity, AmountOfSubstance — so
-electromagnetic, thermodynamic, and chemical invariants are approximated.
+Removed human-inferred target dimension from `auto_discover`. Previously
+hardcoded: if Scalar present → target=Scalar, else if all Energy →
+target=Energy, else compound/Energy fallback. This embedded the assumption
+that invariants should be dimensionless and encoded a human taxonomy.
 
-Mitigation path: Auto-discover target dimension from clustering the
-dimensions of quantities that co-vary in data, rather than inferring
-from a fixed taxonomy.
+Replaced with dimension-agnostic search (`target_dim=None`). The
+evaluator already rejects dimension-mismatched expressions during
+evaluation — no human taxonomy needed to gate the search pipelines.
+Beam search already handled `target_dim=None` natively.
+
+All 28 claims still pass with zero regressions.
 
 ### 3. Operator Set (MEDIUM) — TACKLED 2026-06-26
 

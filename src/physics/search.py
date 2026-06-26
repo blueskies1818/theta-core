@@ -1061,20 +1061,10 @@ def auto_discover(
         expression="", score=0.0, depth=0, expansions=0, train_constancies=[]
     )
 
-    # Derive target dimension from the quantity dimensions in the observation.
-    # If quantities include Scalars or mixed dimensions, the invariant likely
-    # produces a dimensionless (Scalar) result.  If all dimensions are Energy,
-    # the invariant is Energy-valued.  Otherwise, it's compound.
-    dims = {str(d) for d in quantities.values()}
-    scalars = dims & {"Scalar", "Scalar/time", "Scalar*length"}
-    if scalars:
-        target_dim = "Scalar"
-    elif dims == {"Energy"}:
-        target_dim = "Energy"
-    elif dims:
-        target_dim = "compound"
-    else:
-        target_dim = "Energy"
+    # Dimension-aware evaluation is handled by the evaluator itself —
+    # it rejects expressions with dimension mismatches at evaluation time.
+    # We do not infer a target dimension from human taxonomy.
+    # All search pipelines run dimension-agnostic (target_dim=None).
 
     # Pipeline 0: Neural template generators (for complex invariants).
     # Domain-specific transformer decoders that learned to map quantity
@@ -1120,9 +1110,7 @@ def auto_discover(
     # coincidences.  But regime sub-discovery (called from Pipeline 3.5)
     # needs it as a fallback when the model can't find piecewise invariants.
     if _enable_beam_search:
-        search_target = (
-            target_dim if target_dim in ("Energy", "Scalar") else None
-        )
+        # Run dimension-agnostic — evaluator handles dimension mismatches.
         search = ExpressionSearch(
             quantities=quantities,
             train_observations=observations,
@@ -1130,7 +1118,7 @@ def auto_discover(
             max_expansions=beam_expansions,
             discovery_threshold=discovery_threshold,
             top_k=20,
-            target_dim=search_target,
+            target_dim=None,
         )
         result = search.run()
         refined = _refine_canonical(result, evaluator, observations)
