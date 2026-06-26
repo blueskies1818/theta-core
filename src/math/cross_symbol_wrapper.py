@@ -376,15 +376,17 @@ def cross_symbol_template_search(
 
     scored_proposals.sort(key=lambda x: -x[0])
 
-    # ── Apply neural seed scorer ──
-    # Boost proposals that the model recognizes as structurally valid
-    # sub-expressions.  Penalize those that look like random noise.
+    # ── Apply neural seed scorer (plastic) ──
+    # Boost proposals that the model recognizes from prior experience.
+    # Plastic adaptation accumulates over experiments.
     try:
         from src.math.seed_scorer import score_seeds as model_score_seeds
+        from src.math.plastic_seed_scorer import score_seed as plastic_score_seed, update_plastic as plastic_update
         all_exprs = [p for _, p in scored_proposals]
         model_scored = dict(model_score_seeds(symbols, all_exprs))
+        # Blend frozen + plastic scores
         scored_proposals = [
-            (s + 0.3 * model_scored.get(p, 0.5), p)  # blend: 70% constancy, 30% model
+            (s + 0.3 * plastic_score_seed(symbols, p), p)
             for s, p in scored_proposals
         ]
         scored_proposals.sort(key=lambda x: -x[0])
@@ -496,6 +498,14 @@ def cross_symbol_template_search(
             mem_save(_mem)
         except Exception:
             pass
+
+    # ── Plastic update: learn from this discovery ──
+    try:
+        from src.math.plastic_seed_scorer import update_plastic as plastic_update_fn
+        outcome = 1.0 if final_score >= discovery_threshold else -0.1
+        plastic_update_fn(outcome, symbols, best_expr)
+    except Exception:
+        pass
 
     return SearchResult(
         expression=best_expr, score=final_score, depth=1,
