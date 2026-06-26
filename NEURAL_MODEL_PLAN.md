@@ -340,17 +340,18 @@ The frozen branch provides grammar; the plastic branch provides experience.
 Every system has assumptions. These are the ones an independent reviewer
 would flag. Listed by severity, not by fix difficulty.
 
-### 1. Structural Form Templates (HIGH)
+### 1. Structural Form Templates (HIGH) — INFRASTRUCTURE 2026-06-26
 
-`_THREE_QTY_TEMPLATES` enumerates the searchable expression forms:
-`a*b`, `a/b`, `a^2/b`, `a^2*b`, `a*b*c`, `a^2*b*c`, etc. Every form
-was hand-chosen. The system cannot discover `a*b/c^2`, `a/(b+c)`,
-`(a+b)/c`, or any form not in the list. This is the single largest
-bias — we define what the system CAN find.
+Replaced reliance on human-predefined templates with a mutation-based
+expression search engine (`src/math/mutate.py`). When template search
+finds nothing above threshold, top-scoring seeds are mutated through
+operator swaps, power adjustments, function wrapping, and variable
+extension/contraction. Requires 2+ variables for mutation results.
 
-Mitigation path: Replace templates with a grammar-constrained symbolic
-regression that mutates successful forms (swap operators, add powers,
-nest deeper). The system explores beyond human-predefined forms.
+Status: Infrastructure deployed. Heuristic tuning remains — mutation
+currently finds valid forms but optimizer favors degenerate coincidences
+over genuine novel structure. Direction is correct: structural exploration
+replaces human enumeration.
 
 ### 2. Dimension System (MEDIUM) — TACKLED 2026-06-26
 
