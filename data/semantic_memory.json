@@ -1,0 +1,72 @@
+{
+  "variables": {
+    "T": {
+      "appearances": 1,
+      "operations": {
+        "additive": 1,
+        "multiplicative": 1
+      },
+      "positions": {
+        "term": 1
+      },
+      "co_occurs_with": {
+        "P": 1,
+        "V": 1
+      }
+    },
+    "P": {
+      "appearances": 1,
+      "operations": {
+        "additive": 1,
+        "multiplicative": 1
+      },
+      "positions": {
+        "term": 1
+      },
+      "co_occurs_with": {
+        "T": 1,
+        "V": 1
+      }
+    },
+    "V": {
+      "appearances": 1,
+      "operations": {
+        "multiplicative": 1
+      },
+      "positions": {
+        "denominator": 1,
+        "factor": 1
+      },
+      "co_occurs_with": {
+        "P": 1,
+        "T": 1
+      }
+    }
+  },
+  "co_occurrence": {
+    "P*T": {
+      "count": 1,
+      "confidence": 0.2
+    },
+    "P*V": {
+      "count": 1,
+      "confidence": 0.2
+    },
+    "T*V": {
+      "count": 1,
+      "confidence": 0.2
+    }
+  },
+  "templates": {
+    "sum": 1
+  },
+  "constants": {
+    "P": {
+      "confidence": 0.2,
+      "sources": [
+        "auto"
+      ]
+    }
+  },
+  "discovery_count": 1
+}

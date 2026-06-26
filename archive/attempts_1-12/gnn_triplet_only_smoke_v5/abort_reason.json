@@ -1,5 +1,0 @@
-{
-  "gate": "B",
-  "message": "GATE B FAILED at epoch 1: val MRR 0.0001 < 0.6",
-  "timestamp": 1781978565.9476378
-}

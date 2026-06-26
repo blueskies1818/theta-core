@@ -1,8 +1,0 @@
-{
-  "gnn_checkpoint": "checkpoints/gnn/proof_step_pretrained.pt",
-  "num_samples": 5000,
-  "epochs": 25,
-  "lr": 0.001,
-  "best_test_acc": 0.965,
-  "elapsed_s": 1.3
-}

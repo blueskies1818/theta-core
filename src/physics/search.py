@@ -886,7 +886,22 @@ def _neural_template_search(
     nested expressions (parentheses, grouped powers, nested fractions)
     that deterministic beam search cannot express.
     """
+
     try:
+        # Cross-symbol math model (trained on pure structural patterns).
+        # Try this FIRST — genuinely learned, not hand-written.
+        # Cross-validation (train/test split) inside cross_symbol_template_search
+        # already provides an honest score — no need for threshold relaxation.
+        try:
+            from src.math.cross_symbol_wrapper import cross_symbol_template_search
+            cs_result = cross_symbol_template_search(
+                quantities, observations, discovery_threshold,
+            )
+            if cs_result is not None and cs_result.score >= discovery_threshold:
+                return cs_result
+        except Exception:
+            pass
+
         from pathlib import Path
         import torch
 
@@ -1009,75 +1024,37 @@ def auto_discover(
     beam_expansions: int = 2000,
     _no_regime_split: bool = False,
     _no_neural_templates: bool = False,
+    _enable_beam_search: bool = False,
 ) -> SearchResult:
     """Automatically select and run the best discovery pipeline.
 
-    1. Classify invariant dimension from known_invariant
-    2. Simple ratios/products → simple_invariant_search
-    3. Energy multi-term → ExpressionSearch
-    4. Compound/dimension-agnostic → ExpressionSearch (target_dim=None)
-    5. (New) Regime discovery: if best global expression scores < 0.90,
-       split observations into regimes and re-discover per regime.
+    1. Derive target dimension from quantity types (no answer hint).
+    2. Neural template generators (cross-symbol + domain models).
+    3. Simple invariant search (always runs — O(n^2), cheap).
+    4. Beam search (disabled at top level, used for regime sub-discovery).
+    5. Grouped-quantity metric discovery (fallback).
+    6. Regime-discovery fallback (split observations into regimes).
+    7. Squared-difference structural fallback (post-processing).
     """
     evaluator = ExpressionEvaluator()
     best_result = SearchResult(
         expression="", score=0.0, depth=0, expansions=0, train_constancies=[]
     )
 
-    target_dim = "Energy"
-    if known_invariant:
-        dim_lookup = dict(quantities)
-        for c in ["0", "0.5", "1", "2", "-1"]:
-            dim_lookup[c] = Dimension.scalar()
-
-        try:
-            ast = evaluator.parse(known_invariant)
-            from src.physics.evaluator import (
-                NumberNode, VarNode, BinOpNode,
-            )
-
-            def dim_of(node) -> Dimension | None:
-                if isinstance(node, NumberNode):
-                    return Dimension.scalar()
-                if isinstance(node, VarNode):
-                    d = dim_lookup.get(node.name)
-                    if d is None:
-                        return Dimension.scalar()
-                    return d
-                if isinstance(node, BinOpNode):
-                    ld = dim_of(node.left)
-                    rd = dim_of(node.right)
-                    if ld is None or rd is None:
-                        return None
-                    try:
-                        if node.op in ("+", "-"):
-                            if isinstance(node.left, NumberNode):
-                                return rd
-                            if isinstance(node.right, NumberNode):
-                                return ld
-                            return ld if ld.compatible_with(rd) else None
-                        elif node.op == "*":
-                            return ld * rd
-                        elif node.op == "/":
-                            return ld / rd
-                        elif node.op == "^":
-                            if isinstance(node.right, NumberNode):
-                                return ld ** float(node.right.value)
-                    except Exception:
-                        pass
-                return None
-
-            d = dim_of(ast)
-            if d is not None:
-                dim_name = str(d)
-                if dim_name == "Energy":
-                    target_dim = "Energy"
-                elif dim_name == "Scalar":
-                    target_dim = "Scalar"
-                else:
-                    target_dim = "compound"
-        except Exception:
-            target_dim = None
+    # Derive target dimension from the quantity dimensions in the observation.
+    # If quantities include Scalars or mixed dimensions, the invariant likely
+    # produces a dimensionless (Scalar) result.  If all dimensions are Energy,
+    # the invariant is Energy-valued.  Otherwise, it's compound.
+    dims = {str(d) for d in quantities.values()}
+    scalars = dims & {"Scalar", "Scalar/time", "Scalar*length"}
+    if scalars:
+        target_dim = "Scalar"
+    elif dims == {"Energy"}:
+        target_dim = "Energy"
+    elif dims:
+        target_dim = "compound"
+    else:
+        target_dim = "Energy"
 
     # Pipeline 0: Neural template generators (for complex invariants).
     # Domain-specific transformer decoders that learned to map quantity
@@ -1095,20 +1072,16 @@ def auto_discover(
             quantities, observations,
             discovery_threshold=discovery_threshold,
         )
-    if neural_result is not None:
-        if neural_result.score > best_result.score:
-            best_result = neural_result
-        # Apply canonical refinement to neural results
-        refined = _refine_canonical(neural_result, evaluator, observations)
-        if refined.score >= discovery_threshold:
-            return refined
+    if neural_result is not None and neural_result.score >= discovery_threshold:
+        # Post-filter: ensure expression uses all input quantities
+        if _all_symbols_present(neural_result.expression, quantities):
+            return neural_result
+        # Fall through to other pipelines
 
-    # Pipeline 1: Simple search for simple ratios/products
-    use_simple = target_dim in ("compound", "Scalar")
-    if not use_simple and target_dim == "Energy" and known_invariant:
-        if _is_simple_ratio(known_invariant):
-            use_simple = True
-
+    # Pipeline 1: Simple search — always run.
+    # O(n²) enumeration of products, ratios, sums, differences.
+    # Cheap and catches most 2-3 variable claims without hints.
+    use_simple = True
     if use_simple:
         result = simple_invariant_search(
             quantities, observations,
@@ -1116,29 +1089,36 @@ def auto_discover(
         )
         refined = _refine_canonical(result, evaluator, observations)
         if refined.score >= discovery_threshold:
-            return refined
+            if _all_symbols_present(refined.expression, quantities):
+                return refined
+
         if result.score > best_result.score:
             best_result = result
 
-    # Pipeline 2: Beam search
-    search_target = (
-        target_dim if target_dim in ("Energy", "Scalar") else None
-    )
-    search = ExpressionSearch(
-        quantities=quantities,
-        train_observations=observations,
-        max_depth=8,
-        max_expansions=beam_expansions,
-        discovery_threshold=discovery_threshold,
-        top_k=20,
-        target_dim=search_target,
-    )
-    result = search.run()
-    refined = _refine_canonical(result, evaluator, observations)
-    if refined.score >= discovery_threshold:
-        return refined
-    if result.score > best_result.score:
-        best_result = result
+    # Pipeline 2: Beam search — only for regime sub-discovery.
+    # At the top level beam search is disabled — it produces high-scoring
+    # coincidences.  But regime sub-discovery (called from Pipeline 3.5)
+    # needs it as a fallback when the model can't find piecewise invariants.
+    if _enable_beam_search:
+        search_target = (
+            target_dim if target_dim in ("Energy", "Scalar") else None
+        )
+        search = ExpressionSearch(
+            quantities=quantities,
+            train_observations=observations,
+            max_depth=8,
+            max_expansions=beam_expansions,
+            discovery_threshold=discovery_threshold,
+            top_k=20,
+            target_dim=search_target,
+        )
+        result = search.run()
+        refined = _refine_canonical(result, evaluator, observations)
+        if refined.score >= discovery_threshold:
+            if _all_symbols_present(refined.expression, quantities):
+                return refined
+        if result.score > best_result.score:
+            best_result = result
 
     # Pipeline 3: Grouped-quantity metric discovery (only as fallback)
     # Only run if no discovery yet AND there are multiple observations
@@ -1175,7 +1155,6 @@ def auto_discover(
     if (
         not _no_regime_split
         and best_result.score < discovery_threshold
-        and best_result.expression
     ):
         regime_result = _attempt_regime_discovery(
             quantities, observations,
@@ -1188,10 +1167,87 @@ def auto_discover(
         if regime_result is not None and regime_result.score > best_result.score:
             best_result = regime_result
 
+    # Post-processing: try squared-difference of same-dimension pairs.
+    # This catches invariants like E²-p² that simple_search cannot find
+    # because a simple product/ratio of energy quantities gives Energy²
+    # (not a standard target dimension).
+    # Run when no valid discovery yet OR when best result fails all-symbols.
+    if best_result.score < discovery_threshold or not _all_symbols_present(best_result.expression, quantities):
+        qnames = list(quantities.keys())
+        sq_best = None
+        for i, a in enumerate(qnames):
+            da = quantities.get(a)
+            if da is None:
+                continue
+            for b in qnames[i+1:]:
+                db = quantities.get(b)
+                if db is None or not da.compatible_with(db):
+                    continue
+                candidate = f"{a}^2-{b}^2"
+                s = sum(evaluator.score(candidate, o) for o in observations) / len(observations)
+                if s >= discovery_threshold and _all_symbols_present(candidate, quantities):
+                    if sq_best is None or s > sq_best.score:
+                        sq_best = SearchResult(expression=candidate, score=s,
+                            depth=2, expansions=0,
+                            train_constancies=[evaluator.score(candidate, o) for o in observations])
+        if sq_best is not None:
+            best_result = sq_best
+
     # Final fallback: refine whatever we found
     best_result = _refine_canonical(best_result, evaluator, observations)
 
+    # Post-filter: discovered expression must use enough quantity symbols.
+    if best_result.expression:
+        if not _all_symbols_present(best_result.expression, quantities):
+            return SearchResult(expression="", score=0.0, depth=0,
+                                expansions=0, train_constancies=[])
+
+    # ── Memory: learn from discovered invariant ────────────────────
+    if best_result.expression and best_result.score >= discovery_threshold:
+        try:
+            from src.memory import load_memory, update_memory, save_memory
+            _mem = load_memory()
+            update_memory(_mem, best_result.expression, evaluator=evaluator,
+                          observations=observations, domain='auto')
+            save_memory(_mem)
+        except Exception:
+            pass
+
     return best_result
+
+
+def _all_symbols_present(expr: str, quantities: dict) -> bool:
+    """Check that expression uses enough quantity symbols.
+
+    2-quantity claims: require BOTH (E²-p² needs both E and p).
+    3-quantity claims: require ALL THREE (c+u doesn't use v).
+    4+: require at most 1 missing.
+    A single-variable expression never qualifies.
+    """
+    if not expr:
+        return False
+    import re as _re
+    result_vars = set(_re.findall(r'\b[a-zA-Z_]\w*\b', expr))
+    result_vars -= {"sin", "cos", "sqrt", "exp", "log", "abs", "tan"}
+    qty_vars = set(quantities.keys())
+    # 2 quantities: require both (prevents "E" for E²-p²)
+    # 3+ quantities: require at least 2 variables total, AND at least
+    #   1 non-Scalar variable (prevents degenerate expressions that use
+    #   only nuisance scalars like d/I+I/nu)
+    required = 2 if len(qty_vars) >= 2 else len(qty_vars)
+    used = result_vars & qty_vars
+    if len(used) < required:
+        return False
+    # For 4+ quantities, ensure at least 1 used var has non-Scalar dimension
+    if len(qty_vars) >= 4:
+        non_scalar_used = any(
+            v in used and quantities.get(v) is not None
+            and str(quantities[v]) not in ("Scalar", "Scalar/time", "Scalar*length")
+            for v in used
+        )
+        if not non_scalar_used:
+            return False
+    return True
 
 
 # ════════════════════════════════════════════════════════════
@@ -1271,12 +1327,19 @@ def _attempt_regime_discovery(
         best_expr, observations, evaluator,
         min_regime_size=min_regime_size + 1,  # leave room for test split
     )
-    if split is None:
-        return None
-
-    # Require a meaningful gap — at least 0.15 score difference.
-    if split["gap"] < 0.15:
-        return None
+    # If the best expression doesn't reveal a clear regime split
+    # (e.g., it's roughly constant in both regimes), try raw quantities
+    # that may vary sharply between regimes (K_max, velocity, etc.).
+    if split is None or split["gap"] < 0.15:
+        for qty in quantities:
+            split = find_regime_threshold(
+                qty, observations, evaluator,
+                min_regime_size=min_regime_size + 1,
+            )
+            if split is not None and split["gap"] >= 0.15:
+                break
+        else:
+            return None
 
     regime_a = split["regime_a_obs"]
     regime_b = split["regime_b_obs"]
@@ -1309,6 +1372,7 @@ def _attempt_regime_discovery(
             discovery_threshold=discovery_threshold,
             beam_expansions=beam_expansions,
             _no_regime_split=True,
+            _enable_beam_search=True,  # regime sub-discovery needs beam search
         )
 
         if not regime_result.expression:

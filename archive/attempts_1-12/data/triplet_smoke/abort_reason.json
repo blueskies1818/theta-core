@@ -1,5 +1,0 @@
-{
-  "gate": "B",
-  "message": "GATE B FAILED at epoch 2: MRR=0.000081 < 0.60 threshold. Triplet-only approach is degrading retrieval.",
-  "timestamp": 1781973867.468611
-}

@@ -681,18 +681,44 @@ class ExpressionEvaluator:
         if len(obs.timesteps) < 2:
             return 0.0
 
+        # Gate: expressions with no variables (pure numbers like "2+2")
+        # are trivially constant — they're just arithmetic results.
+        var_names = _collect_var_names(ast)
+        if not var_names:
+            return 0.0
+
         # Gate: at least one variable must actually change across timesteps.
         # Uses precomputed varying-quantities cache — O(1) per expression.
-        var_names = _collect_var_names(ast)
-        if var_names:
-            varying = self._get_varying_quantities(obs)
-            if not (var_names & varying):
-                return 0.0
+        varying = self._get_varying_quantities(obs)
+        if not (var_names & varying):
+            return 0.0
 
         # Gate: expressions that algebraically cancel their own variables
         # (e.g. 1/v*1*v → always 2) are trivially constant — the variable
         # appears in both numerator and denominator with net exponent 0.
         if _has_self_cancellation(ast):
+            return 0.0
+
+        # Gate: term dominance — if one additive term's magnitude overwhelms
+        # the others, the expression's constancy is degenerate.
+        # Example: (t*x)^2 - c^2 where c=3e8 makes c^2 ≈ 9e16 dominate
+        # (t*x)^2 ≈ 4e4.  The expression is "constant" only because one
+        # term soaks up all the variation.  Not a genuine invariant.
+        if _has_term_dominance(ast, obs):
+            return 0.0
+
+        # Gate: near-identity power — if a power operation's base is
+        # always within 1% of 1.0, the power is degenerate (1^y = 1
+        # regardless of exponent).  Catches (c^t)^x where tiny t makes
+        # c^t ≈ 1.00002, making the whole expression ≈ constant.
+        if _has_near_identity_power(ast, obs):
+            return 0.0
+
+        # Gate: numerical underflow — if the expression evaluates to
+        # zero (or near-zero) at every timestep due to extreme exponents
+        # rather than algebraic cancellation, it's not a genuine invariant.
+        # Catches t^(c+x) where t≈1e-6, c+x≈3e8 → underflows to 0.0.
+        if _has_numerical_collapse(ast, obs):
             return 0.0
 
         values: list[float] = []
@@ -754,34 +780,261 @@ def _collect_var_names(node: "ExprNode") -> set[str]:
 
 
 def _has_self_cancellation(node: "ExprNode") -> bool:
-    """Check if any additive term contains a variable that cancels itself.
+    """Check if a variable algebraically cancels itself — either within a
+    multiplicative group (v/v, 1/v*v) or across additive terms (-a+a, a-a).
 
-    A variable "cancels itself" when it appears in both numerator and
-    denominator within the same multiplicative group, giving net exponent 0.
-    Example: 1/v*1*v — v has exponent +1 (from *v) and -1 (from 1/v),
-    net 0. The expression simplifies to a constant regardless of v's
-    value — its constancy is algebraic, not physical.
+    Within a multiplicative group: a variable has net exponent 0 (appears in
+    both numerator and denominator with equal total power).
 
-    This is checked per additive term (split by top-level +/-)
-    because x + 1/x is NOT self-canceling — x varies across terms.
+    Across additive terms: the same variable structure appears with opposite
+    signs and the net contribution is zero.  This catches patterns like
+    -psi+psi that always evaluate to 0 regardless of the variable's value.
+    We require that EVERY variable group cancels (net 0) — if any variable
+    has a non-zero net contribution the expression varies with that variable
+    and is not self-cancelling.  Constants (terms with no variables) do not
+    prevent cancellation.
+
+    Additive cancellation is checked once at the top level (the flattened
+    tree already includes nested +/-).  Recursive calls only check
+    multiplicative cancellation so that -a+a inside a larger expression
+    like -a+a+b is NOT falsely flagged — the outer variable b prevents
+    the overall expression from being self-cancelling.
     """
+    return _has_multiplicative_cancellation(node) or _has_additive_cancellation(node)
+
+
+def _has_multiplicative_cancellation(node: "ExprNode") -> bool:
+    """Check for cancellation within multiplicative groups (v/v, 1/v*v)."""
     if isinstance(node, (NumberNode, VarNode, FuncNode)):
         return False
 
     if isinstance(node, BinOpNode):
         if node.op in ("+", "-"):
-            return (_has_self_cancellation(node.left)
-                    or _has_self_cancellation(node.right))
+            return (_has_multiplicative_cancellation(node.left)
+                    or _has_multiplicative_cancellation(node.right))
 
         # Multiplicative group (*, /, ^): collect variable exponents.
         exponents: dict[str, float] = {}
         _collect_multiplicative_exponents(node, exponents, sign=1.0)
-
         for exp in exponents.values():
             if abs(exp) < 1e-9:
                 return True
 
     return False
+
+
+def _has_additive_cancellation(node: "ExprNode") -> bool:
+    """Check for cancellation across additive terms (-a+a, a-a)."""
+    if isinstance(node, (NumberNode, VarNode, FuncNode)):
+        return False
+
+    if isinstance(node, BinOpNode) and node.op in ("+", "-"):
+        # Flatten the entire additive tree.
+        terms: list[tuple[float, ExprNode]] = []
+        _flatten_additive(node, terms, sign=1.0)
+
+        # Group by variable-exponent fingerprint, summing effective
+        # coefficients (not just signs — -2*a+a nets to -a, which varies).
+        groups: dict[frozenset[tuple[str, float]], float] = {}
+        for flatten_sign, term in terms:
+            coeff_val, body = _extract_coeff(term)
+            effective_coeff = flatten_sign * coeff_val
+            exps: dict[str, float] = {}
+            _collect_multiplicative_exponents(body, exps, sign=1.0)
+            fp = frozenset((k, round(v, 6)) for k, v in exps.items())
+            groups[fp] = groups.get(fp, 0.0) + effective_coeff
+
+        # If every variable group has net coefficient ≈ 0 → self-cancelling.
+        nonempty = {
+            fp: total for fp, total in groups.items()
+            if fp  # skip constant-only terms
+        }
+        if nonempty and all(abs(total) < 1e-9 for total in nonempty.values()):
+            return True
+
+    return False
+
+
+def _flatten_additive(
+    node: "ExprNode", out: list[tuple[float, "ExprNode"]], sign: float,
+) -> None:
+    """Flatten an additive tree into (sign, subexpression) pairs.
+
+    sign tracks the accumulated sign: +1 for addition, -1 for subtraction.
+    Nested +/- are flattened so the output is a flat list where sign
+    indicates whether the subexpression is added or subtracted.
+    """
+    if isinstance(node, (NumberNode, VarNode, FuncNode)):
+        out.append((sign, node))
+        return
+
+    if isinstance(node, BinOpNode):
+        if node.op == "+":
+            _flatten_additive(node.left, out, sign)
+            _flatten_additive(node.right, out, sign)
+        elif node.op == "-":
+            _flatten_additive(node.left, out, sign)
+            _flatten_additive(node.right, out, -sign)
+        else:
+            # Non-additive sub-expression (*, /, ^) → treat as atomic term.
+            out.append((sign, node))
+
+
+def _has_term_dominance(ast: "ExprNode", obs: Observation) -> bool:
+    """Check if one additive term dominates the expression's magnitude.
+
+    When one term is orders of magnitude larger than the others,
+    the expression's constancy is degenerate — the dominant term
+    absorbs all variation.  e.g., (t*x)^2 - c^2 where c=3e8
+    makes c^2 ≈ 9e16 while (t*x)^2 ≈ 4e4.
+    """
+    # Only applies to additive expressions
+    if not isinstance(ast, BinOpNode) or ast.op not in ("+", "-"):
+        return False
+
+    # Flatten into terms
+    terms: list[tuple[float, ExprNode]] = []
+    _flatten_additive(ast, terms, sign=1.0)
+    if len(terms) < 2:
+        return False
+
+    # Evaluate each term at a few timesteps and check magnitude ratios
+    sample_ts = obs.timesteps[:min(3, len(obs.timesteps))]
+    all_dominant = True
+    any_dominant = False
+
+    for ts in sample_ts:
+        context = {**obs.parameters, **ts}
+        magnitudes: list[float] = []
+        for sign, term_node in terms:
+            try:
+                val = evaluate_node(term_node, context)
+                if isinstance(val, (int, float)) and not isinstance(val, complex):
+                    magnitudes.append(abs(val * sign))
+                else:
+                    magnitudes.append(0.0)
+            except Exception:
+                magnitudes.append(0.0)
+
+        if not magnitudes or max(magnitudes) == 0:
+            continue
+
+        max_mag = max(magnitudes)
+        other_sum = sum(magnitudes) - max_mag
+
+        # Skip timesteps where any term is zero (boundary case like v=0 → p=0)
+        if any(m == 0 for m in magnitudes):
+            continue
+
+        # Dominant if one term > 10,000x the sum of all others
+        if max_mag > 10000 * max(other_sum, 1e-30):
+            any_dominant = True
+        else:
+            all_dominant = False
+
+    # Only flag if dominant in EVERY sampled timestep
+    return any_dominant and all_dominant
+
+
+def _has_near_identity_power(ast: "ExprNode", obs: Observation) -> bool:
+    """Check if any power operation has a base always near 1.0.
+
+    When X ≈ 1.0, X^Y ≈ 1.0 regardless of Y — the power operation is
+    degenerate.  Catches expressions like (c^t)^x where tiny t (≈1e-6)
+    makes c^t ≈ 1.00002, making the whole expression artificially constant.
+    """
+    return _walk_for_near_identity(ast, obs)
+
+
+def _walk_for_near_identity(node: "ExprNode", obs: Observation) -> bool:
+    """Recursively check for power ops with near-identity bases."""
+    if isinstance(node, (NumberNode, VarNode, FuncNode)):
+        return False
+
+    if isinstance(node, BinOpNode):
+        if node.op == "^":
+            # Check if base is always near 1.0
+            sample_ts = obs.timesteps[:min(4, len(obs.timesteps))]
+            all_near_one = True
+            for ts in sample_ts:
+                context = {**obs.parameters, **ts}
+                try:
+                    base_val = evaluate_node(node.left, context)
+                    if isinstance(base_val, (int, float)) and not isinstance(base_val, complex):
+                        if abs(base_val - 1.0) > 0.01:
+                            all_near_one = False
+                            break
+                    else:
+                        return False
+                except Exception:
+                    return False
+            if all_near_one and len(sample_ts) > 0:
+                return True
+
+        # Recurse into children
+        return (_walk_for_near_identity(node.left, obs)
+                or _walk_for_near_identity(node.right, obs))
+
+    return False
+
+
+def _has_numerical_collapse(ast: "ExprNode", obs: Observation) -> bool:
+    """Check if the expression always evaluates to zero (numerical underflow).
+
+    Catches expressions like t^(c+x) where tiny base + huge exponent causes
+    float64 underflow to 0.0 at every timestep.  This is not algebraic
+    cancellation — it's a numerical artifact.
+    """
+    values: list[float] = []
+    for ts in obs.timesteps:
+        context = {**obs.parameters, **ts}
+        try:
+            val = evaluate_node(ast, context)
+            if isinstance(val, (int, float)) and not isinstance(val, complex):
+                values.append(float(val))
+            else:
+                return False
+        except Exception:
+            return False
+
+    if len(values) < 2:
+        return False
+
+    # All values are zero (or within float64 epsilon of zero)
+    return all(abs(v) < 1e-300 for v in values)
+
+
+def _extract_coeff(node: "ExprNode") -> tuple[float, "ExprNode"]:
+    """Extract the leading numeric coefficient from a multiplicative term.
+
+    Returns (value, body) where value is the product of all constant factors
+    and body is the term with constants stripped.  For example:
+      -a    → (-1.0, VarNode(a))
+      a     → (1.0,  VarNode(a))
+      5     → (5.0,  NumberNode(1))
+      -2*a  → (-2.0, VarNode(a))
+      2*a   → (2.0,  VarNode(a))
+      3*5*a → (15.0, VarNode(a))
+    """
+    if isinstance(node, NumberNode):
+        return (node.value, NumberNode(1.0))
+    if isinstance(node, (VarNode, FuncNode)):
+        return (1.0, node)
+    if isinstance(node, BinOpNode) and node.op == "*":
+        # Walk left through nested * to accumulate constant factors.
+        left = node.left
+        product = 1.0
+        while isinstance(left, BinOpNode) and left.op == "*":
+            inner = left.left
+            if isinstance(inner, NumberNode):
+                product *= inner.value
+                left = left.right
+            else:
+                break
+        if isinstance(left, NumberNode):
+            product *= left.value
+            return (product, node.right)
+    return (1.0, node)
 
 
 def _collect_multiplicative_exponents(
