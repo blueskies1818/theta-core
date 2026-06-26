@@ -48,14 +48,55 @@ class PlasticSeedScorer(nn.Module):
         self._last_key: Optional[tuple] = None
 
     def _make_key(self, symbols: list[str], expression: str) -> tuple:
-        """Create a sparse key from symbols and expression.
+        """Create a structural key — learns at the FORM level, not token level.
 
-        Uses sorted symbols for order-independence and expression hash
-        for content addressing.
+        Key is (num_symbols, structural_pattern) so that:
+        - E*lambda and K*nu share the same key (both are 2-var products)
+        - Plastic generalizes across domains
         """
-        sym_key = frozenset(symbols)
-        expr_hash = hashlib.md5(expression.encode()).hexdigest()[:8]
-        return (sym_key, expr_hash)
+        n = len(symbols)
+        pattern = self._structural_pattern(expression)
+        return (n, pattern)
+
+    @staticmethod
+    def _structural_pattern(expr: str) -> str:
+        """Extract structural pattern from expression.
+
+        Returns abstract form like 'a*b', 'a/b', 'a*b/c', 'a^2*b'.
+        """
+        # Count operators at top level
+        import re
+        # Remove parentheses for pattern extraction
+        clean = expr.replace('(', '').replace(')', '')
+
+        # Count operators
+        ops = re.findall(r'[+\-*/^]', clean)
+        op_types = ''.join(sorted(set(ops)))
+
+        # Count variables vs numbers
+        tokens = re.findall(r'\b[a-zA-Z_]\w*\b|\d+\.?\d*', clean)
+        funcs = {"sin", "cos", "sqrt", "exp", "log", "abs", "tan"}
+        vars_only = [t for t in tokens if t not in funcs and not t.replace('.','').replace('-','').isdigit()]
+        num_count = len(tokens) - len(vars_only)
+
+        n_vars = len(set(vars_only))
+
+        if op_types == '*' and n_vars == 2:
+            return 'a*b'
+        elif op_types == '/' and n_vars == 2:
+            return 'a/b'
+        elif op_types == '*' and '^' in clean and n_vars <= 2:
+            return 'a^2*b' if num_count > 0 else 'a*b^2'
+        elif '*' in op_types and '/' in op_types:
+            return 'a*b/c'
+        elif op_types == '+' and n_vars == 2:
+            return 'a+b'
+        elif op_types == '-' and n_vars == 2:
+            return 'a-b'
+        elif '^' in op_types and n_vars == 1:
+            return 'a^2'
+        else:
+            return f'custom_{op_types}_{n_vars}'
 
     def forward(self, frozen_score: float, symbols: list[str],
                 expression: str) -> float:
