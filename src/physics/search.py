@@ -29,6 +29,9 @@ _SCALAR_CONSTANTS = ["0", "0.5", "1", "2", "-1"]
 _THREE_QTY_TEMPLATES = [
     "{a}*{b}/{c}", "{a}^2/{b}", "{a}^2/{b}^2",
     "{a}*{b}*{c}", "{a}/({b}*{c})", "{a}^2/{b}^3",
+    # Powers combined with other variables (structural tier 2)
+    "{a}^2*{b}", "{a}*{b}^2",
+    "{a}^2*{b}*{c}", "{a}*{b}^2*{c}", "{a}*{b}*{c}^2",
 ]
 _SIMPLE_OPS = ["*", "/"]
 _SIMPLE_POWERS = [2, -1, -2]

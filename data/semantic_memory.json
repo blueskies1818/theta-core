@@ -13,121 +13,282 @@
       }
     },
     "E": {
-      "appearances": 7,
+      "appearances": 12,
       "operations": {
-        "additive": 7,
-        "multiplicative": 7
+        "additive": 12,
+        "multiplicative": 12
       },
       "positions": {
-        "term": 7
+        "term": 12
       },
       "co_occurs_with": {
         "lambda": 1
       }
     },
     "E_peak": {
+      "appearances": 6,
+      "operations": {
+        "multiplicative": 6
+      },
+      "positions": {
+        "denominator": 6
+      },
+      "co_occurs_with": {
+        "R": 6,
+        "T": 6
+      }
+    },
+    "R": {
+      "appearances": 6,
+      "operations": {
+        "multiplicative": 6
+      },
+      "positions": {
+        "unknown": 6
+      },
+      "co_occurs_with": {
+        "E_peak": 6,
+        "T": 6
+      }
+    },
+    "T": {
+      "appearances": 6,
+      "operations": {
+        "multiplicative": 6
+      },
+      "positions": {
+        "unknown": 6
+      },
+      "co_occurs_with": {
+        "E_peak": 6,
+        "R": 6
+      }
+    },
+    "nu": {
+      "appearances": 3,
+      "operations": {
+        "multiplicative": 3
+      },
+      "positions": {
+        "denominator": 3
+      },
+      "co_occurs_with": {
+        "I": 3,
+        "d": 3
+      }
+    },
+    "d": {
+      "appearances": 3,
+      "operations": {
+        "additive": 3,
+        "multiplicative": 3
+      },
+      "positions": {
+        "term": 3
+      },
+      "co_occurs_with": {
+        "I": 3,
+        "nu": 3
+      }
+    },
+    "I": {
+      "appearances": 3,
+      "operations": {
+        "multiplicative": 3
+      },
+      "positions": {
+        "denominator": 3
+      },
+      "co_occurs_with": {
+        "d": 3,
+        "nu": 3
+      }
+    },
+    "c": {
+      "appearances": 9,
+      "operations": {
+        "additive": 9,
+        "multiplicative": 9
+      },
+      "positions": {
+        "term": 9
+      },
+      "co_occurs_with": {
+        "u": 9
+      }
+    },
+    "u": {
+      "appearances": 9,
+      "operations": {
+        "additive": 9,
+        "multiplicative": 9
+      },
+      "positions": {
+        "term": 9
+      },
+      "co_occurs_with": {
+        "c": 9
+      }
+    },
+    "m": {
+      "appearances": 3,
+      "operations": {
+        "additive": 3,
+        "multiplicative": 3
+      },
+      "positions": {
+        "term": 3
+      },
+      "co_occurs_with": {}
+    },
+    "a": {
+      "appearances": 1,
+      "operations": {
+        "additive": 1,
+        "multiplicative": 1
+      },
+      "positions": {
+        "term": 1
+      },
+      "co_occurs_with": {}
+    },
+    "q1": {
+      "appearances": 5,
+      "operations": {
+        "additive": 5,
+        "multiplicative": 5
+      },
+      "positions": {
+        "term": 5
+      },
+      "co_occurs_with": {
+        "q2": 5
+      }
+    },
+    "q2": {
+      "appearances": 5,
+      "operations": {
+        "additive": 5,
+        "multiplicative": 5
+      },
+      "positions": {
+        "term": 5
+      },
+      "co_occurs_with": {
+        "q1": 5
+      }
+    },
+    "F": {
+      "appearances": 1,
+      "operations": {
+        "additive": 1,
+        "multiplicative": 1
+      },
+      "positions": {
+        "term": 1
+      },
+      "co_occurs_with": {}
+    },
+    "V": {
+      "appearances": 3,
+      "operations": {
+        "additive": 3,
+        "multiplicative": 3,
+        "power_base": 3
+      },
+      "positions": {
+        "term": 3
+      },
+      "co_occurs_with": {}
+    },
+    "t": {
+      "appearances": 10,
+      "operations": {
+        "additive": 10,
+        "multiplicative": 10,
+        "power_base": 9
+      },
+      "positions": {
+        "term": 10
+      },
+      "co_occurs_with": {}
+    },
+    "A": {
+      "appearances": 1,
+      "operations": {
+        "additive": 1,
+        "multiplicative": 1
+      },
+      "positions": {
+        "term": 1
+      },
+      "co_occurs_with": {}
+    },
+    "C": {
+      "appearances": 1,
+      "operations": {
+        "multiplicative": 1
+      },
+      "positions": {
+        "factor": 1
+      },
+      "co_occurs_with": {
+        "L": 1,
+        "w": 1
+      }
+    },
+    "w": {
+      "appearances": 1,
+      "operations": {
+        "additive": 1,
+        "multiplicative": 1,
+        "power_base": 1
+      },
+      "positions": {
+        "term": 1
+      },
+      "co_occurs_with": {
+        "C": 1,
+        "L": 1
+      }
+    },
+    "L": {
+      "appearances": 1,
+      "operations": {
+        "multiplicative": 1
+      },
+      "positions": {
+        "factor": 1
+      },
+      "co_occurs_with": {
+        "C": 1,
+        "w": 1
+      }
+    },
+    "v": {
       "appearances": 4,
       "operations": {
-        "multiplicative": 4
+        "multiplicative": 4,
+        "power_base": 4
       },
       "positions": {
         "denominator": 4
       },
       "co_occurs_with": {
-        "R": 4,
-        "T": 4
+        "K": 4
       }
     },
-    "R": {
+    "K": {
       "appearances": 4,
       "operations": {
+        "additive": 4,
         "multiplicative": 4
       },
       "positions": {
-        "unknown": 4
+        "term": 4
       },
       "co_occurs_with": {
-        "E_peak": 4,
-        "T": 4
-      }
-    },
-    "T": {
-      "appearances": 4,
-      "operations": {
-        "multiplicative": 4
-      },
-      "positions": {
-        "unknown": 4
-      },
-      "co_occurs_with": {
-        "E_peak": 4,
-        "R": 4
-      }
-    },
-    "nu": {
-      "appearances": 1,
-      "operations": {
-        "multiplicative": 1
-      },
-      "positions": {
-        "denominator": 1
-      },
-      "co_occurs_with": {
-        "I": 1,
-        "d": 1
-      }
-    },
-    "d": {
-      "appearances": 1,
-      "operations": {
-        "additive": 1,
-        "multiplicative": 1
-      },
-      "positions": {
-        "term": 1
-      },
-      "co_occurs_with": {
-        "I": 1,
-        "nu": 1
-      }
-    },
-    "I": {
-      "appearances": 1,
-      "operations": {
-        "multiplicative": 1
-      },
-      "positions": {
-        "denominator": 1
-      },
-      "co_occurs_with": {
-        "d": 1,
-        "nu": 1
-      }
-    },
-    "c": {
-      "appearances": 1,
-      "operations": {
-        "additive": 1,
-        "multiplicative": 1
-      },
-      "positions": {
-        "term": 1
-      },
-      "co_occurs_with": {
-        "u": 1
-      }
-    },
-    "u": {
-      "appearances": 1,
-      "operations": {
-        "additive": 1,
-        "multiplicative": 1
-      },
-      "positions": {
-        "term": 1
-      },
-      "co_occurs_with": {
-        "c": 1
+        "v": 4
       }
     }
   },
@@ -137,49 +298,71 @@
       "confidence": 0.2
     },
     "E_peak*R": {
-      "count": 4,
-      "confidence": 0.8
+      "count": 6,
+      "confidence": 1.0
     },
     "E_peak*T": {
-      "count": 4,
-      "confidence": 0.8
+      "count": 6,
+      "confidence": 1.0
     },
     "R*T": {
-      "count": 4,
-      "confidence": 0.8
+      "count": 6,
+      "confidence": 1.0
     },
     "I*d": {
-      "count": 1,
-      "confidence": 0.2
+      "count": 3,
+      "confidence": 0.6000000000000001
     },
     "I*nu": {
-      "count": 1,
-      "confidence": 0.2
+      "count": 3,
+      "confidence": 0.6000000000000001
     },
     "d*nu": {
+      "count": 3,
+      "confidence": 0.6000000000000001
+    },
+    "c*u": {
+      "count": 9,
+      "confidence": 1.0
+    },
+    "q1*q2": {
+      "count": 5,
+      "confidence": 1.0
+    },
+    "C*L": {
       "count": 1,
       "confidence": 0.2
     },
-    "c*u": {
+    "C*w": {
       "count": 1,
       "confidence": 0.2
+    },
+    "L*w": {
+      "count": 1,
+      "confidence": 0.2
+    },
+    "K*v": {
+      "count": 4,
+      "confidence": 0.8
     }
   },
   "templates": {
-    "product": 1,
-    "nested_fraction": 5,
-    "sum": 1,
-    "atomic": 6
+    "product": 2,
+    "nested_fraction": 9,
+    "sum": 14,
+    "atomic": 18,
+    "power": 12,
+    "ratio": 4
   },
   "constants": {
     "c": {
-      "confidence": 0.2,
+      "confidence": 1.0,
       "sources": [
         "auto"
       ]
     },
     "u": {
-      "confidence": 0.2,
+      "confidence": 1.0,
       "sources": [
         "auto"
       ]
@@ -189,7 +372,37 @@
       "sources": [
         "auto"
       ]
+    },
+    "m": {
+      "confidence": 0.2,
+      "sources": [
+        "auto"
+      ]
+    },
+    "a": {
+      "confidence": 0.2,
+      "sources": [
+        "auto"
+      ]
+    },
+    "q1": {
+      "confidence": 0.4,
+      "sources": [
+        "auto"
+      ]
+    },
+    "q2": {
+      "confidence": 0.4,
+      "sources": [
+        "auto"
+      ]
+    },
+    "F": {
+      "confidence": 0.2,
+      "sources": [
+        "auto"
+      ]
     }
   },
-  "discovery_count": 13
+  "discovery_count": 59
 }

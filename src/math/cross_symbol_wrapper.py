@@ -247,6 +247,7 @@ def propose_sub_expressions(
             # Otherwise fall through to tree decoder
 
     # Try tree-based AST decoder (Phase C — primary generator)
+    tree_proposals: list[str] = []
     if _load_tree_decoder() and _tree_decoder is not None:
         from src.math.tree_decoder import MAX_VARS
         proposals = []
@@ -279,8 +280,8 @@ def propose_sub_expressions(
                                 seen.add(clean)
                                 proposals.append(clean)
 
-        if proposals:
-            return proposals
+        # Store tree proposals — merge with deterministic, don't return early
+        tree_proposals = proposals
 
     # Try grammar-constrained decoder (fallback — kept for backward compat)
     if _load_grammar_model() and _grammar_model is not None:
@@ -307,8 +308,8 @@ def propose_sub_expressions(
             pass
 
     # Fallback: deterministic enumeration
-    exprs: list[str] = []
-    seen: set[str] = set()
+    exprs: list[str] = list(tree_proposals) if tree_proposals else []
+    seen: set[str] = set(exprs)
     for s in symbols:
         if s not in seen:
             seen.add(s); exprs.append(s)
