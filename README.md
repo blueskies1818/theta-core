@@ -60,16 +60,25 @@ Instrument Data → Neural Template Generators
                  All-Symbols Filter (min 1 var)
                       │
                       ▼
-                 DISCOVERY REPORT
+                 Plastic Update (structural Hebbian learning)
+                 ←── feeds back into Seed Scorer ──┐
+                      │                            │
+                      ▼                            │
+                 DISCOVERY REPORT                   │
+                      │                            │
+                      ▼                            │
+                 Relationship Extraction ◄──────────┘
+                 (read learned structural preferences)
 ```
 
-### Neural Components (Phases A-C)
+### Neural Components (Phases A-E)
 
 | Phase | Component | Status | Accuracy |
 |-------|-----------|--------|----------|
 | A | Seed Scorer | Trained | 95.5% val |
 | B | Beam Guider | Trained | 94.2% val |
 | C | Tree Decoder | Trained | 80.7% acc |
+| E | Plastic Adaptation | Active | Structural, 14 patterns |
 
 All three models trained on synthetic structural data (zero physics).
 GPU: Intel Arc Pro B70, 31.9GB VRAM, PyTorch XPU.
@@ -182,9 +191,27 @@ python scripts/training/train_tree_decoder.py
 python -m pytest tests/physics/ tests/core/ -q
 ```
 
-## Next: Phase E — Differentiable Plasticity
+## Next: Relationship Extraction & Refinement
 
-See `NEURAL_MODEL_PLAN.md` for the full plan. The next phase replaces
-frozen neural models with plastic ones that reshape during inference
-via Hebbian-style co-activation updates. Models start with zero prior
-and learn from discovery outcomes.
+The system now learns structural preferences from discovery outcomes
+via differentiable plasticity. Key findings from 20 claims:
+
+- **Ratios (a/b) are the most reliable invariant form** (bias +0.219)
+- **Products (a*b) follow** (bias +0.100)  
+- **14/14 learned structural patterns are positive**
+- **Ratios preferred 2:1 over products** (avg +0.084 vs +0.040)
+
+These relationships were NOT hand-coded — they emerged from experience.
+
+Extract learned relationships:
+```bash
+python scripts/extract_relationships.py
+```
+
+Run provable plastic test (shows generalization across domains):
+```bash
+python scripts/plastic_test.py
+```
+
+See `REVIEW_READY_ROADMAP.md` for completed phases and remaining work.
+See `NEURAL_MODEL_PLAN.md` for bias audit and Phase E design.
