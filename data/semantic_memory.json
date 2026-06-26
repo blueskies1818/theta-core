@@ -105,29 +105,29 @@
       }
     },
     "c": {
-      "appearances": 49,
+      "appearances": 51,
       "operations": {
-        "additive": 49,
-        "multiplicative": 49
+        "additive": 51,
+        "multiplicative": 51
       },
       "positions": {
-        "term": 49
+        "term": 51
       },
       "co_occurs_with": {
-        "u": 49
+        "u": 51
       }
     },
     "u": {
-      "appearances": 49,
+      "appearances": 51,
       "operations": {
-        "additive": 49,
-        "multiplicative": 49
+        "additive": 51,
+        "multiplicative": 51
       },
       "positions": {
-        "term": 49
+        "term": 51
       },
       "co_occurs_with": {
-        "c": 49
+        "c": 51
       }
     },
     "m": {
@@ -266,29 +266,29 @@
       }
     },
     "v": {
-      "appearances": 18,
+      "appearances": 20,
       "operations": {
-        "multiplicative": 18,
-        "power_base": 18
+        "multiplicative": 20,
+        "power_base": 20
       },
       "positions": {
-        "denominator": 18
+        "denominator": 20
       },
       "co_occurs_with": {
-        "K": 18
+        "K": 20
       }
     },
     "K": {
-      "appearances": 18,
+      "appearances": 20,
       "operations": {
-        "additive": 18,
-        "multiplicative": 18
+        "additive": 20,
+        "multiplicative": 20
       },
       "positions": {
-        "term": 18
+        "term": 20
       },
       "co_occurs_with": {
-        "v": 18
+        "v": 20
       }
     },
     "n2": {
@@ -361,7 +361,7 @@
       "confidence": 1.0
     },
     "c*u": {
-      "count": 49,
+      "count": 51,
       "confidence": 1.0
     },
     "q1*q2": {
@@ -381,7 +381,7 @@
       "confidence": 0.4
     },
     "K*v": {
-      "count": 18,
+      "count": 20,
       "confidence": 1.0
     },
     "n2*theta1": {
@@ -400,10 +400,10 @@
   "templates": {
     "product": 18,
     "nested_fraction": 28,
-    "sum": 54,
+    "sum": 56,
     "atomic": 43,
     "power": 24,
-    "ratio": 18
+    "ratio": 20
   },
   "constants": {
     "c": {
@@ -455,5 +455,5 @@
       ]
     }
   },
-  "discovery_count": 185
+  "discovery_count": 189
 }
