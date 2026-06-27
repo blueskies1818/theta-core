@@ -907,7 +907,9 @@ def simple_invariant_search(
 
     # 3-quantity templates (bootstrap + learned)
     if len(qnames) >= 3:
-        templates = _THREE_QTY_TEMPLATES + _learned_templates
+        # Filter to templates that fit the 3-qty loop (3 or fewer placeholders)
+        learned_3qty = [t for t in _learned_templates if t.count('{') <= 3]
+        templates = _THREE_QTY_TEMPLATES + learned_3qty
         for a, b, c in permutations(qnames, 3):
             for template in templates:
                 expr = template.format(a=a, b=b, c=c)
@@ -1014,6 +1016,105 @@ def simple_invariant_search(
         expansions=expansions,
         train_constancies=train_constancies,
     )
+
+
+def _compositional_search(
+    quantities: dict[str, Dimension],
+    observations: list[Observation],
+    *,
+    discovery_threshold: float = 0.90,
+) -> SearchResult:
+    """Compose 2-var sub-expressions into 4+ var invariants.
+
+    Simple search handles up to 3 variables. For 4+, we find promising
+    2-var building blocks (products, ratios, powers) and compose them
+    with +, -, *, /.  O(k²) where k is top-10 2-var expressions.
+    """
+    qnames = list(quantities.keys())
+    if len(qnames) < 4:
+        return SearchResult(expression="", score=0.0, depth=0,
+                            expansions=0, train_constancies=[])
+
+    evaluator = ExpressionEvaluator()
+    best_expr = ""
+    best_score = 0.0
+
+    # Phase 1: find top 2-var sub-expressions
+    sub_exprs: list[tuple[str, float]] = []
+    import re
+    for i, a in enumerate(qnames):
+        for j, b in enumerate(qnames):
+            if i >= j:
+                continue
+            for op in ["*", "/"]:
+                expr = f"{a}{op}{b}"
+                if re.search(r'\b(\w+)/\1\b', expr):
+                    continue
+                try:
+                    scores = [evaluator.score(expr, obs) for obs in observations]
+                    avg = sum(scores) / len(scores)
+                    if avg > 0.5:
+                        sub_exprs.append((expr, avg))
+                except Exception:
+                    pass
+        # Also try squares
+        for p in [2, -1]:
+            expr = f"{a}^{p}"
+            try:
+                scores = [evaluator.score(expr, obs) for obs in observations]
+                avg = sum(scores) / len(scores)
+                if avg > 0.4:
+                    sub_exprs.append((expr, avg))
+            except Exception:
+                pass
+
+    sub_exprs.sort(key=lambda x: -x[1])
+    top = sub_exprs[:10]
+
+    if len(top) < 2:
+        return SearchResult(expression="", score=0.0, depth=0,
+                            expansions=0, train_constancies=[])
+
+    # Phase 2: compose pairs
+    seen: set[str] = set()
+    for (e1, s1), (e2, s2) in [(top[i], top[j])
+                                 for i in range(len(top))
+                                 for j in range(i+1, len(top))]:
+        vars1 = set(re.findall(r'\b[a-zA-Z_]\w*\b', e1))
+        vars2 = set(re.findall(r'\b[a-zA-Z_]\w*\b', e2))
+        funcs = {"sin", "cos", "sqrt", "exp", "log", "abs"}
+        vars1 -= funcs
+        vars2 -= funcs
+        # Only compose expressions using disjoint variable sets
+        if not vars1.isdisjoint(vars2):
+            continue
+
+        for op in ["+", "-", "*", "/"]:
+            expr = f"({e1}){op}({e2})"
+            if expr in seen:
+                continue
+            seen.add(expr)
+            try:
+                scores = [evaluator.score(expr, obs) for obs in observations]
+                avg = sum(scores) / len(scores)
+                if avg > best_score:
+                    best_score = avg
+                    best_expr = expr
+            except Exception:
+                pass
+
+    if best_score >= discovery_threshold and best_expr:
+        return SearchResult(
+            expression=best_expr,
+            score=best_score,
+            depth=3,
+            expansions=len(top) * len(top),
+            train_constancies=[evaluator.score(best_expr, obs)
+                               for obs in observations],
+        )
+
+    return SearchResult(expression="", score=0.0, depth=0,
+                        expansions=0, train_constancies=[])
 
 
 # ════════════════════════════════════════════════════════════
@@ -1451,6 +1552,19 @@ def _auto_discover_impl(
 
         if result.score > best_result.score:
             best_result = result
+
+    # Pipeline 1.5: Compositional search for 4+ variable invariants.
+    # Finds 2-var sub-expressions and composes them into multi-term forms.
+    if best_result.score < discovery_threshold:
+        comp_result = _compositional_search(
+            quantities, observations,
+            discovery_threshold=discovery_threshold,
+        )
+        if comp_result.score >= discovery_threshold:
+            if _all_symbols_present(comp_result.expression, quantities):
+                return comp_result
+        if comp_result.score > best_result.score:
+            best_result = comp_result
 
     # Pipeline 2: Beam search — with cross-validation anti-coincidence gate.
     # Previously disabled at top level (coincidence problem).  Now safe:

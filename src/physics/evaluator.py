@@ -721,6 +721,14 @@ class ExpressionEvaluator:
         if _has_numerical_collapse(ast, obs):
             return 0.0
 
+        # Gate: literal constant — if expression evaluates to the exact same
+        # numeric value at every timestep (zero variance), it's an arithmetic
+        # identity, not a physical invariant. Genuine physical data always has
+        # residual variation from measurement noise.
+        # Catches -1-d*-1-d (simplifies to -1), a+a-a-a (simplifies to 0).
+        if _is_literal_constant(ast, obs):
+            return 0.0
+
         values: list[float] = []
         for ts in obs.timesteps:
             context = {**obs.parameters, **ts}
@@ -1002,6 +1010,35 @@ def _has_numerical_collapse(ast: "ExprNode", obs: Observation) -> bool:
 
     # All values are zero (or within float64 epsilon of zero)
     return all(abs(v) < 1e-300 for v in values)
+
+
+def _is_literal_constant(ast: "ExprNode", obs: Observation) -> bool:
+    """Check if expression evaluates to a literal constant at every timestep.
+
+    An arithmetic identity like -1-d*-1-d (simplifies to -1) produces the
+    exact same value regardless of variable inputs.  Genuine physical
+    invariants always have residual variation from measurement noise.
+
+    Returns True if all evaluation results are identical within float tolerance.
+    """
+    values: list[float] = []
+    for ts in obs.timesteps:
+        context = {**obs.parameters, **ts}
+        try:
+            val = evaluate_node(ast, context)
+            if isinstance(val, (int, float)) and not isinstance(val, complex):
+                values.append(float(val))
+            else:
+                return False
+        except Exception:
+            return False
+
+    if len(values) < 2:
+        return False
+
+    # If all values are identical to within 1e-12, it's a literal constant
+    first = values[0]
+    return all(abs(v - first) < 1e-12 for v in values[1:])
 
 
 def _extract_coeff(node: "ExprNode") -> tuple[float, "ExprNode"]:
