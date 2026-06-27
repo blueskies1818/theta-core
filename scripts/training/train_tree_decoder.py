@@ -45,7 +45,7 @@ BATCH_SIZE = 64
 LR = 0.0005
 SEED = 42
 DEVICE = "xpu" if torch.xpu.is_available() else "cuda" if torch.cuda.is_available() else "cpu"
-MAX_SEQ_LEN = 20  # max RPN actions per expression
+MAX_SEQ_LEN = 28  # max RPN actions per expression (increased for deeper nesting)
 
 # ════════════════════════════════════════════════════
 # Symbol pool (matching training data from other phases)
@@ -92,7 +92,7 @@ def generate_expression(symbols: list[str], rng: random.Random, max_depth: int =
     n = len(symbols)
 
     # Singleton
-    if n == 1 or rng.random() < 0.1:
+    if n == 1 or rng.random() < 0.08:
         return symbols[0]
 
     a, b = rng.sample(symbols, 2) if n >= 2 else (symbols[0], symbols[0])
@@ -100,46 +100,47 @@ def generate_expression(symbols: list[str], rng: random.Random, max_depth: int =
     # Choose expression type with balanced distribution
     r = rng.random()
 
-    if r < 0.25:
-        # Product
+    # Transcendental functions (22% — previously 0%)
+    if r < 0.08:
+        func = rng.choice(["sin", "cos", "sqrt", "exp", "log"])
+        return f"{func}({a})"
+    elif r < 0.14:
+        func = rng.choice(["sin", "cos", "sqrt", "exp", "log"])
+        return f"{func}({a}*{b})" if max_depth >= 2 else f"{func}({a})"
+    elif r < 0.18:
+        func = rng.choice(["sin", "exp", "sqrt"])
+        return f"({func}({a})/{func}({b}))"
+    elif r < 0.21:
+        func1 = rng.choice(["sin", "sqrt", "exp"])
+        func2 = rng.choice(["exp", "log", "sqrt"])
+        return f"{func1}({func2}({a}))"
+    elif r < 0.22:
+        # a*exp(b), a*sin(b) — transcendental w/ variable coefficient
+        func = rng.choice(["exp", "sin", "cos", "log"])
+        return f"({b}*{func}({a}))"
+
+    # Structural forms (78%)
+    elif r < 0.42:
         return f"({a}*{b})"
-
-    elif r < 0.40:
-        # Ratio
+    elif r < 0.55:
         return f"({a}/{b})"
-
-    elif r < 0.50:
-        # Sum
+    elif r < 0.63:
         return f"({a}+{b})"
-
-    elif r < 0.58:
-        # Difference
+    elif r < 0.69:
         return f"({a}-{b})"
-
-    elif r < 0.72:
-        # Square of single var
+    elif r < 0.80:
         return f"({a}^2)"
-
-    elif r < 0.85:
-        # Square of product (if depth allows)
-        return f"(({a}*{b})^2)"
-
-    elif r < 0.95:
-        # Power with other constant
+    elif r < 0.90:
+        return f"(({a}*{b})^2)" if max_depth >= 2 else f"({a}^2)"
+    elif r < 0.96:
         const = rng.choice(["0.5", "-1"])
         return f"({a}^{const})"
-
     else:
-        # Nested: squared difference or deeper composition
         if n >= 3 and max_depth >= 2:
             remaining = [s for s in symbols if s != a and s != b]
-            if remaining:
-                c = rng.choice(remaining)
-                return f"(({a}*{b})^2-{c}^2)"
-            else:
-                return f"(({a}*{b})^2-{b}^2)"
-        else:
-            return f"(({a}*{b})^2)"
+            c = rng.choice(remaining) if remaining else b
+            return f"(({a}*{b})^2-{c}^2)"
+        return f"(({a}*{b})^2)"
 
 
 def generate_training_data(n: int, rng: random.Random) -> list[dict]:
@@ -152,7 +153,7 @@ def generate_training_data(n: int, rng: random.Random) -> list[dict]:
         symbols = rng.sample(ALL_QUANTITY_SYMBOLS, n_syms)
         sym_key = tuple(sorted(symbols))
 
-        expr = generate_expression(symbols, rng)
+        expr = generate_expression(symbols, rng, max_depth=3)
         key = (sym_key, expr)
         if key in seen:
             continue
