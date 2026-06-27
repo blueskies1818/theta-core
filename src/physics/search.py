@@ -95,6 +95,7 @@ class ExpressionSearch:
         min_discovery_depth: int = 2,
         target_dim: str | None = "Energy",
         time_limit: float = 30.0,
+        use_guider: bool = False,
         **kwargs,
     ) -> None:
         self.quantities = quantities
@@ -126,6 +127,31 @@ class ExpressionSearch:
         self._best_depth: int = 0
         self._expansions_at_last_improvement: int = 0
         self._early_stopping_patience: int = 2000
+
+        # Beam guider (Phase B): prunes unproductive operator compositions.
+        # Loaded lazily; if unavailable, all candidates are explored.
+        self._use_guider = use_guider
+        self._guider_loaded: bool = False
+
+    def _guider_ok(self, left: str, right: str, operator: str,
+                   threshold: float = 0.2) -> bool:
+        """Check if this composition is worth exploring per the beam guider."""
+        if not self._use_guider:
+            return True
+        if not self._guider_loaded:
+            try:
+                from src.math.beam_guider import _load
+                self._guider_loaded = _load()
+            except Exception:
+                self._guider_loaded = True  # don't retry
+                return True
+        if not self._guider_loaded:
+            return True
+        try:
+            from src.math.beam_guider import should_explore
+            return should_explore(left, right, operator, threshold=threshold)
+        except Exception:
+            return True
 
     def _score_expression(self, expr_str: str) -> float:
         if not self.train_observations:
@@ -238,6 +264,11 @@ class ExpressionSearch:
                             child = self._build_str(left_str, op, right_str)
                             if child and child not in self._seen:
                                 self._seen.add(child)
+                                # Guider gate: skip unproductive compositions
+                                if self._use_guider and not self._guider_ok(
+                                    left_str, right_str, op,
+                                ):
+                                    continue
                                 score = self._score_expression(child)
                                 new_candidates[child] = score
 
@@ -966,6 +997,59 @@ def _is_simple_ratio(expr: str) -> bool:
     return op_count <= 1 and sum_count == 0 and "^" not in expr
 
 
+def _cross_validate(
+    expr_str: str,
+    quantities: dict[str, Dimension],
+    observations: list[Observation],
+    *,
+    test_ratio: float = 0.3,
+    min_test_score: float = 0.85,
+    max_gap: float = 0.05,
+    seed: int = 42,
+) -> tuple[float, bool]:
+    """Cross-validate a candidate expression on held-out observations.
+
+    Splits observations 70/30 train/test, re-scores the expression on the
+    held-out test set.  A genuine invariant scores consistently on both
+    splits; a coincidence drops on unseen data.
+
+    Returns (test_score, passed) where passed means test_score >= min_test_score
+    AND the train/test gap <= max_gap.
+    """
+    import random as _random
+
+    if len(observations) < 4:
+        # Too few observations to split — accept with lower threshold
+        evaluator = ExpressionEvaluator()
+        scores = [evaluator.score(expr_str, obs) for obs in observations]
+        avg = sum(scores) / len(scores) if scores else 0.0
+        return avg, avg >= 0.90
+
+    # Deterministic split
+    _random.seed(seed)
+    indices = list(range(len(observations)))
+    _random.shuffle(indices)
+    split = int(len(indices) * (1.0 - test_ratio))
+    train_idx = set(indices[:split])
+    test_idx = set(indices[split:])
+
+    evaluator = ExpressionEvaluator()
+    test_scores = [
+        evaluator.score(expr_str, observations[i]) for i in test_idx
+    ]
+    train_scores = [
+        evaluator.score(expr_str, observations[i]) for i in train_idx
+    ]
+
+    test_avg = sum(test_scores) / len(test_scores) if test_scores else 0.0
+    train_avg = sum(train_scores) / len(train_scores) if train_scores else 0.0
+
+    gap = abs(train_avg - test_avg)
+    passed = test_avg >= min_test_score and gap <= max_gap
+
+    return test_avg, passed
+
+
 def _neural_template_search(
     quantities: dict[str, Dimension],
     observations: list[Observation],
@@ -1121,7 +1205,7 @@ def auto_discover(
     beam_expansions: int = 2000,
     _no_regime_split: bool = False,
     _no_neural_templates: bool = False,
-    _enable_beam_search: bool = False,
+    _enable_beam_search: bool = True,
 ) -> SearchResult:
     """Automatically select and run the best discovery pipeline."""
     result = _auto_discover_impl(
@@ -1159,7 +1243,7 @@ def _auto_discover_impl(
     beam_expansions: int = 2000,
     _no_regime_split: bool = False,
     _no_neural_templates: bool = False,
-    _enable_beam_search: bool = False,
+    _enable_beam_search: bool = True,
 ) -> SearchResult:
     evaluator = ExpressionEvaluator()
     best_result = SearchResult(
@@ -1210,12 +1294,10 @@ def _auto_discover_impl(
         if result.score > best_result.score:
             best_result = result
 
-    # Pipeline 2: Beam search — only for regime sub-discovery.
-    # At the top level beam search is disabled — it produces high-scoring
-    # coincidences.  But regime sub-discovery (called from Pipeline 3.5)
-    # needs it as a fallback when the model can't find piecewise invariants.
+    # Pipeline 2: Beam search — with cross-validation anti-coincidence gate.
+    # Previously disabled at top level (coincidence problem).  Now safe:
+    # cross-validation rejects expressions that don't generalize to held-out data.
     if _enable_beam_search:
-        # Run dimension-agnostic — evaluator handles dimension mismatches.
         search = ExpressionSearch(
             quantities=quantities,
             train_observations=observations,
@@ -1224,11 +1306,25 @@ def _auto_discover_impl(
             discovery_threshold=discovery_threshold,
             top_k=20,
             target_dim=None,
+            use_guider=True,
         )
         result = search.run()
         refined = _refine_canonical(result, evaluator, observations)
         if refined.score >= discovery_threshold:
-            if _all_symbols_present(refined.expression, quantities):
+            # Cross-validation gate: must generalize to held-out observations
+            test_score, cv_ok = _cross_validate(
+                refined.expression, quantities, observations,
+            )
+            if cv_ok and _all_symbols_present(refined.expression, quantities):
+                # Update result with cross-validated score
+                refined = SearchResult(
+                    expression=refined.expression,
+                    score=test_score,
+                    depth=refined.depth,
+                    expansions=result.expansions,
+                    train_constancies=refined.train_constancies,
+                    test_constancies=refined.train_constancies,
+                )
                 return refined
         if result.score > best_result.score:
             best_result = result

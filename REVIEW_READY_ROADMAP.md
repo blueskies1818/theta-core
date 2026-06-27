@@ -68,6 +68,62 @@ Mutation engine deployed but needs better heuristics to avoid degenerate
 coincidences on novel forms. Current architecture correct; scoring
 function needs iteration.
 
+### Frontier Test Predictions (June 2026)
+
+**Status: ROADBLOCK #1 IN PROGRESS — Beam search anti-degenerate (2026-06-26)**
+
+Honest prediction: 6-9/12 pass on genuinely held-out claims.
+
+**What would pass (free wins):**
+- Simple 2-var products/ratios (a*b, a/b). Simple search brute-forces all pairs.
+- Powers (a^2*b, a/b^2). Templates cover these.
+- Transcendental forms matching the 25 templates (sin(a)/sin(b), a*exp(-b/c)).
+- Squared-differences (a^2-b^2 for same-dimension pairs). Post-processing catches.
+
+**What would fail — specific roadblocks:**
+
+1. **Forms outside the 72-pattern catalog.** 47 polynomial + 25 transcendental
+   templates define the search space. Mutation engine is noisy — finds degenerate
+   coincidences more often than genuine novel structure. A structural pattern
+   the developer didn't enumerate will not be discovered reliably.
+   → Fix: Learn structural patterns from data instead of enumerating by hand.
+
+2. **Nested transcendental combos.** sin(exp(a/b)), log(a)*sqrt(b/c).
+   Templates are mostly single-function wrapping. Tree decoder generates deeper
+   nesting but training data is synthetic and shallow.
+   → Fix: Train tree decoder on deeper compositional patterns.
+
+3. **Ternary+ non-standard forms.** a*b+c*d, (a+b)/(c-d). Simple search
+   exhausts pairs/ratios/powers, not sums-of-products. Beam search is
+   disabled at top level (coincidence problem).
+   → Fix: Make beam search safe for top-level use (better anti-degenerate gates
+   or neural guidance).
+
+4. **4+ variable interactions.** 3-qty templates cover 47 permutations but
+   4-way interactions explode combinatorially — system bails to simpler forms.
+   → Fix: Compositional search that builds 4-var expressions from 2-var parts.
+
+5. **Differential/implicit relationships.** dE/dV = -P (Maxwell relations).
+   System only searches algebraic expressions. Invisible.
+   → Fix: Extend grammar to include derivatives, or frame as algebraic
+   invariant pairs.
+
+6. **Negative results.** System never says "no invariant found." If fed data
+   with no conserved quantity, it still returns a high-scoring coincidence.
+   → Fix: Null-hypothesis testing — compare against random expression baseline.
+
+### Roadblock Priority (attack order)
+
+1. **Beam search anti-degenerate** — unlocks sums-of-products and multi-term forms.
+   Biggest practical gain for least structural change.
+2. **Null-hypothesis baseline** — honesty requirement. System must know
+   when it found nothing.
+3. **Learn structural patterns from data** — replaces human template
+   enumeration with emergent search space. Highest theoretical importance.
+4. **Compositional 4+ variable search** — builds complex forms from simple parts.
+5. **Deeper tree decoder training** — nested transcendental combos.
+6. **Derivative-aware grammar** — opens differential physics.
+
 ### Structural Limitations (Honest)
 - Templates + mutation rules still human-designed (abstraction, not elimination)
 - Function set (sin, cos, sqrt, exp, log, abs) is hand-chosen
