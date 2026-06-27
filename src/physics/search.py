@@ -1550,7 +1550,10 @@ def _auto_discover_impl(
             discovery_threshold=discovery_threshold,
         )
         refined = _refine_canonical(result, evaluator, observations)
-        if refined.score >= discovery_threshold:
+        # Only return early if simple search found something genuinely strong.
+        # Mediocre scores (0.90-0.95) may be coincidences — let later
+        # pipelines (compositional, beam search) try to do better.
+        if refined.score >= 0.95:
             if _all_symbols_present(refined.expression, quantities):
                 return refined
 
