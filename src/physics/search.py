@@ -53,6 +53,73 @@ _THREE_QTY_TEMPLATES = [
 _SIMPLE_OPS = ["*", "/"]
 _SIMPLE_POWERS = [2, -1, -2]
 
+# Learned template catalog — grows from discovery outcomes.
+# Start minimal (5 base patterns); system discovers the rest.
+_learned_templates: list[str] = []
+_MAX_LEARNED_TEMPLATES = 200
+
+# Minimal bootstrap templates: just the most fundamental forms.
+_BOOTSTRAP_TEMPLATES: list[str] = [
+    "{a}*{b}",       # product
+    "{a}/{b}",       # ratio
+    "{a}^2",         # square
+    "{a}+{b}",       # sum
+    "{a}-{b}",       # difference
+]
+
+
+def _extract_structural_pattern(expr: str) -> str | None:
+    """Extract abstract structural form from a concrete expression.
+
+    E.g., 'E*lambda' → '{a}*{b}', 'P*V/T' → '{a}*{b}/{c}'
+    Uses the same logic as plastic_seed_scorer._structural_pattern.
+    Returns a template string suitable for _THREE_QTY_TEMPLATES,
+    or None if the expression cannot be templatized.
+    """
+    import re
+    funcs = {"sin", "cos", "sqrt", "exp", "log", "abs", "tan"}
+    tokens = re.findall(r'\b[a-zA-Z_]\w*\b', expr)
+    var_tokens = [t for t in tokens if t not in funcs
+                  and not t.replace('.', '').replace('-', '').isdigit()]
+    unique_vars = list(dict.fromkeys(var_tokens))  # preserve order
+
+    if len(unique_vars) < 2:
+        return None
+
+    # Map variables to template placeholders {a}, {b}, {c}
+    # Use intermediate sigils to avoid false matches
+    sorted_vars = sorted(unique_vars, key=lambda v: expr.index(v))
+    template = expr
+    placeholders = ['a', 'b', 'c', 'd', 'e']
+    sigils = ['__P0__', '__P1__', '__P2__', '__P3__', '__P4__']
+    for i, var in enumerate(sorted_vars[:5]):
+        template = re.sub(
+            r'\b' + re.escape(var) + r'\b',
+            sigils[i],
+            template
+        )
+    for i in range(min(len(sorted_vars), 5)):
+        template = template.replace(sigils[i], '{' + placeholders[i] + '}')
+
+    # Verify template uses at least 2 distinct placeholders
+    if template.count('{') >= 2:
+        return template
+    return None
+
+
+def _register_learned_template(expr: str) -> None:
+    """Extract pattern from discovered expression and add to catalog."""
+    global _learned_templates
+    template = _extract_structural_pattern(expr)
+    if template and len(_learned_templates) < _MAX_LEARNED_TEMPLATES:
+        if template not in _learned_templates:
+            _learned_templates.append(template)
+
+
+def _get_all_templates() -> list[str]:
+    """Return combined bootstrap + learned templates."""
+    return _BOOTSTRAP_TEMPLATES + _learned_templates
+
 
 @dataclass
 class SearchResult:
@@ -838,10 +905,11 @@ def simple_invariant_search(
         if expansions > max_pairs:
             break
 
-    # 3-quantity templates
+    # 3-quantity templates (bootstrap + learned)
     if len(qnames) >= 3:
+        templates = _THREE_QTY_TEMPLATES + _learned_templates
         for a, b, c in permutations(qnames, 3):
-            for template in _THREE_QTY_TEMPLATES:
+            for template in templates:
                 expr = template.format(a=a, b=b, c=c)
                 if _is_trivial(expr):
                     continue
@@ -1304,6 +1372,9 @@ def auto_discover(
                 plastic_update(outcome, used_symbols, result.expression)
         except Exception:
             pass
+
+        # Register discovered pattern for future searches
+        _register_learned_template(result.expression)
 
     # Null-hypothesis check: reject discoveries indistinguishable from random
     if result.is_discovery:
