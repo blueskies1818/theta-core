@@ -49,6 +49,10 @@ _THREE_QTY_TEMPLATES = [
     # sqrt combinations
     "sqrt({a}*{b})", "{a}/sqrt({b})", "sqrt({a})/{b}",
     "{a}*sqrt({b})",
+    # Derivative relationships (numerical differentiation from data)
+    # dX/dY + constant (Maxwell relations, thermodynamic identities)
+    "deriv({a},{b})", "deriv({a},{b})+{c}",
+    "deriv({a},{b})*{c}", "deriv({a},{b})/{c}",
 ]
 _SIMPLE_OPS = ["*", "/"]
 _SIMPLE_POWERS = [2, -1, -2]

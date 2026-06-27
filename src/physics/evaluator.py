@@ -30,10 +30,10 @@ _TOKEN_RE = re.compile(
     \s*                             # skip whitespace
     (?:
         (?P<number>\d+\.?\d*(?:[eE][+-]?\d+)?)  # numbers: 0.5, 2, 1e-3
-      | (?P<func>sin|cos|sqrt|exp|log|abs)    # function names
-      | (?P<ident>[a-zA-Z_]\w*)               # variable names
-      | (?P<op>[+\-*/^()])                     # operators and parens
-      | (?P<bad>\S)                            # unexpected
+      | (?P<func>sin|cos|sqrt|exp|log|abs|deriv) # function names (incl. deriv)
+      | (?P<ident>[a-zA-Z_]\w*)                   # variable names
+      | (?P<op>[+\-*/^(),])                        # operators, parens, comma
+      | (?P<bad>\S)                                # unexpected
     )
     """,
     re.VERBOSE,
@@ -76,7 +76,19 @@ class BinOpNode:
     right: "ExprNode"
 
 
-ExprNode = NumberNode | VarNode | FuncNode | BinOpNode
+@dataclass
+class DerivNode:
+    """Derivative dX/dY — numeric differentiation from observation data.
+
+    The derivative dX/dY is computed numerically from successive timesteps:
+    dX/dY = (X[i+1] - X[i]) / (Y[i+1] - Y[i])
+    Dimensions follow from dX/dY: dim(X) / dim(Y).
+    """
+    var: str          # numerator variable (X)
+    wrt: str          # denominator variable (Y, the \"with respect to\")
+
+
+ExprNode = NumberNode | VarNode | FuncNode | BinOpNode | DerivNode
 
 
 # ── Tokenizer ────────────────────────────────────────────────────────────────
@@ -193,6 +205,27 @@ class _Parser:
 
         if tok[0] in ("ident", "func"):
             name = self._advance()[1]
+
+            # Derivative: deriv(X,Y)
+            if name == "deriv":
+                nxt = self._peek()
+                if nxt is None or nxt[0] != "op" or nxt[1] != "(":
+                    raise ParseError("Expected '(' after deriv")
+                self._advance()
+                arg1 = self._atom()
+                nxt2 = self._peek()
+                if nxt2 is None or nxt2[0] != "op" or nxt2[1] != ",":
+                    raise ParseError("Expected ',' in deriv")
+                self._advance()
+                arg2 = self._atom()
+                nxt3 = self._peek()
+                if nxt3 is None or nxt3[0] != "op" or nxt3[1] != ")":
+                    raise ParseError("Expected ')' after deriv args")
+                self._advance()
+                if not isinstance(arg1, VarNode) or not isinstance(arg2, VarNode):
+                    raise ParseError("deriv requires variable names: deriv(X,Y)")
+                return DerivNode(var=arg1.name, wrt=arg2.name)
+
             nxt = self._peek()
             if nxt is not None and nxt[0] == "op" and nxt[1] == "(":
                 from math import sin, cos, sqrt, exp, log, fabs
@@ -292,6 +325,15 @@ def evaluate_node(node: ExprNode, context: dict[str, float]) -> float:
             except (ValueError, OverflowError):
                 raise EvalError(f"Cannot compute {left_val} ^ {right_val}")
         raise EvalError(f"Unknown binary operator {node.op!r}")
+
+    if isinstance(node, DerivNode):
+        key = f"d{node.var}_d{node.wrt}"
+        if key not in context:
+            raise EvalError(
+                f"Undefined derivative: {key!r}. "
+                f"Available: {sorted(context.keys())}"
+            )
+        return context[key]
 
     raise EvalError(f"Unknown AST node type: {type(node)}")
 
@@ -684,13 +726,14 @@ class ExpressionEvaluator:
         # Gate: expressions with no variables (pure numbers like "2+2")
         # are trivially constant — they're just arithmetic results.
         var_names = _collect_var_names(ast)
-        if not var_names:
+        base_names = _collect_base_var_names(ast)
+        if not var_names and not base_names:
             return 0.0
 
         # Gate: at least one variable must actually change across timesteps.
         # Uses precomputed varying-quantities cache — O(1) per expression.
         varying = self._get_varying_quantities(obs)
-        if not (var_names & varying):
+        if not (var_names & varying) and not (base_names & varying):
             return 0.0
 
         # Gate: expressions that algebraically cancel their own variables
@@ -729,9 +772,15 @@ class ExpressionEvaluator:
         if _is_literal_constant(ast, obs):
             return 0.0
 
+        # Precompute derivatives if expression uses deriv()
+        deriv_vars = _collect_deriv_vars(ast)
+        deriv_contexts = _precompute_derivatives(obs, deriv_vars)
+
         values: list[float] = []
-        for ts in obs.timesteps:
+        for i, ts in enumerate(obs.timesteps):
             context = {**obs.parameters, **ts}
+            if i < len(deriv_contexts):
+                context.update(deriv_contexts[i])
             try:
                 val = evaluate_node(ast, context)
                 if isinstance(val, complex):
@@ -778,6 +827,24 @@ def _collect_var_names(node: "ExprNode") -> set[str]:
     def walk(n):
         if isinstance(n, VarNode):
             names.add(n.name)
+        elif isinstance(n, FuncNode):
+            walk(n.arg)
+        elif isinstance(n, BinOpNode):
+            walk(n.left)
+            walk(n.right)
+        elif isinstance(n, DerivNode):
+            names.add(f"d{n.var}_d{n.wrt}")
+    walk(node)
+    return names
+
+
+def _collect_base_var_names(node: "ExprNode") -> set[str]:
+    """Return concrete variable names underlying derivatives."""
+    names: set[str] = set()
+    def walk(n):
+        if isinstance(n, DerivNode):
+            names.add(n.var)
+            names.add(n.wrt)
         elif isinstance(n, FuncNode):
             walk(n.arg)
         elif isinstance(n, BinOpNode):
@@ -1010,6 +1077,68 @@ def _has_numerical_collapse(ast: "ExprNode", obs: Observation) -> bool:
 
     # All values are zero (or within float64 epsilon of zero)
     return all(abs(v) < 1e-300 for v in values)
+
+
+def _collect_deriv_vars(ast: "ExprNode") -> list[tuple[str, str]]:
+    """Collect all deriv(X,Y) variable pairs from an AST."""
+    pairs: list[tuple[str, str]] = []
+
+    def walk(n):
+        if isinstance(n, DerivNode):
+            pairs.append((n.var, n.wrt))
+        elif isinstance(n, FuncNode):
+            walk(n.arg)
+        elif isinstance(n, BinOpNode):
+            walk(n.left)
+            walk(n.right)
+
+    walk(ast)
+    return pairs
+
+
+def _precompute_derivatives(
+    obs: Observation, deriv_vars: list[tuple[str, str]]
+) -> list[dict[str, float]]:
+    """Precompute numerical derivatives for each timestep pair.
+
+    For deriv(X,Y) at timestep i: dX/dY = (X[i+1] - X[i]) / (Y[i+1] - Y[i])
+    Last timestep uses backward difference.  Returns list of dicts mapping
+    dX_dY → value for each timestep.
+    """
+    ts = obs.timesteps
+    n = len(ts)
+    if n < 2 or not deriv_vars:
+        return [{} for _ in range(n)]
+
+    all_vars = set(obs.parameters.keys())
+    for t in ts:
+        all_vars.update(t.keys())
+
+    contexts: list[dict[str, float]] = [{} for _ in range(n)]
+
+    for var, wrt in deriv_vars:
+        if var not in all_vars or wrt not in all_vars:
+            continue
+        key = f"d{var}_d{wrt}"
+        for i in range(n):
+            cur = {**obs.parameters, **ts[i]}
+            if var not in cur or wrt not in cur:
+                continue
+            if i < n - 1:
+                nxt = {**obs.parameters, **ts[i + 1]}
+                dx = nxt.get(var, 0.0) - cur.get(var, 0.0)
+                dy = nxt.get(wrt, 0.0) - cur.get(wrt, 0.0)
+            else:
+                # Backward difference for last timestep
+                prv = {**obs.parameters, **ts[i - 1]}
+                dx = cur.get(var, 0.0) - prv.get(var, 0.0)
+                dy = cur.get(wrt, 0.0) - prv.get(wrt, 0.0)
+            if abs(dy) < 1e-12:
+                contexts[i][key] = 0.0
+            else:
+                contexts[i][key] = dx / dy
+
+    return contexts
 
 
 def _is_literal_constant(ast: "ExprNode", obs: Observation) -> bool:
