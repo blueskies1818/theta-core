@@ -1196,6 +1196,80 @@ def _neural_template_search(
         return None
 
 
+def _null_hypothesis_check(
+    expr_str: str,
+    candidate_score: float,
+    quantities: dict[str, Dimension],
+    observations: list[Observation],
+    *,
+    n_random: int = 50,
+    margin: float = 0.05,
+) -> bool:
+    """Check if a discovery is significantly above random baseline.
+
+    Extracts the structural form of the candidate expression, then
+    generates shuffled variants by substituting different quantity names
+    into the same structure.  If shuffled variants score nearly as high,
+    the discovery is indistinguishable from random assignment.
+
+    Returns True if the discovery passes the null-hypothesis test.
+    """
+    import random as _random
+    import re
+
+    qnames = list(quantities.keys())
+    if len(qnames) < 3 or len(observations) < 4:
+        return True  # not enough data for meaningful baseline
+
+    # Extract variables used in the candidate
+    funcs = {"sin", "cos", "sqrt", "exp", "log", "abs", "tan"}
+    expr_vars = re.findall(r'\b[a-zA-Z_]\w*\b', expr_str)
+    expr_vars = [v for v in expr_vars if v not in funcs]
+    used_vars = [v for v in qnames if v in expr_vars]
+    unused_vars = [v for v in qnames if v not in expr_vars]
+
+    if len(used_vars) < 1 or len(unused_vars) < 2:
+        return True
+
+    evaluator = ExpressionEvaluator()
+    _random.seed(42)
+    random_scores: list[float] = []
+    seen: set[str] = {expr_str}
+
+    # Generate shuffled variants: substitute each used variable
+    # with an unused one, preserving structural form.
+    for _ in range(n_random * 3):
+        if len(random_scores) >= n_random:
+            break
+        subs = {}
+        for v in used_vars:
+            if unused_vars:
+                subs[v] = _random.choice(unused_vars)
+        shuffled = expr_str
+        for old, new in sorted(subs.items(), key=lambda x: -len(x[0])):
+            shuffled = re.sub(
+                r'\b' + re.escape(old) + r'\b', new, shuffled
+            )
+        if shuffled in seen or shuffled == expr_str:
+            continue
+        seen.add(shuffled)
+        try:
+            scores = [evaluator.score(shuffled, obs) for obs in observations]
+            avg = sum(scores) / len(scores) if scores else 0.0
+            random_scores.append(avg)
+        except Exception:
+            pass
+
+    if len(random_scores) < 10:
+        return True  # insufficient baseline
+
+    random_scores.sort()
+    idx_95 = int(len(random_scores) * 0.95)
+    baseline_95 = random_scores[min(idx_95, len(random_scores) - 1)]
+
+    return candidate_score >= baseline_95 + margin
+
+
 def auto_discover(
     quantities: dict[str, Dimension],
     observations: list[Observation],
@@ -1228,6 +1302,19 @@ def auto_discover(
             used_symbols = [q for q in quantities if q in expr_vars]
             if used_symbols:
                 plastic_update(outcome, used_symbols, result.expression)
+        except Exception:
+            pass
+
+    # Null-hypothesis check: reject discoveries indistinguishable from random
+    if result.is_discovery:
+        try:
+            if not _null_hypothesis_check(
+                result.expression, result.score, quantities, observations,
+            ):
+                return SearchResult(
+                    expression="", score=0.0, depth=0, expansions=0,
+                    train_constancies=[],
+                )
         except Exception:
             pass
 
